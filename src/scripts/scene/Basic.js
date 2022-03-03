@@ -135,28 +135,28 @@ export default class BasicScene {
     
     this.camera.lowerAlphaLimit =  null;
     this.camera.upperAlphaLimit =  null;
-    new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+    new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
     }).start();
-    new TWEEN.Tween(this.camera).to({beta: BABYLON.Angle.FromDegrees(90).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+    new TWEEN.Tween(this.camera).to({beta: BABYLON.Angle.FromDegrees(90).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
     }).start();
-    // new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+    // new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
     // }).start();
-    new TWEEN.Tween(this.camera).to({radius:3},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+    new TWEEN.Tween(this.camera).to({radius:3},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
     }).start();
     
   }
   setFocusOnObject(pos){
-    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
         this.camera.lowerAlphaLimit = this.camera.upperAlphaLimit=this.camera.alpha;
     }).start();
   }
   setFocusOnDoor(pos){
-    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
         this.gamestate.state =  ObjectState.pick;
         this.camera.lowerAlphaLimit = this.camera.upperAlphaLimit = this.camera.alpha;
     }).start();
     if(this.camera.alpha>2)
-          new TWEEN.Tween(this.camera).to({alpha:3.25},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+          new TWEEN.Tween(this.camera).to({alpha:3.25},500).easing(TWEEN.Easing.Linear.None).onComplete(() => {
     }).start();
   }
   onpickMesh(mesh){

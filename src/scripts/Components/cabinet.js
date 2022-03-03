@@ -27,8 +27,8 @@ export default class Cabinet{
                         if(mesh.name.includes("cabinet") && this.action===0){
                             // this.root.gamestate.state  =  ObjectState.pick;
                             this.action=1;
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
                             this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y+.5,this.position.z-1));
                         }
                         else if(this.action>0){
@@ -50,7 +50,7 @@ export default class Cabinet{
         let val=0;
         if(mesh.rotation.z === BABYLON.Angle.FromDegrees(0).radians())
             val=angle;
-        new TWEEN.Tween(mesh.rotation).to({z:isleft?-BABYLON.Angle.FromDegrees(val).radians():BABYLON.Angle.FromDegrees(val).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+        new TWEEN.Tween(mesh.rotation).to({z:isleft?-BABYLON.Angle.FromDegrees(val).radians():BABYLON.Angle.FromDegrees(val).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
             if(isleft){
                 if(this.action===1){   
                     this.action=2;

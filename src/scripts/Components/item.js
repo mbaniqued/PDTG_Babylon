@@ -23,9 +23,9 @@ export default class Item{
                             if(this.action===0){
                                 this.action =1;
                                 // this.root.gamestate.state  =  ObjectState.pick;
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(330).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();   
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({radius:1.5},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(330).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();   
+                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({radius:1.5},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.25,this.meshRoot.position.y,this.meshRoot.position.z));
                             }
                             else{

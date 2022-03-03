@@ -27,13 +27,13 @@ export default class Trolly{
                         console.log(this.root.gamestate.state+" "+mesh.name);
                         if(this.root.gamestate.state === ObjectState.default){
                              if(mesh.name.includes("trolly") && this.action === 0){
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y+1,this.meshRoot.position.z-2.2));
                              }
                              else if(mesh.name.includes("apdmachine") && this.action === 0){
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.apdMachine.absolutePosition.x,this.apdMachine.absolutePosition.y-.5,this.apdMachine.absolutePosition.z+1));
                                 this.action=1;
                                 // this.root.gamestate.state = ObjectState.pick;

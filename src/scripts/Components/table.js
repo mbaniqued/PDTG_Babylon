@@ -25,8 +25,8 @@ export default class Table{
                         if(mesh.name==="table3" && this.action===0){
                             // this.root.gamestate.state  =  ObjectState.pick;
                             this.action=1;
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(40).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(40).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
                             this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y+1,this.meshRoot.position.z-.5));
                         }
                         else{
@@ -37,7 +37,7 @@ export default class Table{
                                         let drawerNode = childnode;  
                                         let val = this.action==1?-100:100; 
                                         this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z+(this.action===1?-1.5:0)));
-                                        new TWEEN.Tween(drawerNode.position).to({y:drawerNode.position.y+val},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                                        new TWEEN.Tween(drawerNode.position).to({y:drawerNode.position.y+val},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
                                             if(this.action==1){   
                                                 this.action=2;
                                             }

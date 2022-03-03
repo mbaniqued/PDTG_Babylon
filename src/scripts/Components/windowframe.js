@@ -44,14 +44,14 @@ export default class WindowFrame{
                         console.log(this.root.gamestate.state+" "+mesh.name);
                         if(this.root.gamestate.state === ObjectState.default){
                              if(this.action === 0){
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(360).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(360).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y-.5,1));
                                 this.action =1;
                              }else if(this.action ===1 && mesh.name =="windowframeplan"){
                                  console.log(this.meshRoot.position.z)
                                 if(this.meshRoot.position.z>0)
-                                    new TWEEN.Tween(this.meshRoot.position).to({z:0},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                                    new TWEEN.Tween(this.meshRoot.position).to({z:0},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
                                         if(this.action>0){
                                             this.reset();
                                             this.root.setCameraTarget();
@@ -59,7 +59,7 @@ export default class WindowFrame{
 
                                     }).start();
                                  else   
-                                    new TWEEN.Tween(this.meshRoot.position).to({z:2},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                                    new TWEEN.Tween(this.meshRoot.position).to({z:2},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
                                         if(this.action>0){
                                             this.reset();
                                             this.root.setCameraTarget();
