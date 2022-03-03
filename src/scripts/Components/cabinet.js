@@ -27,7 +27,7 @@ export default class Cabinet{
                         if(mesh.name.includes("cabinet") && this.action===0){
                             // this.root.gamestate.state  =  ObjectState.pick;
                             this.action=1;
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
                             new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
                             this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y+.5,this.position.z-1));
                         }

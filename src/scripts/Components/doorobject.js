@@ -24,8 +24,8 @@ export default class DoorObject{
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                         if(this.root.gamestate.state === ObjectState.default && this.action===0){
                             this.root.gamestate.state  =  ObjectState.pick;
-                            new TWEEN.Tween(this.root.camera).to({alpha:Math.PI*1.1},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:5},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(180).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({radius:7},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
                             this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z));
                         }
                         else{
