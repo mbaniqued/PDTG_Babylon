@@ -20,43 +20,123 @@ export default class LoaderManager {
       this.root.door.scaling = new BABYLON.Vector3(.01,.01,.01);
       // const sinkMat          = kitchenpCube3Mat.clone();
       this.assetsManager.addMeshTask("room_reference","","models/","roomscene.glb");
-      this.assetsManager.addMeshTask("trolley","","models/","trolly.glb");
+      this.assetsManager.addMeshTask("trolley","","models/","Trolley_v2.glb");
       this.assetsManager.addMeshTask("table","","models/","Table_v2.glb");
       this.assetsManager.addMeshTask("cabinet","","models/","Cabinet_Main_v2.glb");
       this.assetsManager.addMeshTask("gasStove2","","models/","gasStove2.glb");
       this.assetsManager.addMeshTask("cabinethanging","","models/","Cabinet_Hanging.glb");
       this.assetsManager.addMeshTask("airconditioner_remote","","models/","Airconditioner_Remote.glb");
       this.assetsManager.addMeshTask("APD_Machine_v2","","models/","APD_Machine_v2.glb");
-      
-      
+      this.assetsManager.addMeshTask("bp_monitor","","models/Items/","bpmachine.glb");
+      this.assetsManager.addMeshTask("Alcohol_Wipe","","models/Items/","Alcohol_Wipe.glb");
+      this.assetsManager.addMeshTask("ConnectionShield","","models/Items/","ConnectionShield.glb");
+      this.assetsManager.addMeshTask("DrainBag","","models/Items/","DrainBag_final.glb");
+      this.assetsManager.addMeshTask("SurgicalMask","","models/Items/","SurgicalMask.glb");
+      this.assetsManager.addMeshTask("ccpdrecordbook","","models/Items/","ccpdrecordbook.glb");
       this.assetsManager.onTaskSuccessObservable.add((task)=> {
-        
+        if(task.name === "bp_monitor"){
+          const bpnode       = new BABYLON.TransformNode("bpmachinenode");
+          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+              
+              task.loadedMeshes[i].parent = bpnode;
+              task.loadedMeshes[i].name="bp_monitor"+i;
+              this.setPickable(task.loadedMeshes[i],2);
+              task.loadedMeshes[i].scaling.set(-.8,.8,.8);
+            }
+            // bpnode.scaling.set(-.8,.8,.8);
+        }
+        if(task.name === "Alcohol_Wipe"){
+          const node       = new BABYLON.TransformNode("Alcohol_Wipe");
+          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+              task.loadedMeshes[i].parent = node;
+              task.loadedMeshes[i].name="Alcohol_Wipe"+i;
+              this.setPickable(task.loadedMeshes[i],1);
+              task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+              task.loadedMeshes[i].scaling.set(-1,1,1);
+            }
+        }
+        if(task.name === "ConnectionShield"){
+          const node       = new BABYLON.TransformNode("ConnectionShield");
+          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+              
+              task.loadedMeshes[i].parent = node;
+              task.loadedMeshes[i].name="ConnectionShield"+i;
+              this.setPickable(task.loadedMeshes[i],1);
+              task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(-180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+              task.loadedMeshes[i].scaling.set(-1,1,1);
+            }
+        }
+        if(task.name === "DrainBag"){
+          const node       = new BABYLON.TransformNode("DrainBag");
+          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+              // console.log(task.loadedMeshes[i].name);
+              task.loadedMeshes[i].parent = node;
+              this.setPickable(task.loadedMeshes[i],1);
+              // if(task.loadedMeshes[i].name === "DrainBagPlasticCover")
+              // task.loadedMeshes[i].position = new BABYLON.Vector3(0,0,-5);
+              task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(180).radians());
+              task.loadedMeshes[i].name="DrainBag"+i;
+              task.loadedMeshes[i].scaling.set(.6,.6,.6);
+            }
+            // node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+            
+        }
+        if(task.name === "ccpdrecordbook"){
+          const node       = new BABYLON.TransformNode("ccpdrecordbook");
+          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+              
+              
+              task.loadedMeshes[i].parent = node;
+              task.loadedMeshes[i].name="ccpdrecordbook"+i;
+              if(task.loadedMeshes[i].id === "ccpdfront"){
+                task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
+                task.loadedMeshes[i].scaling.set(-10,10,10);
+                task.loadedMeshes[i].position.x-=12;
+                this.setPickable(task.loadedMeshes[i],0);
+              }
+              if(task.loadedMeshes[i].id === "ccpdback"){
+                task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+                task.loadedMeshes[i].isPickable=false;
+                this.setPickable(task.loadedMeshes[i],0);
+                task.loadedMeshes[i].scaling.set(10,10,10);
+              }
+              
+            }
+            node.scaling.set(1,1,1);
+            // node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+        }
+        if(task.name === "SurgicalMask"){
+          const node       = new BABYLON.TransformNode("SurgicalMask");
+          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+              
+              task.loadedMeshes[i].parent = node;
+              task.loadedMeshes[i].name="SurgicalMask"+i;
+              this.setPickable(task.loadedMeshes[i],1);
+              task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(270).radians());
+            
+            }
+            // node.scaling.set(1,1,1);
+            // node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(270).radians());
+            
+            
+        }
         if(task.name === "APD_Machine_v2"){
           const apdnode       = new BABYLON.TransformNode("apdnode");
           for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
             task.loadedMeshes[i].parent  = apdnode;
             // console.log(task.loadedMeshes[i].id);
-            task.loadedMeshes[i].isPickable=true;
             task.loadedMeshes[i].name="apdmachine"+i;
-            task.loadedMeshes[i].renderOutline = false;
-            task.loadedMeshes[i].outlineWidth = .5;
-            task.loadedMeshes[i].outlineColor = BABYLON.Color3.Yellow();
+            this.setPickable(task.loadedMeshes[i],-.1);
+            // task.loadedMeshes[i]..setPivotMatrix(BABYLON.Matrix.Translation(0, 0, 0), false);
           }
-          // this.root.apdmachineRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
-          // this.root.apdmachineRoot.position.set(0,0,0);
-          // this.root.apdmachineRoot.scaling.set(-.05,-.05,-.05);
           apdnode.scaling.set(-5,5,5);
           apdnode.parent = this.root.trollyRoot;
         }
         if(task.name === "airconditioner_remote"){
-          for(let i=0;i<task.loadedMeshes.length;i++){ // cabinethanging
+          for(let i=0;i<task.loadedMeshes.length;i++){ // airconditioner_remote
             task.loadedMeshes[i].parent  = this.root.acRemoteRoot;
-            // console.log(task.loadedMeshes[i].id);
-            task.loadedMeshes[i].isPickable=true;
             task.loadedMeshes[i].name="acremot"+i;
-            task.loadedMeshes[i].renderOutline = false;
-            task.loadedMeshes[i].outlineWidth = 2;
-            task.loadedMeshes[i].outlineColor = BABYLON.Color3.Yellow();
+            this.setPickable(task.loadedMeshes[i],.35);
             const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
             const boundingInfo = new BABYLON.BoundingInfo(min, max);
             const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
@@ -72,35 +152,26 @@ export default class LoaderManager {
             task.loadedMeshes[i].parent  = wallcabinet;
             task.loadedMeshes[i].isPickable=false;
             task.loadedMeshes[i].name="cabinethanging"+i;
-            // task.loadedMeshes[i].renderOutline = false;
-            // task.loadedMeshes[i].outlineWidth = 5;
-            // task.loadedMeshes[i].outlineColor = BABYLON.Color3.White();
-            const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
-            const boundingInfo = new BABYLON.BoundingInfo(min, max);
-            const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
-            task.loadedMeshes[i].position = new BABYLON.Vector3(centerPoint.x,centerPoint.y,centerPoint.z);
-            if(task.loadedMeshes[i].id === "Cabinet_Hanging_primitive3")
-              task.loadedMeshes[i].position.set(0,0,-60);
           }
           wallcabinet.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
-          wallcabinet.position.set(0,3.8,2.8);
+          wallcabinet.position.set(0,4.5,2.9);
           wallcabinet.scaling.set(.01,.01,.01);
         }
         if(task.name === "trolley"){
           const trolly         = new BABYLON.TransformNode("trollynode");
           for(let i=0;i<task.loadedMeshes.length;i++){ // trolly
             task.loadedMeshes[i].parent  = trolly;
-            task.loadedMeshes[i].isPickable=true;
             task.loadedMeshes[i].name="trolly"+i;
-            task.loadedMeshes[i].renderOutline = false;
-            task.loadedMeshes[i].outlineWidth = 5;
-            task.loadedMeshes[i].outlineColor = BABYLON.Color3.Yellow();
-            const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
-            const boundingInfo = new BABYLON.BoundingInfo(min, max);
-            const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
-            task.loadedMeshes[i].position = new BABYLON.Vector3(centerPoint.x,centerPoint.y,centerPoint.z);
-            if(task.loadedMeshes[i].id ==="Trolley_2")
-                task.loadedMeshes[i].position.z+=88;
+            this.setPickable(task.loadedMeshes[i],-1);
+            // const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
+            // const boundingInfo = new BABYLON.BoundingInfo(min, max);
+            // const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
+            // task.loadedMeshes[i].position = new BABYLON.Vector3(centerPoint.x,centerPoint.y,centerPoint.z);
+            // task.loadedMeshes[i].setPivotMatrix(BABYLON.Matrix.Translation(0, 0, 0), false);
+            // if(task.loadedMeshes[i].id ==="Trolley_primitive1")
+            //     task.loadedMeshes[i].position.z+=88;
+            // if(task.loadedMeshes[i].id ==="Trolley_primitive3")   
+            //     task.loadedMeshes[i].position.z+=78;
           }
           trolly.parent = this.root.trollyRoot;
           this.root.trollyRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
@@ -111,29 +182,28 @@ export default class LoaderManager {
           const tabledrawer   = new BABYLON.TransformNode("tabledrawer");
           const tableknob     = new BABYLON.TransformNode("tableknob");
           for(let i=0;i<task.loadedMeshes.length;i++){ // table
-              // console.log(task.loadedMeshes[i].id);
+              
               if(task.loadedMeshes[i].id === "Table_primitive0")
                   task.loadedMeshes[i].parent  = tableknob;  
               else if(task.loadedMeshes[i].id=== "Table_primitive1")
                   task.loadedMeshes[i].parent  = tabledrawer;  
-              else
+              else{
                   task.loadedMeshes[i].parent  = table;
-              
-              task.loadedMeshes[i].isPickable=true;
+                  // task.loadedMeshes[i].setEnabled(false);
+              }
               task.loadedMeshes[i].name="table"+i;
-              task.loadedMeshes[i].renderOutline = false;
-              task.loadedMeshes[i].outlineWidth = 5;
-              task.loadedMeshes[i].outlineColor = BABYLON.Color3.Yellow();
-              const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
-              const boundingInfo = new BABYLON.BoundingInfo(min, max);
-              const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
-              task.loadedMeshes[i].position = new BABYLON.Vector3(centerPoint.x,centerPoint.y,centerPoint.z);
-              if(task.loadedMeshes[i].id === "Table_primitive0"){
-                tableknob.position.set(0,-70,0);
-              }
-              if(task.loadedMeshes[i].id === "Table_primitive1"){
-                tabledrawer.position.set(0,-5,-60);
-              }
+              this.setPickable(task.loadedMeshes[i],0);
+              // this.setPickable(task.loadedMeshes[i],1);
+              // const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
+              // const boundingInfo = new BABYLON.BoundingInfo(min, max);
+              // const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
+              // task.loadedMeshes[i].position = new BABYLON.Vector3(centerPoint.x,centerPoint.y,centerPoint.z);
+              // if(task.loadedMeshes[i].id === "Table_primitive0"){
+              //   tableknob.position.set(0,-70,0);
+              // }
+              // if(task.loadedMeshes[i].id === "Table_primitive1"){
+              //   tabledrawer.position.set(0,-5,-60);
+              // }
           }
           tableknob.parent   = tabledrawer;
           tabledrawer.parent = this.root.tableRoot;
@@ -154,10 +224,7 @@ export default class LoaderManager {
             else
                 task.loadedMeshes[i].parent  = cabinet;
 
-            task.loadedMeshes[i].isPickable=true;
-            task.loadedMeshes[i].renderOutline = false;
-            task.loadedMeshes[i].outlineWidth = 5;
-            task.loadedMeshes[i].outlineColor = BABYLON.Color3.Yellow();
+            this.setPickable(task.loadedMeshes[i],0);
             task.loadedMeshes[i].name="cabinet"+i;
             const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
             const boundingInfo = new BABYLON.BoundingInfo(min, max);
@@ -210,6 +277,8 @@ export default class LoaderManager {
                   }
                   else if(task.loadedMeshes[i].name === "pCube31 InteriorWall" || task.loadedMeshes[i].name === "Divider" || task.loadedMeshes[i].name ==="pPlane5"){
                       task.loadedMeshes[i].isPickable=false;
+                      task.loadedMeshes[i].renderOutline=false;
+                      task.loadedMeshes[i].outlineWidth=0;
                       const mat           = standerdMat.clone("innerWall");
                       mat.diffuseColor    = new BABYLON.Color3.FromInts(129,135,143);
                       mat.emissiveColor   = new BABYLON.Color3.FromInts(129,135,143);
@@ -302,13 +371,11 @@ export default class LoaderManager {
                       mat.metallic  = 1;
                       mat.roughness = .18;  
                       task.loadedMeshes[i].material = mat;
-                      if( task.loadedMeshes[i].name=== "WindiCasingFrame DoorFront1"){
-                          this.root.windowbox =task.loadedMeshes[i];
-                          task.loadedMeshes[i].renderOutline = false;
-                          task.loadedMeshes[i].outlineWidth = 2;
-                          task.loadedMeshes[i].outlineColor = BABYLON.Color3.Yellow();
+                      if(task.loadedMeshes[i].name=== "WindiCasingFrame DoorFront1"){
+                        this.root.windowbox = task.loadedMeshes[i];
+                        this.setPickable(this.root.windowbox,.5);
                       }
-                      if(task.loadedMeshes[i].name === "pCube22 WindowFrame2"){
+                      else if(task.loadedMeshes[i].name === "pCube22 WindowFrame2"){
                         const windownode   = new BABYLON.TransformNode("windownode");
                         task.loadedMeshes[i].parent   =  windownode;
                         task.loadedMeshes[i].name     = "windowframe";
@@ -316,10 +383,7 @@ export default class LoaderManager {
                         const boundingInfo = new BABYLON.BoundingInfo(min, max);
                         const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
                         task.loadedMeshes[i].position =  centerPoint;
-                        task.loadedMeshes[i].isPickable=true;
-                        task.loadedMeshes[i].renderOutline = false;
-                        task.loadedMeshes[i].outlineWidth = 1;
-                        task.loadedMeshes[i].outlineColor = BABYLON.Color3.Yellow();
+                        this.setPickable(task.loadedMeshes[i],-1);
                         // windownode.position.set(-790,345,0);
                         windownode.parent   = this.root.windowFrameRoot;
                         windownode.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
@@ -388,10 +452,7 @@ export default class LoaderManager {
                     task.loadedMeshes[i].parent = tmproot;
                     task.loadedMeshes[i].scaling.y=.98;
                     task.loadedMeshes[i].name="mydoor";
-                    task.loadedMeshes[i].renderOutline = false;
-                    task.loadedMeshes[i].outlineWidth = 5;
-                    task.loadedMeshes[i].outlineColor = BABYLON.Color3.Yellow();
-                    task.loadedMeshes[i].isPickable=true;
+                    this.setPickable(task.loadedMeshes[i],2);
                     const mat            = standerdMat.clone("bathdoorMat");
                     mat.diffuseColor     = new BABYLON.Color3.FromInts(255,170,93);
                     mat.diffuseTexture   = new BABYLON.Texture("models/texture/Wood027_2K_Roughness.jpg",this.scene);
@@ -439,10 +500,9 @@ export default class LoaderManager {
                   mat.metallic  = .723;  
                   mat.roughness = .4;  
                   task.loadedMeshes[i].material = mat;
-                  task.loadedMeshes[i].isPickable=true;
-                  task.loadedMeshes[i].renderOutline = false;
-                  task.loadedMeshes[i].outlineWidth = 1;
-                  task.loadedMeshes[i].outlineColor = BABYLON.Color3.Yellow();
+                  this.root.lightswtich = task.loadedMeshes[i];
+                  this.root.lightswtich.name = "lightswtich";
+                  this.setPickable(task.loadedMeshes[i],1);
                 }
                 else if(task.loadedMeshes[i].name === "pCube6" || task.loadedMeshes[i].name === "pCube24" || task.loadedMeshes[i].name ===  "pCube29" ||
                         task.loadedMeshes[i].name === "pCube25"){
@@ -473,6 +533,19 @@ export default class LoaderManager {
     backPlan.scaling.y*=1.2;
     backPlan.material = backplanMaterial;
     backPlan.isPickable=false;
+    backPlan.renderOutline=false;
+
+
+    const tableupperColllider = BABYLON.MeshBuilder.CreatePlane("tablecollider",{width:2.6,height:1.6,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.scene);
+    let tableMat = new BABYLON.StandardMaterial("frontplaneMat", this.scene);
+    tableMat.diffuseColor = new BABYLON.Color3.FromInts(107,166,163);
+    tableMat.emissiveColor = new BABYLON.Color3.FromInts(107,166,163);
+    tableupperColllider.renderOutline=false;
+    tableupperColllider.isPickable=false;
+    tableupperColllider.material = tableMat;
+    tableupperColllider.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),0,0);
+    tableupperColllider.position.set(-.3,1.92,2.5);
+    tableupperColllider.visibility=0;
   
   // console.log("meshes", meshes)
    this.assetsManager.onProgress = (
@@ -498,6 +571,12 @@ export default class LoaderManager {
          document.getElementById("loader_spiner").style.display = "none";
     };
     this.assetsManager.load();
+  }
+  setPickable(mesh,width){
+    mesh.isPickable=true;
+    mesh.renderOutline = false;
+    mesh.outlineWidth = width;
+    mesh.outlineColor = BABYLON.Color3.Yellow();
   }
   
 }

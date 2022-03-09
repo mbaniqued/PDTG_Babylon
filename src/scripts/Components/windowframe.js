@@ -7,7 +7,7 @@ export default class WindowFrame{
             this.root       = root;
             this.meshRoot   = meshobject;
             this.position   = pos;
-            this.action     = 0;
+            this.state     = 0;
             this.setPos();
             // this.mesh = new BABYLON.Mesh();
             
@@ -23,10 +23,12 @@ export default class WindowFrame{
             const glasssplan = plan.clone("windowframeplan");
             glasssplan.parent   = this.meshRoot;
             glasssplan.scaling.set(55,100,1);
-            glasssplan.visibility=1;
             glasssplan.position.set(50,0,-5);
             glasssplan.visibility=0;
+            glasssplan.outlineWidth = 0;
+            glasssplan.renderOutline=false;
             this.addAction(glasssplan);
+            this.initMeshOutline();
             // const windowplan = BABYLON.MeshBuilder.CreatePlane("glassplane",{width:500,height:270,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.root.scene);
 
             // this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -41,39 +43,50 @@ export default class WindowFrame{
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                        console.log(this.root.gamestate.state+" "+mesh.name);
-                        if(this.root.gamestate.state === ObjectState.default){
-                             if(this.action === 0){
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(360).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y-.5,1));
-                                this.action =1;
-                             }else if(this.action ===1 && mesh.name =="windowframeplan"){
-                                 console.log(this.meshRoot.position.z)
-                                if(this.meshRoot.position.z>0)
-                                    new TWEEN.Tween(this.meshRoot.position).to({z:0},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-                                        if(this.action>0){
-                                            this.reset();
-                                            this.root.setCameraTarget();
-                                        }
-
-                                    }).start();
-                                 else   
-                                    new TWEEN.Tween(this.meshRoot.position).to({z:2},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-                                        if(this.action>0){
-                                            this.reset();
-                                            this.root.setCameraTarget();
-                                        }
-                                    }).start();
-                             }
+                        console.log(this.root.gamestate.state+" "+mesh.name+"   "+this.state);
+                        if(this.state>0 && this.root.gamestate.state === ObjectState.default)
+                            this.state =0;
+                        if(this.state ===0 &&  this.root.gamestate.state === ObjectState.default){
+                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(360).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+                                this.state=1;
+                                this.root.gamestate.state = ObjectState.focus;
+                            }).start();
+                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+                            this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y-.5,1));
                         }
-                      
+                        else if(this.state ===1 &&  (this.root.gamestate.state === ObjectState.active || this.root.gamestate.state === ObjectState.focus) && mesh.name =="windowframeplan"){
+                            this.root.gamestate.state = ObjectState.active;
+                           if(this.meshRoot.position.z>0){
+                               new TWEEN.Tween(this.meshRoot.position).to({z:0},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+                                   if(this.state>0){
+                                       this.reset();
+                                   }
+                               }).start();
+                            }
+                            else{
+                                new TWEEN.Tween(this.meshRoot.position).to({z:2},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+                                    if(this.state>0){
+                                        this.reset();
+                                    }
+                                }).start();
+                            }
+                        }
                     }
                 )
             )
         }
         reset(){
-            this.root.gamestate.state =  ObjectState.default;
-            this.action =0;
+            // this.root.gamestate.state =  ObjectState.default;
+            // this.state =0;
+            // this.root.setCameraTarget();
+        }
+        initMeshOutline(){
+            this.meshRoot.getChildTransformNodes().forEach(childnode=>{
+                    if(childnode.name.includes("windownode")){
+                        childnode.getChildMeshes().forEach(childmesh=>{
+                            this.root.loaderManager.setPickable(childmesh,.0001); 
+                        });
+                    }
+            });
         }
 }

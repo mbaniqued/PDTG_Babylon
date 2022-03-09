@@ -1,11 +1,13 @@
 export default class Common{
-     constructor(game){
-        this.game          = game;
+     constructor(root){
+        this.root          = root;                    
+        this.game          = root.game;
         this.scene         = null;
         this.camera        = null; 
         this.animFrameRate = 60;
         this.camDirection  = {deltaVal:.4,margin:50}; 
         this.camVector = new BABYLON.Vector3(0,3.2,0);
+      //   this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI");
         
         
      }
@@ -13,10 +15,10 @@ export default class Common{
         this.scene = new BABYLON.Scene(this.game.engine);
         this.scene.name = name;
         this.scene.clearColor = BABYLON.Color3.FromHexString("#000");
-        // this.env =this.scene.createDefaultEnvironment()
+        // this.env=this.scene.createDefaultEnvironment()
         this.scene.environmentTexture = new BABYLON.CubeTexture.CreateFromPrefilteredData("models/environment/autoshop_01_4k.env",this.scene);
-         // this.hdrTexture = new BABYLON.HDRCubeTexture("models/environment/room.hdr",this.scene, 128, false, true, false, true);
-         // this.scene.environmentTexture = this.hdrTexture;
+        // this.hdrTexture = new BABYLON.HDRCubeTexture("models/environment/room.hdr",this.scene, 128, false, true, false, true);
+        // this.scene.environmentTexture = this.hdrTexture;
         // this.scene.enablePrePassRenderer();
         this.setLight();
 
@@ -29,16 +31,17 @@ export default class Common{
         this.camera = new BABYLON.ArcRotateCamera("cameraera",0,0,10,this.camVector,scene);
         this.camRoot = new BABYLON.TransformNode("camroot");
       //   this.camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(0,3,-1),scene);
-        this.camera.fov   = .65;
+        this.camera.fov   = .6;
         
-      //   this.camera.inputs.clear();
+        this.camera.inputs.clear();
       // this.camera.useAutoRotationBehavior = true;
-      // this.camera.inputs.addMouse();
+        this.camera.inputs.addPointers();
+        this.camera.inputs.addMouseWheel();
         this.camera.position.set(0,this.camVector.y,0);
         this.camera.setTarget(this.camVector);
         this.camera.attachControl(this.game.canvas, true);  
         this.camera.maxZ = 100;
-        this.camera.wheelPrecision = 15;
+        this.camera.wheelPrecision = 50;
         this.camera.useBouncingBehavior = false;
         this.camera.parent = this.camRoot;
         // this.camRoot.rotationQuaternion = new BABYLON.Quaternion(0,0,0,1);
@@ -69,6 +72,8 @@ export default class Common{
             this.camera.upperBetaLimit  = BABYLON.Angle.FromDegrees(180).radians();
       }
       updateCam(){
+            if(this.root.gui2D.resetCamBtn.isVisible || this.root.gui2D.radialCircle.isVisible)
+                 return; 
             if(this.scene.pointerX>0 && this.scene.pointerX<=this.camDirection.margin){
                   this.camera.alpha += BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
             }
