@@ -1,4 +1,4 @@
-import { ObjectState,ANIM_TIME } from "../scene/Basic";
+import { GameState,ANIM_TIME } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 
 export default class Table{
@@ -18,62 +18,101 @@ export default class Table{
             if(childmesh)
                 this.addAction(childmesh);
         });
+        this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-50);
+        this.label._children[0].text = "Drawer";
+        this.label.isVisible=false;
     }
     setPos(){
         this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
     }
     addAction(mesh){
-        mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-        mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
-                    console.log(this.root.gamestate.state);
-                    if(this.state>0 && this.root.gamestate.state === ObjectState.default)
-                            this.state =0;
-                    if(this.root.gamestate.state === ObjectState.default){
-                        if(mesh.name==="table3"){
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-                                this.root.gamestate.state  =  ObjectState.focus;
-                                this.state=1;
-                                this.setDrawerBorder(1);
-                            }).start();
-                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(50).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root).to({radius:2.5},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
-                            this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z-.5));
+                mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+                    this.setLabel();
+                }))
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+                       this.label.isVisible=false;
+                }))
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+                        this.setLabel();
+                        this.root.scene.onPointerUp=()=>{
+                            this.label.isVisible=false;
                         }
+                }))
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
+                    
+                    if(this.state>0 && this.root.gamestate.state === GameState.default){
+                        if(this.state>0 && this.isdrawerOpen)
+                            this.state=10;
+                         else   
+                            this.state=0;
+
                     }
-                    else if(this.state===1 && (this.root.gamestate.state === ObjectState.focus || this.root.gamestate.state === ObjectState.active)){
-                        this.meshRoot.getChildTransformNodes().forEach(childnode=>{
-                                if(childnode.name==="tabledrawer"){
-                                    this.root.gamestate.state = ObjectState.active;
-                                    let drawerNode = childnode;  
-                                    if(!this.drawerAnim){
-                                        console.log("!!! in drawer!!!");
-                                        this.isdrawerOpen =!this.isdrawerOpen;
-                                        let val = this.isdrawerOpen?-120:120; 
-                                        this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z+(this.isdrawerOpen?-2:0)));
-                                        new TWEEN.Tween(drawerNode.position).to({y:drawerNode.position.y+val},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onUpdate(()=>{
-                                            this.drawerAnim = true;
-                                        }).onComplete(() => {
-                                            this.drawerAnim = false;   
-                                            if(!this.isdrawerOpen){
-                                                this.reset();
-                                            }
-                                        }).start();
+                    switch(this.state){
+                        case 0:
+                                this.root.gamestate.state = GameState.default;
+                                this.setTableFocusAnim();
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z-.5));
+                            break;
+                        case 1:
+                                this.setDrawerAnim();
+                            break;    
+                        case 10:
+                                this.setTableFocusAnim();
+                                this.meshRoot.getChildTransformNodes().forEach(childnode=>{
+                                    if(childnode.name==="tabledrawer"){
+                                        let drawerNode = childnode;  
+                                        this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z-1));
                                     }
-                                }
-                            
-                        });
-                    }
+                                });
+                            break;
+                    }        
+                    this.setLabel();    
                 }
+                
              )
          )
     }
-    reset(){
-        this.state=0;
-        this.isdrawerOpen = false;
-        this.drawerAnim   = false;
-        this.root.gamestate.state = ObjectState.default;
-        this.setDrawerBorder(-1);
-        // this.root.setCameraTarget();
+    setTableFocusAnim(){
+        new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+            this.root.gamestate.state  =  GameState.focus;
+            this.state=1;
+            this.setDrawerBorder(1);
+        }).start();
+        new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(50).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+        new TWEEN.Tween(this.root.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+    }
+    setDrawerAnim(){
+        this.meshRoot.getChildTransformNodes().forEach(childnode=>{
+            if(childnode.name==="tabledrawer"){
+                this.root.gamestate.state = GameState.active;
+                let drawerNode = childnode;  
+                if(!this.drawerAnim){
+                    console.log("!!! in drawer!!!");
+                    if(this.state===1)
+                        this.isdrawerOpen =!this.isdrawerOpen;
+                    let val = this.isdrawerOpen?-120:120; 
+                    this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z+(this.isdrawerOpen?-2:0)));
+                    new TWEEN.Tween(drawerNode.position).to({y:drawerNode.position.y+val},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onUpdate(()=>{
+                        this.drawerAnim = true;
+                    }).onComplete(() => {
+                        this.drawerAnim = false;   
+                        if(!this.isdrawerOpen){
+                            this.state=0;
+                            this.root.gamestate.state = GameState.default;
+                        }
+                    }).start();
+                }
+            }
+        });
+    }
+    setLabel(){
+        if(this.root.gamestate.state == GameState.default)
+            this.label._children[0].text = "Table";
+         else   
+            this.label._children[0].text = this.isdrawerOpen?"Close Drawer":"Open Drawer";
+            
+        this.label.isVisible=true;
     }
     initMeshOutline(){
         this.meshRoot.getChildTransformNodes().forEach(childnode=>{

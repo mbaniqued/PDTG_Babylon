@@ -1,6 +1,5 @@
 // https://github.com/mbaniqued/PDTG_Babylon
 import * as BABYLON from "babylonjs";
-import * as GUI from 'babylonjs-gui';
 import "babylonjs-loaders";
 import LoaderManager from "../LoaderManager.js";
 import Common from '../Common.js' 
@@ -13,18 +12,19 @@ import ACRemote from "../Components/acremote.js";
 import Item from "../Components/item.js";
 import GUI2D from "../gui.js";
 import LightSwitch from "../Components/lightswtich.js";
-export const ObjectState={default:0,focus:1,active:2,radial:3};
+import TWEEN from '@tweenjs/tween.js';
+
+export const GameState={default:0,focus:1,active:2,radial:3,menu:4};
 export const ANIM_TIME=1000;
 let SX=0,SY=0,SZ=0;
-import TWEEN from '@tweenjs/tween.js';
-export default class BasicScene {
+export default class MainScene {
   constructor(gameManager) {
     this.game = gameManager;
     this.sceneCommon = new Common(this);
     this.scene  = this.sceneCommon.createScene("basic");
     this.camera = this.sceneCommon.createCamera(this.scene);
     this.gui2D  = new GUI2D(this);
-    this.gamestate        = {state:ObjectState.default}; 
+    this.gamestate        = {state:GameState.menu}; 
     this.trollyRoot       = new BABYLON.TransformNode("TROLLY"),
     this.tableRoot        = new BABYLON.TransformNode("TABLE");
     this.cabinetRoot      = new BABYLON.TransformNode("CABINET");
@@ -70,12 +70,12 @@ export default class BasicScene {
 
     this.lightswtichObject = new LightSwitch(this,this.lightswtich);
     
-    this.bpMachineItem     = new Item(this,this.scene.getTransformNodeByID("bpmachinenode"),{x:-69,y:30,z:33},{x:-93,y:17,z:-8},);
-    this.connectionItem    = new Item(this,this.scene.getTransformNodeByID("ConnectionShield"),{x:-70,y:5,z:38.5},{x:-65,y:-55,z:-4}); 
-    this.alcohalItem       = new Item(this,this.scene.getTransformNodeByID("Alcohol_Wipe"),{x:-45,y:8,z:38.5},{x:-36,y:-53,z:-4},{x:0,y:0,z:90});
-    this.maskItem          = new Item(this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14});
-    this.drainBagItem      = new Item(this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
-    this.ccpdRecordBook    = new Item(this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3});
+    this.bpMachineItem     = new Item("Blood Pressure Monitor",this,this.scene.getTransformNodeByID("bpmachinenode"),{x:-69,y:30,z:33},{x:-93,y:17,z:-8},undefined);
+    this.connectionItem    = new Item("Connection Shield",this,this.scene.getTransformNodeByID("ConnectionShield"),{x:-70,y:5,z:38.5},{x:-65,y:-55,z:-4},undefined); 
+    this.alcohalItem       = new Item("Alchohal Wipe",this,this.scene.getTransformNodeByID("Alcohol_Wipe"),{x:-45,y:8,z:38.5},{x:-36,y:-53,z:-4},{x:0,y:0,z:90});
+    this.maskItem          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
+    this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
+    this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     let val=1;
     document.addEventListener('keydown', (event)=> {
       console.log(event.key);
@@ -106,7 +106,10 @@ export default class BasicScene {
       // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);
   }, false);
     this.scene.onPointerObservable.add((pointerInfo) => {      	
-      if(this.gamestate.state !== ObjectState.radial){
+
+      if(this.gamestate.state === GameState.menu)
+        return ;
+      if(this.gamestate.state !== GameState.radial){
           switch (pointerInfo.type) {
               case BABYLON.PointerEventTypes.POINTERDOWN:{
                       const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
@@ -141,11 +144,13 @@ export default class BasicScene {
           }
       });
   }
+
   onpickMesh(pickedMesh){
+
+    
     // console.log(mesh.name);
     if(this.pickMesh && pickedMesh.name !== this.pickMesh.name){
       this.updateObjectOutLine(false);
-        
       this.pickMesh.renderOutline=false;
     }
     if(pickedMesh.name ==="glassplane")
@@ -158,7 +163,7 @@ export default class BasicScene {
     }
     else{
         if(this.focusMesh)
-            this.checkObjectChange(pickedMesh,this.focusMesh);
+            this.checkObjectChange(this.focusMesh,pickedMesh);
         this.focusMesh = pickedMesh;
         this.pickMesh = pickedMesh;
     }
@@ -175,9 +180,9 @@ export default class BasicScene {
          root2 = root2.parent;
     }
     if(root1.name !== root2.name){
-      if(this.gamestate.state != ObjectState.active){
-        console.log(root1.name+"      "+root2.name);
-          this.gamestate.state = ObjectState.default;
+      if(this.gamestate.state != GameState.radial){
+          console.log(root1.name+"      "+root2.name);
+          this.gamestate.state = GameState.default;
       }
     }
   }
@@ -212,7 +217,7 @@ export default class BasicScene {
       });
     }
     if(this.pickMesh.parent.name.includes("ccpdrecordbook")){
-      console.log(this.pickMesh.parent.name);
+      // console.log(this.pickMesh.parent.name);
       this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
             childmesh.outlineWidth=.1;
             childmesh.renderOutline=value;
@@ -224,28 +229,28 @@ export default class BasicScene {
   }
   setCameraTarget(){
     this.showResetViewButton(false);
-    this.gamestate.state = ObjectState.default;
+    this.gamestate.state = GameState.default;
     this.sceneCommon.camVector  = new BABYLON.Vector3(0,3.2,0);
     this.camera.position.set(0,this.sceneCommon.camVector.y,0);
     this.camera.lowerAlphaLimit =  null;
     this.camera.upperAlphaLimit =  null;
     this.camera.lowerBetaLimit  =  null;
     this.camera.upperBetaLimit  =  null;
-    new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+    new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
       }).start();
-    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
       }).start();
-    // new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+    // new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
     // }).start();
-    new TWEEN.Tween(this.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+    new TWEEN.Tween(this.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
     }).start();
     
   }
   setFocusOnObject(pos){
-    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
         // this.camera.lowerAlphaLimit = this.camera.upperAlphaLimit=this.camera.alpha;
         // this.camera.lowerBetaLimit = this.camera.upperBetaLimit=this.camera.beta;
-        if(this.gamestate.state === ObjectState.focus || this.gamestate.state === ObjectState.active)
+        if(this.gamestate.state === GameState.focus || this.gamestate.state === GameState.active)
             this.showResetViewButton(true);
         else
             this.showResetViewButton(false);
@@ -253,12 +258,12 @@ export default class BasicScene {
     }).start();
   }
   // setFocusOnDoor(pos){
-  //   new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},1000).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-  //       this.gamestate.state =  ObjectState.pick;
+  //   new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+  //       this.gamestate.state =  GameState.pick;
   //       this.camera.lowerAlphaLimit = this.camera.upperAlphaLimit = this.camera.alpha;
   //   }).start();
   //   if(this.camera.alpha>2)
-  //         new TWEEN.Tween(this.camera).to({alpha:3.25},500).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+  //         new TWEEN.Tween(this.camera).to({alpha:3.25},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
   //   }).start();
   // }
   showResetViewButton(isVisible){

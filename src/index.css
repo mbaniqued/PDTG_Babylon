@@ -9,10 +9,13 @@ html, body, canvas {
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  
-
-  /* position: fixed; */
-}
+   /* position: fixed; */
+  }
+  @font-face {
+    font-family: "s_hand";
+    font-weight: 400;
+    src: url("/ui/font/S_Hand.ttf") format("truetype");
+  }
 /* Solid border */
   .btn {
     border: 2px solid black;

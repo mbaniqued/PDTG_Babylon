@@ -4,12 +4,26 @@
       <meta charset="utf-8"/>
       <title>PDTG</title>
       <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Shrikhand&display=swap" rel="stylesheet">
   </head>
   <body>
+    <style>
+      body {
+        /* @font-face { */
+          font-family: "s_hand";
+          font-family: "Shrikhand",cursive;
+          src: url("/ui/font/S_Hand.ttf") format("truetype");
+        /* } */
+      }
+  </style>
      <!-- <div id="fps">0</div>  -->
       <div>
        <button id="start_game"  class="btn btn-primary">Start Game </button>
     </div>
+      <h4 id="debugtext" style="position: absolute; background-color: antiquewhite;"></h4>
     <div  id="loader_spiner" class="loader"></div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <canvas  id="game"></canvas>

@@ -1,4 +1,4 @@
-import { ObjectState,ANIM_TIME } from "../scene/Basic";
+import { GameState,ANIM_TIME } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class Cabinet{
 
@@ -17,65 +17,100 @@ export default class Cabinet{
             if(childmesh)
                 this.addAction(childmesh);
         });
+        this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-150);
+        this.label._children[0].text = "Cabinet";
+        this.label.isVisible=false;
     }
     setPos(){
         this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
     }
     addAction(mesh){
         mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
+        mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+            this.setLabel();
+        }))
+        mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+                this.label.isVisible=false;
+        }))
+        mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+                this.setLabel();
+                this.root.scene.onPointerUp=()=>{
+                    this.label.isVisible=false;
+                }
+        }))
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                        if(this.state>0 && this.root.gamestate.state === ObjectState.default)
-                                this.state =0;
-                    if(this.root.gamestate.state === ObjectState.default){
-                        if(mesh.parent.name.includes("cabinetnode")){
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-                                this.root.gamestate.state = ObjectState.focus;
-                                this.state =1;
-                                this.setCabinetDoorBorder(1);
-                            }).start();
-                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
-                            this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y+.5,this.position.z-1));
-                        }
-                    }
-                    else if(this.state ===1 && mesh.parent.parent.name.includes("Door") && (this.root.gamestate.state === ObjectState.focus || this.root.gamestate.state === ObjectState.active)){
-                            this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y+.5,this.position.z-1));
-                            this.meshRoot.getChildTransformNodes().forEach(childnode => {
-                                this.root.gamestate.state = ObjectState.active;
-                                if(!this.doorAnim){
-                                    if(childnode.name==="cabinetleftDoor"){
-                                        this.isdoorOpen = !this.isdoorOpen;
-                                        this.openCloseDoor(childnode,90,true);
-                                    }
-                                    if(childnode.name==="cabinetrightDoor")
-                                        this.openCloseDoor(childnode,90,false);
+                // document.getElementById("debugtext").textContent= "cabinetstate==before== "+this.state+"  !!! GameState!!  "+this.root.gamestate.state;
+                if(this.state>0 && this.root.gamestate.state === GameState.default){
+                        if(this.state>0 && this.isdoorOpen)
+                            this.state =10;
+                         else   
+                            this.state =0;
+                }
+                // document.getElementById("debugtext").textContent= "cabinetstate==after== "+this.state+"  !!! GameState!!  "+this.root.gamestate.state;
+                    switch(this.state){
+                        case 0:
+                                this.root.gamestate.state = GameState.default;
+                                this.cabinetFocusAnim();
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y+.5,this.position.z-1));
+                            break;
+                         case 1:
+                                if(mesh.parent.parent.name.includes("Door")){
+                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y+.5,this.position.z-1));            
+                                    this.meshRoot.getChildTransformNodes().forEach(childnode => {
+                                        this.root.gamestate.state = GameState.active;
+                                        if(!this.doorAnim){
+                                            if(childnode.name==="cabinetleftDoor"){
+                                                this.isdoorOpen = !this.isdoorOpen;
+                                                this.openCloseDoor(childnode,90,true);
+                                            }
+                                            if(childnode.name==="cabinetrightDoor")
+                                                this.openCloseDoor(childnode,90,false);
+                                        }
+                                    });
                                 }
-                            });
-                        }
+                             break;   
+                           case 10:
+                                this.cabinetFocusAnim();
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y+.5,this.position.z-1));            
+                               break;  
+                        } 
+                        this.setLabel();      
                     }     
                 )
-           )
+            )
+    }
+    cabinetFocusAnim(){
+        new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+        new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+            this.root.gamestate.state = GameState.focus;
+            this.state =1;
+            this.setCabinetDoorBorder(1);
+        }).start();
+        new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
     }
     openCloseDoor(mesh,angle,isleft){
         let val=0;
         if(mesh.rotation.z === BABYLON.Angle.FromDegrees(0).radians())
-            val=angle;
-        new TWEEN.Tween(mesh.rotation).to({z:isleft?-BABYLON.Angle.FromDegrees(val).radians():BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onUpdate(()=>{
+            val = BABYLON.Angle.FromDegrees(angle).radians();
+        new TWEEN.Tween(mesh.rotation).to({z:isleft?-val:val},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onUpdate(()=>{
             this.doorAnim = true;
         }).onComplete(() => {
             this.doorAnim = false;
             if(isleft){
-                // console.log(this.isdoorOpen);
-                if(!this.isdoorOpen)
-                    this.reset();
+                if(!this.isdoorOpen){
+                    this.isdoorOpen=false;
+                    this.doorAnim = false;
+                }
             }
         }).start();
     }
-    reset(){
-        // this.state=0;
-        this.isdoorOpen=false;
-        this.doorAnim = false;
-        // this.root.gamestate.state = ObjectState.default;
-        // this.root.setCameraTarget();
+    
+    setLabel(){
+        if(this.root.gamestate.state === GameState.default)
+            this.label._children[0].text = "Cabinet";
+        else
+            this.label._children[0].text = this.isdoorOpen?"Close Cabinet":"Open Cabinet";
+        this.label.isVisible=true;
     }
     initMeshOutline(){
         this.meshRoot.getChildTransformNodes().forEach(childnode=>{

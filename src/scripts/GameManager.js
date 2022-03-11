@@ -1,9 +1,9 @@
 
 import * as BABYLON from 'babylonjs';
-import Basic from './scene/Basic';
+import MainScene from './scene/MainScene';
 import SceneManager   from './SceneManager';
 import TWEEN from '@tweenjs/tween.js';
-import {ObjectState}  from './scene/Basic';
+import {GameState}  from './scene/MainScene';
 let divFps;
 let cnt=0;
 export class GameManger {
@@ -17,7 +17,7 @@ export class GameManger {
         this.worldManager = null;
         switch(this.sceneManager.currentSceneState){
             case this.sceneManager.sceneState.basic:
-                this.basic = new Basic(this);
+                this.mainScene = new MainScene(this);
                 break;
         }
         // divFps = document.getElementById("fps");
@@ -30,40 +30,27 @@ export class GameManger {
         this.engine.resize();
     }
     restartScene(){
-        if(this.basic.scene){
-            this.basic.scene.onDisposeObservable.add(()=>{
-                this.basic.scene = undefined;
-                this.basic.scene = null;
-                this.basic = null;
-                this.basic = new Basic(this);
+        if(this.mainScene.scene){
+            this.mainScene.scene.onDisposeObservable.add(()=>{
+                this.mainScene.scene = undefined;
+                this.mainScene.scene = null;
+                this.mainScene = null;
+                this.mainScene = new Basic(this);
                 this.startRenderLoop();    
             });
             this.engine.stopRenderLoop();
-            this.basic.releaseScene();
+            this.mainScene.releaseScene();
         }
     }
     startRenderLoop(){
         this.engine.runRenderLoop( ()=> {
             switch(this.sceneManager.currentSceneState){
                 case this.sceneManager.sceneState.basic:
-                        if(this.basic && this.basic.scene && this.basic.loaderManager.isLoad){
-                            this.basic.scene.render();
-                            if(this.basic.gamestate.state ===  ObjectState.default)
-                                this.basic.sceneCommon.updateCam();
-                                
+                        if(this.mainScene && this.mainScene.scene && this.mainScene.loaderManager.isLoad){
+                                this.mainScene.scene.render();
+                            if(this.mainScene.gamestate.state ===  GameState.default)
+                                this.mainScene.sceneCommon.updateCam();
                             TWEEN.update();
-                            // if(cnt>200){
-                            //     let mesh = this.basic.tableRoot.getChildren()[3];
-                            //         if(mesh){
-                            //             // mesh  = mesh.getChildren()[2];
-                            //             mesh.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(-cnt).radians());
-                            //         }
-                                   
-                            //     }
-                            // cnt++;
-                            // if(this.basic.trollyRoot.rotation){
-                            //     this.basic.trollyRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(cnt).radians(),BABYLON.Angle.FromDegrees(0).radians());
-                            // }
                         }
                     break;
             }

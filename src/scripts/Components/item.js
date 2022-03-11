@@ -1,16 +1,18 @@
 
-import { ObjectState } from "../scene/Basic";
+import { GameState } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 
 let showMenu = false;
 
 export default class Item{
-        constructor(root,meshobject,pos,placedpos,rotation){
-            this.name            = meshobject.name;
+        constructor(name,root,meshobject,pos,placedpos,rotation){
+            this.name            = name;
             this.root            = root;
             this.meshRoot        = meshobject;
             this.position        = pos;
             this.startPosition   = pos;
+
+            
             this.startRotation   = new BABYLON.Vector3(this.meshRoot.rotation.x,this.meshRoot.rotation.y,this.meshRoot.rotation.z);
             this.startScaling    = new BABYLON.Vector3(this.meshRoot.scaling.x,this.meshRoot.scaling.y,this.meshRoot.scaling.z);
             this.placedPostion   = placedpos;
@@ -29,6 +31,9 @@ export default class Item{
             });
             this.initDrag();
             this.meshRoot.addBehavior(this.pointerDragBehavior);
+
+            this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
+            this.label.isVisible=false;
             
         }
         setPos(){
@@ -61,24 +66,26 @@ export default class Item{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                             console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                             this.pickObject = true;
+                            this.label.isVisible=true;
                         }
                     )
                 )
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                             console.log(this.root.gamestate.state+"!! OnPickTrigger!!! ")
+                            this.label.isVisible=false;
                             showMenu =!showMenu;
-                            this.root.gamestate.state = showMenu?ObjectState.radial:ObjectState.active;
+                            this.root.gamestate.state = showMenu?GameState.radial:GameState.active;
                             this.root.gui2D.drawRadialMenu(showMenu);
                             if(showMenu)
                                 this.root.gui2D.resetCamBtn.isVisible=false;
-                            this.root.gui2D.correctBtn._onPointerUp = ()=>{
-                                console.log("correctBtn Button");
+                            this.root.gui2D.inspectBtn._onPointerUp = ()=>{
+                                console.log("inspectBtn Button");
                                 this.meshRoot.removeBehavior(this.pointerDragBehavior);
                                 showMenu = false;
                                 this.root.gui2D.drawRadialMenu(false);  
                                 this.showItem();
                             };
-                            this.root.gui2D.handBtn._onPointerUp = ()=>{
+                            this.root.gui2D.useBtn._onPointerUp = ()=>{
                                 this.meshRoot.removeBehavior(this.pointerDragBehavior);
                                 console.log("user Button");
                                 showMenu = false;
@@ -87,7 +94,7 @@ export default class Item{
                             };
                             this.root.gui2D.crossBtn._onPointerUp = ()=>{
                                 this.root.gui2D.drawRadialMenu(false);  
-                                this.root.gamestate.state = ObjectState.active;
+                                this.root.gamestate.state = GameState.active;
                                 setShowMenu(false);
                                 this.hideOutLine();
                                 
@@ -101,7 +108,7 @@ export default class Item{
             this.pointerDragBehavior.useObjectOrientationForDragging = false;
             this.pointerDragBehavior.onDragStartObservable.add((event)=>{
                 console.log( this.pickObject+   "!!! onDragStartObservable 111"+this.root.gamestate.state);
-                if( !this.pickObject && this.root.gamestate.state ===  ObjectState.radial){
+                if( !this.pickObject && this.root.gamestate.state ===  GameState.radial){
                     this.state =0;
                     return;
                 }
@@ -109,11 +116,11 @@ export default class Item{
             });
             this.pointerDragBehavior.onDragObservable.add((event)=>{
                 console.log("!!! onDragObservable 111"+this.root.gamestate.state);
-                if(!this.pickObject &&  this.root.gamestate.state ===  ObjectState.radial){
+                if(!this.pickObject &&  this.root.gamestate.state ===  GameState.radial){
                     this.state =0;
                     return;
                 }
-                if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>20))
+                if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>30))
                     this.root.scene.getMeshByName("tablecollider").visibility=1;
                 else    
                     this.root.scene.getMeshByName("tablecollider").visibility=0;
@@ -121,9 +128,9 @@ export default class Item{
                 // console.log(event);
             });
             this.pointerDragBehavior.onDragEndObservable.add((event)=>{
+                this.label.isVisible=false;
                 this.pickObject = false;
                 this.root.scene.getMeshByName("tablecollider").visibility=0;
-                // console.log("!!! onDragEndObservable 111"+this.root.gamestate.state);
                 console.log(this.meshRoot.position.y);
                 if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>20) && this.state>10 || this.isPlaced  ){ 
                     this.state=0;
@@ -148,11 +155,6 @@ export default class Item{
                 }
                 // console.log(event);
             });
-        }
-        reset(){
-            this.root.gamestate.state =  ObjectState.default;
-            this.state =0;
-            this.root.setCameraTarget();
         }
        showItem(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -191,15 +193,13 @@ export default class Item{
             this.root.gui2D.userExitBtn._onPointerUp = ()=>{
                 showMenu = false;
                 this.root.gui2D.drawRadialMenu(false);  
-                this.hideItem();
+                this.resetItem();
             };
         }).start();
       }
-      hideItem(){
+      resetItem(){
         this.root.gui2D.userExitBtn.isVisible = false;
         if(this.isPlaced){
-
-             console.log("iffffffffff hideItem");
             if(this.placeRotation)
                 new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             else
@@ -207,16 +207,15 @@ export default class Item{
             new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPostion.x,y:this.placedPostion.y,z:this.placedPostion.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             new TWEEN.Tween(this.meshRoot.scaling).to({x:this.startScaling.x,y:this.startScaling.y,z:this.startScaling.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                 this.meshRoot.addBehavior(this.pointerDragBehavior);
-                this.root.gamestate.state = ObjectState.active;
+                this.root.gamestate.state = GameState.active;
             }).start();
         }
         else{
-            console.log("elseeeeeeeeee hideItem");
             new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x,y:this.startRotation.y,z:this.startRotation.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             new TWEEN.Tween(this.meshRoot.position).to({x:this.position.x,y:this.position.y,z:this.position.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             new TWEEN.Tween(this.meshRoot.scaling).to({x:this.startScaling.x,y:this.startScaling.y,z:this.startScaling.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                 this.meshRoot.addBehavior(this.pointerDragBehavior);
-                this.root.gamestate.state = ObjectState.active;
+                this.root.gamestate.state = GameState.active;
             }).start();
         }
       }

@@ -494,11 +494,11 @@ export default class LoaderManager {
                     }
                 }
                 else if(task.loadedMeshes[i].name ===  "OnSwitch2"){
-                  const mat           = physicMat.clone("bathdoorMat");
-                  mat.albedoColor     = new BABYLON.Color3.FromInts(117,119,121);
-                  mat.emissiveColor   = new BABYLON.Color3.FromInts(117,119,121);
-                  mat.metallic  = .723;  
-                  mat.roughness = .4;  
+                  const mat           = standerdMat.clone("bathdoorMat");
+                  mat.albedoColor     = new BABYLON.Color3.FromInts(192,192,192);
+                  mat.emissiveColor   = new BABYLON.Color3.FromInts(50,50,50);
+                  mat.metallic  = 0;  
+                  mat.roughness = .2;  
                   task.loadedMeshes[i].material = mat;
                   this.root.lightswtich = task.loadedMeshes[i];
                   this.root.lightswtich.name = "lightswtich";

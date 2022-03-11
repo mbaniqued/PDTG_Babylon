@@ -5,7 +5,7 @@ export default class Common{
         this.scene         = null;
         this.camera        = null; 
         this.animFrameRate = 60;
-        this.camDirection  = {deltaVal:.4,margin:50}; 
+        this.camDirection  = {deltaVal:1,margin:50}; 
         this.camVector = new BABYLON.Vector3(0,3.2,0);
       //   this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI");
         
@@ -21,10 +21,6 @@ export default class Common{
         // this.scene.environmentTexture = this.hdrTexture;
         // this.scene.enablePrePassRenderer();
         this.setLight();
-
-        
-        
-        
         return this.scene;
      }
      createCamera(scene) {
@@ -50,16 +46,16 @@ export default class Common{
       }
       setLight() {
         this.hemiLight = new BABYLON.HemisphericLight("HemiLight",new BABYLON.Vector3(0,10,0),this.scene);
-        this.hemiLight.intensity = .5;
+        this.hemiLight.intensity = .1;
         this.hemiLight.diffuse = new BABYLON.Color3(1, 1, 1);
         this.hemiLight.specular = new BABYLON.Color3(0, 0, 0);
         this.hemiLight.groundColor = new BABYLON.Color3(1,1,1);
 
 
         this.directionalLight          = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0,-5,0), this.scene);
+        this.directionalLight.intensity =.1;
         this.directionalLight.diffuse  = new BABYLON.Color3(1, 1, 1);
         this.directionalLight.specular = new BABYLON.Color3(0, 0, 0);
-        this.directionalLight.intensity =.5;
 
       }
       setView(){
@@ -76,9 +72,13 @@ export default class Common{
                  return; 
             if(this.scene.pointerX>0 && this.scene.pointerX<=this.camDirection.margin){
                   this.camera.alpha += BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
+                  if(this.camera.alpha>=BABYLON.Angle.FromDegrees(360).radians())
+                        this.camera.alpha = BABYLON.Angle.FromDegrees(0).radians();
             }
             else if( this.scene.pointerX>window.innerWidth-this.camDirection.margin &&  this.scene.pointerX<window.innerWidth){
                   this.camera.alpha -= BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
+                  if(this.camera.alpha<=0)
+                        this.camera.alpha = BABYLON.Angle.FromDegrees(360).radians();
             }
             else if(this.scene.pointerY>0 && this.scene.pointerY<=this.camDirection.margin){
                   console.log(this.camera.beta);
