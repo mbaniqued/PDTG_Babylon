@@ -14,7 +14,9 @@ import GUI2D from "../gui.js";
 import LightSwitch from "../Components/lightswtich.js";
 import TWEEN from '@tweenjs/tween.js';
 
-export const GameState={default:0,focus:1,active:2,radial:3,menu:4};
+export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5};
+export const usermode={patient:0,caregiver:1};
+export const gamemode={training:0,practice:1,assessment:2};
 export const ANIM_TIME=1000;
 let SX=0,SY=0,SZ=0;
 export default class MainScene {
@@ -44,7 +46,8 @@ export default class MainScene {
     // this.testMesh = new BABYLON.Mesh("test");
     
     
-
+    this.userMode = usermode.patient;
+    this.gamemode = gamemode.training;
     // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
     // this.sceneOptimiser.startOptimiser();
   }
@@ -143,6 +146,9 @@ export default class MainScene {
             }
           }
       });
+      this.gui2D.resetCamBtn._onPointerUp=()=>{
+        this.setCameraTarget(); 
+      } 
   }
 
   onpickMesh(pickedMesh){

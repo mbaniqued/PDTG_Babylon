@@ -1,6 +1,8 @@
 import * as GUI from 'babylonjs-gui';
-import { GameState } from './scene/MainScene';
-import { setShowMenu } from './Components/item';
+import TWEEN from '@tweenjs/tween.js';
+import { usermode } from './scene/MainScene';
+import { gamemode } from './scene/MainScene';
+ import { GameState } from './scene/MainScene';
 export default class GUI2D{
 
      constructor(root){
@@ -17,6 +19,7 @@ export default class GUI2D{
         this.userExitBtn.addControl(userImg);
         this.userExitBtn.isVisible=false;
         this.initMainMenu();
+        this.initStageMenu();
         this.initRadialMenu();
       }
       initMainMenu(){
@@ -28,47 +31,267 @@ export default class GUI2D{
         menuBgImg.isVisible=true;
         const menufont    =  this.createText("menufont","Peritoneal Dialysis \nGame",90,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false) 
         this.setTextOutLine(menufont,"#000000",2);
-        menufont.top =-180;
-        const userModeText =  this.createText("userMode","User Mode",30,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false) 
-        userModeText.top =-40;
+        menufont.topInPixels =-240;
+        const userModeText =  this.createText("userMode","User Mode",40,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false) 
+        userModeText.topInPixels =-100;
         this.setTextOutLine(userModeText,"#000000",2);
 
         this.userModeBtn = this.createButon("userdropbutton","ui/button.png","#ffffff00","Patient",24,"#FFFFFF",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         this.userModeBtn.isVisible=true;
+        this.patientModeBtn   = this.createButon("patient","ui/button2.png","#ffffff00","Patient",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.caregiverModeBtn = this.createButon("caregiver","ui/button2.png","#ffffff00","Caregiver",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
 
-        this.patientModeBtn = this.createButon("patient","ui/button2.png","#ffffff00","Patient",24,"#FFFFFF",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        this.patientModeBtn.isVisible=true;
 
-        this.caregiverModeBtn = this.createButon("caregiver","ui/button2.png","#ffffff00","Caregiver",24,"#FFFFFF",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        this.caregiverModeBtn.isVisible=true;
+        
+        const gameModeText =  this.createText("gameMode","Game Mode",40,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false) 
+        gameModeText.topInPixels =60;
+        
+        this.setTextOutLine(gameModeText,"#000000",2);
+        this.gameModeBtn = this.createButon("gameModeBtn","ui/button.png","#ffffff00","Practice",24,"#FFFFFF",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.gameModeBtn.children[1].leftInPixels -=20;
+        this.gameModeBtn.isVisible=true;
+
+        this.trainingModeBtn   = this.createButon("training","ui/button2.png","#ffffff00","Training",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.practiceModeBtn   = this.createButon("practice","ui/button2.png","#ffffff00","Practice",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.assesmentModeBtn  = this.createButon("assesment","ui/button2.png","#ffffff00","Assessment",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+
+        this.proceedBtn        = this.createButon("assesment","ui/proceed.png","#ffffff00","",24,"#808080",193,78,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
 
         
         this.menuContainer.addControl(menuBgImg);
         this.menuContainer.addControl(whiteimg);
         this.menuContainer.addControl(menuBg);
+        this.advancedTexture.addControl(this.menuContainer);
+        this.advancedTexture.addControl(this.proceedBtn);
+        this.advancedTexture.addControl(this.trainingModeBtn);
+        this.advancedTexture.addControl(this.practiceModeBtn); 
+        this.advancedTexture.addControl(this.assesmentModeBtn);
+        this.advancedTexture.addControl(this.gameModeBtn);
         this.advancedTexture.addControl(this.caregiverModeBtn);
         this.advancedTexture.addControl(this.patientModeBtn);
         this.advancedTexture.addControl(this.userModeBtn);
-        this.advancedTexture.addControl(this.menuContainer);
+        
+        
         this.menuContainer.addControl(menufont);
         this.menuContainer.addControl(userModeText);
+        this.menuContainer.addControl(gameModeText);
         this.drawMainMenu(true);
       }
-      drawMainMenu(isDraw){
-        this.menuContainer.isVisible =isDraw;
-        this.patientModeBtn.isVisible =isDraw;
-        this.caregiverModeBtn.isVisible =isDraw;
-        this.userModeBtn.isVisible =isDraw;
-        this.userModeBtn.top =20;
-        const y = 20;
-        const dy = 56;
-        this.patientModeBtn.top  =  y+dy;
-        this.caregiverModeBtn.top = y+dy*2;
+      drawMainMenu(isDraw){ 
+        this.menuContainer.isVisible  =  isDraw;
+        this.menuContainer.getChildByName("userMode").text = "User Mode";
+        this.menuContainer.getChildByName("gameMode").text = "Game Mode";
+        
+        const y  = -40;
+        const dy = 54;
+        this.userModeBtn.isVisible = isDraw;
+        this.proceedBtn.isVisible = isDraw;
+        this.proceedBtn.topInPixels += 300;
+        this.userModeBtn.topInPixels = y;
+        this.caregiverModeBtn.topInPixels = y;
+        this.patientModeBtn.topInPixels   = y;
+        let isOpen=false;
+        const hideusermode= ()=>{
+                new TWEEN.Tween(this.patientModeBtn).to({topInPixels:y},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                  isOpen = false;
+                  this.patientModeBtn.isVisible       =  false;
+                  this.caregiverModeBtn.isVisible     =  false;
+              }).start();
+              new TWEEN.Tween(this.caregiverModeBtn).to({topInPixels:y},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+        };
+        this.userModeBtn.onPointerUpObservable.add(()=> {
+                if(!isOpen){
+                  this.patientModeBtn.isVisible       =  true;
+                  this.caregiverModeBtn.isVisible     =  true;
+                  new TWEEN.Tween(this.patientModeBtn).to({topInPixels:y+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                    isOpen = true;
+                  }).start();
+                  new TWEEN.Tween(this.caregiverModeBtn).to({topInPixels:y+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                }
+                else{
+                  hideusermode();
+                }
+          });
+          this.patientModeBtn.onPointerUpObservable.add(()=> {
+                hideusermode();
+                this.userModeBtn.children[1].text="Patient";
+                this.root.userMode = usermode.patient;
+          });
+          this.caregiverModeBtn.onPointerUpObservable.add(()=> {
+              hideusermode();
+              this.userModeBtn.children[1].text="CareGiver";
+              this.root.userMode = usermode.caregiver;
+          });
+          const y2 = 120;  
+          this.gameModeBtn.isVisible = isDraw;
+          this.gameModeBtn.topInPixels = y2;
+          this.practiceModeBtn.topInPixels = y2;
+          this.trainingModeBtn.topInPixels = y2;
+          this.assesmentModeBtn.topInPixels = y2;
+          
+          let isOpen2 =false;
+          const hidegamemode= ()=>{
+            new TWEEN.Tween(this.practiceModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+              isOpen2 = false;
+              this.practiceModeBtn.isVisible     =  false;
+              this.trainingModeBtn.isVisible     =  false;
+              this.assesmentModeBtn.isVisible     =  false;
+          }).start();
+            new TWEEN.Tween(this.trainingModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+            new TWEEN.Tween(this.assesmentModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+          };
+
+          this.gameModeBtn.onPointerUpObservable.add(()=> {
+            if(!isOpen2){
+                this.practiceModeBtn.isVisible     =  true;
+                this.trainingModeBtn.isVisible     =  true;
+                this.assesmentModeBtn.isVisible    =  true;
+                new TWEEN.Tween(this.practiceModeBtn).to({topInPixels:y2+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                  isOpen2 = true;
+                }).start();
+              new TWEEN.Tween(this.trainingModeBtn).to({topInPixels:y2+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+              new TWEEN.Tween(this.assesmentModeBtn).to({topInPixels:y2+dy*3},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+            }
+            else{
+                hidegamemode();
+            }
+          });
+          this.practiceModeBtn.onPointerUpObservable.add(()=> {
+            this.gameModeBtn.children[1].text="Practice";
+            this.root.gamemode = gamemode.practice;
+            hidegamemode();
+          });
+          this.trainingModeBtn.onPointerUpObservable.add(()=> {
+            this.gameModeBtn.children[1].text="Training";
+            this.root.gamemode = gamemode.training;
+            hidegamemode();
+          });
+          this.assesmentModeBtn.onPointerUpObservable.add(()=> {
+            this.gameModeBtn.children[1].text="Assessment";
+            this.root.gamemode = gamemode.assessment;
+            hidegamemode();
+          });
+          this.proceedBtn._onPointerUp=()=>{
+              this.drawMainMenu(false);
+              hideusermode();
+              hidegamemode();
+              this.root.gamestate.state = GameState.levelstage; 
+              this.drawStageMenu(true);
+          }
+
+      }
+      initStageMenu(){
+        this.playBtn        = this.createButon("playbtn","ui/play.png","#ffffff00","",24,"#808080",193,78,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.stage1btn      = this.createButon("prepration1btn","ui/button2.png","#ffffff00","Stage1:Prepration",22,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.stagebtn       = this.createButon("stagemodbtn","ui/stagebtn.png","#ffffff00","Stage1:Prepration",22,"#FFFFFF",300,60,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        
+        this.roompreBtn     = this.createButon("roomprebtn","ui/button2.png","#ffffff00","Room Prepration",22,"#808080",278,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.itempreBtn     = this.createButon("itemprebtn","ui/button2.png","#ffffff00","Item Prepration",22,"#808080",278,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.selfpreBtn     = this.createButon("selfprebtn","ui/button2.png","#ffffff00","Self Prepration",22,"#808080",278,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.machinepreBtn  = this.createButon("machineprebtn","ui/button2.png","#ffffff00","Machine Prepration",22,"#808080",278,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.phasebtn       = this.createButon("phasebtn","ui/stagebtn.png","#ffffff00","Room Prepration",22,"#FFFFFF",300,60,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        
+      }
+      drawStageMenu(isDraw){
+          this.menuContainer.isVisible = isDraw;
+          this.menuContainer.getChildByName("userMode").text = "Select Stage";
+          this.menuContainer.getChildByName("gameMode").text = "Select Phase";
+          
+          this.playBtn.isVisible = isDraw;
+          this.playBtn.topInPixels +=300; 
+          this.playBtn._onPointerUp=()=>{
+            this.drawStageMenu(false);
+            hidephasebtn();
+            this.root.gamestate.state = GameState.default;
+            this.stage1btn.isVisible       =  false;
+
+          }
+          this.stagebtn.isVisible = isDraw;
+          this.stagebtn.children[1].leftInPixels -=20;
+          const y  = -40;
+          const dy = 54;
+          this.stagebtn.topInPixels  = y;
+          this.stage1btn.topInPixels = y;
+          this.stage1btn.scaleX = 1.2;
+          
+          let isOpen =false;
+            this.stagebtn.onPointerUpObservable.add(()=> {
+              if(!isOpen){
+                this.stage1btn.isVisible       =  true;
+                new TWEEN.Tween(this.stage1btn).to({topInPixels:y+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                  isOpen = true;
+                }).start();
+              }
+              else{
+                  new TWEEN.Tween(this.stage1btn).to({topInPixels:y},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                    isOpen = false;
+                    this.stage1btn.isVisible       =  false;
+                  }).start();
+            }
+          });
+         this.stage1btn.onPointerUpObservable.add(()=>{
+            isOpen = false;
+            this.stage1btn.isVisible       =  false;
+          })
+          const y2 = 120;  
+          this.phasebtn.isVisible = isDraw;
+          this.phasebtn.children[1].leftInPixels -=20;
+          this.phasebtn.topInPixels= y2;
+          this.roompreBtn.topInPixels= y2;
+          this.itempreBtn.topInPixels= y2;
+          this.selfpreBtn.topInPixels= y2;
+          this.machinepreBtn.topInPixels= y2;
+
+          let isopen2=false;
+          this.phasebtn.onPointerUpObservable.add(()=> {
+            if(!isopen2){
+                isopen2 = true;
+               this.roompreBtn.isVisible       =  true;
+               this.itempreBtn.isVisible       =  true;
+               this.selfpreBtn.isVisible       =  true;
+               this.machinepreBtn.isVisible    =  true;
+              new TWEEN.Tween(this.roompreBtn).to({topInPixels:y2+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {isopen2 = true;}).start();
+              new TWEEN.Tween(this.itempreBtn).to({topInPixels:y2+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+              new TWEEN.Tween(this.selfpreBtn).to({topInPixels:y2+dy*3},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+              new TWEEN.Tween(this.machinepreBtn).to({topInPixels:y2+dy*4},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+            }
+            else{
+                hidephasebtn();
+           }
+        });
+        this.roompreBtn.onPointerUpObservable.add(()=>{
+            hidephasebtn();
+            this.phasebtn.children[1].text="Room Prepration";
+        })
+        this.itempreBtn.onPointerUpObservable.add(()=>{
+          hidephasebtn();
+          this.phasebtn.children[1].text="Item Prepration";
+        })
+        this.selfpreBtn.onPointerUpObservable.add(()=>{
+          hidephasebtn();
+          this.phasebtn.children[1].text="Self Prepration";
+        })
+        this.machinepreBtn.onPointerUpObservable.add(()=>{
+          hidephasebtn();
+          this.phasebtn.children[1].text="Machine Prepration";
+        })
+        const hidephasebtn =()=>{
+          new TWEEN.Tween(this.roompreBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+          new TWEEN.Tween(this.itempreBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+          new TWEEN.Tween(this.selfpreBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+          new TWEEN.Tween(this.machinepreBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+            isopen2 = false;
+            this.roompreBtn.isVisible       =  false;
+            this.itempreBtn.isVisible       =  false;
+            this.selfpreBtn.isVisible       =  false;
+            this.machinepreBtn.isVisible    =  false;
+          }).start();
+        }
+
       }
       initRadialMenu(){
         
-        this.radialCircle =  this.createImage("RadialCircleBig","ui/CircleBig.png",350,350,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-
+        this.radialCircle    =  this.createImage("RadialCircleBig","ui/CircleBig.png",350,350,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.inspectBtn      =  this.createCircle("inspectBtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         const inspectImg     =  this.createImage("inspectBtn","ui/magnifying-glass-with-check-mark.png",72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         inspectImg.isVisible=true;
@@ -87,9 +310,7 @@ export default class GUI2D{
         this.drawRadialMenu(false);
       }
       drawRadialMenu(isDraw){
-
         this.radialCircle.isVisible=isDraw;
-
         this.inspectBtn.top ="-150px";
         this.inspectBtn.isVisible=isDraw;
 
@@ -122,7 +343,6 @@ export default class GUI2D{
         button.height = height+"px";
         button.color = bgcolor;
         button.background = "ffffff00";
-        button.isPointerBlocker=false;
         button.isVisible=false;
         button.horizontalAlignment = horizontal;
         button.verticalAlignment   = verticle;
@@ -132,50 +352,42 @@ export default class GUI2D{
           text.fontFamily = "Shrikhand";
           text.fontSize = fontSize+"px";
           text.color    = fontcolor;
-          // text.isPointerBlocker=true;
+          text.isPointerBlocker=false;
           text.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
           text.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTERverticle;
           button.addControl(text);
         }
         if(isadd)
             this.advancedTexture.addControl(button);    
-          button.onPointerDownObservable.add(function() {
+          // button.onPointerDownObservable.add(()=> {
+          //   this.handleButton(0,button.name);
+          // });
+          // button.onPointerUpObservable.add(()=> {
+          //   this.handleButton(2,button.name);
+          // });
+          // button.onPointerEnterObservable.add(()=> {
+          // });
+          // button.onPointerOutObservable.add(()=> {
+          // });    
           
-          });
-          button.onPointerUpObservable.add(()=> {
-            
-            this.handleButton(2,button.name);
-          
-          });
-          button.onPointerEnterObservable.add(()=> {
-            this.handleButton(0,button.name);
-          });
-          button.onPointerOutObservable.add(()=> {
-            this.handleButton(1,button.name);
-          
-          });    
-          button.onPointerMoveObservable.add((coordinates)=> {
-          
-          });  
           
         return button;  
       }
       handleButton(event,buttontype){
-          switch(event){
-             case 0:
-                 break;
-              case 1:
-                break;
-              case 2:
-                  switch(buttontype){
-                     case this.resetCamBtn.name:
-                         this.root.setCameraTarget(); 
-                        break;
-                    
-                  }
-                break;
-          }
-        console.log(event+"    "+buttontype);
+          // switch(event){
+          //    case 0:
+          //        break;
+          //     case 1:
+          //       break;
+          //     case 2:
+          //         switch(buttontype){
+          //            case this.resetCamBtn.name:
+          //                this.root.setCameraTarget(); 
+          //               break;
+          //         }
+          //       break;
+          // }
+        // console.log(event+"    "+buttontype);
       }
       createCircle(name,width,height,color,horizontal,verticle,isadd){
         const circle   = new GUI.Ellipse(name);
@@ -185,26 +397,23 @@ export default class GUI2D{
         circle.thickness = 0;
         circle.background = color;
         circle.horizontalAlignment = horizontal;
-        circle.verticalAlignment = verticle;
+        circle.verticalAlignment   = verticle;
+        circle.isVisible=false
         if(isadd)
             this.advancedTexture.addControl(circle);   
         circle.onPointerDownObservable.add(function() {
-          
         });
-        circle.onPointerUpObservable.add(()=> {
-          this.handleButton(2,circle.name);
+        // circle.onPointerUpObservable.add(()=> {
+        //   this.handleButton(2,circle.name);
         
-        });
-        circle.onPointerEnterObservable.add(()=> {
-          this.handleButton(0,circle.name);
-        });
-        circle.onPointerOutObservable.add(()=> {
-          this.handleButton(1,circle.name);
+        // });
+        // circle.onPointerEnterObservable.add(()=> {
+        //   // this.handleButton(0,circle.name);
+        // });
+        // circle.onPointerOutObservable.add(()=> {
+        //   // this.handleButton(1,circle.name);
         
-        });    
-        circle.onPointerMoveObservable.add((coordinates)=> {
-        
-        });  
+        // });    
         return circle;
       }
       createRectLabel(name,width,height,radius,color,mesh,linkOffsetX,linkOffsetY){
