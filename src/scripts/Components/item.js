@@ -34,6 +34,8 @@ export default class Item{
 
             this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
             this.label.isVisible=false;
+
+            this.useItem=false;
             
         }
         setPos(){
@@ -91,12 +93,21 @@ export default class Item{
                                 showMenu = false;
                                 this.root.gui2D.drawRadialMenu(false);  
                                 this.showItem();
+                                if(this.name.includes("Blood Pressure")){
+
+                                    let startvalue = new BABYLON.Vector3(0,0,0);
+                                    let endvalue = new BABYLON.Vector3(120,80,70);
+                                    new TWEEN.Tween(startvalue).to({x:endvalue.x,y:endvalue.y,z:endvalue.z},2000).easing(TWEEN.Easing.Linear.None).onUpdate(()=>{
+                                        this.root.setbpRecord(endvalue.x,endvalue.y,endvalue.z);
+                                    }) .onComplete(() => {}).start();
+                                }
                             };
                             this.root.gui2D.crossBtn._onPointerUp = ()=>{
                                 this.root.gui2D.drawRadialMenu(false);  
                                 this.root.gamestate.state = GameState.active;
                                 setShowMenu(false);
                                 this.hideOutLine();
+
                                 
                             };
                        }     
@@ -131,7 +142,6 @@ export default class Item{
                 this.label.isVisible=false;
                 this.pickObject = false;
                 this.root.scene.getMeshByName("tablecollider").visibility=0;
-                console.log(this.meshRoot.position.y);
                 if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>20) && this.state>10 || this.isPlaced  ){ 
                     this.state=0;
                     this.parent           = this.root.scene.getTransformNodeByID("tablenode");
@@ -186,6 +196,7 @@ export default class Item{
             
         showMenu = false;
         this.meshRoot.removeBehavior(this.pointerDragBehavior);
+        new TWEEN.Tween(this.root.camera).to({radius:3},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x+upAng,y:this.startRotation.y,z:this.startRotation.z+BABYLON.Angle.FromDegrees(360).radians()},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.position).to({x:0,y:-42+newPos.y,z:-66+newPos.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.scaling).to({x:scalAnim,y:scalAnim,z:scalAnim},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {

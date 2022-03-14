@@ -14,10 +14,11 @@ import GUI2D from "../gui.js";
 import LightSwitch from "../Components/lightswtich.js";
 import TWEEN from '@tweenjs/tween.js';
 
-export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5};
+export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
 export const ANIM_TIME=1000;
+
 let SX=0,SY=0,SZ=0;
 export default class MainScene {
   constructor(gameManager) {
@@ -43,6 +44,8 @@ export default class MainScene {
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
     this.ccpdRecordBook=undefined,this.lightswtichObject=undefined;
    
+
+    this.dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 256, this.scene);
     // this.testMesh = new BABYLON.Mesh("test");
     
     
@@ -74,12 +77,16 @@ export default class MainScene {
     this.lightswtichObject = new LightSwitch(this,this.lightswtich);
     
     this.bpMachineItem     = new Item("Blood Pressure Monitor",this,this.scene.getTransformNodeByID("bpmachinenode"),{x:-69,y:30,z:33},{x:-93,y:17,z:-8},undefined);
+    this.createBpText();
+    
+
     this.connectionItem    = new Item("Connection Shield",this,this.scene.getTransformNodeByID("ConnectionShield"),{x:-70,y:5,z:38.5},{x:-65,y:-55,z:-4},undefined); 
     this.alcohalItem       = new Item("Alchohal Wipe",this,this.scene.getTransformNodeByID("Alcohol_Wipe"),{x:-45,y:8,z:38.5},{x:-36,y:-53,z:-4},{x:0,y:0,z:90});
     this.maskItem          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
     this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     let val=1;
+    
     document.addEventListener('keydown', (event)=> {
       console.log(event.key);
       switch(event.key){
@@ -102,11 +109,8 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // this.drainBagItem.meshRoot.position  = new BABYLON.Vector3(SX,SY,SZ);
       // // -42!! sz !! -66
-      // this.drainBagItem.meshRoot.scaling  = new BABYLON.Vector3(2,2,2);
-      // this.drainBagItem.meshRoot.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-60).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
-      // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);
+      // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
     this.scene.onPointerObservable.add((pointerInfo) => {      	
 
@@ -150,7 +154,41 @@ export default class MainScene {
         this.setCameraTarget(); 
       } 
   }
+  createBpText(){
 
+    const bpPlan = BABYLON.MeshBuilder.CreatePlane("bptextplan",{width:8,height:5,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+    bpPlan.parent = this.bpMachineItem.meshRoot;
+    bpPlan.isPickable=false;
+    bpPlan.renderOutline=false;
+    bpPlan.outlineWidth=0;
+    const planmat = new BABYLON.StandardMaterial("bptextmat", this.scene);
+    const size = 256;
+    planmat.diffuseColor  = new BABYLON.Color3.FromInts(128,135,148);
+    planmat.emissiveColor = new BABYLON.Color3.FromInts(128,135,148);
+    
+    
+    this.dynamicTexture.hasAlpha=true;
+    planmat.diffuseTexture = this.dynamicTexture;
+    bpPlan.material  = planmat;
+    bpPlan.scaling   = new BABYLON.Vector3(1.4,3.2,1);
+    bpPlan.position  = new BABYLON.Vector3(17.8,13,-9.9);
+    bpPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-30).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+    this.setbpRecord(0,0,0)
+  }
+  setbpRecord(v1,v2,v3){
+
+    console.log(v1);
+    let ctx = this.dynamicTexture.getContext();
+    
+    const font_size = 64;
+    const font_type = "Orbitron";
+    const font = font_size + "px " + font_type;
+    ctx.clearRect(0, 0, 256, 256)
+    this.dynamicTexture.drawText(v1+"",90, 70, font, "#808794", "transparent", true);
+    this.dynamicTexture.drawText(v2+"",90, 150, font, "#808794", "transparent", true);
+    this.dynamicTexture.drawText(v3+"",90, 230, font, "#808794", "transparent", true);
+    // this.dynamicTexture.update();
+  }
   onpickMesh(pickedMesh){
 
     

@@ -14,12 +14,11 @@ export default class Common{
      createScene(name) {
         this.scene = new BABYLON.Scene(this.game.engine);
         this.scene.name = name;
-        this.scene.clearColor = BABYLON.Color3.FromHexString("#000");
+        this.scene.clearColor = BABYLON.Color3.FromHexString("#000000");
+        
         // this.env=this.scene.createDefaultEnvironment()
         this.scene.environmentTexture = new BABYLON.CubeTexture.CreateFromPrefilteredData("models/environment/autoshop_01_4k.env",this.scene);
-        // this.hdrTexture = new BABYLON.HDRCubeTexture("models/environment/room.hdr",this.scene, 128, false, true, false, true);
-        // this.scene.environmentTexture = this.hdrTexture;
-        // this.scene.enablePrePassRenderer();
+        this.scene.enablePrePassRenderer();
         this.setLight();
         return this.scene;
      }

@@ -57,7 +57,7 @@ export default class WindowFrame{
                         switch(this.state){
                             case 0:
                                 this.root.gamestate.state = GameState.default;
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(360).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(359.9).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                                     this.state=1;
                                     this.root.gamestate.state = GameState.focus;
                                 }).start();

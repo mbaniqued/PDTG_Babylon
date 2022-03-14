@@ -12,6 +12,8 @@ export default class GUI2D{
      }
      initUi(){
         this.advancedTexture.idealWidth = 1920;
+        // this.advancedTexture.idealHeight = 1080;
+        this.advancedTexture.renderAtIdealSize = true;
         this.resetCamBtn   =  this.createButon("resetcambtn","ui/move.png","#ffffffff","",0,0,72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
         this.userExitBtn   =  this.createCircle("userexitbtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
         const userImg      =  this.createImage("userexitbtn","ui/Users-Exit-icon.png",72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
@@ -32,45 +34,29 @@ export default class GUI2D{
         const menufont    =  this.createText("menufont","Peritoneal Dialysis \nGame",90,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false) 
         this.setTextOutLine(menufont,"#000000",2);
         menufont.topInPixels =-240;
-        const userModeText =  this.createText("userMode","User Mode",40,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false) 
-        userModeText.topInPixels =-100;
+        const userModeText =  this.createText("usermodetxt","User Mode",40,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false) 
         this.setTextOutLine(userModeText,"#000000",2);
 
-        this.userModeBtn = this.createButon("userdropbutton","ui/button.png","#ffffff00","Patient",24,"#FFFFFF",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        this.userModeBtn.isVisible=true;
-        this.patientModeBtn   = this.createButon("patient","ui/button2.png","#ffffff00","Patient",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        this.caregiverModeBtn = this.createButon("caregiver","ui/button2.png","#ffffff00","Caregiver",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.patientModeBtn   = this.createButon("patient","ui/button2.png","#ffffff00","Patient",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.caregiverModeBtn = this.createButon("caregiver","ui/button2.png","#ffffff00","Caregiver",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.userModeBtn = this.createButon("userdropbutton","ui/button.png","#ffffff00","Patient",24,"#FFFFFF",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
 
 
         
-        const gameModeText =  this.createText("gameMode","Game Mode",40,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false) 
-        gameModeText.topInPixels =60;
-        
+        const gameModeText =  this.createText("gamemodetxt","Game Mode",40,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false) 
         this.setTextOutLine(gameModeText,"#000000",2);
-        this.gameModeBtn = this.createButon("gameModeBtn","ui/button.png","#ffffff00","Practice",24,"#FFFFFF",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        this.gameModeBtn.children[1].leftInPixels -=20;
-        this.gameModeBtn.isVisible=true;
 
-        this.trainingModeBtn   = this.createButon("training","ui/button2.png","#ffffff00","Training",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        this.practiceModeBtn   = this.createButon("practice","ui/button2.png","#ffffff00","Practice",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        this.assesmentModeBtn  = this.createButon("assesment","ui/button2.png","#ffffff00","Assessment",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-
-        this.proceedBtn        = this.createButon("assesment","ui/proceed.png","#ffffff00","",24,"#808080",193,78,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.proceedBtn        = this.createButon("assesment","ui/proceed.png","#ffffff00","",24,"#808080",193,78,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.trainingModeBtn   = this.createButon("training","ui/button2.png","#ffffff00","Training",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.assesmentModeBtn  = this.createButon("assesment","ui/button2.png","#ffffff00","Assessment",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.practiceModeBtn   = this.createButon("practice","ui/button2.png","#ffffff00","Practice",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.gameModeBtn       = this.createButon("gameModeBtn","ui/button.png","#ffffff00","Practice",24,"#FFFFFF",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        
 
         
         this.menuContainer.addControl(menuBgImg);
         this.menuContainer.addControl(whiteimg);
         this.menuContainer.addControl(menuBg);
-        this.advancedTexture.addControl(this.menuContainer);
-        this.advancedTexture.addControl(this.proceedBtn);
-        this.advancedTexture.addControl(this.trainingModeBtn);
-        this.advancedTexture.addControl(this.practiceModeBtn); 
-        this.advancedTexture.addControl(this.assesmentModeBtn);
-        this.advancedTexture.addControl(this.gameModeBtn);
-        this.advancedTexture.addControl(this.caregiverModeBtn);
-        this.advancedTexture.addControl(this.patientModeBtn);
-        this.advancedTexture.addControl(this.userModeBtn);
-        
         
         this.menuContainer.addControl(menufont);
         this.menuContainer.addControl(userModeText);
@@ -79,14 +65,17 @@ export default class GUI2D{
       }
       drawMainMenu(isDraw){ 
         this.menuContainer.isVisible  =  isDraw;
-        this.menuContainer.getChildByName("userMode").text = "User Mode";
-        this.menuContainer.getChildByName("gameMode").text = "Game Mode";
+        this.menuContainer.getChildByName("usermodetxt").text = "User Mode";
+        this.menuContainer.getChildByName("usermodetxt").topInPixels =-100;
+        this.menuContainer.getChildByName("gamemodetxt").text = "Game Mode";
+        this.menuContainer.getChildByName("gamemodetxt").topInPixels =60;
         
+
         const y  = -40;
         const dy = 54;
         this.userModeBtn.isVisible = isDraw;
         this.proceedBtn.isVisible = isDraw;
-        this.proceedBtn.topInPixels += 300;
+        this.proceedBtn.topInPixels = 300;
         this.userModeBtn.topInPixels = y;
         this.caregiverModeBtn.topInPixels = y;
         this.patientModeBtn.topInPixels   = y;
@@ -123,34 +112,36 @@ export default class GUI2D{
               this.root.userMode = usermode.caregiver;
           });
           const y2 = 120;  
+          this.gameModeBtn.children[1].leftInPixels =-20;
           this.gameModeBtn.isVisible = isDraw;
-          this.gameModeBtn.topInPixels = y2;
-          this.practiceModeBtn.topInPixels = y2;
-          this.trainingModeBtn.topInPixels = y2;
+          this.gameModeBtn.topInPixels    = y2;
+          this.practiceModeBtn.topInPixels  = y2;
+          this.trainingModeBtn.topInPixels  = y2;
           this.assesmentModeBtn.topInPixels = y2;
+
           
           let isOpen2 =false;
           const hidegamemode= ()=>{
-            new TWEEN.Tween(this.practiceModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+            
+            new TWEEN.Tween(this.practiceModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+            new TWEEN.Tween(this.trainingModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+            new TWEEN.Tween(this.assesmentModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
               isOpen2 = false;
               this.practiceModeBtn.isVisible     =  false;
               this.trainingModeBtn.isVisible     =  false;
               this.assesmentModeBtn.isVisible     =  false;
-          }).start();
-            new TWEEN.Tween(this.trainingModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-            new TWEEN.Tween(this.assesmentModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+            }).start();
           };
 
           this.gameModeBtn.onPointerUpObservable.add(()=> {
             if(!isOpen2){
-                this.practiceModeBtn.isVisible     =  true;
-                this.trainingModeBtn.isVisible     =  true;
-                this.assesmentModeBtn.isVisible    =  true;
-                new TWEEN.Tween(this.practiceModeBtn).to({topInPixels:y2+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
-                  isOpen2 = true;
-                }).start();
-              new TWEEN.Tween(this.trainingModeBtn).to({topInPixels:y2+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-              new TWEEN.Tween(this.assesmentModeBtn).to({topInPixels:y2+dy*3},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                isOpen2 = true;
+                this.practiceModeBtn.isVisible    =  true;
+                this.trainingModeBtn.isVisible    =  true;
+                this.assesmentModeBtn.isVisible   =  true;
+                new TWEEN.Tween(this.practiceModeBtn).to({topInPixels:y2+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                new TWEEN.Tween(this.trainingModeBtn).to({topInPixels:y2+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                new TWEEN.Tween(this.assesmentModeBtn).to({topInPixels:y2+dy*3},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             }
             else{
                 hidegamemode();
@@ -181,6 +172,7 @@ export default class GUI2D{
 
       }
       initStageMenu(){
+        this.backBtn        = this.createButon("backbtn","ui/backbtn.png","#ffffff00","",24,"#808080",119,67,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.playBtn        = this.createButon("playbtn","ui/play.png","#ffffff00","",24,"#808080",193,78,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.stage1btn      = this.createButon("prepration1btn","ui/button2.png","#ffffff00","Stage1:Prepration",22,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.stagebtn       = this.createButon("stagemodbtn","ui/stagebtn.png","#ffffff00","Stage1:Prepration",22,"#FFFFFF",300,60,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
@@ -194,20 +186,31 @@ export default class GUI2D{
       }
       drawStageMenu(isDraw){
           this.menuContainer.isVisible = isDraw;
-          this.menuContainer.getChildByName("userMode").text = "Select Stage";
-          this.menuContainer.getChildByName("gameMode").text = "Select Phase";
+          this.menuContainer.getChildByName("usermodetxt").text = "Select Stage";
+          this.menuContainer.getChildByName("gamemodetxt").text = "Select Phase";
           
           this.playBtn.isVisible = isDraw;
-          this.playBtn.topInPixels +=300; 
+          this.playBtn.topInPixels =300; 
           this.playBtn._onPointerUp=()=>{
             this.drawStageMenu(false);
             hidephasebtn();
             this.root.gamestate.state = GameState.default;
             this.stage1btn.isVisible       =  false;
+            this.advancedTexture.renderAtIdealSize = false;
 
           }
-          this.stagebtn.isVisible = isDraw;
-          this.stagebtn.children[1].leftInPixels -=20;
+          this.backBtn.topInPixels =400;
+          this.backBtn.isVisible  = isDraw;
+          this.backBtn._onPointerUp=()=>{
+            this.drawStageMenu(false);
+            this.stage1btn.isVisible=false;
+            hidephasebtn();
+            this.drawMainMenu(true);
+          }
+
+
+          this.stagebtn.isVisible  = isDraw;
+          this.stagebtn.children[1].leftInPixels =-20;
           const y  = -40;
           const dy = 54;
           this.stagebtn.topInPixels  = y;
@@ -235,7 +238,7 @@ export default class GUI2D{
           })
           const y2 = 120;  
           this.phasebtn.isVisible = isDraw;
-          this.phasebtn.children[1].leftInPixels -=20;
+          this.phasebtn.children[1].leftInPixels =-20;
           this.phasebtn.topInPixels= y2;
           this.roompreBtn.topInPixels= y2;
           this.itempreBtn.topInPixels= y2;
@@ -338,7 +341,7 @@ export default class GUI2D{
       } 
       
       createButon(name,src,bgcolor,txt,fontSize,fontcolor,width,height,horizontal,verticle,isadd){
-        const button = new GUI.Button.CreateImageOnlyButton(name, src);
+        const button = GUI.Button.CreateImageOnlyButton(name, src);
         button.width = width+"px";
         button.height = height+"px";
         button.color = bgcolor;
@@ -346,6 +349,7 @@ export default class GUI2D{
         button.isVisible=false;
         button.horizontalAlignment = horizontal;
         button.verticalAlignment   = verticle;
+        button._moveToProjectedPosition
         if(txt.length>0){
           const text = new GUI.TextBlock(name);
           text.text = txt;
@@ -425,19 +429,22 @@ export default class GUI2D{
         rect.thickness = 4;
         rect.background = color;
         rect.isPointerBlocker=true;
+        rect.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        rect.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
         this.advancedTexture.addControl(rect);
+        rect.linkOffsetXInPixels = linkOffsetX;
+        rect.linkOffsetYInPixels = linkOffsetY;
+        rect.linkWithMesh(mesh);   
 
         const label = new GUI.TextBlock(name+"txt");
+        label.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        label.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
         label.text =  name;
         label.fontSize =20+"px";
         label.color = "#A5A5A5";
         label.isPointerBlocker=true;
         
         rect.addControl(label);
-
-        rect.linkWithMesh(mesh);   
-        rect.linkOffsetY = linkOffsetY;
-        rect.linkOffsetX = linkOffsetX;
         return rect;
       }
       createRect(name,width,height,radius,color,horizontal,verticle,isadd){
@@ -464,6 +471,7 @@ export default class GUI2D{
         text.isPointerBlocker=true;
         text.horizontalAlignment = horizontal;
         text.verticalAlignment   = verticle;
+
         if(isadd)
           this.advancedTexture.addControl(text);
         return text;
