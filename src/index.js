@@ -16,8 +16,8 @@ function startScene(){
         console.log("!! Fresh!!!");
         gameManager = new GameManger("game");
     }
-    if(document.getElementById("start_game")!== null)
-        document.getElementById("start_game").style.display = "none";
+    // if(document.getElementById("start_game")!== null)
+    //     document.getElementById("start_game").style.display = "none";
 
     document.getElementById("loader_spiner").style.display = "block";
 }

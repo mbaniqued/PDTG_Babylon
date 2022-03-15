@@ -12,6 +12,7 @@ import ACRemote from "../Components/acremote.js";
 import Item from "../Components/item.js";
 import GUI2D from "../gui.js";
 import LightSwitch from "../Components/lightswtich.js";
+import CabinetItem from "../Components/cabinetitem.js"; 
 import TWEEN from '@tweenjs/tween.js';
 
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6};
@@ -36,14 +37,18 @@ export default class MainScene {
     this.apdmachineRoot   = new BABYLON.TransformNode("APDMACHINE");
     this.windowFrameRoot  = new BABYLON.TransformNode("WINDOW");
     
+    
+    
     this.windowbox=undefined,this.lightswtich=undefined;
     this.loaderManager  = new LoaderManager(this);
     this.game.engine.hideLoadingUI();
     this.pickMesh=null,this.focusMesh=null;
     this.trollyObject=undefined,this.tableObject=undefined,this.cabinetObject=undefined,this.doorObject=undefined,this.windowObject=undefined;
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
-    this.ccpdRecordBook=undefined,this.lightswtichObject=undefined;
-   
+    this.ccpdRecordBook=undefined,this.lightswtichObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
+    
+
+    this.tmp=null;
 
     this.dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 256, this.scene);
     // this.testMesh = new BABYLON.Mesh("test");
@@ -85,10 +90,28 @@ export default class MainScene {
     this.maskItem          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
     this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
-    let val=1;
+
+    
+    
+    this.dissolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode"),{x:2.16,y:1.57,z:2.34});
+    const solutionclone1 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode1");
+    this.dissolutionObject[1] = new CabinetItem("Dialysis Solution",this,solutionclone1,{x:2.16,y:1.17,z:2.34});
+    const solutionclone2 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode2");
+    this.dissolutionObject[2] = new CabinetItem("Dialysis Solution",this,solutionclone2,{x:2.16,y:.78,z:2.34});
+    const solutionclone3 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode3");
+    this.dissolutionObject[3] = new CabinetItem("Dialysis Solution",this,solutionclone3,{x:2.16,y:.31,z:2.34});
+
+
+    this.sanitiserObject[0]   = new CabinetItem("Hand Sanitizer ",this,this.scene.getTransformNodeByID("handsanitizernode"),{x:1.47,y:1.07,z:2.6});
+    const sanitizerclone2 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer2");
+    this.sanitiserObject[1]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone2,{x:1.47,y:1.07,z:2.4});
+    const sanitizerclone3 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer3");
+    this.sanitiserObject[2]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone3,{x:1.47,y:1.07,z:2.2});
+    // 1.470000000000001 !!sy!!  1.4600000000000009!! sz !! 2.6999999999999864
     
     document.addEventListener('keydown', (event)=> {
       console.log(event.key);
+      const val=.1;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -109,8 +132,10 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // // -42!! sz !! -66
-      // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
+      // -3.4000000000000017 !!sy!!  2.1000000000000005!! sz !! 2.500000000000001
+      // this.dissolutionObject[0].meshRoot.position = new BABYLON.Vector3(SX,SY,SZ);
+      // this.dissolutionObject[0].meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+      console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
     this.scene.onPointerObservable.add((pointerInfo) => {      	
 
@@ -224,10 +249,12 @@ export default class MainScene {
          root2 = root2.parent;
     }
     if(root1.name !== root2.name){
-      if(this.gamestate.state != GameState.radial){
-          console.log(root1.name+"      "+root2.name);
-          this.gamestate.state = GameState.default;
-      }
+       if(!root1.name.includes("items") && !root2.name.includes("items")){
+          if(this.gamestate.state != GameState.radial){
+            console.log(root1.name+"      "+root2.name);
+            this.gamestate.state = GameState.default;
+          }
+       }
     }
   }
   updateObjectOutLine(value){
@@ -267,7 +294,13 @@ export default class MainScene {
             childmesh.renderOutline=value;
       });
     }
-    
+    if(this.pickMesh.parent.name.includes("diasolutionnode")){
+      // console.log(this.pickMesh.parent.name);
+      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
+            childmesh.outlineWidth=1;
+            childmesh.renderOutline=value;
+      });
+    }
     
     
   }

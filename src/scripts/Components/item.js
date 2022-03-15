@@ -9,17 +9,12 @@ export default class Item{
             this.name            = name;
             this.root            = root;
             this.meshRoot        = meshobject;
-            this.position        = pos;
             this.startPosition   = pos;
-
-            
             this.startRotation   = new BABYLON.Vector3(this.meshRoot.rotation.x,this.meshRoot.rotation.y,this.meshRoot.rotation.z);
             this.startScaling    = new BABYLON.Vector3(this.meshRoot.scaling.x,this.meshRoot.scaling.y,this.meshRoot.scaling.z);
             this.placedPostion   = placedpos;
-            if(rotation){
-                this.placeRotation   = rotation;
-                this.placeRotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(this.placeRotation.x).radians(),BABYLON.Angle.FromDegrees(this.placeRotation.y).radians(),BABYLON.Angle.FromDegrees(this.placeRotation.z).radians());
-            }
+            if(rotation)
+                this.placeRotation =  new BABYLON.Vector3(BABYLON.Angle.FromDegrees(rotation.x).radians(),BABYLON.Angle.FromDegrees(rotation.y).radians(),BABYLON.Angle.FromDegrees(rotation.z).radians());
             this.parent          = this.root.scene.getTransformNodeByID("tabledrawer");
             this.state           = 0;
             this.isPlaced        = false;
@@ -31,49 +26,36 @@ export default class Item{
             });
             this.initDrag();
             this.meshRoot.addBehavior(this.pointerDragBehavior);
-
             this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
             this.label.isVisible=false;
-
             this.useItem=false;
-            
         }
         setPos(){
             if(this.parent){
                 this.meshRoot.parent    = this.parent;
                 this.meshRoot.name+="items";
             }
-            this.meshRoot.position  = new BABYLON.Vector3(this.position.x,this.position.y,this.position.z);
+            this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
         }
         addAction(mesh){
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-                // mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
-                //       parameter: this.root.scene.getMeshByName("tablecollider"),},
-                //     () => {
-                //         if(!this.isPlaced)
-                //          this.root.scene.getMeshByName("tablecollider").visibility=1;
-                //          this.collide = true;
-                //     }
-                //   )
-                // );
-                // mesh.actionManager.registerAction(
-                //       new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnIntersectionExitTrigger,
-                //         parameter: this.root.scene.getMeshByName("tablecollider")},
-                //       () => {
-                //            this.root.scene.getMeshByName("tablecollider").visibility=0;
-                //            this.collide = false;
-                //       }
-                //     )
-                // );
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+                    this.label.isVisible=this.root.gamestate.state !== GameState.radial || this.root.gamestate.state !== GameState.menu || this.root.gamestate.state !== GameState.levelstage;
+                }))
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+                    this.label.isVisible=false
+                }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
-                            console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
+                        // console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                             this.pickObject = true;
-                            this.label.isVisible=true;
+                            this.label.isVisible=this.root.gamestate.state !== GameState.radial || this.root.gamestate.state !== GameState.menu || this.root.gamestate.state !== GameState.levelstage;
                         }
                     )
                 )
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                             console.log(this.root.gamestate.state+"!! OnPickTrigger!!! ")
+                            if(this.root.gui2D.userExitBtn.isVisible)
+                                return;
                             this.label.isVisible=false;
                             showMenu =!showMenu;
                             this.root.gamestate.state = showMenu?GameState.radial:GameState.active;
@@ -93,22 +75,22 @@ export default class Item{
                                 showMenu = false;
                                 this.root.gui2D.drawRadialMenu(false);  
                                 this.showItem();
-                                if(this.name.includes("Blood Pressure")){
-
-                                    let startvalue = new BABYLON.Vector3(0,0,0);
-                                    let endvalue = new BABYLON.Vector3(120,80,70);
-                                    new TWEEN.Tween(startvalue).to({x:endvalue.x,y:endvalue.y,z:endvalue.z},2000).easing(TWEEN.Easing.Linear.None).onUpdate(()=>{
-                                        this.root.setbpRecord(endvalue.x,endvalue.y,endvalue.z);
-                                    }) .onComplete(() => {}).start();
-                                }
+                                    if(this.name.includes("Blood Pressure")){
+                                        let tout = setTimeout(() => {
+                                            clearTimeout(tout)
+                                            let startvalue = new BABYLON.Vector3(0,0,0); 
+                                            let endvalue = new BABYLON.Vector3(120,80,70);
+                                            new TWEEN.Tween(startvalue).to({x:endvalue.x,y:endvalue.y,z:endvalue.z},2000).easing(TWEEN.Easing.Linear.None).onUpdate(()=>{
+                                                this.root.setbpRecord(startvalue.x,startvalue.y,startvalue.z);
+                                            }).onComplete(() => {}).start();
+                                    }, 1500);
+                                 }    
                             };
                             this.root.gui2D.crossBtn._onPointerUp = ()=>{
+                                showMenu = false;
                                 this.root.gui2D.drawRadialMenu(false);  
                                 this.root.gamestate.state = GameState.active;
-                                setShowMenu(false);
                                 this.hideOutLine();
-
-                                
                             };
                        }     
                     )
@@ -118,15 +100,12 @@ export default class Item{
             this.pointerDragBehavior = new BABYLON.PointerDragBehavior();
             this.pointerDragBehavior.useObjectOrientationForDragging = false;
             this.pointerDragBehavior.onDragStartObservable.add((event)=>{
-                console.log( this.pickObject+   "!!! onDragStartObservable 111"+this.root.gamestate.state);
                 if( !this.pickObject && this.root.gamestate.state ===  GameState.radial){
                     this.state =0;
                     return;
                 }
-                console.log("dragStart");
             });
             this.pointerDragBehavior.onDragObservable.add((event)=>{
-                console.log("!!! onDragObservable 111"+this.root.gamestate.state);
                 if(!this.pickObject &&  this.root.gamestate.state ===  GameState.radial){
                     this.state =0;
                     return;
@@ -142,17 +121,15 @@ export default class Item{
                 this.label.isVisible=false;
                 this.pickObject = false;
                 this.root.scene.getMeshByName("tablecollider").visibility=0;
-                if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>20) && this.state>10 || this.isPlaced  ){ 
+                if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>20) && this.state>10 || this.isPlaced ){ 
                     this.state=0;
                     this.parent           = this.root.scene.getTransformNodeByID("tablenode");
                     this.meshRoot.parent  = this.parent;
                     new TWEEN.Tween(this.meshRoot).to({position:this.placedPostion},300).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                         this.isPlaced=true;
                         this.root.scene.getMeshByName("tablecollider").visibility=0;
-                        console.log("dragEnd");
                     }).start();
                     if(this.placeRotation){
-                        
                         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},300).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                             this.meshRoot.removeBehavior(this.pointerDragBehavior);
                         }).start();
@@ -172,10 +149,10 @@ export default class Item{
             });
            let scalAnim=5;
            let newPos = new BABYLON.Vector3(0,0,0);
-           let upAng=-BABYLON.Angle.FromDegrees(60).radians();
+           let upAng = -BABYLON.Angle.FromDegrees(70).radians();
            if(this.meshRoot.name.includes("bpmachinenode")){
-                scalAnim = 1.7;
-                newPos.z   -= 50;
+                scalAnim  = 1.7;
+                newPos.z -= 50;
            }
            if(this.meshRoot.name.includes("DrainBag")){
                 scalAnim = 2;
@@ -193,7 +170,6 @@ export default class Item{
             newPos.z-=20;
             newPos.y-=140;
         }   
-            
         showMenu = false;
         this.meshRoot.removeBehavior(this.pointerDragBehavior);
         new TWEEN.Tween(this.root.camera).to({radius:3},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
@@ -223,7 +199,7 @@ export default class Item{
         }
         else{
             new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x,y:this.startRotation.y,z:this.startRotation.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-            new TWEEN.Tween(this.meshRoot.position).to({x:this.position.x,y:this.position.y,z:this.position.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+            new TWEEN.Tween(this.meshRoot.position).to({x:this.startPosition.x,y:this.startPosition.y,z:this.startPosition.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             new TWEEN.Tween(this.meshRoot.scaling).to({x:this.startScaling.x,y:this.startScaling.y,z:this.startScaling.z},500).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                 this.meshRoot.addBehavior(this.pointerDragBehavior);
                 this.root.gamestate.state = GameState.active;
@@ -236,8 +212,6 @@ export default class Item{
         });
       }
 }
-export function setShowMenu(value){
-    showMenu = value;
-}
+
 
 

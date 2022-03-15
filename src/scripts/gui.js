@@ -12,7 +12,7 @@ export default class GUI2D{
      }
      initUi(){
         this.advancedTexture.idealWidth = 1920;
-        // this.advancedTexture.idealHeight = 1080;
+        this.advancedTexture.idealHeight = 1080;
         this.advancedTexture.renderAtIdealSize = true;
         this.resetCamBtn   =  this.createButon("resetcambtn","ui/move.png","#ffffffff","",0,0,72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
         this.userExitBtn   =  this.createCircle("userexitbtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
@@ -73,6 +73,7 @@ export default class GUI2D{
 
         const y  = -40;
         const dy = 54;
+        this.userModeBtn.children[1].leftInPixels =-20;
         this.userModeBtn.isVisible = isDraw;
         this.proceedBtn.isVisible = isDraw;
         this.proceedBtn.topInPixels = 300;

@@ -33,14 +33,51 @@ export default class LoaderManager {
       this.assetsManager.addMeshTask("DrainBag","","models/Items/","DrainBag_final.glb");
       this.assetsManager.addMeshTask("SurgicalMask","","models/Items/","SurgicalMask.glb");
       this.assetsManager.addMeshTask("ccpdrecordbook","","models/Items/","ccpdrecordbook.glb");
+      this.assetsManager.addMeshTask("diaSol_complete","","models/Items/","diaSol_complete.glb");
+      this.assetsManager.addMeshTask("HandSanitizer","","models/Items/","HandSanitizer.glb");
+      
       this.assetsManager.onTaskSuccessObservable.add((task)=> {
+      
+        
+        if(task.name === "HandSanitizer"){
+          const node   = new BABYLON.TransformNode("handsanitizernode");
+            for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+                task.loadedMeshes[i].parent = node;
+                task.loadedMeshes[i].name="sanitizer"+i;
+                // if(task.loadedMeshes[i].id.includes("DialysisSolution_primitive")){
+                //     task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
+                // }
+                // else{
+                //   task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
+                // }
+                this.setPickable(task.loadedMeshes[i],.5);
+            }
+            node.scaling.set(.015,.015,.015);
+            // this.root.tmp = node;
+        }
+        if(task.name === "diaSol_complete"){
+            const node   = new BABYLON.TransformNode("diasolutionnode");
+            for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+                task.loadedMeshes[i].parent = node;
+                task.loadedMeshes[i].name="diasolution"+i;
+                if(task.loadedMeshes[i].id.includes("DialysisSolution_primitive")){
+                    task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
+                }
+                else{
+                  task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
+                }
+                this.setPickable(task.loadedMeshes[i],1);
+            }
+            node.scaling.set(-.005,.005,.005);
+            node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians());
+        }
         if(task.name === "bp_monitor"){
-          const bpnode       = new BABYLON.TransformNode("bpmachinenode");
+          const node       = new BABYLON.TransformNode("bpmachinenode");
           for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
               
-              task.loadedMeshes[i].parent = bpnode;
+              task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="bp_monitor"+i;
-              this.setPickable(task.loadedMeshes[i],2);
+              this.setPickable(task.loadedMeshes[i],1);
               task.loadedMeshes[i].scaling.set(-.8,.8,.8);
             }
             // bpnode.scaling.set(-.8,.8,.8);
@@ -217,12 +254,26 @@ export default class LoaderManager {
           const cabinetRight  = new BABYLON.TransformNode("cabinetrightDoor");
           for(let i=0;i<task.loadedMeshes.length;i++){ // cabinet
             // console.log(task.loadedMeshes[i].id);
-            if(task.loadedMeshes[i].id  === "Cabinet_Main_primitive1")
-              task.loadedMeshes[i].parent  = cabinetRight;
-            else if(task.loadedMeshes[i].id=== "Cabinet_Main_primitive2")
-                task.loadedMeshes[i].parent   = cebinetLeft;
+            if(task.loadedMeshes[i].id  ===  "Cabinet_Main_primitive1")
+                task.loadedMeshes[i].parent  = cabinetRight;
+            else if(task.loadedMeshes[i].id=== "Cabinet_Main_primitive2"){
+                task.loadedMeshes[i].parent = cebinetLeft;
+                const part1  =  task.loadedMeshes[i].clone("cabinetpart1");
+                part1.parent  = cabinet;
+                part1.position.set(80,-38,2.5);
+                part1.scaling.set(1,1,.65);
+                part1.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(90).radians());
+                
+                const part2  =  part1.clone("cabinetpart2");
+                part2.position.set(83,-38,42.5);
+                part2.scaling.set(1,1,1);
+                
+                const part3  =  part1.clone("cabinetpart3");
+                part3.position.set(83,-38,82.5);
+                part3.scaling.set(1,1,1);
+            }
             else
-                task.loadedMeshes[i].parent  = cabinet;
+                task.loadedMeshes[i].parent   = cabinet;
 
             this.setPickable(task.loadedMeshes[i],0);
             task.loadedMeshes[i].name="cabinet"+i;
@@ -246,8 +297,8 @@ export default class LoaderManager {
           cabinet.parent = this.root.cabinetRoot;
           cabinetRight.parent   = this.root.cabinetRoot;
           cebinetLeft.parent    = this.root.cabinetRoot;
-          cabinetRight.position = new BABYLON.Vector3(70,-50,0);
-          cebinetLeft.position  = new BABYLON.Vector3(-70,-50,0);
+          cabinetRight.position = new BABYLON.Vector3(68.5,-50,0);
+          cebinetLeft.position  = new BABYLON.Vector3(-68.5,-50,0);
           this.root.cabinetRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
           this.root.cabinetRoot.scaling.set(.01,.01,.01);
         }
@@ -536,7 +587,7 @@ export default class LoaderManager {
     backPlan.renderOutline=false;
 
 
-    const tableupperColllider = BABYLON.MeshBuilder.CreatePlane("tablecollider",{width:2.6,height:1.6,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.scene);
+    const tableupperColllider = BABYLON.MeshBuilder.CreatePlane("tablecollider",{width:2.6,height:1.6,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
     let tableMat = new BABYLON.StandardMaterial("frontplaneMat", this.scene);
     tableMat.diffuseColor = new BABYLON.Color3.FromInts(107,166,163);
     tableMat.emissiveColor = new BABYLON.Color3.FromInts(107,166,163);
@@ -546,6 +597,23 @@ export default class LoaderManager {
     tableupperColllider.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),0,0);
     tableupperColllider.position.set(-.3,1.92,2.5);
     tableupperColllider.visibility=0;
+
+    const trollyCollider = tableupperColllider.clone("trollycollider"); 
+    trollyCollider.renderOutline=false;
+    trollyCollider.isPickable=false;
+    
+    trollyCollider.position = new BABYLON.Vector3(-2.2,1.80,2.50);
+    trollyCollider.scaling.set(.3,.8,1)
+    trollyCollider.visibility=0;
+
+    const apdCollider = tableupperColllider.clone("apdcollider"); 
+    apdCollider.renderOutline=false;
+    apdCollider.isPickable=false;
+    
+  this.scene.getMeshByName("apdcollider").position = new BABYLON.Vector3(-3.4,2.1,2.5);
+  apdCollider.position = new BABYLON.Vector3(-3.4,2.1,2.5);
+  apdCollider.scaling.set(.3,.4,1)
+  apdCollider.visibility=0;
   
   // console.log("meshes", meshes)
    this.assetsManager.onProgress = (

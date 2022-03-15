@@ -28,6 +28,7 @@ export default class Cabinet{
         mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
             this.setLabel();
+            
         }))
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                 this.label.isVisible=false;
@@ -106,11 +107,12 @@ export default class Cabinet{
     }
     
     setLabel(){
+        console.log(this.root.gamestate.state)
         if(this.root.gamestate.state === GameState.default)
             this.label._children[0].text = "Cabinet";
         else
             this.label._children[0].text = this.isdoorOpen?"Close Cabinet":"Open Cabinet";
-        this.label.isVisible=true;
+            this.label.isVisible=this.root.gamestate.state !== GameState.radial && this.root.gamestate.state !== GameState.menu && this.root.gamestate.state !== GameState.levelstage;
     }
     initMeshOutline(){
         this.meshRoot.getChildTransformNodes().forEach(childnode=>{
