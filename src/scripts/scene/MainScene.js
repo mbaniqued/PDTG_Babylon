@@ -13,9 +13,10 @@ import Item from "../Components/item.js";
 import GUI2D from "../gui.js";
 import LightSwitch from "../Components/lightswtich.js";
 import CabinetItem from "../Components/cabinetitem.js"; 
+import FanSwitch from "../Components/fanswitch.js";
 import TWEEN from '@tweenjs/tween.js';
 
-export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6};
+export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
 export const ANIM_TIME=1000;
@@ -45,9 +46,9 @@ export default class MainScene {
     this.pickMesh=null,this.focusMesh=null;
     this.trollyObject=undefined,this.tableObject=undefined,this.cabinetObject=undefined,this.doorObject=undefined,this.windowObject=undefined;
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
-    this.ccpdRecordBook=undefined,this.lightswtichObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
+    this.ccpdRecordBook=undefined,this.lightswitchObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
     
-
+    this.fanAnim = null;
     this.tmp=null;
 
     this.dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 256, this.scene);
@@ -79,7 +80,8 @@ export default class MainScene {
     this.windowObject   = new WindowFrame(this,this.windowFrameRoot,{x:-7.9,y:3.45,z:2});
     this.acItem         = new ACRemote(this,this.acRemoteRoot,{x:-5.5,y:.9,z:.5});
 
-    this.lightswtichObject = new LightSwitch(this,this.lightswtich);
+    this.lightswitchObject = new LightSwitch(this,this.lightswtich);
+    this.fanswitchobject   = new FanSwitch(this,this.scene.getNodeByName("fanswitchnode"));
     
     this.bpMachineItem     = new Item("Blood Pressure Monitor",this,this.scene.getTransformNodeByID("bpmachinenode"),{x:-69,y:30,z:33},{x:-93,y:17,z:-8},undefined);
     this.createBpText();
@@ -108,10 +110,10 @@ export default class MainScene {
     const sanitizerclone3 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer3");
     this.sanitiserObject[2]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone3,{x:1.47,y:1.07,z:2.2});
     // 1.470000000000001 !!sy!!  1.4600000000000009!! sz !! 2.6999999999999864
-    
+    this.startFan();
     document.addEventListener('keydown', (event)=> {
       console.log(event.key);
-      const val=.1;
+      const val=.01;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -132,7 +134,8 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // -3.4000000000000017 !!sy!!  2.1000000000000005!! sz !! 2.500000000000001
+      //  this.scene.getNodeByName("fanswitchnode").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
+      //  this.scene.getNodeByName("fanswitchnode").position = new BABYLON.Vector3(SX,SY,SZ);
       // this.dissolutionObject[0].meshRoot.position = new BABYLON.Vector3(SX,SY,SZ);
       // this.dissolutionObject[0].meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
@@ -196,7 +199,7 @@ export default class MainScene {
     planmat.diffuseTexture = this.dynamicTexture;
     bpPlan.material  = planmat;
     bpPlan.scaling   = new BABYLON.Vector3(1.4,3.2,1);
-    bpPlan.position  = new BABYLON.Vector3(17.8,13,-9.9);
+    bpPlan.position  = new BABYLON.Vector3(17.8,13,-8);
     bpPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-30).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
     this.setbpRecord(0,0,0)
   }
@@ -209,9 +212,9 @@ export default class MainScene {
     const font_type = "Orbitron";
     const font = font_size + "px " + font_type;
     ctx.clearRect(0, 0, 256, 256)
-    this.dynamicTexture.drawText(v1+"",90, 70, font, "#808794", "transparent", true);
-    this.dynamicTexture.drawText(v2+"",90, 150, font, "#808794", "transparent", true);
-    this.dynamicTexture.drawText(v3+"",90, 230, font, "#808794", "transparent", true);
+    this.dynamicTexture.drawText(parseInt(v1)+"",90, 70, font, "#808794", "transparent", true);
+    this.dynamicTexture.drawText(parseInt(v2)+"",90, 150, font, "#808794", "transparent", true);
+    this.dynamicTexture.drawText(parseInt(v3)+"",90, 230, font, "#808794", "transparent", true);
     // this.dynamicTexture.update();
   }
   onpickMesh(pickedMesh){
@@ -297,16 +300,28 @@ export default class MainScene {
     if(this.pickMesh.parent.name.includes("diasolutionnode")){
       // console.log(this.pickMesh.parent.name);
       this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
-            childmesh.outlineWidth=1;
+            childmesh.outlineWidth=2;
             childmesh.renderOutline=value;
       });
     }
+    if(this.pickMesh.parent.name.includes("fanswitchnode")){
+      // console.log(this.pickMesh.parent.name);
+      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
+            if(childmesh.id ==="OnSwitch2")
+              childmesh.renderOutline=value;
+            else  
+              childmesh.renderOutline=false;
+            childmesh.outlineWidth=.5;
+      });
+    }
+    
     
     
   }
   setCameraTarget(){
     this.showResetViewButton(false);
     this.gamestate.state = GameState.default;
+    this.camera.fov=.6;
     this.sceneCommon.camVector  = new BABYLON.Vector3(0,3.2,0);
     this.camera.position.set(0,this.sceneCommon.camVector.y,0);
     this.camera.lowerAlphaLimit =  null;
@@ -346,4 +361,20 @@ export default class MainScene {
   showResetViewButton(isVisible){
     this.gui2D.resetCamBtn.isVisible = isVisible;
   }
+  
+  startFan(){
+      const fanNode =  this.scene.getNodeByName("fannode");
+      if(this.fanAnim == null){
+        this.fanAnim = new TWEEN.Tween(fanNode.rotation).to({y:BABYLON.Angle.FromDegrees(359).radians()},500).repeat(Infinity).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+        }).start();
+      }
+      else{
+        this.fanAnim.resume();        
+      }
+
+  }
+  stopFan(){
+    this.fanAnim.pause();    
+  }
+
 }

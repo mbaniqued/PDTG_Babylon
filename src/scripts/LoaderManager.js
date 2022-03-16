@@ -35,13 +35,56 @@ export default class LoaderManager {
       this.assetsManager.addMeshTask("ccpdrecordbook","","models/Items/","ccpdrecordbook.glb");
       this.assetsManager.addMeshTask("diaSol_complete","","models/Items/","diaSol_complete.glb");
       this.assetsManager.addMeshTask("HandSanitizer","","models/Items/","HandSanitizer.glb");
+      this.assetsManager.addMeshTask("ceiling_fan","","models/","ceiling_fan.glb");
+      
+      this.assetsManager.addMeshTask("fanswitch","","models/","fanswitch.glb");
       
       this.assetsManager.onTaskSuccessObservable.add((task)=> {
-      
         
+        if(task.name === "fanswitch"){
+          const node   = new BABYLON.TransformNode("fanswitchnode");
+            for(let i=0;i<task.loadedMeshes.length;i++){ //fanswitch
+              task.loadedMeshes[i].parent = node;
+
+              console.log(task.loadedMeshes[i].id);
+              if(task.loadedMeshes[i].id === "OnSwitch2"){
+                  const mat           = standerdMat.clone("fanswitch");
+                  mat.diffuseColor    = new BABYLON.Color3.FromInts(192,192,192);
+                  mat.emissiveColor   = new BABYLON.Color3.FromInts(50,50,50);
+                  mat.metallic  = 0;  
+                  mat.roughness = .2;  
+                  task.loadedMeshes[i].material = mat;
+                  this.setPickable(task.loadedMeshes[i],1);
+              }else{
+                  const mat           = physicMat.clone("fanswitch_2");
+                  mat.albedoColor     = new BABYLON.Color3.FromInts(10,10,10);
+                  mat.metallic  = 1;  
+                  mat.roughness = .2;  
+                  task.loadedMeshes[i].material = mat;
+                  task.loadedMeshes[i].isPickable=false;
+                  task.loadedMeshes[i].renderOutline=false;
+              }
+              task.loadedMeshes[i].name="fanswitch"+i;
+            }
+          // node.scaling.set(.01,.01,.01);
+          node.rotation.set(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          node.position.set(3.039,3.209,-0.6);
+        }
+
+        if(task.name === "ceiling_fan"){
+            const node   = new BABYLON.TransformNode("fannode");
+            for(let i=0;i<task.loadedMeshes.length;i++){ //fannode
+              task.loadedMeshes[i].parent = node;
+              task.loadedMeshes[i].name="ceilingfan"+i;
+              task.loadedMeshes[i].isPickable=false;
+            }
+          node.scaling.set(.01,.01,.01);
+          node.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          node.position.set(-5.9,5.90,0);
+        }
         if(task.name === "HandSanitizer"){
           const node   = new BABYLON.TransformNode("handsanitizernode");
-            for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+            for(let i=0;i<task.loadedMeshes.length;i++){ //handsanitizernode
                 task.loadedMeshes[i].parent = node;
                 task.loadedMeshes[i].name="sanitizer"+i;
                 // if(task.loadedMeshes[i].id.includes("DialysisSolution_primitive")){
@@ -57,7 +100,7 @@ export default class LoaderManager {
         }
         if(task.name === "diaSol_complete"){
             const node   = new BABYLON.TransformNode("diasolutionnode");
-            for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+            for(let i=0;i<task.loadedMeshes.length;i++){ //diasolutionnode
                 task.loadedMeshes[i].parent = node;
                 task.loadedMeshes[i].name="diasolution"+i;
                 if(task.loadedMeshes[i].id.includes("DialysisSolution_primitive")){
@@ -73,7 +116,7 @@ export default class LoaderManager {
         }
         if(task.name === "bp_monitor"){
           const node       = new BABYLON.TransformNode("bpmachinenode");
-          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+          for(let i=0;i<task.loadedMeshes.length;i++){ //bpmachinenode
               
               task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="bp_monitor"+i;
@@ -84,7 +127,7 @@ export default class LoaderManager {
         }
         if(task.name === "Alcohol_Wipe"){
           const node       = new BABYLON.TransformNode("Alcohol_Wipe");
-          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+          for(let i=0;i<task.loadedMeshes.length;i++){ //Alcohol_Wipe
               task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="Alcohol_Wipe"+i;
               this.setPickable(task.loadedMeshes[i],1);
@@ -94,7 +137,7 @@ export default class LoaderManager {
         }
         if(task.name === "ConnectionShield"){
           const node       = new BABYLON.TransformNode("ConnectionShield");
-          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+          for(let i=0;i<task.loadedMeshes.length;i++){ //ConnectionShield
               
               task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="ConnectionShield"+i;
@@ -105,7 +148,7 @@ export default class LoaderManager {
         }
         if(task.name === "DrainBag"){
           const node       = new BABYLON.TransformNode("DrainBag");
-          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+          for(let i=0;i<task.loadedMeshes.length;i++){ //DrainBag
               // console.log(task.loadedMeshes[i].name);
               task.loadedMeshes[i].parent = node;
               this.setPickable(task.loadedMeshes[i],1);
@@ -120,7 +163,7 @@ export default class LoaderManager {
         }
         if(task.name === "ccpdrecordbook"){
           const node       = new BABYLON.TransformNode("ccpdrecordbook");
-          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+          for(let i=0;i<task.loadedMeshes.length;i++){ //ccpdrecordbook
               
               
               task.loadedMeshes[i].parent = node;
@@ -144,7 +187,7 @@ export default class LoaderManager {
         }
         if(task.name === "SurgicalMask"){
           const node       = new BABYLON.TransformNode("SurgicalMask");
-          for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
+          for(let i=0;i<task.loadedMeshes.length;i++){ //SurgicalMask
               
               task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="SurgicalMask"+i;
@@ -546,7 +589,7 @@ export default class LoaderManager {
                 }
                 else if(task.loadedMeshes[i].name ===  "OnSwitch2"){
                   const mat           = standerdMat.clone("bathdoorMat");
-                  mat.albedoColor     = new BABYLON.Color3.FromInts(192,192,192);
+                  mat.diffuseColor    = new BABYLON.Color3.FromInts(192,192,192);
                   mat.emissiveColor   = new BABYLON.Color3.FromInts(50,50,50);
                   mat.metallic  = 0;  
                   mat.roughness = .2;  

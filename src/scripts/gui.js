@@ -23,6 +23,7 @@ export default class GUI2D{
         this.initMainMenu();
         this.initStageMenu();
         this.initRadialMenu();
+        this.initLoadingPage();
       }
       initMainMenu(){
         
@@ -195,9 +196,19 @@ export default class GUI2D{
           this.playBtn._onPointerUp=()=>{
             this.drawStageMenu(false);
             hidephasebtn();
-            this.root.gamestate.state = GameState.default;
+            
             this.stage1btn.isVisible       =  false;
             this.advancedTexture.renderAtIdealSize = false;
+            this.root.gamestate.state = GameState.loading;
+            this.drawLoadingPage(true);
+            this.root.sceneCommon.setView();
+              let tout = setTimeout(() => {
+                  clearTimeout(tout);
+                  this.drawLoadingPage(false);
+                  this.root.gamestate.state = GameState.default;
+                  this.root.setCameraTarget();
+                  new TWEEN.Tween(this.root.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+              }, 2000);
 
           }
           this.backBtn.topInPixels =400;
@@ -292,6 +303,18 @@ export default class GUI2D{
           }).start();
         }
 
+      }
+      initLoadingPage(){
+        this.loaginBg =  this.createRect("loadingBg",1920,1080,0,"#7EC5DDB3",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        const title   =  this.createText("title","Preparing the room...",60,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false); 
+        this.setTextOutLine(title,"#000000",2);
+        title.leftInPixels = -550;
+        title.topInPixels  =  300;
+        this.loaginBg.addControl(title);
+        this.loaginBg.isVisible=false;
+      }
+      drawLoadingPage(isDraw){
+        this.loaginBg.isVisible=isDraw;
       }
       initRadialMenu(){
         

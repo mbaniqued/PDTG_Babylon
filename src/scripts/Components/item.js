@@ -83,7 +83,7 @@ export default class Item{
                                             new TWEEN.Tween(startvalue).to({x:endvalue.x,y:endvalue.y,z:endvalue.z},2000).easing(TWEEN.Easing.Linear.None).onUpdate(()=>{
                                                 this.root.setbpRecord(startvalue.x,startvalue.y,startvalue.z);
                                             }).onComplete(() => {}).start();
-                                    }, 1500);
+                                    }, 1000);
                                  }    
                             };
                             this.root.gui2D.crossBtn._onPointerUp = ()=>{

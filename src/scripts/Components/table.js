@@ -18,7 +18,7 @@ export default class Table{
             if(childmesh)
                 this.addAction(childmesh);
         });
-        this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-50);
+        this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-20);
         this.label._children[0].text = "Drawer";
         this.label.isVisible=false;
     }

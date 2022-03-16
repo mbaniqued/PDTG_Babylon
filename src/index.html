@@ -8,27 +8,33 @@
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Shrikhand&display=swap" rel="stylesheet">
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
-      
-      
   </head>
   <body>
     <style>
-         body {
-          font-family: "s_hand";
-          font-family: "Shrikhand";
-         }
-         body {
-          font-family: "s_hand";
-          font-family: "Orbitron";
-          font-weight: 400;
-         }
+         @font-face {
+            font-family: 'Shrikhand';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url("https://fonts.gstatic.com/s/shrikhand/v9/a8IbNovtLWfR7T7bMJwrGIKR4zg.woff2") format('woff2');
+            unicode-range: U+0964-0965, U+0A80-0AFF, U+200C-200D, U+20B9, U+25CC, U+A830-A839;
+        }
+        @font-face {
+            font-family: 'Orbitron';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url("https://fonts.gstatic.com/s/orbitron/v23/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyGy6BoWgz.woff2") format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+          }
+          body{
+              font-family: "Shrikhand";
+          }
   </style>
      <!-- <div id="fps">0</div>  -->
       <div>
-       <!-- <button id="start_game"  class="btn btn-primary">Start Game </button> -->
+       <!-- <button id="start_game"  class="btn btn-primary">Start Game </button> --> 
     </div>
       <h4 id="debugtext" style="position: absolute; background-color: antiquewhite;"></h4>
     <div  id="loader_spiner" class="loader"></div>

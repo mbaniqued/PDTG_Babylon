@@ -26,8 +26,7 @@ export default class Common{
         this.camera = new BABYLON.ArcRotateCamera("cameraera",0,0,10,this.camVector,scene);
         this.camRoot = new BABYLON.TransformNode("camroot");
       //   this.camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(0,3,-1),scene);
-        this.camera.fov   = .6;
-        
+        this.camera.fov   = 1;
         this.camera.inputs.clear();
       // this.camera.useAutoRotationBehavior = true;
         this.camera.inputs.addPointers();
@@ -45,23 +44,24 @@ export default class Common{
       }
       setLight() {
         this.hemiLight = new BABYLON.HemisphericLight("HemiLight",new BABYLON.Vector3(0,10,0),this.scene);
-        this.hemiLight.intensity = .1;
-        this.hemiLight.diffuse = new BABYLON.Color3(1, 1, 1);
-        this.hemiLight.specular = new BABYLON.Color3(0, 0, 0);
-        this.hemiLight.groundColor = new BABYLON.Color3(1,1,1);
+        this.hemiLight.intensity    = .1;
+        this.hemiLight.diffuse      = new BABYLON.Color3(1, 1, 1);
+        this.hemiLight.specular     = new BABYLON.Color3(0, 0, 0);
+        this.hemiLight.groundColor  = new BABYLON.Color3(1,1,1);
 
 
-        this.directionalLight          = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0,-5,0), this.scene);
-        this.directionalLight.intensity =.1;
-        this.directionalLight.diffuse  = new BABYLON.Color3(1, 1, 1);
-        this.directionalLight.specular = new BABYLON.Color3(0, 0, 0);
+        this.directionalLight             = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0,-5,0), this.scene);
+        this.directionalLight.intensity   =.1;
+        this.directionalLight.diffuse     = new BABYLON.Color3(1, 1, 1);
+        this.directionalLight.specular    = new BABYLON.Color3(0, 0, 0);
 
       }
       setView(){
+            this.camera.setTarget(new BABYLON.Vector3(-3,3,0));
             this.camera.lowerRadiusLimit = 1;
             this.camera.upperRadiusLimit = 100;
             this.camera.radius          = 3;
-            this.camera.alpha           = BABYLON.Angle.FromDegrees(-90).radians();
+            this.camera.alpha           = BABYLON.Angle.FromDegrees(220).radians();
             this.camera.beta            = BABYLON.Angle.FromDegrees(90).radians();
             this.camera.lowerBetaLimit  = BABYLON.Angle.FromDegrees(0).radians();
             this.camera.upperBetaLimit  = BABYLON.Angle.FromDegrees(180).radians();
