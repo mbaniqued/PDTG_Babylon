@@ -1,5 +1,5 @@
 
-import { GameState } from "../scene/MainScene";
+import { GameState,ANIM_TIME } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class WindowFrame{
         constructor(root,meshobject,pos){
@@ -32,11 +32,9 @@ export default class WindowFrame{
             this.initMeshOutline();
 
 
-            this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,-150,0);
+            this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,0,0);
             this.label._children[0].text = "Window";
             this.label.isVisible=false;
-
-
             // const windowplan = BABYLON.MeshBuilder.CreatePlane("glassplane",{width:500,height:270,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.root.scene);
 
             // this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -50,27 +48,30 @@ export default class WindowFrame{
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                        console.log(this.root.gamestate.state+" "+mesh.name+"   "+this.state);
-                        if(this.state>0 && this.root.gamestate.state === GameState.default)
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=>{
+                        console.log(this.root.gamestate.state+"   "+mesh.name+"   "+this.state);
+                        if(this.state>0 && this.root.gamestate.state === GameState.default){
                             this.state =0;
+                        }
+                        this.setLabel();
                         switch(this.state){
                             case 0:
                                 this.root.gamestate.state = GameState.default;
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(359.9).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                                new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(0).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                                     this.state=1;
                                     this.root.gamestate.state = GameState.focus;
                                 }).start();
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y-.5,1));
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y+.1,1));
                                 break;
                             case 1:
                                     this.root.gamestate.state = GameState.active;
                                     this.windowClose =!this.windowClose;
-                                    new TWEEN.Tween(this.meshRoot.position).to({z:this.meshRoot.position.z>0?0:2},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                                    new TWEEN.Tween(this.meshRoot.position).to({z:this.meshRoot.position.z>0?0:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                                 break;
                         }
-                        this.setLabel();
+                        
                     }
                 )
             )
@@ -89,19 +90,21 @@ export default class WindowFrame{
         }
         initMeshOutline(){
             this.meshRoot.getChildTransformNodes().forEach(childnode=>{
-                    if(childnode.name.includes("windownode")){
-                        childnode.getChildMeshes().forEach(childmesh=>{
-                            this.root.loaderManager.setPickable(childmesh,.0001); 
-                        });
-                    }
+                if(childnode.name.includes("windownode")){
+                    childnode.getChildMeshes().forEach(childmesh=>{
+                        this.root.loaderManager.setPickable(childmesh,.0001); 
+                    });
+                }
             });
         }
         setLabel(){
-            if(this.state ===0)
-            this.label._children[0].text = "Window";
-            else if(this.state===1){
+             if(this.root.gamestate.state === GameState.default){
+                this.label._children[0].text = "Window";
+             }
+             else{
                 this.label._children[0].text = this.windowClose?"Open Window":"Close Window"; 
-            }
+             }   
             this.label.isVisible=true;
+            this.label.isPointerBlocker=true;
         }
 }

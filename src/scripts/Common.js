@@ -28,9 +28,9 @@ export default class Common{
       //   this.camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(0,3,-1),scene);
         this.camera.fov   = 1;
         this.camera.inputs.clear();
-      // this.camera.useAutoRotationBehavior = true;
-        this.camera.inputs.addPointers();
-        this.camera.inputs.addMouseWheel();
+      
+      this.camera.inputs.addPointers();
+      this.camera.inputs.addMouseWheel();
         this.camera.position.set(0,this.camVector.y,0);
         this.camera.setTarget(this.camVector);
         this.camera.attachControl(this.game.canvas, true);  
@@ -67,20 +67,19 @@ export default class Common{
             this.camera.upperBetaLimit  = BABYLON.Angle.FromDegrees(180).radians();
       }
       updateCam(){
-            if(this.root.gui2D.resetCamBtn.isVisible || this.root.gui2D.radialCircle.isVisible)
+            if(this.root.gui2D.resetCamBtn.isVisible )//this.root.gui2D.radialCircle.isVisible
                  return; 
             if(this.scene.pointerX>0 && this.scene.pointerX<=this.camDirection.margin){
                   this.camera.alpha += BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
-                  if(this.camera.alpha>=BABYLON.Angle.FromDegrees(360).radians())
+                  if(this.camera.alpha>=BABYLON.Angle.FromDegrees(359).radians())
                         this.camera.alpha = BABYLON.Angle.FromDegrees(0).radians();
             }
             else if( this.scene.pointerX>window.innerWidth-this.camDirection.margin &&  this.scene.pointerX<window.innerWidth){
                   this.camera.alpha -= BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
                   if(this.camera.alpha<=0)
-                        this.camera.alpha = BABYLON.Angle.FromDegrees(360).radians();
+                        this.camera.alpha = BABYLON.Angle.FromDegrees(359).radians();
             }
             else if(this.scene.pointerY>0 && this.scene.pointerY<=this.camDirection.margin){
-                  console.log(this.camera.beta);
                   if(this.camera.beta<1.7)
                         this.camera.beta += BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
             }

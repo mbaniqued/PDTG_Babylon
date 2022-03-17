@@ -28,6 +28,7 @@ export default class Item{
             this.meshRoot.addBehavior(this.pointerDragBehavior);
             this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
             this.label.isVisible=false;
+            this.label.isPointerBlocker=true;
             this.useItem=false;
         }
         setPos(){

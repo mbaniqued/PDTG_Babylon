@@ -22,14 +22,16 @@ export default class CabinetItem{
         this.meshRoot.getChildMeshes().forEach(childmesh => {
           this.addAction(childmesh);
           });
-        this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
-        this.label.isVisible=false;
+        
         this.pickObject = false;
         this.initDrag();
         this.meshRoot.addBehavior(this.pointerDragBehavior);
         this.meshRoot.name+="items";
         this.state =0;
         this.isPlaced=false;
+        this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
+        this.label.isVisible=false;
+        this.label.isPointerBlocker=true;
       }
       setPos(){
         this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
@@ -51,7 +53,7 @@ export default class CabinetItem{
         )
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                     console.log(this.root.gamestate.state+"!! OnPickTrigger!!! ")
-                    if(this.root.gui2D.userExitBtn.isVisible)
+                  if(this.root.gui2D.userExitBtn.isVisible)
                         return
                     this.label.isVisible=false;
                     showMenu =!showMenu;

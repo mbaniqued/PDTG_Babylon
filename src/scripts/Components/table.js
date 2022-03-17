@@ -21,6 +21,7 @@ export default class Table{
         this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-20);
         this.label._children[0].text = "Drawer";
         this.label.isVisible=false;
+        this.label.isPointerBlocker=true;
     }
     setPos(){
         this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
@@ -75,13 +76,13 @@ export default class Table{
          )
     }
     setTableFocusAnim(){
-        new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+        new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
             this.root.gamestate.state  =  GameState.focus;
             this.state=1;
             this.setDrawerBorder(1);
         }).start();
-        new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(50).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-        new TWEEN.Tween(this.root.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+        new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(50).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+        new TWEEN.Tween(this.root.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
     }
     setDrawerAnim(){
         this.meshRoot.getChildTransformNodes().forEach(childnode=>{
@@ -94,7 +95,7 @@ export default class Table{
                         this.isdrawerOpen =!this.isdrawerOpen;
                     let val = this.isdrawerOpen?-120:120; 
                     this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z+(this.isdrawerOpen?-2:0)));
-                    new TWEEN.Tween(drawerNode.position).to({y:drawerNode.position.y+val},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onUpdate(()=>{
+                    new TWEEN.Tween(drawerNode.position).to({y:drawerNode.position.y+val},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onUpdate(()=>{
                         this.drawerAnim = true;
                     }).onComplete(() => {
                         this.drawerAnim = false;   

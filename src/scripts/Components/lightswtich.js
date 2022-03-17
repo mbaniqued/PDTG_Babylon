@@ -26,28 +26,29 @@ export default class LightSwitch{
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                     if(this.state>0 && this.root.gamestate.state === GameState.default)
-                        this.state =0;
+                        this.state=0;
                     this.setLabel();
                     this.root.scene.onPointerUp=()=>{
                         this.label.isVisible=false;
                     }
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                        if(this.state>0 && this.root.gamestate.state === GameState.default)
-                            this.state =0;
+                       if(this.state>0 && this.root.gamestate.state === GameState.default)
+                           this.state =0;
                         this.setLabel();
                         if(this.root.gamestate.state === GameState.default){
                             this.root.gamestate.state  =  GameState.active;
                             this.state=1;
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(185).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                            this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+2,this.meshRoot.position.y+3.5,this.meshRoot.position.z-.5));
+                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(185).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            // this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+2,this.meshRoot.position.y+3.5,this.meshRoot.position.z-.5));
+                            let node = this.root.scene.getNodeByName("fanswitchnode");
+                            this.root.setFocusOnObject(new BABYLON.Vector3(node.position.x,node.position.y,node.position.z+.5));
                         }
                         else if(this.state>0){
                             this.isLightOff =!this.isLightOff;
                             this.setLight();
-
                         }
                         this.setLabel();
                         console.log("innnnnnnnnnnnn OnPickTrigger")
@@ -62,6 +63,7 @@ export default class LightSwitch{
                 this.label._children[0].text = this.isLightOff?"Turn Off Lights":"Turn On Lights"; 
             }
             this.label.isVisible=true;
+            this.label.isPointerBlocker=true;
         }
         setLight(){
             this.root.sceneCommon.hemiLight.intensity        =  this.isLightOff?.5:.1;

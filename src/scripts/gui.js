@@ -20,10 +20,11 @@ export default class GUI2D{
         userImg.isVisible  = true;
         this.userExitBtn.addControl(userImg);
         this.userExitBtn.isVisible=false;
-        this.initMainMenu();
-        this.initStageMenu();
-        this.initRadialMenu();
-        this.initLoadingPage();
+        // this.initMainMenu();
+        // this.initStageMenu();
+        // this.initRadialMenu();
+        // this.initLoadingPage();
+        // this.root.gamestate.state = GameState.default;
       }
       initMainMenu(){
         
@@ -47,11 +48,11 @@ export default class GUI2D{
         const gameModeText =  this.createText("gamemodetxt","Game Mode",40,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false) 
         this.setTextOutLine(gameModeText,"#000000",2);
 
-        this.proceedBtn        = this.createButon("assesment","ui/proceed.png","#ffffff00","",24,"#808080",193,78,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.trainingModeBtn   = this.createButon("training","ui/button2.png","#ffffff00","Training",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.assesmentModeBtn  = this.createButon("assesment","ui/button2.png","#ffffff00","Assessment",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.practiceModeBtn   = this.createButon("practice","ui/button2.png","#ffffff00","Practice",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.gameModeBtn       = this.createButon("gameModeBtn","ui/button.png","#ffffff00","Practice",24,"#FFFFFF",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.proceedBtn        = this.createButon("proceedbtn","ui/proceed.png","#ffffff00","",24,"#808080",193,78,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.trainingModeBtn   = this.createButon("trainingbtn","ui/button2.png","#ffffff00","Training",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.practiceModeBtn   = this.createButon("practicebtn","ui/button2.png","#ffffff00","Practice",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.assesmentModeBtn  = this.createButon("assesmentbtn","ui/button2.png","#ffffff00","Assessment",24,"#808080",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.gameModeBtn       = this.createButon("gameModeBtn","ui/button.png","#ffffff00","Training",24,"#FFFFFF",218,53,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         
 
         
@@ -141,8 +142,8 @@ export default class GUI2D{
                 this.practiceModeBtn.isVisible    =  true;
                 this.trainingModeBtn.isVisible    =  true;
                 this.assesmentModeBtn.isVisible   =  true;
-                new TWEEN.Tween(this.practiceModeBtn).to({topInPixels:y2+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                new TWEEN.Tween(this.trainingModeBtn).to({topInPixels:y2+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                new TWEEN.Tween(this.trainingModeBtn).to({topInPixels:y2+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                new TWEEN.Tween(this.practiceModeBtn).to({topInPixels:y2+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
                 new TWEEN.Tween(this.assesmentModeBtn).to({topInPixels:y2+dy*3},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             }
             else{
@@ -467,7 +468,7 @@ export default class GUI2D{
         label.fontSize =20+"px";
         label.color = "#A5A5A5";
         label.isPointerBlocker=true;
-        
+        rect.isVisible=false;
         rect.addControl(label);
         return rect;
       }

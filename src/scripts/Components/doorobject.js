@@ -43,8 +43,8 @@ export default class DoorObject{
                         switch(this.state){
                             case 0:
                                 this.root.gamestate.state  =  GameState.default;
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(190).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({radius:6},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(190).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({radius:6},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                                     this.root.gamestate.state  =  GameState.focus;
                                     this.state =1;
                                 }).start();
@@ -63,17 +63,17 @@ export default class DoorObject{
             let val=325;
             if(this.meshRoot.rotation.y<= BABYLON.Angle.FromDegrees(325).radians())
             val=360;
-            new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                 this.closedoor = !this.closedoor;
             }).start();
         }
         setLabel(){
-            if(this.state ===0)
+            if(this.root.gamestate.state === GameState.default)
                 this.label._children[0].text = "Door";
-            else{
+            else
                 this.label._children[0].text = this.closedoor?"Open Door":"Close Door"; 
-            }
+
             this.label.isVisible=true;
+            this.label.isPointerBlocker=true;
         }
-        
 }

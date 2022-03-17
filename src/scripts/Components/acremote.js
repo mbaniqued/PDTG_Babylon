@@ -1,5 +1,5 @@
 
-import { GameState } from "../scene/MainScene";
+import { GameState,ANIM_TIME } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class ACRemote{
         constructor(root,meshobject,pos,_parent){
@@ -16,7 +16,7 @@ export default class ACRemote{
             });
             this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-50);
             this.label._children[0].text = "AC Remote";
-            this.label.isVisible=false;
+            
         }
         setPos(){
             this.meshRoot.position  = new BABYLON.Vector3(this.position.x,this.position.y,this.position.z);
@@ -43,39 +43,30 @@ export default class ACRemote{
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                         if(this.state>0 && this.root.gamestate.state === GameState.default)
                             this.state =0;
-                        
+                        this.setLabel();
                         if(this.state == 0 && this.root.gamestate.state === GameState.default){
                                 this.root.gamestate.state = GameState.focus;
                                 this.state= 1;
                                 this.label._children[0].text = "Power Off AC";
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(330).radians()},900).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();   
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},900).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({radius:1.5},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.25,this.meshRoot.position.y,this.meshRoot.position.z));
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(359).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();   
+                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(40).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.1,this.meshRoot.position.y,this.meshRoot.position.z));
                         }    
                         else if(this.state>0) {
-                                this.setLabel();
                                 this.isAcOff = !this.isAcOff;
+                                this.root.setAc(!this.isAcOff);
                             }
                         }
                     )
                 )
-                // this.root.gui2D.resetCamBtn._onPointerUp = ()=>{
-                //     this.reset(1);
-                // }
-            
-        }
-        reset(type){
-            this.state =0;
-            this.root.gamestate.state =  GameState.default;
-            if(type>0)
-            this.root.setCameraTarget();
         }
         setLabel(){
-            if(this.state===0)
+            if(this.root.gamestate.state ===  GameState.default)
                 this.label._children[0].text = "AC Remote";
             else
                 this.label._children[0].text = this.isAcOff?"Power On AC":"Power Off AC";
             this.label.isVisible=true;
+            this.label.isPointerBlocker=true;
         }
 }

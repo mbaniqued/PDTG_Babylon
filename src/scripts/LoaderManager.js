@@ -222,7 +222,7 @@ export default class LoaderManager {
             const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
             task.loadedMeshes[i].position = new BABYLON.Vector3(centerPoint.x,centerPoint.y,centerPoint.z);
           }
-          this.root.acRemoteRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(135).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          this.root.acRemoteRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(105).radians(),BABYLON.Angle.FromDegrees(0).radians());
           this.root.acRemoteRoot.position.set(0,0,0);
           this.root.acRemoteRoot.scaling.set(.01,.01,.01);
         }
@@ -355,9 +355,13 @@ export default class LoaderManager {
               task.loadedMeshes[i].position =  centerPoint;
               task.loadedMeshes[i].parent = tmproot;
               task.loadedMeshes[i].name="gasstove";
+              task.isPickable=false;
+              task.loadedMeshes[i].renderOutline=false;
+              task.loadedMeshes[i].outlineWidth=0;
             }
             tmproot.rotation.x+=BABYLON.Angle.FromDegrees(90).radians();
-            tmproot.position.set(-.17,0,-3.2)
+            tmproot.position.set(-.17,0,-3.2);
+            tmproot.isPickable=false;
         }
         if(task.name === "room_reference"){
 
