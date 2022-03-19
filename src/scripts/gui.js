@@ -8,11 +8,13 @@ export default class GUI2D{
      constructor(root){
         this.root = root;
         this.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        this.advancedTexture.layer.layerMask=1;
         this.initUi();
      }
      initUi(){
         this.advancedTexture.idealWidth = 1920;
         this.advancedTexture.idealHeight = 1080;
+        // this.advancedTexture.useSmallestIdeal = true
         this.advancedTexture.renderAtIdealSize = true;
         this.resetCamBtn   =  this.createButon("resetcambtn","ui/move.png","#ffffffff","",0,0,72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
         this.userExitBtn   =  this.createCircle("userexitbtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
@@ -20,11 +22,10 @@ export default class GUI2D{
         userImg.isVisible  = true;
         this.userExitBtn.addControl(userImg);
         this.userExitBtn.isVisible=false;
-        // this.initMainMenu();
-        // this.initStageMenu();
-        // this.initRadialMenu();
-        // this.initLoadingPage();
-        // this.root.gamestate.state = GameState.default;
+        this.initMainMenu();
+        this.initStageMenu();
+        this.initRadialMenu();
+        this.initLoadingPage();
       }
       initMainMenu(){
         
@@ -209,7 +210,7 @@ export default class GUI2D{
                   this.root.gamestate.state = GameState.default;
                   this.root.setCameraTarget();
                   new TWEEN.Tween(this.root.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-              }, 2000);
+              }, 10);
 
           }
           this.backBtn.topInPixels =400;

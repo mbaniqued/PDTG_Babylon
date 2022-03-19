@@ -37,6 +37,9 @@ export default class FanSwitch{
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                         if(this.state>0 && this.root.gamestate.state === GameState.default)
                             this.state =0;
+                        if(this.root.camera.radius<3)
+                            this.state =1;
+                        this.root.sceneCommon.setminiCamTarget(0);
                         this.setLabel();
                         if(this.root.gamestate.state === GameState.default){
                             this.root.gamestate.state  =  GameState.active;

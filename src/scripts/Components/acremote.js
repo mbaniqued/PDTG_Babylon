@@ -26,8 +26,7 @@ export default class ACRemote{
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                         if(this.state>0 && this.root.gamestate.state === GameState.default)
                             this.state =0;
-
-                        this.setLabel();
+                           this.setLabel();
                     }))
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                             this.label.isVisible=false;
@@ -41,6 +40,8 @@ export default class ACRemote{
                             }
                     }))
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+
+                        this.root.sceneCommon.setminiCamTarget(1);
                         if(this.state>0 && this.root.gamestate.state === GameState.default)
                             this.state =0;
                         this.setLabel();

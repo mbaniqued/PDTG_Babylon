@@ -21,9 +21,7 @@ export default class Item{
             this.collide=false;
             this.pickObject=false;
             this.setPos();
-            this.meshRoot.getChildMeshes().forEach(childmesh => {
-                this.addAction(childmesh);
-            });
+            this.initAction();
             this.initDrag();
             this.meshRoot.addBehavior(this.pointerDragBehavior);
             this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
@@ -37,6 +35,17 @@ export default class Item{
                 this.meshRoot.name+="items";
             }
             this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
+        }
+        removeAction(){
+                this.meshRoot.getChildMeshes().forEach(childmesh => {
+                    childmesh.actionManager = null;
+            });
+        }
+        initAction(){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                if(!childmesh.actionManager)
+                    this.addAction(childmesh);
+            });
         }
         addAction(mesh){
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
@@ -155,18 +164,24 @@ export default class Item{
                 scalAnim  = 1.7;
                 newPos.z -= 50;
            }
-           if(this.meshRoot.name.includes("DrainBag")){
+           else if(this.meshRoot.name.includes("DrainBag")){
                 scalAnim = 2;
                 newPos.z-= 0;
                 upAng=-BABYLON.Angle.FromDegrees(60).radians();
             }
-            if(this.meshRoot.name.includes("ccpdrecordbook")){
+            else if(this.meshRoot.name.includes("ccpdrecordbook")){
                 scalAnim = 4.5;
             }
-            if(this.meshRoot.name.includes("SurgicalMask")){
+            else if(this.meshRoot.name.includes("SurgicalMask")){
                 upAng =0;
                 console.log("in mask")
             }
+            else if(this.meshRoot.name.includes("apd_package_node")){
+                upAng = BABYLON.Angle.FromDegrees(70).radians();
+                scalAnim  = 2;
+                console.log("in mask")
+            }
+            
         if(this.isPlaced){
             newPos.z-=20;
             newPos.y-=140;

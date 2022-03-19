@@ -33,9 +33,12 @@ export default class LightSwitch{
                     }
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                       if(this.state>0 && this.root.gamestate.state === GameState.default)
+                        if(this.state>0 && this.root.gamestate.state === GameState.default)
                            this.state =0;
+                        if(this.root.camera.radius<3)
+                            this.state =1;
                         this.setLabel();
+                        this.root.sceneCommon.setminiCamTarget(0);
                         if(this.root.gamestate.state === GameState.default){
                             this.root.gamestate.state  =  GameState.active;
                             this.state=1;

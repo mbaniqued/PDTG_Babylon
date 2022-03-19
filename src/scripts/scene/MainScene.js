@@ -15,7 +15,7 @@ import LightSwitch from "../Components/lightswtich.js";
 import CabinetItem from "../Components/cabinetitem.js"; 
 import FanSwitch from "../Components/fanswitch.js";
 import TWEEN from '@tweenjs/tween.js';
-
+import * as GUI from 'babylonjs-gui';
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
@@ -48,10 +48,11 @@ export default class MainScene {
     this.pickMesh=null,this.focusMesh=null;
     this.trollyObject=undefined,this.tableObject=undefined,this.cabinetObject=undefined,this.doorObject=undefined,this.windowObject=undefined;
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
-    this.ccpdRecordBook=undefined,this.lightswitchObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
+    this.ccpdRecordBook=undefined,this.apdmachinePackage=undefined,this.lightswitchObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
     this.fanAnim = null;
     
-    this.bpnumberTexture = new BABYLON.DynamicTexture("bpnumberTexture",256,this.scene);
+    
+
     
     // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
     // this.sceneOptimiser.startOptimiser();
@@ -59,7 +60,7 @@ export default class MainScene {
     this.initacParticle();
   }
   initState(){
-    this.gamestate  = {state:GameState.default}; 
+    this.gamestate  = {state:GameState.menu}; 
     this.userMode   = usermode.patient;
     this.gamemode   = gamemode.training;
   }
@@ -75,6 +76,13 @@ export default class MainScene {
     // this.highlightLayer.innerGlow=true;
     // this.highlightLayer.outerGlow=false;
 
+    this.viewportFrame =  this.gui2D.createRect("viewportFrame",400,228,0,"#FFFFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+    this.viewportFrame.width  =.22;
+    this.viewportFrame.height = .3;
+    this.viewportFrame.isVisible=false;
+    this.viewportFrame.leftInPixels=400;
+
+
 
     this.trollyObject   = new Trolly(this,this.trollyRoot,{x:-2.85,y:1.78,z:2.5});
     this.tableObject    = new Table(this,this.tableRoot,{x:-.25,y:1.9,z:2.5});
@@ -85,7 +93,7 @@ export default class MainScene {
     this.lightswitchObject = new LightSwitch(this,this.lightswtich);
     this.fanswitchobject   = new FanSwitch(this,this.scene.getNodeByName("fanswitchnode"));
 
-
+    this.bpnumberTexture = new BABYLON.DynamicTexture("bpnumberTexture",256,this.scene);
     this.bpMachineItem     = new Item("Blood Pressure Monitor",this,this.scene.getTransformNodeByID("bpmachinenode"),{x:-69,y:30,z:33},{x:-93,y:17,z:-8},undefined);
     this.createBpText();
     this.connectionItem    = new Item("Connection Shield",this,this.scene.getTransformNodeByID("ConnectionShield"),{x:-70,y:5,z:38.5},{x:-65,y:-55,z:-4},undefined); 
@@ -93,7 +101,11 @@ export default class MainScene {
     this.maskItem          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
     this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
-
+    this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
+    this.apdmachinePackage = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
+    
+    
+    // this.apdmachinePackage.meshRoot.parent =  this.scene.getTransformNodeByID("tablenode");
     
     
     this.dissolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode"),{x:2.16,y:1.57,z:2.34});
@@ -118,9 +130,11 @@ export default class MainScene {
       switch(event.key){
          case "ArrowDown":
             SY -=val;
+            // this.apdmachinePackage.removeAction();
           break;
         case "ArrowUp":
             SY +=val;
+            // this.apdmachinePackage.initAction();
           break;
         case "ArrowLeft":
             SX-=val;
@@ -136,9 +150,8 @@ export default class MainScene {
           break;
       }
       
-      // this.acItem.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
-      // this.scene.getMeshByName("acbox").position = new BABYLON.Vector3(SX,SY,SZ);
-      // this.dissolutionObject[0].meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+      // this.apdmachinePackage.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
+      // this.apdmachinePackage.meshRoot.position = new BABYLON.Vector3(SX,SY,SZ);  
       // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
     this.scene.onPointerObservable.add((pointerInfo) => {      	
@@ -181,6 +194,7 @@ export default class MainScene {
       });
       this.gui2D.resetCamBtn.onPointerUpObservable.add(()=>{
         this.setCameraTarget(); 
+        this.sceneCommon.removeMiniCam();
       }) 
   }
   createBpText(){
@@ -264,6 +278,12 @@ export default class MainScene {
   updateObjectOutLine(value){
     if(!this.pickMesh)
       return;
+
+     
+    if(!this.pickMesh.isPickable){
+      this.pickMesh.renderOutline=false;
+      return;
+    }
     if(this.pickMesh.parent.parent && (this.pickMesh.parent.parent.name.includes("cabinet"))){
       let leftnode = this.scene.getTransformNodeByID("cabinetleftDoor").getChildMeshes()[0];
       leftnode.renderOutline=value;
@@ -271,13 +291,13 @@ export default class MainScene {
       rightnode.renderOutline=value;
    }
    
-   if(this.pickMesh.parent.name.includes("trollynode")){
+   else if(this.pickMesh.parent.name.includes("trollynode")){
         // alert(this.pickMesh.parent.name);
         this.pickMesh.parent.parent.getChildMeshes().forEach(childmesh=>{
             childmesh.renderOutline=value;
         });
     }
-    if(this.pickMesh.parent.name.includes("apdnode")){
+    else if(this.pickMesh.parent.name.includes("apdnode")){
       // alert(this.pickMesh.parent.name);
       this.pickMesh.parent.parent.getChildMeshes().forEach(childmesh=>{
           if(childmesh.id.includes("DeviceDialysisReference_primitive1"))
@@ -285,39 +305,53 @@ export default class MainScene {
       });
     }
     
-    if(this.pickMesh.parent.name.includes("bpmachinenodeitems")){
+    else if(this.pickMesh.parent.name.includes("bpmachinenodeitems")){
       console.log(this.pickMesh.parent.name);
       this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
             childmesh.renderOutline=value;
       });
     }
-    if(this.pickMesh.parent.name.includes("ccpdrecordbook")){
+    else if(this.pickMesh.parent.name.includes("ccpdrecordbook")){
       // console.log(this.pickMesh.parent.name);
       this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
             childmesh.outlineWidth=.1;
             childmesh.renderOutline=value;
       });
     }
-    if(this.pickMesh.parent.name.includes("diasolutionnode")){
+    else if(this.pickMesh.parent.name.includes("diasolutionnode")){
       // console.log(this.pickMesh.parent.name);
       this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
             childmesh.outlineWidth=2;
             childmesh.renderOutline=value;
       });
     }
-    if(this.pickMesh.parent.name.includes("fanswitchnode")){
+    else if(this.pickMesh.parent.name.includes("fanswitchnode")){
       // console.log(this.pickMesh.parent.name);
       this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
-            if(childmesh.id ==="OnSwitch2")
+            childmesh.outlineWidth=0;
+            if(childmesh.id ==="OnSwitch2"){
               childmesh.renderOutline=value;
+              childmesh.outlineWidth=.5;
+            }
             else  
               childmesh.renderOutline=false;
-            childmesh.outlineWidth=.5;
+            
       });
     }
-    
-    
-    
+    else if(this.pickMesh.parent.name.includes("apd_package_node")){
+      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
+        if(childmesh.id ==="APDCassetteRevisedWithPackaging2.001_primitive42"){
+          childmesh.renderOutline=value;
+          childmesh.outlineWidth=2;
+          console.log(this.pickMesh.isPickable+"  11111111   "+this.pickMesh.name) ;
+        }
+        else{
+            childmesh.renderOutline=false;
+            childmesh.outlineWidth=0;
+            console.log(this.pickMesh.isPickable+"  222222   "+this.pickMesh.name) ;
+          }
+      });
+    } 
   }
   setCameraTarget(){
     this.showResetViewButton(false);

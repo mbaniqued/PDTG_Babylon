@@ -38,9 +38,26 @@ export default class LoaderManager {
       this.assetsManager.addMeshTask("ceiling_fan","","models/","ceiling_fan.glb");
       
       this.assetsManager.addMeshTask("fanswitch","","models/","fanswitch.glb");
+      this.assetsManager.addMeshTask("APD_Package_v2","","models/Items/","APD_Package_v2.glb");
       
       this.assetsManager.onTaskSuccessObservable.add((task)=> {
         
+        
+        if(task.name === "APD_Package_v2"){
+          const node   = new BABYLON.TransformNode("apd_package_node");
+          for(let i=0;i<task.loadedMeshes.length;i++){ //fanswitch
+            task.loadedMeshes[i].parent = node;
+            task.loadedMeshes[i].scaling.set(-.5,.5,.5);
+            if(task.loadedMeshes[i].name === "APDCassetteRevisedWithPackaging2.001_primitive11"){
+              task.loadedMeshes[i].setEnabled(false);
+            }
+            this.setPickable(task.loadedMeshes[i],2);
+            
+          } 
+          node.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(180).radians());
+          node.position.set(0,0,0);
+          node.isPickable=false;
+        }
         if(task.name === "fanswitch"){
           const node   = new BABYLON.TransformNode("fanswitchnode");
             for(let i=0;i<task.loadedMeshes.length;i++){ //fanswitch
@@ -378,8 +395,12 @@ export default class LoaderManager {
                       task.loadedMeshes[i].renderOutline=false;
                       task.loadedMeshes[i].outlineWidth=0;
                       const mat           = standerdMat.clone("innerWall");
-                      mat.diffuseColor    = new BABYLON.Color3.FromInts(129,135,143);
-                      mat.emissiveColor   = new BABYLON.Color3.FromInts(129,135,143);
+                      mat.diffuseColor    = new BABYLON.Color3.FromInts(126,135,143);
+                      mat.emissiveColor   = new BABYLON.Color3.FromInts(126,135,143);
+                      if(task.loadedMeshes[i].name ==="pPlane5"){
+                          mat.diffuseColor   = new BABYLON.Color3.FromInts(101,105,110);
+                          mat.emissiveColor   = new BABYLON.Color3.FromInts(101,105,110);
+                      }
                       mat.roughness       = .524;
                       task.loadedMeshes[i].material = mat;
                   }
@@ -431,8 +452,9 @@ export default class LoaderManager {
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "Cabinet" || task.loadedMeshes[i].name === "Cabinet4" || task.loadedMeshes[i].name === "Cabinet6"){
-                      const mat         = standerdMat.clone("Fridge1Mat");
+                      const mat            = standerdMat.clone("Fridge1Mat");
                       mat.diffuseColor     = new BABYLON.Color3.FromInts(255,255,255);
+                      mat.emissiveColor    = new BABYLON.Color3.FromInts(128,128,128);
                       mat.diffuseTexture   = new BABYLON.Texture("models/texture/picturemessage_rajvwxq1.qr2.png",this.scene);
                       mat.diffuseTexture.uScale = 8.55;
                       mat.metallic      = .878;
@@ -611,15 +633,16 @@ export default class LoaderManager {
               }
           }
     });
-    const frontplan = BABYLON.MeshBuilder.CreatePlane("frontplane",{width:8,height:5,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.scene);
+    const frontplan = BABYLON.MeshBuilder.CreatePlane("frontplane",{width:8,height:5,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
     let frontplanMaterial = new BABYLON.StandardMaterial("frontplaneMat", this.scene);
 
     frontplanMaterial.emissiveTexture= new BABYLON.Texture("models/texture/view.jpg",this.scene);
     frontplanMaterial.diffuseTexture = new BABYLON.Texture("models/texture/view.jpg",this.scene);
-    frontplan.rotation.y = BABYLON.Angle.FromDegrees(90).radians();
+    frontplan.rotation.y = BABYLON.Angle.FromDegrees(270).radians();
     frontplan.position = new BABYLON.Vector3(-8.4,4,-.9);
     frontplan.material = frontplanMaterial;
     frontplan.isPickable=false;
+    frontplan.renderOutline=false;
 
 
     const backPlan = frontplan.clone();
