@@ -26,6 +26,8 @@ export default class GUI2D{
         this.initStageMenu();
         this.initRadialMenu();
         this.initLoadingPage();
+        this.initObjectiveMenu();
+        this.initLevelComplete() ;
       }
       initMainMenu(){
         
@@ -198,10 +200,9 @@ export default class GUI2D{
           this.playBtn._onPointerUp=()=>{
             this.drawStageMenu(false);
             hidephasebtn();
-            
-            this.stage1btn.isVisible       =  false;
-            this.advancedTexture.renderAtIdealSize = false;
             this.root.gamestate.state = GameState.loading;
+            this.advancedTexture.renderAtIdealSize = false;
+            this.stage1btn.isVisible  =  false;
             this.drawLoadingPage(true);
             this.root.sceneCommon.setView();
               let tout = setTimeout(() => {
@@ -209,7 +210,8 @@ export default class GUI2D{
                   this.drawLoadingPage(false);
                   this.root.gamestate.state = GameState.default;
                   this.root.setCameraTarget();
-                  new TWEEN.Tween(this.root.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+                  new TWEEN.Tween(this.root.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                  this.root.setGame();
               }, 10);
 
           }
@@ -221,8 +223,6 @@ export default class GUI2D{
             hidephasebtn();
             this.drawMainMenu(true);
           }
-
-
           this.stagebtn.isVisible  = isDraw;
           this.stagebtn.children[1].leftInPixels =-20;
           const y  = -40;
@@ -230,7 +230,6 @@ export default class GUI2D{
           this.stagebtn.topInPixels  = y;
           this.stage1btn.topInPixels = y;
           this.stage1btn.scaleX = 1.2;
-          
           let isOpen =false;
             this.stagebtn.onPointerUpObservable.add(()=> {
               if(!isOpen){
@@ -267,10 +266,10 @@ export default class GUI2D{
                this.itempreBtn.isVisible       =  true;
                this.selfpreBtn.isVisible       =  true;
                this.machinepreBtn.isVisible    =  true;
-              new TWEEN.Tween(this.roompreBtn).to({topInPixels:y2+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {isopen2 = true;}).start();
-              new TWEEN.Tween(this.itempreBtn).to({topInPixels:y2+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-              new TWEEN.Tween(this.selfpreBtn).to({topInPixels:y2+dy*3},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-              new TWEEN.Tween(this.machinepreBtn).to({topInPixels:y2+dy*4},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+               new TWEEN.Tween(this.roompreBtn).to({topInPixels:y2+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {isopen2 = true;}).start();
+               new TWEEN.Tween(this.itempreBtn).to({topInPixels:y2+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+               new TWEEN.Tween(this.selfpreBtn).to({topInPixels:y2+dy*3},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+               new TWEEN.Tween(this.machinepreBtn).to({topInPixels:y2+dy*4},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             }
             else{
                 hidephasebtn();
@@ -304,7 +303,6 @@ export default class GUI2D{
             this.machinepreBtn.isVisible    =  false;
           }).start();
         }
-
       }
       initLoadingPage(){
         this.loaginBg =  this.createRect("loadingBg",1920,1080,0,"#7EC5DDB3",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
@@ -321,6 +319,7 @@ export default class GUI2D{
       initRadialMenu(){
         
         this.radialCircle    =  this.createImage("RadialCircleBig","ui/CircleBig.png",350,350,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.radialCircle.isPointerBlocker=true;
         this.inspectBtn      =  this.createCircle("inspectBtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         const inspectImg     =  this.createImage("inspectBtn","ui/magnifying-glass-with-check-mark.png",72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         inspectImg.isVisible=true;
@@ -340,14 +339,96 @@ export default class GUI2D{
       }
       drawRadialMenu(isDraw){
         this.radialCircle.isVisible=isDraw;
-        this.inspectBtn.top ="-150px";
+        this.inspectBtn.topInPixels =-150;
         this.inspectBtn.isVisible=isDraw;
 
-        this.useBtn.top ="150px";
+        this.useBtn.topInPixels = 150;
         this.useBtn.isVisible=isDraw;
 
-        this.crossBtn.left ="150px";
+        this.crossBtn.leftInPixels = 150;
         this.crossBtn.isVisible=isDraw;
+      }
+      initObjectiveMenu(){
+
+         this.objectiveBg  =  new GUI.StackPanel();    
+         this.objectiveBg.widthInPixels = 400;
+         this.objectiveBg.background = "#9EF6FF66";
+         this.objectiveBg.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+         this.objectiveBg.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+         this.advancedTexture.addControl(this.objectiveBg);   
+         this.objectiveBg.ignoreLayoutWarnings = true
+        //  this.objectiveBg       =  this.createRect("objectivebg",400,200,5,"#7BABB2B3",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,true);
+         
+         this.objectiveTitle   =  this.createText("objectivetitle","Room Prepration",32,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+         this.objectiveTitle.widthInPixels=400;
+         this.objectiveTitle.heightInPixels=50;
+         this.objectiveBg.addControl(this.objectiveTitle);
+
+         this.objectiveTitle2  =  this.createText("objectivetitle2","Current Objective :",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+         this.objectiveTitle2.widthInPixels=400;
+         this.objectiveTitle2.heightInPixels=50;
+         this.objectiveBg.addControl(this.objectiveTitle2);
+
+        //  this.objectiveBar    =  this.createBar("objectivebar");
+        //  this.objectiveBg.addControl(this.objectiveBar);
+        //  this.objectiveBar2    =  this.createBar("objectivebar2");
+        //  this.objectiveBg.addControl(this.objectiveBar2);
+        
+         this.downArrow =  this.createImage("downarrow","ui/arrow.png",10,34,GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+         this.downArrow.isVisible=true;
+         this.downArrow.leftInPixels =-20;
+         this.downArrow.rotation =BABYLON.Angle.FromDegrees(270).radians(); 
+        //  this.objectiveBg.addControl(this.downArrow);
+        //  this.drawObjectiveMenu(true);
+        this.drawObjectiveMenu(false);
+      }
+      createBar(msg){
+        const objectivebar = this.createRect("objectivebar",380,42,5,"#567F9033",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        const  rightArrowImage =  this.createImage("rightarrow","ui/white.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        rightArrowImage.isVisible=true;
+        objectivebar.addControl(rightArrowImage);
+        const bartitle   =  this.createText("bartitle",msg,20,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        bartitle.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        bartitle.leftInPixels =40;
+        objectivebar.addControl(bartitle);
+        return objectivebar;
+      }
+      drawObjectiveMenu(isdraw){
+        this.objectiveBg.isVisible=isdraw;
+        this.objectiveTitle.leftInPixels  = -40;
+        this.objectiveTitle2.leftInPixels = -70;
+        this.downArrow.rotation =BABYLON.Angle.FromDegrees(90).radians(); 
+        
+      }
+      initLevelComplete(){
+        this.winPopUp =  this.createRect("objectivebar",480,320,5,"#96E5ED",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        const title   =  this.createText("popup_-ttle","Room PrepRation\n Complete!",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        title.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        this.winPopUp.addControl(title);
+
+        this.nextBtn =  this.createRect("nextntn",196,64,5,"#62F56F",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        let btnText   =  this.createText("btnText","Next Phase\n-->",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        btnText.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        btnText.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        this.nextBtn.addControl(btnText);
+
+        this.endsessionBtn =  this.createRect("endsession",128,32,5,"#F55656",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        btnText   =  this.createText("endsessiontext","End Session",16,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        btnText.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        btnText.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+
+        this.endsessionBtn.addControl(btnText);
+        this.drawLevelComplete(false);
+      }
+      drawLevelComplete(isDraw){
+        this.winPopUp.isVisible =  isDraw;
+        this.nextBtn.isVisible =  isDraw;
+        this.nextBtn.topInPixels =40;
+        this.endsessionBtn.isVisible =  isDraw;
+        this.endsessionBtn.topInPixels =120;
+        
       }
       createImage(name,src,width,height,horizontal,verticle,isadd){
         const image  =  new GUI.Image(name,src);
@@ -428,11 +509,11 @@ export default class GUI2D{
         circle.background = color;
         circle.horizontalAlignment = horizontal;
         circle.verticalAlignment   = verticle;
-        circle.isVisible=false
+        circle.isVisible=false;
         if(isadd)
             this.advancedTexture.addControl(circle);   
-        circle.onPointerDownObservable.add(function() {
-        });
+        // circle.onPointerDownObservable.add(function() {
+        // });
         // circle.onPointerUpObservable.add(()=> {
         //   this.handleButton(2,circle.name);
         
@@ -493,6 +574,7 @@ export default class GUI2D{
         text.text = _text;
         text.fontFamily = "Shrikhand";
         text.fontSize = size+"px";
+        text.fontWeight = "100";
         text.color    = color;
         text.isPointerBlocker=true;
         text.horizontalAlignment = horizontal;

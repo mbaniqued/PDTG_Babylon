@@ -1,4 +1,4 @@
-import { GameState,ANIM_TIME } from "../scene/MainScene";
+import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class DoorObject{
         constructor(root,meshobject,pos){
@@ -14,14 +14,22 @@ export default class DoorObject{
             this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,0);
             this.label._children[0].text = "Door";
             this.label.isVisible=false;
+            this.initAction();
             // let mesh = new BABYLON.TransformNode();
-            this.meshRoot.getChildMeshes().forEach(childmesh => {
-                if(childmesh.name ==="mydoor")
-                    this.addAction(childmesh);
-            });
         }
         setPos(){
             this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
+        }
+        initAction(){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+               if(childmesh.name ==="mydoor" && !childmesh.actionManager)
+                  this.addAction(childmesh);
+            });
+        }
+        removeAction(){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                childmesh.actionManager = null;
+            });
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
@@ -65,6 +73,11 @@ export default class DoorObject{
             val=360;
             new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                 this.closedoor = !this.closedoor;
+                if(this.closedoor){
+                    let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
+                    document.dispatchEvent(custom_event);
+                }
+
             }).start();
         }
         setLabel(){

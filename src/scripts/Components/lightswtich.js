@@ -1,4 +1,4 @@
-import { GameState,ANIM_TIME } from "../scene/MainScene";
+import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class LightSwitch{
 
@@ -8,11 +8,18 @@ export default class LightSwitch{
             this.camera     = root.camera;
             this.meshRoot   = meshobject;
             this.state      = 0;
-            this.addAction(this.meshRoot);
             this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,0,-50);
             this.label._children[0].text = "Switches";
             this.label.isVisible=false;
             this.isLightOff=false;
+            this.initAction();
+        }
+        initAction(){
+            if(!this.meshRoot.actionManager)
+                this.addAction(this.meshRoot);
+        }
+        removeAction(){
+            this.meshRoot.actionManager=null;
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
@@ -52,6 +59,8 @@ export default class LightSwitch{
                         else if(this.state>0){
                             this.isLightOff =!this.isLightOff;
                             this.setLight();
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
+                            document.dispatchEvent(custom_event);
                         }
                         this.setLabel();
                         console.log("innnnnnnnnnnnn OnPickTrigger")

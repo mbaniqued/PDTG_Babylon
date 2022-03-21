@@ -1,4 +1,4 @@
-import { GameState,ANIM_TIME } from "../scene/MainScene";
+import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class FanSwitch{
 
@@ -8,13 +8,22 @@ export default class FanSwitch{
             this.camera     = root.camera;
             this.meshRoot   = meshobject;
             this.state      = 0;
-            this.meshRoot.getChildMeshes().forEach(childmesh => {
-                this.addAction(childmesh);
-            });
+            this.initAction();
             this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,0,-50);
             this.label._children[0].text = "Switches";
             this.label.isVisible=false;
             this.isFanOff=false;
+        }
+        initAction(){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                if(!childmesh.actionManager)
+                    this.addAction(childmesh);
+            });
+        }
+        removeAction(){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                childmesh.actionManager=null;
+            });
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
@@ -51,8 +60,11 @@ export default class FanSwitch{
                         }
                         else if(this.state>0){
                             this.isFanOff =!this.isFanOff;
-                            if(this.isFanOff)
+                            if(this.isFanOff){
                                 this.root.stopFan();
+                                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
+                                document.dispatchEvent(custom_event);
+                            }
                             else    
                                 this.root.startFan();
 

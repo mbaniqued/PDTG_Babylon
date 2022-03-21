@@ -13,10 +13,7 @@ export default class Cabinet{
         this.setPos();
         this.initMeshOutline();
         // this.mesh = new BABYLON.TransformNode();
-        this.meshRoot.getChildMeshes().forEach(childmesh => {
-            if(childmesh)
-                this.addAction(childmesh);
-        });
+        this.initAction();
         this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-150);
         this.label._children[0].text = "Cabinet";
         this.label.isVisible=false;
@@ -24,6 +21,17 @@ export default class Cabinet{
     }
     setPos(){
         this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
+    }
+    removeAction(){
+        this.meshRoot.getChildMeshes().forEach(childmesh => {
+            childmesh.actionManager = null;
+        });
+    }
+    initAction(){
+        this.meshRoot.getChildMeshes().forEach(childmesh => {
+            if(!childmesh.actionManager)
+                this.addAction(childmesh);
+        });
     }
     addAction(mesh){
         mesh.actionManager = new BABYLON.ActionManager(this.root.scene);

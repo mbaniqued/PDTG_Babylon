@@ -14,10 +14,7 @@ export default class Table{
         this.setPos();
         // this.mesh = new BABYLON.TransformNode();
         this.initMeshOutline();
-        this.meshRoot.getChildMeshes().forEach(childmesh => {
-            if(childmesh)
-                this.addAction(childmesh);
-        });
+        this.initAction();
         this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-20);
         this.label._children[0].text = "Drawer";
         this.label.isVisible=false;
@@ -25,6 +22,17 @@ export default class Table{
     }
     setPos(){
         this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
+    }
+    removeAction(){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                childmesh.actionManager = null;
+        });
+    }
+    initAction(){
+        this.meshRoot.getChildMeshes().forEach(childmesh => {
+            if(!childmesh.actionManager)
+                this.addAction(childmesh);
+        });
     }
     addAction(mesh){
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);

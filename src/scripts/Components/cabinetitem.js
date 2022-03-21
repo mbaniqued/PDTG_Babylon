@@ -19,9 +19,7 @@ export default class CabinetItem{
         this.placedPosition   = undefined;
         this.placedRotation   = undefined;
         this.setPos(); 
-        this.meshRoot.getChildMeshes().forEach(childmesh => {
-          this.addAction(childmesh);
-          });
+        this.initAction();
         
         this.pickObject = false;
         this.initDrag();
@@ -35,6 +33,17 @@ export default class CabinetItem{
       }
       setPos(){
         this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
+      }
+      removeAction(){
+        this.meshRoot.getChildMeshes().forEach(childmesh => {
+            childmesh.actionManager = null;
+          });
+      }
+      initAction(){
+          this.meshRoot.getChildMeshes().forEach(childmesh => {
+              if(!childmesh.actionManager)
+                  this.addAction(childmesh);
+          });
       }
       addAction(mesh){
         mesh.actionManager = new BABYLON.ActionManager(this.root.scene);

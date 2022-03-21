@@ -1,5 +1,5 @@
 
-import { GameState,ANIM_TIME } from "../scene/MainScene";
+import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class ACRemote{
         constructor(root,meshobject,pos,_parent){
@@ -10,10 +10,7 @@ export default class ACRemote{
             this.state          = 0;
             this.isAcOff        = false;
             this.setPos();
-            this.meshRoot.getChildMeshes().forEach(childmesh => {
-                this.addAction(childmesh);
-
-            });
+            this.initAction();
             this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-50);
             this.label._children[0].text = "AC Remote";
             
@@ -21,11 +18,26 @@ export default class ACRemote{
         setPos(){
             this.meshRoot.position  = new BABYLON.Vector3(this.position.x,this.position.y,this.position.z);
         }
+        initAction(){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                if(!childmesh.actionManager)
+                    this.addAction(childmesh);
+            });
+        }
+        removeAction(){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                childmesh.actionManager=null;
+            });
+        }
         addAction(mesh){
                     mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                         if(this.state>0 && this.root.gamestate.state === GameState.default)
                             this.state =0;
+                        if(this.root.camera.radius<2){
+                            this.root.gamestate.state = GameState.focus;
+                            this.state =1;
+                        }
                            this.setLabel();
                     }))
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
@@ -34,6 +46,11 @@ export default class ACRemote{
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                             if(this.state>0 && this.root.gamestate.state === GameState.default)
                                 this.state =0;
+                            if(this.root.camera.radius<2){
+                                this.root.gamestate.state = GameState.focus;
+                                this.state =1;
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.1,this.meshRoot.position.y,this.meshRoot.position.z));
+                            }
                             this.setLabel();
                             this.root.scene.onPointerUp=()=>{
                                 this.label.isVisible=false;
@@ -57,12 +74,18 @@ export default class ACRemote{
                         else if(this.state>0) {
                                 this.isAcOff = !this.isAcOff;
                                 this.root.setAc(!this.isAcOff);
+                                if(this.isAcOff){
+                                    let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
+                                    document.dispatchEvent(custom_event);
+                                }
                             }
                         }
                     )
                 )
         }
         setLabel(){
+            
+            console.log(this.state+"    "+this.root.gamestate.state)
             if(this.root.gamestate.state ===  GameState.default)
                 this.label._children[0].text = "AC Remote";
             else

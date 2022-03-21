@@ -12,15 +12,29 @@ export default class Trolly{
             this.setPos();
             this.initMeshOutline();
             // this.mesh = new BABYLON.Mesh();
-            this.meshRoot.getChildMeshes().forEach(childmesh => {
-                if(childmesh.name.includes("apdmachine0"))
-                    this.apdMachine = childmesh.parent;
-                this.addAction(childmesh);
-            });
+            // this.meshRoot.getChildMeshes().forEach(childmesh => {
+            //     if(childmesh.name.includes("apdmachine0"))
+            //         this.apdMachine = childmesh.parent;
+            //     this.addAction(childmesh);
+            // });
+            this.initAction();
             this.apdMachine.position = new BABYLON.Vector3(-50,0,0);
         }
         setPos(){
             this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
+        }
+        removeAction(){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                childmesh.actionManager = null;
+        });
+        }
+        initAction(){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                if(childmesh.name.includes("apdmachine0"))
+                    this.apdMachine = childmesh.parent;
+                if(!childmesh.actionManager)
+                    this.addAction(childmesh);
+            });
         }
         addAction(mesh){
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);

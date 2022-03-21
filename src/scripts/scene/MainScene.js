@@ -16,10 +16,13 @@ import CabinetItem from "../Components/cabinetitem.js";
 import FanSwitch from "../Components/fanswitch.js";
 import TWEEN from '@tweenjs/tween.js';
 import * as GUI from 'babylonjs-gui';
+
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
 export const ANIM_TIME=1000;
+export const event_objectivecomplete = "event_objectivecomplete";
+let gameObjectives=[];
 
 let SX=0,SY=0,SZ=0;
 export default class MainScene {
@@ -37,52 +40,34 @@ export default class MainScene {
     this.acRemoteRoot     = new BABYLON.TransformNode("ACREMOTe");
     this.apdmachineRoot   = new BABYLON.TransformNode("APDMACHINE");
     this.windowFrameRoot  = new BABYLON.TransformNode("WINDOW");
-
-    
-    
-    
+    this.loaderManager    = new LoaderManager(this);
+    this.game.engine.hideLoadingUI();
     
     this.windowbox=undefined,this.lightswtich=undefined;
-    this.loaderManager  = new LoaderManager(this);
-    this.game.engine.hideLoadingUI();
     this.pickMesh=null,this.focusMesh=null;
     this.trollyObject=undefined,this.tableObject=undefined,this.cabinetObject=undefined,this.doorObject=undefined,this.windowObject=undefined;
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
     this.ccpdRecordBook=undefined,this.apdmachinePackage=undefined,this.lightswitchObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
     this.fanAnim = null;
     
-    
-
-    
     // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
     // this.sceneOptimiser.startOptimiser();
+    this.level=0,this.isUp=false,this.objectiveCount=0;
     this.initState();
     this.initacParticle();
+    
   }
   initState(){
     this.gamestate  = {state:GameState.menu}; 
     this.userMode   = usermode.patient;
     this.gamemode   = gamemode.training;
   }
-
-
   initScene() {
-
-    // this.highlightLayer = new BABYLON.HighlightLayer("highlightLayer",this.scene, { camera: this.arcCam });
-    // let mesh = this.door.getChildren()[1].getChildren()[0];
-    // this.highlightLayer.addMesh(mesh, BABYLON.Color3.White());
-    // this.highlightLayer.blurHorizontalSize=1;
-    // this.highlightLayer.blurVerticalSize=1;
-    // this.highlightLayer.innerGlow=true;
-    // this.highlightLayer.outerGlow=false;
-
     this.viewportFrame =  this.gui2D.createRect("viewportFrame",400,228,0,"#FFFFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
     this.viewportFrame.width  =.22;
     this.viewportFrame.height = .3;
     this.viewportFrame.isVisible=false;
     this.viewportFrame.leftInPixels=400;
-
-
 
     this.trollyObject   = new Trolly(this,this.trollyRoot,{x:-2.85,y:1.78,z:2.5});
     this.tableObject    = new Table(this,this.tableRoot,{x:-.25,y:1.9,z:2.5});
@@ -104,10 +89,6 @@ export default class MainScene {
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
     
-    
-    // this.apdmachinePackage.meshRoot.parent =  this.scene.getTransformNodeByID("tablenode");
-    
-    
     this.dissolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode"),{x:2.16,y:1.57,z:2.34});
     const solutionclone1 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode1");
     this.dissolutionObject[1] = new CabinetItem("Dialysis Solution",this,solutionclone1,{x:2.16,y:1.17,z:2.34});
@@ -116,14 +97,19 @@ export default class MainScene {
     const solutionclone3 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode3");
     this.dissolutionObject[3] = new CabinetItem("Dialysis Solution",this,solutionclone3,{x:2.16,y:.31,z:2.34});
 
-
     this.sanitiserObject[0]   = new CabinetItem("Hand Sanitizer ",this,this.scene.getTransformNodeByID("handsanitizernode"),{x:1.47,y:1.07,z:2.6});
     const sanitizerclone2 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer2");
     this.sanitiserObject[1]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone2,{x:1.47,y:1.07,z:2.4});
     const sanitizerclone3 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer3");
     this.sanitiserObject[2]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone3,{x:1.47,y:1.07,z:2.2});
-    // 1.470000000000001 !!sy!!  1.4600000000000009!! sz !! 2.6999999999999864
+
     this.startFan();
+
+    this.gui2D.resetCamBtn.onPointerUpObservable.add(()=>{
+      this.setCameraTarget(); 
+      this.sceneCommon.removeMiniCam();
+    }) 
+
     document.addEventListener('keydown', (event)=> {
       console.log(event.key);
       const val=1;
@@ -149,16 +135,14 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      
       // this.apdmachinePackage.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
       // this.apdmachinePackage.meshRoot.position = new BABYLON.Vector3(SX,SY,SZ);  
       // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
     this.scene.onPointerObservable.add((pointerInfo) => {      	
-
-      if(this.gamestate.state === GameState.menu)
-        return ;
-      if(this.gamestate.state !== GameState.radial){
+      if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
+              return ;
+      
           switch (pointerInfo.type) {
               case BABYLON.PointerEventTypes.POINTERDOWN:{
                       const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
@@ -190,15 +174,14 @@ export default class MainScene {
                   }
                 break;
             }
-          }
       });
-      this.gui2D.resetCamBtn.onPointerUpObservable.add(()=>{
-        this.setCameraTarget(); 
-        this.sceneCommon.removeMiniCam();
-      }) 
+      this.objectiveListner = (e) => {
+          this.checkObjectives(e.detail.object_type);
+           
+      }
+      document.addEventListener(event_objectivecomplete,this.objectiveListner);
   }
   createBpText(){
-
     const bpPlan = BABYLON.MeshBuilder.CreatePlane("bptextplan",{width:8,height:5,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
     bpPlan.parent = this.bpMachineItem.meshRoot;
     bpPlan.isPickable=false;
@@ -218,7 +201,6 @@ export default class MainScene {
     this.setbpRecord(0,0,0);
   
   }
-
   setbpRecord(v1,v2,v3){
     let ctx = this.bpnumberTexture.getContext();
     const font_size = 64;
@@ -230,11 +212,7 @@ export default class MainScene {
     this.bpnumberTexture.drawText(parseInt(v3)+"",90, 230, font, "#808794", "transparent", true);
     // this.bpnumberTexture.update();
   }
-    
-
   onpickMesh(pickedMesh){
-
-    
     // console.log(mesh.name);
     if(this.pickMesh && pickedMesh.name !== this.pickMesh.name){
       this.updateObjectOutLine(false);
@@ -276,20 +254,20 @@ export default class MainScene {
     }
   }
   updateObjectOutLine(value){
-    if(!this.pickMesh)
-      return;
-
-     
-    if(!this.pickMesh.isPickable){
-      this.pickMesh.renderOutline=false;
+    if(!this.pickMesh){
       return;
     }
+    
+    if(!this.pickMesh.isPickable || this.pickMesh.actionManager === null){
+      value = false;
+      this.pickMesh.outlineWidth=0;
+     }
     if(this.pickMesh.parent.parent && (this.pickMesh.parent.parent.name.includes("cabinet"))){
       let leftnode = this.scene.getTransformNodeByID("cabinetleftDoor").getChildMeshes()[0];
       leftnode.renderOutline=value;
       let rightnode = this.scene.getTransformNodeByID("cabinetrightDoor").getChildMeshes()[0];
       rightnode.renderOutline=value;
-   }
+   } 
    
    else if(this.pickMesh.parent.name.includes("trollynode")){
         // alert(this.pickMesh.parent.name);
@@ -382,19 +360,9 @@ export default class MainScene {
 
     }).start();
   }
-  // setFocusOnDoor(pos){
-  //   new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},1000).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-  //       this.gamestate.state =  GameState.pick;
-  //       this.camera.lowerAlphaLimit = this.camera.upperAlphaLimit = this.camera.alpha;
-  //   }).start();
-  //   if(this.camera.alpha>2)
-  //         new TWEEN.Tween(this.camera).to({alpha:3.25},500).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-  //   }).start();
-  // }
   showResetViewButton(isVisible){
     this.gui2D.resetCamBtn.isVisible = isVisible;
   }
-  
   startFan(){
       const fanNode =  this.scene.getNodeByName("fannode");
       if(this.fanAnim == null){
@@ -404,7 +372,6 @@ export default class MainScene {
       else{
         this.fanAnim.resume();        
       }
-
   }
   stopFan(){
     this.fanAnim.pause();    
@@ -438,7 +405,6 @@ export default class MainScene {
     this.acparticle.maxEmitPower = .3;
     this.acparticle.updateSpeed = 0.005;
     this.setAc(true);
-
    }
    setAc(isOn){
       if(isOn)
@@ -446,5 +412,128 @@ export default class MainScene {
       else
         this.acparticle.stop();  
    }
+   setGame(){
+     
+      this.objectiveCount =0;
+      this.objectivebar=[];
+      gameObjectives=[];
+      switch(this.gamemode){
+          case gamemode.training:
+                switch(this.level){
+                  case 0:
+                     this.removeAllActions();
+                     const values = ["Close The Door","Switch On The Light","Turn-off the Fan","Close the window","Turn-off the AC using remote"];   
+                     this.objectivebar=[];
+                     for(let i=0;i<values.length;i++){ 
+                        gameObjectives.push({status:false,msg:values[i],totalobjective:5});
 
+                        this.objectivebar[i] = this.gui2D.createBar(values[i]);
+                        this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
+                        if(i===0)
+                            this.objectivebar[i].isVisible = true;
+                        else
+                            this.objectivebar[i].isVisible = false;
+
+                            this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
+
+                     }
+                     this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
+                     this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
+                     this.gui2D.drawObjectiveMenu(true);
+                    break;
+                }
+            break;
+          case gamemode.practice:
+            break;            
+          case gamemode.assessment:
+            break;            
+      }
+      this.gui2D.downArrow._onPointerUp =()=>{
+          this.isUp =!this.isUp;
+          this.gui2D.objectiveBg.isVisible=false;
+          this.gui2D.downArrow.rotation = BABYLON.Angle.FromDegrees(this.isUp?270:90).radians(); 
+          this.updateObjective();
+        
+      }
+   }
+   updateObjective(){
+    this.gui2D.objectiveBg.isVisible = false;
+    if(this.isUp){
+      this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Objective :";
+          for(let i=0;i<this.gui2D.objectiveBg.children.length;i++){
+              this.gui2D.objectiveBg.children[i].isVisible=true;
+          }
+      }
+      else{
+        let isonce=false;
+        for(let i=0;i<this.gui2D.objectiveBg.children.length;i++){
+          if(i>1 && i<this.gui2D.objectiveBg.children.length-1){
+              this.gui2D.objectiveBg.children[i].getChildByName("rightarrow").alpha = gameObjectives[i-2].status?1:.5;
+              this.gui2D.objectiveBg.children[i].isVisible=false;    
+              if(!gameObjectives[i-2].status && !isonce){
+                  isonce =true;
+                  this.gui2D.objectiveBg.children[i].isVisible=true;
+              }
+          }
+        }
+        this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
+      }
+      this.gui2D.objectiveBg.isVisible=true;
+   }
+   removeAllActions(){
+     this.tableObject.removeAction();
+     this.cabinetObject.removeAction();
+     this.trollyObject.removeAction();
+     for(let i=0;i<this.dissolutionObject.length;i++)
+       this.dissolutionObject[i].removeAction();
+
+      for(let i=0;i<this.sanitiserObject.length;i++)
+       this.sanitiserObject[i].removeAction();
+
+       this.connectionItem.removeAction();  
+       this.alcohalItem.removeAction();     
+       this.maskItem.removeAction();        
+       this.drainBagItem.removeAction();    
+       this.ccpdRecordBook.removeAction();  
+       this.ccpdRecordBook.removeAction();  
+       this.apdmachinePackage.removeAction();
+   }
+   checkObjectives(object_type){
+      this.objectiveCount++;
+      if(object_type ===  this.doorObject){
+          gameObjectives[0].status = true;
+          this.doorObject.removeAction();
+          
+      }
+      else if(object_type ===  this.lightswitchObject){
+        gameObjectives[1].status = true;
+        this.lightswitchObject.removeAction();
+      }
+      else if(object_type ===  this.fanswitchobject){
+        gameObjectives[2].status = true;
+        this.fanswitchobject.removeAction();
+      }
+      else if(object_type ===  this.windowObject){
+        gameObjectives[3].status = true;
+        this.windowObject.removeAction();
+      }
+      else if(object_type ===  this.acItem){
+        gameObjectives[4].status = true;
+        this.acItem.removeAction();
+      }
+      this.updateObjective();
+      if(this.objectiveCount>=gameObjectives[0].totalobjective){
+        alert("!! complete!!! ");
+        this.gui2D.drawLevelComplete(true);
+        this.gui2D.nextBtn._onPointerUp=()=>{
+          this.gui2D.drawLevelComplete(false);
+        }
+        this.gui2D.endsessionBtn._onPointerUp=()=>{
+          this.gui2D.drawLevelComplete(false);
+          this.gamestate.state = GameState.menu;
+          this.gui2D.drawMainMenu(true);
+          this.sceneCommon.removeMiniCam();
+        }
+      }
+   }
 }

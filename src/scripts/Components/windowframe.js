@@ -1,5 +1,5 @@
 
-import { GameState,ANIM_TIME } from "../scene/MainScene";
+import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class WindowFrame{
         constructor(root,meshobject,pos){
@@ -12,29 +12,31 @@ export default class WindowFrame{
             this.setPos();
             // this.mesh = new BABYLON.Mesh();
             
-            const plan = BABYLON.MeshBuilder.CreatePlane("glassplane",{width:4.2,height:2.5,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.root.scene);
+            this.plan = BABYLON.MeshBuilder.CreatePlane("glassplane",{width:4.2,height:2.5,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.root.scene);
             const glasssplanMat = new BABYLON.StandardMaterial("glassplaneMat", this.root.scene);
             glasssplanMat.diffuseColor = new BABYLON.Color3.FromInts(255,0,0);  
-            plan.material = glasssplanMat;
-            plan.position.set(-7.6,3.45,1);
-            plan.rotation.y = BABYLON.Angle.FromDegrees(90).radians();
-            plan.visibility=0;
-            this.addAction(plan);
+            this.plan.material = glasssplanMat;
+            this.plan.position.set(-7.6,3.45,1);
+            this.plan.rotation.y = BABYLON.Angle.FromDegrees(90).radians();
+            this.plan.visibility=0;
+            
 
-            const glasssplan = plan.clone("windowframeplan");
-            glasssplan.parent   = this.meshRoot;
-            glasssplan.scaling.set(55,100,1);
-            glasssplan.position.set(50,0,-5);
-            glasssplan.visibility=0;
-            glasssplan.outlineWidth = 0;
-            glasssplan.renderOutline=false;
-            this.addAction(glasssplan);
+            this.glasssplan = this.plan.clone("windowframeplan");
+            this.glasssplan.parent   = this.meshRoot;
+            this.glasssplan.scaling.set(55,100,1);
+            this.glasssplan.position.set(50,0,-5);
+            this.glasssplan.visibility=0;
+            this.glasssplan.outlineWidth = 0;
+            this.glasssplan.renderOutline=false;
+            
             this.initMeshOutline();
 
 
             this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,0,0);
             this.label._children[0].text = "Window";
             this.label.isVisible=false;
+
+            this.initAction();
             // const windowplan = BABYLON.MeshBuilder.CreatePlane("glassplane",{width:500,height:270,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.root.scene);
 
             // this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -45,6 +47,16 @@ export default class WindowFrame{
         }
         setPos(){
             this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
+        }
+        initAction(){
+            if(!this.glasssplan.actionManager)
+                this.addAction(this.glasssplan);
+            if(!this.plan.actionManager)
+                this.addAction(this.plan);
+        }
+        removeAction(){
+            this.glasssplan.actionManager=null;
+            this.plan.actionManager=null;
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
@@ -59,7 +71,7 @@ export default class WindowFrame{
                                 this.root.gamestate.state = GameState.default;
                                 new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                                 new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(0).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(359).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                                     this.state=1;
                                     this.root.gamestate.state = GameState.focus;
                                 }).start();
@@ -69,6 +81,10 @@ export default class WindowFrame{
                                     this.root.gamestate.state = GameState.active;
                                     this.windowClose =!this.windowClose;
                                     new TWEEN.Tween(this.meshRoot.position).to({z:this.meshRoot.position.z>0?0:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                    if(this.windowClose){
+                                        let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
+                                        document.dispatchEvent(custom_event);
+                                    }
                                 break;
                         }
                         
