@@ -52,7 +52,7 @@ export default class MainScene {
     
     // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
     // this.sceneOptimiser.startOptimiser();
-    this.level=0,this.isUp=false,this.objectiveCount=0;
+    this.level=0,this.isUp=false,this.objectiveCount=0,this.totalobjective=0,this.itemCount=0,this.dialysisItemCnt=0,this.handsanitiserCnt=0;
     this.initState();
     this.initacParticle();
     
@@ -86,7 +86,7 @@ export default class MainScene {
     this.maskItem          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
     this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
-    this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
+    // this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
     
     this.dissolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode"),{x:2.16,y:1.57,z:2.34});
@@ -247,7 +247,7 @@ export default class MainScene {
     if(root1.name !== root2.name){
        if(!root1.name.includes("items") && !root2.name.includes("items")){
           if(this.gamestate.state != GameState.radial){
-            console.log(root1.name+"      "+root2.name);
+            // console.log(root1.name+"      "+root2.name);
             this.gamestate.state = GameState.default;
           }
        }
@@ -257,18 +257,16 @@ export default class MainScene {
     if(!this.pickMesh){
       return;
     }
-    
     if(!this.pickMesh.isPickable || this.pickMesh.actionManager === null){
-      value = false;
-      this.pickMesh.outlineWidth=0;
-     }
+        value = false;
+        this.pickMesh.outlineWidth=0;
+    }
     if(this.pickMesh.parent.parent && (this.pickMesh.parent.parent.name.includes("cabinet"))){
       let leftnode = this.scene.getTransformNodeByID("cabinetleftDoor").getChildMeshes()[0];
       leftnode.renderOutline=value;
       let rightnode = this.scene.getTransformNodeByID("cabinetrightDoor").getChildMeshes()[0];
       rightnode.renderOutline=value;
    } 
-   
    else if(this.pickMesh.parent.name.includes("trollynode")){
         // alert(this.pickMesh.parent.name);
         this.pickMesh.parent.parent.getChildMeshes().forEach(childmesh=>{
@@ -282,9 +280,8 @@ export default class MainScene {
             childmesh.renderOutline=value;
       });
     }
-    
     else if(this.pickMesh.parent.name.includes("bpmachinenodeitems")){
-      console.log(this.pickMesh.parent.name);
+      // console.log(this.pickMesh.parent.name);
       this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
             childmesh.renderOutline=value;
       });
@@ -321,12 +318,12 @@ export default class MainScene {
         if(childmesh.id ==="APDCassetteRevisedWithPackaging2.001_primitive42"){
           childmesh.renderOutline=value;
           childmesh.outlineWidth=2;
-          console.log(this.pickMesh.isPickable+"  11111111   "+this.pickMesh.name) ;
+          // console.log(this.pickMesh.isPickable+"  11111111   "+this.pickMesh.name) ;
         }
         else{
             childmesh.renderOutline=false;
             childmesh.outlineWidth=0;
-            console.log(this.pickMesh.isPickable+"  222222   "+this.pickMesh.name) ;
+            // console.log(this.pickMesh.isPickable+"  222222   "+this.pickMesh.name) ;
           }
       });
     } 
@@ -413,34 +410,60 @@ export default class MainScene {
         this.acparticle.stop();  
    }
    setGame(){
-     
-      this.objectiveCount =0;
-      this.objectivebar=[];
-      gameObjectives=[];
+      this.resetObjectiveBar();
+      // this.level = 0;
+      this.removeAllActions();
       switch(this.gamemode){
           case gamemode.training:
                 switch(this.level){
                   case 0:
-                     this.removeAllActions();
-                     const values = ["Close The Door","Switch On The Light","Turn-off the Fan","Close the window","Turn-off the AC using remote"];   
-                     this.objectivebar=[];
-                     for(let i=0;i<values.length;i++){ 
-                        gameObjectives.push({status:false,msg:values[i],totalobjective:5});
-
-                        this.objectivebar[i] = this.gui2D.createBar(values[i]);
-                        this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
-                        if(i===0)
-                            this.objectivebar[i].isVisible = true;
-                        else
-                            this.objectivebar[i].isVisible = false;
-
+                      {
+                        this.gui2D.objectiveTitle.text = "Room Prepration";
+                        this.totalobjective=5; 
+                        const values = ["Close The Door","Switch On The Light","Turn-off the Fan","Close the window","Turn-off the AC using remote"];   
+                        this.doorObject.initAction(); 
+                        this.lightswitchObject.initAction();
+                        this.fanswitchobject.initAction();
+                        this.acItem.initAction();
+                        this.windowObject.initAction();
+                        for(let i=0;i<values.length;i++){ 
+                            gameObjectives.push({status:false,msg:values[i]});
+                            this.objectivebar[i] = this.gui2D.createBar(values[i],380,42);
+                            this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
+                            this.objectivebar[i].isVisible = i===0;
                             this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
-
-                     }
-                     this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
-                     this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
-                     this.gui2D.drawObjectiveMenu(true);
+                        }
+                        this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
+                        this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
+                        this.gui2D.drawObjectiveMenu(true);
+                      }
                     break;
+                  case 1:{
+                          this.gui2D.objectiveTitle.text = "Item Prepration";
+                          this.totalobjective=2; 
+                          const values = ["Place the required eqipment from the drawer on the top of the table: \n \u2022 BP Monitor \n \u2022 CCPD Record Book \n \u2022 Alcohal Wipe \n \u2022 Connection Shield \n \u2022 APD Cassette Package \n \u2022 Face Mask \n \u2022 Drain Bag",
+                                          "Place the required eqipment from the brown cabinet on top of the table: \n \u2022 Dialysis Solution x2 \n \u2022 Hand Sanitizer"];   
+
+                          this.tableObject.initAction();
+                          this.bpMachineItem.initAction();
+                          this.alcohalItem.initAction();
+                          this.maskItem.initAction();
+                          this.connectionItem.initAction();
+                          this.apdmachinePackage.initAction();
+                          this.drainBagItem .initAction();
+                          this.ccpdRecordBook.initAction();
+                          for(let i=0;i<values.length;i++){ 
+                            gameObjectives.push({status:false,msg:values[i]});
+                            this.objectivebar[i] = this.gui2D.createBar(values[i],380,i===0?250:160);
+                            this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
+                            this.objectivebar[i].isVisible = i===0;
+                            this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
+                        }
+                        this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
+                        this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
+                        this.gui2D.drawObjectiveMenu(true);
+                      }
+                     break;
                 }
             break;
           case gamemode.practice:
@@ -449,12 +472,26 @@ export default class MainScene {
             break;            
       }
       this.gui2D.downArrow._onPointerUp =()=>{
-          this.isUp =!this.isUp;
-          this.gui2D.objectiveBg.isVisible=false;
-          this.gui2D.downArrow.rotation = BABYLON.Angle.FromDegrees(this.isUp?270:90).radians(); 
-          this.updateObjective();
-        
+        this.isUp =!this.isUp;
+        this.gui2D.objectiveBg.isVisible=false;
+        this.gui2D.downArrow.rotation = BABYLON.Angle.FromDegrees(this.isUp?90:270).radians(); 
+        this.updateObjective();
       }
+   }
+   resetObjectiveBar(){
+     this.gamestate.state = GameState.default;
+    this.itemCount=0;
+    this.dialysisItemCnt=0;
+    this.handsanitiserCnt=0;
+    this.objectiveCount =0;
+    this.isUp=false;
+    if(this.objectivebar){
+       for(let i=0;i<this.objectivebar.length;i++)
+            this.gui2D.objectiveBg.removeControl(this.objectivebar[i]); 
+      this.gui2D.objectiveBg.removeControl(this.gui2D.downArrow);
+    }
+      this.objectivebar=[];
+      gameObjectives=[];
    }
    updateObjective(){
     this.gui2D.objectiveBg.isVisible = false;
@@ -462,13 +499,16 @@ export default class MainScene {
       this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Objective :";
           for(let i=0;i<this.gui2D.objectiveBg.children.length;i++){
               this.gui2D.objectiveBg.children[i].isVisible=true;
+              if(i>1 && i<this.gui2D.objectiveBg.children.length-1)
+                 this.gui2D.objectiveBg.children[i].getChildByName("rightarrow").alpha = gameObjectives[i-2].status?1:.5;
           }
       }
-      else{
+    else{
         let isonce=false;
         for(let i=0;i<this.gui2D.objectiveBg.children.length;i++){
           if(i>1 && i<this.gui2D.objectiveBg.children.length-1){
               this.gui2D.objectiveBg.children[i].getChildByName("rightarrow").alpha = gameObjectives[i-2].status?1:.5;
+              // console.log(this.gui2D.objectiveBg.children[i].getChildByName("rightarrow").alpha);
               this.gui2D.objectiveBg.children[i].isVisible=false;    
               if(!gameObjectives[i-2].status && !isonce){
                   isonce =true;
@@ -479,8 +519,16 @@ export default class MainScene {
         this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
       }
       this.gui2D.objectiveBg.isVisible=true;
+      this.gui2D.advancedTexture.update();
+      
    }
    removeAllActions(){
+
+     this.doorObject.removeAction(); 
+     this.lightswitchObject.removeAction();
+     this.fanswitchobject.removeAction();
+     this.acItem.removeAction();
+     this.windowObject.removeAction();
      this.tableObject.removeAction();
      this.cabinetObject.removeAction();
      this.trollyObject.removeAction();
@@ -499,34 +547,91 @@ export default class MainScene {
        this.apdmachinePackage.removeAction();
    }
    checkObjectives(object_type){
-      this.objectiveCount++;
+
+    
       if(object_type ===  this.doorObject){
+        
           gameObjectives[0].status = true;
           this.doorObject.removeAction();
-          
+          this.objectiveCount++;
+          console.log(this.dialysisItemCnt+"     11111111111111   "+this.handsanitiserCnt);
       }
       else if(object_type ===  this.lightswitchObject){
         gameObjectives[1].status = true;
         this.lightswitchObject.removeAction();
+        this.objectiveCount++;
+        console.log(this.dialysisItemCnt+"     2222222222222222   "+this.handsanitiserCnt);
       }
       else if(object_type ===  this.fanswitchobject){
         gameObjectives[2].status = true;
         this.fanswitchobject.removeAction();
+        this.objectiveCount++;
+        console.log(this.dialysisItemCnt+"     3333333333333333   "+this.handsanitiserCnt);
       }
       else if(object_type ===  this.windowObject){
         gameObjectives[3].status = true;
         this.windowObject.removeAction();
+        this.objectiveCount++;
+        console.log(this.dialysisItemCnt+"     4444444444444   "+this.handsanitiserCnt);
       }
       else if(object_type ===  this.acItem){
         gameObjectives[4].status = true;
         this.acItem.removeAction();
+        this.objectiveCount++;
+        console.log(this.dialysisItemCnt+"     55555555555555   "+this.handsanitiserCnt);
+      }
+      else if(object_type ===  this.connectionItem || object_type ===  this.alcohalItem|| object_type ===  this.maskItem || object_type ===  this.ccpdRecordBook 
+              || object_type ===  this.apdmachinePackage||this.bpMachineItem){
+            if(this.itemCount>=7){
+              console.log(this.dialysisItemCnt+"     6666666666666666   "+this.handsanitiserCnt);
+                this.itemCount =0;
+                this.objectiveCount++;
+                gameObjectives[0].status = true;
+                this.tableObject.setDrawerAnim();
+                this.tableObject.removeAction();
+                this.bpMachineItem.removeAction();
+                this.alcohalItem.removeAction();
+                this.maskItem.removeAction();
+                this.connectionItem.removeAction();
+                this.apdmachinePackage.removeAction();
+                this.drainBagItem .removeAction();
+                this.ccpdRecordBook.removeAction();
+                this.cabinetObject.initAction();
+                for(let i=0;i<this.dissolutionObject.length;i++)
+                  this.dissolutionObject[i].initAction();
+
+                for(let i=0;i<this.sanitiserObject.length;i++)
+                  this.sanitiserObject[i].initAction();
+                  this.gamestate.state = GameState.default;
+            }
+      }
+      if(this.dialysisItemCnt>1 && this.handsanitiserCnt>0){
+        console.log(this.dialysisItemCnt+"     77777777777777777   "+this.handsanitiserCnt);
+        this.cabinetObject.removeAction();
+        this.objectiveCount++;
+        gameObjectives[1].status = true;
+        for(let i=0;i<this.dissolutionObject.length;i++)
+            this.dissolutionObject[i].removeAction();
+        for(let i=0;i<this.sanitiserObject.length;i++)
+            this.sanitiserObject[i].removeAction();
+          this.gamestate.state = GameState.default;
       }
       this.updateObjective();
-      if(this.objectiveCount>=gameObjectives[0].totalobjective){
-        alert("!! complete!!! ");
+      if(this.objectiveCount>=this.totalobjective){
+        this.gui2D.drawObjectiveMenu(false);
         this.gui2D.drawLevelComplete(true);
+        switch(this.level){
+            case 0:
+                this.gui2D.winPopUp.getChildByName("popup_tittle").text = "Room PrepRation\n Complete!";
+              break;
+            case 1:
+                this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Item PrepRation\n Complete!";
+              break;
+        }
         this.gui2D.nextBtn._onPointerUp=()=>{
-          this.gui2D.drawLevelComplete(false);
+           this.gui2D.drawLevelComplete(false);
+           this.level++;
+           this.setGame();
         }
         this.gui2D.endsessionBtn._onPointerUp=()=>{
           this.gui2D.drawLevelComplete(false);

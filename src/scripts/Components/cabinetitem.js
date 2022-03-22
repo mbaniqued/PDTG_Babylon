@@ -1,4 +1,4 @@
-import { GameState,ANIM_TIME } from "../scene/MainScene";
+import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 let showMenu = false;
 const diasolutionpos1 = new BABYLON.Vector3(.25,2,2.7);
@@ -54,14 +54,14 @@ export default class CabinetItem{
           this.label.isVisible=false
         }))
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
-                  console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
+                //   console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                     this.pickObject = true;
                     this.label.isVisible=this.root.gamestate.state !== GameState.radial || this.root.gamestate.state !== GameState.menu;
                 }
             )
         )
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                    console.log(this.root.gamestate.state+"!! OnPickTrigger!!! ")
+                    // console.log(this.root.gamestate.state+"!! OnPickTrigger!!! ")
                   if(this.root.gui2D.userExitBtn.isVisible)
                         return
                     this.label.isVisible=false;
@@ -146,7 +146,7 @@ export default class CabinetItem{
             this.label.isVisible = false;
             this.pickObject      = false;
             let placed=false;
-            if(this.root.scene.getMeshByName("tablecollider").visibility>0){
+            if(this.root.scene.getMeshByName("tablecollider").visibility>0){    
                 if(this.name.includes("Hand") && checktable_sanipos<1){
                     placed = true;
                     this.placedPosition = sanitizerpos1;
@@ -155,6 +155,10 @@ export default class CabinetItem{
                       new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                           checktable_sanipos++;
                           this.meshRoot.removeBehavior(this.pointerDragBehavior);
+                          this.root.handsanitiserCnt++;
+                          this.label.isVisible=false;
+                          let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,itemcount:this.root.handsanitiserCnt}});
+                          document.dispatchEvent(custom_event);
                       }).start();
                 }
                 else if(this.name.includes("Dialysis") && checktable_diapos<2){ 
@@ -166,6 +170,11 @@ export default class CabinetItem{
                       new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                            checktable_diapos++;
                            this.meshRoot.removeBehavior(this.pointerDragBehavior);
+                           this.removeAction();
+                           this.root.dialysisItemCnt++;
+                           this.label.isVisible=false;
+                           let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,itemcount:this.root.dialysisItemCnt}});
+                           document.dispatchEvent(custom_event);
                       }).start();
                 }
           }

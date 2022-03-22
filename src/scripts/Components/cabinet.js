@@ -116,7 +116,7 @@ export default class Cabinet{
     }
     
     setLabel(){
-        console.log(this.root.gamestate.state)
+        // console.log(this.root.gamestate.state)
         if(this.root.gamestate.state === GameState.default)
             this.label._children[0].text = "Cabinet";
         else

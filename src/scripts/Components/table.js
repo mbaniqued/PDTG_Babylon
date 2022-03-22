@@ -110,6 +110,7 @@ export default class Table{
                         if(!this.isdrawerOpen){
                             this.state=0;
                             this.root.gamestate.state = GameState.default;
+                            this.label.isVisible=false;
                         }
                     }).start();
                 }

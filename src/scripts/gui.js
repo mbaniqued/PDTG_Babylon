@@ -362,9 +362,13 @@ export default class GUI2D{
          this.objectiveTitle   =  this.createText("objectivetitle","Room Prepration",32,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
          this.objectiveTitle.widthInPixels=400;
          this.objectiveTitle.heightInPixels=50;
+         this.objectiveTitle.textHorizontalAlignment  = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+         this.objectiveTitle.textVerticalAlignment    = GUI.Control.VERTICAL_ALIGNMENT_TOP;
          this.objectiveBg.addControl(this.objectiveTitle);
 
          this.objectiveTitle2  =  this.createText("objectivetitle2","Current Objective :",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+         this.objectiveTitle2.textHorizontalAlignment  = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+         this.objectiveTitle2.textVerticalAlignment    = GUI.Control.VERTICAL_ALIGNMENT_TOP;
          this.objectiveTitle2.widthInPixels=400;
          this.objectiveTitle2.heightInPixels=50;
          this.objectiveBg.addControl(this.objectiveTitle2);
@@ -382,28 +386,33 @@ export default class GUI2D{
         //  this.drawObjectiveMenu(true);
         this.drawObjectiveMenu(false);
       }
-      createBar(msg){
-        const objectivebar = this.createRect("objectivebar",380,42,5,"#567F9033",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
-        const  rightArrowImage =  this.createImage("rightarrow","ui/white.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+      createBar(msg,width,height){
+        const objectivebar = this.createRect("objectivebar",width,height,5,"#567F9033",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        const  rightArrowImage =  this.createImage("rightarrow","ui/white.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
         rightArrowImage.isVisible=true;
         objectivebar.addControl(rightArrowImage);
-        const bartitle   =  this.createText("bartitle",msg,20,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const bartitle =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        bartitle.widthInPixels  =  width*.9;
+        bartitle.heightInPixels =  height;
         bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        bartitle.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        bartitle.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        bartitle.resizeToFit = true;
         bartitle.leftInPixels =40;
+        bartitle.textWrapping=true;
+        objectivebar._automaticSize =true;
         objectivebar.addControl(bartitle);
         return objectivebar;
       }
       drawObjectiveMenu(isdraw){
         this.objectiveBg.isVisible=isdraw;
-        this.objectiveTitle.leftInPixels  = -40;
-        this.objectiveTitle2.leftInPixels = -70;
-        this.downArrow.rotation =BABYLON.Angle.FromDegrees(90).radians(); 
+        this.objectiveTitle.leftInPixels  = 20;
+        this.objectiveTitle2.leftInPixels = 20;
+        this.downArrow.rotation =BABYLON.Angle.FromDegrees(270).radians(); 
         
       }
       initLevelComplete(){
         this.winPopUp =  this.createRect("objectivebar",480,320,5,"#96E5ED",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        const title   =  this.createText("popup_-ttle","Room PrepRation\n Complete!",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const title   =  this.createText("popup_tittle","Room PrepRation\n Complete!",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
         title.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
         this.winPopUp.addControl(title);
@@ -423,11 +432,11 @@ export default class GUI2D{
         this.drawLevelComplete(false);
       }
       drawLevelComplete(isDraw){
-        this.winPopUp.isVisible =  isDraw;
-        this.nextBtn.isVisible =  isDraw;
-        this.nextBtn.topInPixels =40;
-        this.endsessionBtn.isVisible =  isDraw;
-        this.endsessionBtn.topInPixels =120;
+        this.winPopUp.isVisible        =  isDraw;
+        this.nextBtn.isVisible         =  isDraw;
+        this.nextBtn.topInPixels       =  40;
+        this.endsessionBtn.isVisible   =  isDraw;
+        this.endsessionBtn.topInPixels =  120;
         
       }
       createImage(name,src,width,height,horizontal,verticle,isadd){

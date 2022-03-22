@@ -122,5 +122,6 @@ export default class WindowFrame{
              }   
             this.label.isVisible=true;
             this.label.isPointerBlocker=true;
+            this.label._children[0].isPointerBlocker=true;
         }
 }
