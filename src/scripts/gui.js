@@ -1,8 +1,6 @@
 import * as GUI from 'babylonjs-gui';
 import TWEEN from '@tweenjs/tween.js';
-import { usermode } from './scene/MainScene';
-import { gamemode } from './scene/MainScene';
- import { GameState } from './scene/MainScene';
+import {GameState, usermode,gamemode } from './scene/MainScene';
 export default class GUI2D{
 
      constructor(root){
@@ -17,8 +15,8 @@ export default class GUI2D{
         // this.advancedTexture.useSmallestIdeal = true
         this.advancedTexture.renderAtIdealSize = true;
         this.resetCamBtn   =  this.createButon("resetcambtn","ui/move.png","#ffffffff","",0,0,72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
-        this.userExitBtn   =  this.createCircle("userexitbtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
-        const userImg      =  this.createImage("userexitbtn","ui/Users-Exit-icon.png",72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.userExitBtn   =  this.createCircle("userexitbtn",72,72,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
+        const userImg      =  this.createImage("userexitbtn","ui/Users-Exit-icon.png",48,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         userImg.isVisible  = true;
         this.userExitBtn.addControl(userImg);
         this.userExitBtn.isVisible=false;
@@ -343,8 +341,10 @@ export default class GUI2D{
         this.inspectBtn.isVisible=isDraw;
 
         this.useBtn.topInPixels = 150;
-        this.useBtn.isVisible=isDraw;
-
+        if(this.root.gamemode === gamemode.training && this.root.level ===2)
+            this.useBtn.isVisible=isDraw;
+        else
+            this.useBtn.isVisible=false;
         this.crossBtn.leftInPixels = 150;
         this.crossBtn.isVisible=isDraw;
       }
@@ -392,7 +392,7 @@ export default class GUI2D{
         rightArrowImage.isVisible=true;
         objectivebar.addControl(rightArrowImage);
         const bartitle =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
-        bartitle.widthInPixels  =  width*.9;
+        bartitle.widthInPixels  =  parseInt(width*.9);
         bartitle.heightInPixels =  height;
         bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
         bartitle.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;

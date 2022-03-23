@@ -71,7 +71,8 @@ export default class WindowFrame{
                                 this.root.gamestate.state = GameState.default;
                                 new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                                 new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(359).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                                let val = BABYLON.Angle.FromRadians(this.root.camera.alpha).degrees()>300?359:0; 
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                                     this.state=1;
                                     this.root.gamestate.state = GameState.focus;
                                 }).start();

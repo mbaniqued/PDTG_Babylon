@@ -66,7 +66,8 @@ export default class ACRemote{
                                 this.root.gamestate.state = GameState.focus;
                                 this.state= 1;
                                 this.label._children[0].text = "Power Off AC";
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(359).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();   
+                                let val = BABYLON.Angle.FromRadians(this.root.camera.alpha).degrees()>300?359:0; 
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();   
                                 new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(40).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                                 new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.1,this.meshRoot.position.y,this.meshRoot.position.z));
@@ -84,8 +85,7 @@ export default class ACRemote{
                 )
         }
         setLabel(){
-            
-            console.log(this.state+"    "+this.root.gamestate.state)
+            // console.log(this.state+"    "+this.root.gamestate.state)
             if(this.root.gamestate.state ===  GameState.default)
                 this.label._children[0].text = "AC Remote";
             else

@@ -25,7 +25,7 @@ export default class Common{
         return this.scene;
      }
      createCamera(scene) {
-        this.camera = new BABYLON.ArcRotateCamera("cameraera",0,0,10,this.camVector,scene);
+        this.camera = new BABYLON.ArcRotateCamera("maincamera",0,0,10,this.camVector,scene);
       //   this.camRoot = new BABYLON.TransformNode("camroot");
       //   this.camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(0,3,-1),scene);
         this.camera.fov   = 1;

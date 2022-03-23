@@ -61,27 +61,18 @@ export default class Cabinet{
                         case 0:
                                 this.root.gamestate.state = GameState.default;
                                 this.cabinetFocusAnim();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y+.5,this.position.z-1));
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));
                             break;
                          case 1:
                                 if(mesh.parent.parent.name.includes("Door")){
-                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y+.5,this.position.z-1));            
-                                    this.meshRoot.getChildTransformNodes().forEach(childnode => {
-                                        this.root.gamestate.state = GameState.active;
-                                        if(!this.doorAnim){
-                                            if(childnode.name==="cabinetleftDoor"){
-                                                this.isdoorOpen = !this.isdoorOpen;
-                                                this.openCloseDoor(childnode,90,true);
-                                            }
-                                            if(childnode.name==="cabinetrightDoor")
-                                                this.openCloseDoor(childnode,90,false);
-                                        }
-                                    });
+                                    this.root.gamestate.state = GameState.active;
+                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));            
+                                    this.openCloseDoor();
                                 }
                              break;   
                            case 10:
                                 this.cabinetFocusAnim();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y+.5,this.position.z-1));            
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));            
                                break;  
                         } 
                         this.setLabel();      
@@ -98,23 +89,30 @@ export default class Cabinet{
         }).start();
         new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
     }
-    openCloseDoor(mesh,angle,isleft){
+    openCloseDoor(){
+        this.meshRoot.getChildTransformNodes().forEach(childnode => {
+            if(!this.doorAnim){
+                if(childnode.name==="cabinetleftDoor"){
+                    this.isdoorOpen = !this.isdoorOpen;
+                    this.doorAnimation(childnode,90,true);
+                }
+                if(childnode.name==="cabinetrightDoor")
+                    this.doorAnimation(childnode,90,false);
+            }
+        });
+    }
+    doorAnimation(mesh,angle,isleft){
         let val=0;
         if(mesh.rotation.z === BABYLON.Angle.FromDegrees(0).radians())
             val = BABYLON.Angle.FromDegrees(angle).radians();
         new TWEEN.Tween(mesh.rotation).to({z:isleft?-val:val},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onUpdate(()=>{
             this.doorAnim = true;
         }).onComplete(() => {
-            this.doorAnim = false;
             if(isleft){
-                if(!this.isdoorOpen){
-                    this.isdoorOpen=false;
-                    this.doorAnim = false;
-                }
+                this.doorAnim = false;
             }
         }).start();
     }
-    
     setLabel(){
         // console.log(this.root.gamestate.state)
         if(this.root.gamestate.state === GameState.default)

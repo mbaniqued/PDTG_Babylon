@@ -78,6 +78,8 @@ export default class MainScene {
     this.lightswitchObject = new LightSwitch(this,this.lightswtich);
     this.fanswitchobject   = new FanSwitch(this,this.scene.getNodeByName("fanswitchnode"));
 
+
+    
     this.bpnumberTexture = new BABYLON.DynamicTexture("bpnumberTexture",256,this.scene);
     this.bpMachineItem     = new Item("Blood Pressure Monitor",this,this.scene.getTransformNodeByID("bpmachinenode"),{x:-69,y:30,z:33},{x:-93,y:17,z:-8},undefined);
     this.createBpText();
@@ -86,7 +88,6 @@ export default class MainScene {
     this.maskItem          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
     this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
-    // this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
     
     this.dissolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode"),{x:2.16,y:1.57,z:2.34});
@@ -112,7 +113,7 @@ export default class MainScene {
 
     document.addEventListener('keydown', (event)=> {
       console.log(event.key);
-      const val=1;
+      const val=.01;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -135,8 +136,10 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // this.apdmachinePackage.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
-      // this.apdmachinePackage.meshRoot.position = new BABYLON.Vector3(SX,SY,SZ);  
+      // this.ccpdRecordBook.meshRoot.parent = this.scene.getCameraByName("maincamera");
+      // this.ccpdRecordBook.meshRoot.scaling.set(.003,.003,.003);
+      // // this.ccpdRecordBook.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
+      // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(.55,-0.23,1.05);
       // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
     this.scene.onPointerObservable.add((pointerInfo) => {      	
@@ -176,7 +179,7 @@ export default class MainScene {
             }
       });
       this.objectiveListner = (e) => {
-          this.checkObjectives(e.detail.object_type);
+          this.checkObjectives(e.detail);
            
       }
       document.addEventListener(event_objectivecomplete,this.objectiveListner);
@@ -198,19 +201,37 @@ export default class MainScene {
     bpPlan.scaling   = new BABYLON.Vector3(1.4,3.2,1);
     bpPlan.position  = new BABYLON.Vector3(17.8,13,-8);
     bpPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-30).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
-    this.setbpRecord(0,0,0);
+    this.setbpRecord(0,false);
   
   }
-  setbpRecord(v1,v2,v3){
+  setbpRecord(v1,isupdate){
     let ctx = this.bpnumberTexture.getContext();
     const font_size = 64;
     const font_type = "Orbitron";
     const font = font_size + "px " + font_type;
-    ctx.clearRect(0, 0, 256, 256)
-    this.bpnumberTexture.drawText(parseInt(v1)+"",90, 70, font,  "#808794", "transparent", true);
-    this.bpnumberTexture.drawText(parseInt(v2)+"",90, 150, font, "#808794", "transparent", true);
-    this.bpnumberTexture.drawText(parseInt(v3)+"",90, 230, font, "#808794", "transparent", true);
-    // this.bpnumberTexture.update();
+    ctx.clearRect(0,0,256,256);
+    let v2=0,v3=0;
+    if(v1>0)
+      this.bpnumberTexture.drawText(parseInt(v1)+"",90, 70, font,  "#808794", "transparent", true);
+    else
+      this.bpnumberTexture.drawText("",90, 70, font,  "#808794", "transparent", true);
+
+      if(isupdate){
+        v2 = randomNumber(70,90);
+        v3 = randomNumber(60,80);
+        this.bpnumberTexture.drawText(parseInt(v2)+"",90, 150, font, "#808794", "transparent", true);
+        this.bpnumberTexture.drawText(parseInt(v3)+"",90, 230, font, "#808794", "transparent", true);
+      }
+      else{
+        this.bpnumberTexture.drawText("",90, 150, font, "#808794", "transparent", true);
+        this.bpnumberTexture.drawText("",90, 230, font, "#808794", "transparent", true);
+      }
+      
+      
+    
+    
+    
+    
   }
   onpickMesh(pickedMesh){
     // console.log(mesh.name);
@@ -289,8 +310,14 @@ export default class MainScene {
     else if(this.pickMesh.parent.name.includes("ccpdrecordbook")){
       // console.log(this.pickMesh.parent.name);
       this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
-            childmesh.outlineWidth=.1;
-            childmesh.renderOutline=value;
+            if(this.pickMesh.parent.parent === this.scene.getCameraByName("maincamera")){
+                childmesh.outlineWidth=0;
+                childmesh.renderOutline=value;
+            }
+            else{
+                childmesh.outlineWidth=.1;
+                childmesh.renderOutline=value;
+            }
       });
     }
     else if(this.pickMesh.parent.name.includes("diasolutionnode")){
@@ -411,7 +438,7 @@ export default class MainScene {
    }
    setGame(){
       this.resetObjectiveBar();
-      // this.level = 0;
+      this.level = 2;
       this.removeAllActions();
       switch(this.gamemode){
           case gamemode.training:
@@ -462,8 +489,46 @@ export default class MainScene {
                         this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
                         this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
                         this.gui2D.drawObjectiveMenu(true);
+                        this.gui2D.useBtn.isVisible=false;
                       }
                      break;
+                  case 2:{
+                        // this.tableObject.initAction();
+                        this.bpMachineItem.placeItem(ANIM_TIME);
+                        this.ccpdRecordBook.placeItem(ANIM_TIME);
+                        this.alcohalItem.placeItem(ANIM_TIME);
+                        this.connectionItem.placeItem(ANIM_TIME);
+                        this.maskItem.placeItem(ANIM_TIME);
+                        this.apdmachinePackage.placeItem(ANIM_TIME);
+                        this.drainBagItem.placeItem(ANIM_TIME);
+                        this.sanitiserObject[0].placeItem(ANIM_TIME);
+                        this.dissolutionObject[0].placeItem(ANIM_TIME);
+                        this.dissolutionObject[1].placeItem(ANIM_TIME);
+                        let tout = setTimeout(() => {
+                          this.bpMachineItem.initAction();
+                          this.tableObject.initAction();
+                          this.ccpdRecordBook.initAction();
+                          
+                          clearTimeout(tout);
+                        }, ANIM_TIME*1.2);
+                        
+
+                        this.gui2D.objectiveTitle.text = "Self Prepration";
+                        this.totalobjective=6; 
+                        const values = ["Measure your blood pressure  using the BP Monitor","Access the CCPD Record Book","Record your BP in the CCPD Record Book"
+                                         ,"Use a face mask","Navigate to the sink,and wash your hands","Dry your hands with the paper towel"];   
+                         for(let i=0;i<values.length;i++){ 
+                              gameObjectives.push({status:false,msg:values[i]});
+                              this.objectivebar[i] = this.gui2D.createBar(values[i],380,60);
+                              this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
+                              this.objectivebar[i].isVisible = i===0;
+                              this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
+                          }
+                          this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
+                          this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
+                          this.gui2D.drawObjectiveMenu(true);
+                        }
+                       break;
                 }
             break;
           case gamemode.practice:
@@ -546,44 +611,35 @@ export default class MainScene {
        this.ccpdRecordBook.removeAction();  
        this.apdmachinePackage.removeAction();
    }
-   checkObjectives(object_type){
-
-    
-      if(object_type ===  this.doorObject){
-        
+   checkObjectives(detail){
+      if(detail.object_type ===  this.doorObject){
           gameObjectives[0].status = true;
           this.doorObject.removeAction();
           this.objectiveCount++;
-          console.log(this.dialysisItemCnt+"     11111111111111   "+this.handsanitiserCnt);
       }
-      else if(object_type ===  this.lightswitchObject){
+      else if(detail.object_type ===  this.lightswitchObject){
         gameObjectives[1].status = true;
         this.lightswitchObject.removeAction();
         this.objectiveCount++;
-        console.log(this.dialysisItemCnt+"     2222222222222222   "+this.handsanitiserCnt);
       }
-      else if(object_type ===  this.fanswitchobject){
+      else if(detail.object_type ===  this.fanswitchobject){
         gameObjectives[2].status = true;
         this.fanswitchobject.removeAction();
         this.objectiveCount++;
-        console.log(this.dialysisItemCnt+"     3333333333333333   "+this.handsanitiserCnt);
       }
-      else if(object_type ===  this.windowObject){
+      else if(detail.object_type ===  this.windowObject){
         gameObjectives[3].status = true;
         this.windowObject.removeAction();
         this.objectiveCount++;
-        console.log(this.dialysisItemCnt+"     4444444444444   "+this.handsanitiserCnt);
       }
-      else if(object_type ===  this.acItem){
+      else if(detail.object_type ===  this.acItem){
         gameObjectives[4].status = true;
         this.acItem.removeAction();
         this.objectiveCount++;
-        console.log(this.dialysisItemCnt+"     55555555555555   "+this.handsanitiserCnt);
       }
-      else if(object_type ===  this.connectionItem || object_type ===  this.alcohalItem|| object_type ===  this.maskItem || object_type ===  this.ccpdRecordBook 
-              || object_type ===  this.apdmachinePackage||this.bpMachineItem){
+      else if(detail.level===1 && (detail.object_type ===  this.connectionItem || detail.object_type ===  this.alcohalItem|| detail.object_type ===  this.maskItem || detail.object_type ===  this.ccpdRecordBook 
+              || detail.object_type ===  this.apdmachinePackage||this.bpMachineItem)){
             if(this.itemCount>=7){
-              console.log(this.dialysisItemCnt+"     6666666666666666   "+this.handsanitiserCnt);
                 this.itemCount =0;
                 this.objectiveCount++;
                 gameObjectives[0].status = true;
@@ -606,7 +662,6 @@ export default class MainScene {
             }
       }
       if(this.dialysisItemCnt>1 && this.handsanitiserCnt>0){
-        console.log(this.dialysisItemCnt+"     77777777777777777   "+this.handsanitiserCnt);
         this.cabinetObject.removeAction();
         this.objectiveCount++;
         gameObjectives[1].status = true;
@@ -616,6 +671,13 @@ export default class MainScene {
             this.sanitiserObject[i].removeAction();
           this.gamestate.state = GameState.default;
       }
+      else if(detail.level===2){
+          if(detail.object_type === this.bpMachineItem){
+            this.objectiveCount++;
+            gameObjectives[0].status = true;
+            this.ccpdRecordBook.initAction();
+          }
+      }   
       this.updateObjective();
       if(this.objectiveCount>=this.totalobjective){
         this.gui2D.drawObjectiveMenu(false);
@@ -626,6 +688,7 @@ export default class MainScene {
               break;
             case 1:
                 this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Item PrepRation\n Complete!";
+                this.cabinetObject.openCloseDoor();
               break;
         }
         this.gui2D.nextBtn._onPointerUp=()=>{
@@ -642,3 +705,7 @@ export default class MainScene {
       }
    }
 }
+
+export function randomNumber(min, max) { 
+  return Math.random() * (max - min) + min;
+} 

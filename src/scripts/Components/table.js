@@ -25,18 +25,35 @@ export default class Table{
     }
     removeAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-                childmesh.actionManager = null;
+                if(childmesh.name.includes("table"))
+                    childmesh.actionManager = null;
         });
     }
     initAction(){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
-            if(!childmesh.actionManager)
-                this.addAction(childmesh);
+            if(!childmesh.actionManager){
+                if(childmesh.name.includes("table"))
+                    this.addAction(childmesh);
+            }
+        });
+    }
+    addTableAction(){
+        this.meshRoot.getChildTransformNodes().forEach(childnode=>{
+            if(childnode.name==="tablenode"){
+                    childnode.getChildMeshes().forEach(childmesh => {
+                        if(childmesh.name.includes("table")){
+                            console.log(childmesh.name)   
+                            this.addAction(childmesh);
+                        }
+                });
+            }
         });
     }
     addAction(mesh){
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+
+                    console.log(mesh.name);
                     this.setLabel();
                     this.label.isVisible=this.root.gamestate.state !== GameState.radial && this.root.gamestate.state !== GameState.menu && this.root.gamestate.state !== GameState.levelstage;
                 }))
@@ -51,6 +68,8 @@ export default class Table{
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
                     
+                    if(this.root.gui2D.radialCircle.isVisible)
+                        return;
                     if(this.state>0 && this.root.gamestate.state === GameState.default){
                         if(this.state>0 && this.isdrawerOpen)
                             this.state=10;
@@ -58,6 +77,8 @@ export default class Table{
                             this.state=0;
 
                     }
+                    
+
                     switch(this.state){
                         case 0:
                                 this.root.gamestate.state = GameState.default;
@@ -89,10 +110,11 @@ export default class Table{
             this.state=1;
             this.setDrawerBorder(1);
         }).start();
-        new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(50).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+        new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(45).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.root.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
     }
     setDrawerAnim(){
+        
         this.meshRoot.getChildTransformNodes().forEach(childnode=>{
             if(childnode.name==="tabledrawer"){
                 this.root.gamestate.state = GameState.active;
