@@ -38,6 +38,7 @@ export default class Common{
         this.camera.setTarget(this.camVector);
         this.camera.attachControl(this.game.canvas, true);  
         this.camera.maxZ = 100;
+        
         this.camera.wheelPrecision = 50;
         this.camera.useBouncingBehavior = false;
       //   this.camera.parent = this.camRoot;

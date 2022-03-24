@@ -49,10 +49,10 @@ export default class MainScene {
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
     this.ccpdRecordBook=undefined,this.apdmachinePackage=undefined,this.lightswitchObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
     this.fanAnim = null;
-    
     // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
     // this.sceneOptimiser.startOptimiser();
     this.level=0,this.isUp=false,this.objectiveCount=0,this.totalobjective=0,this.itemCount=0,this.dialysisItemCnt=0,this.handsanitiserCnt=0;
+    this.bpBalue="";
     this.initState();
     this.initacParticle();
     
@@ -69,12 +69,12 @@ export default class MainScene {
     this.viewportFrame.isVisible=false;
     this.viewportFrame.leftInPixels=400;
 
-    this.trollyObject   = new Trolly(this,this.trollyRoot,{x:-2.85,y:1.78,z:2.5});
-    this.tableObject    = new Table(this,this.tableRoot,{x:-.25,y:1.9,z:2.5});
-    this.cabinetObject  = new Cabinet(this,this.cabinetRoot,{x:1.9,y:1,z:2.5});
-    this.doorObject     = new DoorObject(this,this.doorRoot,{x:8.8,y:2.2,z:2.75});
-    this.windowObject   = new WindowFrame(this,this.windowFrameRoot,{x:-7.9,y:3.45,z:2});
-    this.acItem         = new ACRemote(this,this.acRemoteRoot,{x:-5,y:.9,z:.5});
+    this.trollyObject      = new Trolly(this,this.trollyRoot,{x:-2.85,y:1.78,z:2.5});
+    this.tableObject       = new Table(this,this.tableRoot,{x:-.25,y:1.9,z:2.5});
+    this.cabinetObject     = new Cabinet(this,this.cabinetRoot,{x:1.9,y:1,z:2.5});
+    this.doorObject        = new DoorObject(this,this.doorRoot,{x:8.8,y:2.2,z:2.75});
+    this.windowObject      = new WindowFrame(this,this.windowFrameRoot,{x:-7.9,y:3.45,z:2});
+    this.acItem            = new ACRemote(this,this.acRemoteRoot,{x:-5,y:.9,z:.5});
     this.lightswitchObject = new LightSwitch(this,this.lightswtich);
     this.fanswitchobject   = new FanSwitch(this,this.scene.getNodeByName("fanswitchnode"));
 
@@ -86,8 +86,11 @@ export default class MainScene {
     this.connectionItem    = new Item("Connection Shield",this,this.scene.getTransformNodeByID("ConnectionShield"),{x:-70,y:5,z:38.5},{x:-65,y:-55,z:-4},undefined); 
     this.alcohalItem       = new Item("Alchohal Wipe",this,this.scene.getTransformNodeByID("Alcohol_Wipe"),{x:-45,y:8,z:38.5},{x:-36,y:-53,z:-4},{x:0,y:0,z:90});
     this.maskItem          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
+    // this.maskItem1          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask").clone(),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
     this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
+
+    // this.ccpdRecordBook1    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook").clone("nik"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
     
     this.dissolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode"),{x:2.16,y:1.57,z:2.34});
@@ -104,15 +107,18 @@ export default class MainScene {
     const sanitizerclone3 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer3");
     this.sanitiserObject[2]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone3,{x:1.47,y:1.07,z:2.2});
 
-    this.startFan();
 
+    
+
+    this.createccpdCanvas();
+    this.startFan();
     this.gui2D.resetCamBtn.onPointerUpObservable.add(()=>{
       this.setCameraTarget(); 
       this.sceneCommon.removeMiniCam();
     }) 
 
     document.addEventListener('keydown', (event)=> {
-      console.log(event.key);
+      // console.log(event.key);
       const val=.01;
       switch(event.key){
          case "ArrowDown":
@@ -136,11 +142,20 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // this.ccpdRecordBook.meshRoot.parent = this.scene.getCameraByName("maincamera");
-      // this.ccpdRecordBook.meshRoot.scaling.set(.003,.003,.003);
-      // // this.ccpdRecordBook.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
-      // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(.55,-0.23,1.05);
-      // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
+
+      // this.inputpanel.leftInPixels =SX;
+      // this.inputpanel.topInPixels =SY;
+
+      // this.maskItem1.meshRoot.parent = this.scene.getCameraByName("maincamera");
+      // this.maskItem1.meshRoot.scaling.set(.01,.01,.01);
+      // this.maskItem1.meshRoot.position.set(SX,SY,SZ);
+      // this.maskItem1.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
+
+
+      // this.maskItem.meshRoot.scaling.set(.045,.01,.03);
+      // this.maskItem.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-55).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
+      // this.maskItem.meshRoot.position = new BABYLON.Vector3(.05,-.68,1.12); 
+      console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
     this.scene.onPointerObservable.add((pointerInfo) => {      	
       if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
@@ -221,6 +236,8 @@ export default class MainScene {
         v3 = randomNumber(60,80);
         this.bpnumberTexture.drawText(parseInt(v2)+"",90, 150, font, "#808794", "transparent", true);
         this.bpnumberTexture.drawText(parseInt(v3)+"",90, 230, font, "#808794", "transparent", true);
+        this.bpBalue = parseInt(v1)+"/"+parseInt(v2)+"("+parseInt(v3)+")";
+        console.log(this.bpBalue);
       }
       else{
         this.bpnumberTexture.drawText("",90, 150, font, "#808794", "transparent", true);
@@ -439,6 +456,7 @@ export default class MainScene {
    setGame(){
       this.resetObjectiveBar();
       this.level = 2;
+      this.bpBalue="";
       this.removeAllActions();
       switch(this.gamemode){
           case gamemode.training:
@@ -507,8 +525,7 @@ export default class MainScene {
                         let tout = setTimeout(() => {
                           this.bpMachineItem.initAction();
                           this.tableObject.initAction();
-                          this.ccpdRecordBook.initAction();
-                          
+                          this.maskItem.initAction();
                           clearTimeout(tout);
                         }, ANIM_TIME*1.2);
                         
@@ -612,70 +629,86 @@ export default class MainScene {
        this.apdmachinePackage.removeAction();
    }
    checkObjectives(detail){
-      if(detail.object_type ===  this.doorObject){
-          gameObjectives[0].status = true;
-          this.doorObject.removeAction();
-          this.objectiveCount++;
-      }
-      else if(detail.object_type ===  this.lightswitchObject){
-        gameObjectives[1].status = true;
-        this.lightswitchObject.removeAction();
-        this.objectiveCount++;
-      }
-      else if(detail.object_type ===  this.fanswitchobject){
-        gameObjectives[2].status = true;
-        this.fanswitchobject.removeAction();
-        this.objectiveCount++;
-      }
-      else if(detail.object_type ===  this.windowObject){
-        gameObjectives[3].status = true;
-        this.windowObject.removeAction();
-        this.objectiveCount++;
-      }
-      else if(detail.object_type ===  this.acItem){
-        gameObjectives[4].status = true;
-        this.acItem.removeAction();
-        this.objectiveCount++;
-      }
-      else if(detail.level===1 && (detail.object_type ===  this.connectionItem || detail.object_type ===  this.alcohalItem|| detail.object_type ===  this.maskItem || detail.object_type ===  this.ccpdRecordBook 
-              || detail.object_type ===  this.apdmachinePackage||this.bpMachineItem)){
-            if(this.itemCount>=7){
-                this.itemCount =0;
-                this.objectiveCount++;
-                gameObjectives[0].status = true;
-                this.tableObject.setDrawerAnim();
-                this.tableObject.removeAction();
-                this.bpMachineItem.removeAction();
-                this.alcohalItem.removeAction();
-                this.maskItem.removeAction();
-                this.connectionItem.removeAction();
-                this.apdmachinePackage.removeAction();
-                this.drainBagItem .removeAction();
-                this.ccpdRecordBook.removeAction();
-                this.cabinetObject.initAction();
-                for(let i=0;i<this.dissolutionObject.length;i++)
-                  this.dissolutionObject[i].initAction();
 
-                for(let i=0;i<this.sanitiserObject.length;i++)
-                  this.sanitiserObject[i].initAction();
-                  this.gamestate.state = GameState.default;
+      if(this.level ===0){
+            if(detail.object_type ===  this.doorObject){
+                gameObjectives[0].status = true;
+                this.doorObject.removeAction();
+                this.objectiveCount++;
+            }
+            else if(detail.object_type ===  this.lightswitchObject){
+              gameObjectives[1].status = true;
+              this.lightswitchObject.removeAction();
+              this.objectiveCount++;
+            }
+            else if(detail.object_type ===  this.fanswitchobject){
+              gameObjectives[2].status = true;
+              this.fanswitchobject.removeAction();
+              this.objectiveCount++;
+            }
+            else if(detail.object_type ===  this.windowObject){
+              gameObjectives[3].status = true;
+              this.windowObject.removeAction();
+              this.objectiveCount++;
+            }
+            else if(detail.object_type ===  this.acItem){
+              gameObjectives[4].status = true;
+              this.acItem.removeAction();
+              this.objectiveCount++;
             }
       }
-      if(this.dialysisItemCnt>1 && this.handsanitiserCnt>0){
-        this.cabinetObject.removeAction();
-        this.objectiveCount++;
-        gameObjectives[1].status = true;
-        for(let i=0;i<this.dissolutionObject.length;i++)
-            this.dissolutionObject[i].removeAction();
-        for(let i=0;i<this.sanitiserObject.length;i++)
-            this.sanitiserObject[i].removeAction();
-          this.gamestate.state = GameState.default;
-      }
-      else if(detail.level===2){
-          if(detail.object_type === this.bpMachineItem){
+      if(this.level===1){
+        if((detail.object_type ===  this.connectionItem || detail.object_type ===  this.alcohalItem|| detail.object_type ===  this.maskItem || detail.object_type ===  this.ccpdRecordBook 
+          || detail.object_type ===  this.apdmachinePackage||this.bpMachineItem)){
+                if(this.itemCount>=7){
+                    this.itemCount =0;
+                    this.objectiveCount++;
+                    gameObjectives[0].status = true;
+                    this.tableObject.setDrawerAnim();
+                    this.tableObject.removeAction();
+                    this.bpMachineItem.removeAction();
+                    this.alcohalItem.removeAction();
+                    this.maskItem.removeAction();
+                    this.connectionItem.removeAction();
+                    this.apdmachinePackage.removeAction();
+                    this.drainBagItem .removeAction();
+                    this.ccpdRecordBook.removeAction();
+                    this.cabinetObject.initAction();
+                    for(let i=0;i<this.dissolutionObject.length;i++)
+                      this.dissolutionObject[i].initAction();
+
+                    for(let i=0;i<this.sanitiserObject.length;i++)
+                      this.sanitiserObject[i].initAction();
+                      this.gamestate.state = GameState.default;
+                }
+          }
+          if(this.dialysisItemCnt>1 && this.handsanitiserCnt>0){
+            this.cabinetObject.removeAction();
             this.objectiveCount++;
+            gameObjectives[1].status = true;
+            for(let i=0;i<this.dissolutionObject.length;i++)
+                this.dissolutionObject[i].removeAction();
+            for(let i=0;i<this.sanitiserObject.length;i++)
+                this.sanitiserObject[i].removeAction();
+              this.gamestate.state = GameState.default;
+          }
+      }
+      if(this.level===2){
+          if(detail.object_type === this.bpMachineItem){
+            this.objectiveCount=1;
             gameObjectives[0].status = true;
             this.ccpdRecordBook.initAction();
+          }
+          if(detail.object_type === this.ccpdRecordBook){
+             if(detail.msg.includes("useccpd")){
+              this.objectiveCount=2;
+              gameObjectives[1].status = true;
+             }
+            if(detail.msg.includes("ccprd_record_fill")){
+                this.objectiveCount=3;
+                gameObjectives[2].status = true;
+                this.maskItem.initAction();
+             }  
           }
       }   
       this.updateObjective();
@@ -704,7 +737,86 @@ export default class MainScene {
         }
       }
    }
+    createccpdCanvas(){
+      let ccpdPlan      =  BABYLON.MeshBuilder.CreatePlane("ccpdplane",{width:1,height:1,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+      ccpdPlan.parent   = this.scene.getCameraByName("maincamera");
+      const mat           = new BABYLON.StandardMaterial("ccpdplanemat",this.scene);
+      mat.diffuseColor    = new BABYLON.Color3(1,0,0);
+      ccpdPlan.material = mat;
+      ccpdPlan.scaling.set(.35,.53,1);
+      ccpdPlan.position = new BABYLON.Vector3(0.49,0,1.05); 
+      ccpdPlan.isPickable=true;
+      ccpdPlan.outlineWidth=0;
+      ccpdPlan.isVisible=false;
+      // this.ccpdRecordBook.meshRoot.getChildMeshes().forEach(childmesh => {
+      //     if(childmesh.id ==="ccpdback")
+      //       ccpdCanvas.parent= childmesh;
+      // });
+      this.recordbookCanvas = GUI.AdvancedDynamicTexture.CreateForMesh(ccpdPlan,512,512);
+      const titlepanel  = this.gui2D.createStackPanel("titlepanel",170,500,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP);    
+      titlepanel.leftInPixels =22;
+      titlepanel.topInPixels =26;
+      this.recordbookCanvas.addControl(titlepanel);
+      this. inputpanel  = this.gui2D.createStackPanel("titlepanel",95,500,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP);    
+      this.inputpanel.leftInPixels =186;
+      this.inputpanel.topInPixels =25.5;
+      this.recordbookCanvas.addControl(this.inputpanel);
+
+      
+      const title=["Date","B/P","Time On","Time Off","Heater Bag","1.5 Dext. (Amount)","Supply Bag","1.5 Dext. (Amount)","Last Bag","1.5 Dext. (Amount)","Type of Therapy",
+                  "Therapy Volume","Therapy Time","Fill Volume","Last Fill Volume","Concentration","Number of Cycle","Intial Drain","Average Dwell Time","Total UF","Lost Dwell Time",
+                  "Added Dwell Time","Colour of Drainage"]; 
+
+      for(let i=0;i<title.length;i++){
+          const titletxt =  this.gui2D.createText("ccpdtitle"+i,title[i],12,"#000000",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+          titletxt.widthInPixels  = titlepanel.widthInPixels
+          titletxt.fontFamily="Arial"
+          titletxt.heightInPixels = 20
+          titletxt.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+          titletxt.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+          titlepanel.addControl(titletxt);
+          titletxt.isPointerBlocker=true;
+
+
+          const inputfield = this.gui2D.createInputField("ccpdinput"+i,"","DD/MM/Year",this.inputpanel.widthInPixels,20,"#FFFF0000","#000000",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP) ;
+          inputfield.fontSizeInPixels=12;
+          inputfield.thickness=0;
+          if(i===0)
+            inputfield.placeholderText = "DD/MM/Year";
+          else if(i===1){
+              inputfield.placeholderText = "SYS/DIA(PH)";
+              inputfield.onTextChangedObservable.add(()=>{
+                //  if(this.bpBalue ===inputfield.text)
+                 {
+                    let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this.ccpdRecordBook,msg:"ccprd_record_fill",level:2}});
+                    document.dispatchEvent(custom_event);                                                
+                  }
+                    
+               })
+          }
+          else
+            inputfield.placeholderText = "";
+
+          this.inputpanel.addControl(inputfield);
+      }  
+        const pageCloseBtn  =   this.gui2D.createCircle("pageclose",56,36,"#FF000073",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.recordbookCanvas.addControl(pageCloseBtn);
+        const crossimg      =  this.gui2D.createImage("crossimg","ui/pngaaa.com-28984.png",24,20,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        crossimg.isPointerBlocker=false;
+        crossimg.isVisible  = true;
+        pageCloseBtn.addControl(crossimg);
+        pageCloseBtn.leftInPixels=190;
+        pageCloseBtn.isVisible  = true;
+
+        pageCloseBtn._onPointerUp=()=>{
+            ccpdPlan.isVisible=false;
+            ccpdPlan.isPickable=false;
+            this.ccpdRecordBook.closeccpdRecordBook(300);
+        }
+   }
+
 }
+
 
 export function randomNumber(min, max) { 
   return Math.random() * (max - min) + min;

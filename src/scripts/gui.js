@@ -25,7 +25,9 @@ export default class GUI2D{
         this.initRadialMenu();
         this.initLoadingPage();
         this.initObjectiveMenu();
-        this.initLevelComplete() ;
+        this.initLevelComplete();
+
+        
       }
       initMainMenu(){
         
@@ -387,11 +389,11 @@ export default class GUI2D{
         this.drawObjectiveMenu(false);
       }
       createBar(msg,width,height){
-        const objectivebar = this.createRect("objectivebar",width,height,5,"#567F9033",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
-        const  rightArrowImage =  this.createImage("rightarrow","ui/white.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        const  objectivebar     =  this.createRect("objectivebar",width,height,5,"#567F9033",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        const  rightArrowImage  =  this.createImage("rightarrow","ui/white.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
         rightArrowImage.isVisible=true;
         objectivebar.addControl(rightArrowImage);
-        const bartitle =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
         bartitle.widthInPixels  =  parseInt(width*.9);
         bartitle.heightInPixels =  height;
         bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
@@ -441,8 +443,8 @@ export default class GUI2D{
       }
       createImage(name,src,width,height,horizontal,verticle,isadd){
         const image  =  new GUI.Image(name,src);
-        image.width  = width+"px";
-        image.height = height+"px";
+        image.widthInPixels  = width;
+        image.heightInPixels = height;
         image.populateNinePatchSlicesFromImage = true;
         // image.stretch = BABYLON.GUI.Image.STRETCH_NINE_PATCH;
         image.isVisible=false;
@@ -458,8 +460,8 @@ export default class GUI2D{
       
       createButon(name,src,bgcolor,txt,fontSize,fontcolor,width,height,horizontal,verticle,isadd){
         const button = GUI.Button.CreateImageOnlyButton(name, src);
-        button.width = width+"px";
-        button.height = height+"px";
+        button.widthInPixels = width;
+        button.heightInPixels = height;
         button.color = bgcolor;
         button.background = "ffffff00";
         button.isVisible=false;
@@ -511,8 +513,8 @@ export default class GUI2D{
       }
       createCircle(name,width,height,color,horizontal,verticle,isadd){
         const circle   = new GUI.Ellipse(name);
-        circle.width   = width+"px";
-        circle.height  = height+"px";
+        circle.widthInPixels   = width;
+        circle.heightInPixels  = height;
         circle.color   = color;
         circle.thickness = 0;
         circle.background = color;
@@ -538,8 +540,8 @@ export default class GUI2D{
       }
       createRectLabel(name,width,height,radius,color,mesh,linkOffsetX,linkOffsetY){
         const rect = new GUI.Rectangle(name);
-        rect.width = width+"px";
-        rect.height = height+"px";
+        rect.widthInPixels  = width;
+        rect.heightInPixels = height;
         rect.cornerRadius = radius;
         rect.color = color;
         rect.thickness = 4;
@@ -551,12 +553,13 @@ export default class GUI2D{
         rect.linkOffsetXInPixels = linkOffsetX;
         rect.linkOffsetYInPixels = linkOffsetY;
         rect.linkWithMesh(mesh);   
+        
 
         const label = new GUI.TextBlock(name+"txt");
         label.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
         label.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
         label.text =  name;
-        label.fontSize =20+"px";
+        label.fontSizeInPixels =20;
         label.color = "#A5A5A5";
         label.isPointerBlocker=true;
         rect.isVisible=false;
@@ -565,8 +568,8 @@ export default class GUI2D{
       }
       createRect(name,width,height,radius,color,horizontal,verticle,isadd){
         const rect = new GUI.Rectangle(name);
-        rect.width = width+"px";
-        rect.height = height+"px";
+        rect.widthInPixels  = width;
+        rect.heightInPixels = height;
         rect.cornerRadius = radius;
         rect.color = color;
         rect.thickness = 4;
@@ -582,7 +585,7 @@ export default class GUI2D{
         const text = new GUI.TextBlock(name);
         text.text = _text;
         text.fontFamily = "Shrikhand";
-        text.fontSize = size+"px";
+        text.fontSizeInPixels = size;
         text.fontWeight = "100";
         text.color    = color;
         text.isPointerBlocker=true;
@@ -596,6 +599,31 @@ export default class GUI2D{
       setTextOutLine(textObj,color,widht){
         textObj.outlineColor = color;
         textObj.outlineWidth = widht;
+      }
+      createStackPanel(name,width,height,color,horizontalAlignment,verticalAlignment){
+        const panel  =  new GUI.StackPanel(name);    
+        panel.widthInPixels = width;
+        panel.heightInPixels = height;
+        panel.background = color;
+        panel.horizontalAlignment = horizontalAlignment;
+        panel.verticalAlignment   = verticalAlignment;
+        panel.isPointerBlocker=true;
+        return panel;
+      } 
+      createInputField(name,text,placeholder,width,height,bgcolor,fontcolor,horizontalAlignment,verticalAlignment){
+        const inputfield = new BABYLON.GUI.InputText(name);
+        inputfield.text  = text;
+        inputfield.placeholderText  = placeholder;
+        inputfield.widthInPixels = width;
+        inputfield.heightInPixels = height;
+        inputfield.horizontalAlignment = horizontalAlignment;
+        inputfield.verticalAlignment = verticalAlignment;
+        inputfield.background=bgcolor;
+        inputfield.color=fontcolor;
+        inputfield.focusedBackground="#FFFFFF00";
+        inputfield.promptMessage = text;
+        return inputfield;
+
       }
     
 }
