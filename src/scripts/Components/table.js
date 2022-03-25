@@ -52,8 +52,6 @@ export default class Table{
     addAction(mesh){
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-
-                    console.log(mesh.name);
                     this.setLabel();
                     this.label.isVisible=this.root.gamestate.state !== GameState.radial && this.root.gamestate.state !== GameState.menu && this.root.gamestate.state !== GameState.levelstage;
                 }))
@@ -67,7 +65,6 @@ export default class Table{
                         }
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
-                    
                     if(this.root.gui2D.radialCircle.isVisible)
                         return;
                     if(this.state>0 && this.root.gamestate.state === GameState.default){
@@ -75,10 +72,7 @@ export default class Table{
                             this.state=10;
                          else   
                             this.state=0;
-
                     }
-                    
-
                     switch(this.state){
                         case 0:
                                 this.root.gamestate.state = GameState.default;
@@ -90,12 +84,13 @@ export default class Table{
                             break;    
                         case 10:
                                 this.setTableFocusAnim();
-                                this.meshRoot.getChildTransformNodes().forEach(childnode=>{
-                                    if(childnode.name==="tabledrawer"){
-                                        let drawerNode = childnode;  
-                                        this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z-1));
-                                    }
-                                });
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.meshRoot.position.z-.5));
+                                // this.meshRoot.getChildTransformNodes().forEach(childnode=>{
+                                //     if(childnode.name==="tabledrawer"){
+                                //         let drawerNode = childnode;  
+                                //            // this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z-1));
+                                //     }
+                                // });
                             break;
                     }        
                     this.setLabel();    
@@ -124,14 +119,15 @@ export default class Table{
                     if(this.state===1)
                         this.isdrawerOpen =!this.isdrawerOpen;
                     let val = this.isdrawerOpen?-120:120; 
-                    this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z+(this.isdrawerOpen?-2:0)));
+                    this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.meshRoot.position.z-.5));
+                    // this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z+(this.isdrawerOpen?-2:0)));
                     new TWEEN.Tween(drawerNode.position).to({y:drawerNode.position.y+val},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onUpdate(()=>{
                         this.drawerAnim = true;
                     }).onComplete(() => {
                         this.drawerAnim = false;   
                         if(!this.isdrawerOpen){
-                            this.state=0;
-                            this.root.gamestate.state = GameState.default;
+                            // this.state=0;
+                            // this.root.gamestate.state = GameState.default;
                             this.label.isVisible=false;
                         }
                     }).start();
@@ -154,7 +150,9 @@ export default class Table{
                         this.root.loaderManager.setPickable(childmesh,1); 
                     });
                 }
-                this.setDrawerBorder(-1);
+                else{
+                    this.setDrawerBorder(-1);
+                }
         });
     }
     setDrawerBorder(value){

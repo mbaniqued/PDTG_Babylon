@@ -57,22 +57,20 @@ export default class Cabinet{
                             this.state =0;
                 }
                 // document.getElementById("debugtext").textContent= "cabinetstate==after== "+this.state+"  !!! GameState!!  "+this.root.gamestate.state;
+                        this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));
                     switch(this.state){
                         case 0:
                                 this.root.gamestate.state = GameState.default;
                                 this.cabinetFocusAnim();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));
                             break;
                          case 1:
                                 if(mesh.parent.parent.name.includes("Door")){
                                     this.root.gamestate.state = GameState.active;
-                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));            
                                     this.openCloseDoor();
                                 }
                              break;   
                            case 10:
                                 this.cabinetFocusAnim();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));            
                                break;  
                         } 
                         this.setLabel();      
@@ -132,7 +130,6 @@ export default class Cabinet{
         });
     }
     setCabinetDoorBorder(value){
-        
         this.meshRoot.getChildTransformNodes().forEach(childnode=>{
             if(childnode.name.includes("cabinetleftDoor")){
                 childnode.getChildMeshes().forEach(childmesh=>{

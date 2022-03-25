@@ -36,6 +36,7 @@ export default class GUI2D{
         const whiteimg     =  this.createRect("menubg3",1920,1080,0,"#FFFFFF73",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         const menuBgImg    =  this.createImage("menubg1","ui/apd_bg.PNG",1920,1080,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         menuBgImg.isVisible=true;
+        
         const menufont    =  this.createText("menufont","Peritoneal Dialysis \nGame",90,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false) 
         this.setTextOutLine(menufont,"#000000",2);
         menufont.topInPixels =-240;
@@ -323,16 +324,22 @@ export default class GUI2D{
         this.inspectBtn      =  this.createCircle("inspectBtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         const inspectImg     =  this.createImage("inspectBtn","ui/magnifying-glass-with-check-mark.png",72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         inspectImg.isVisible=true;
+        inspectImg.isPointerBlocker = false;
+        this.inspectBtn.isPointerBlocker = true;
         this.inspectBtn.addControl(inspectImg);
         
         this.useBtn      =  this.createCircle("useBtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         const useImg     =  this.createImage("useBtn","ui/NicePng_hand-png_45955 (2).png",72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         useImg.isVisible=true;
+        useImg.isPointerBlocker=false;
+        this.useBtn.isPointerBlocker = true;
         this.useBtn.addControl(useImg);
         
         this.crossBtn      =  this.createCircle("crossbtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         const crossImg     =  this.createImage("crossbtn","ui/cross2_png.png",72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         crossImg.isVisible=true;
+        crossImg.isPointerBlocker=false;
+        this.crossBtn.isPointerBlocker = true;
         this.crossBtn.addControl(crossImg);
 
         this.drawRadialMenu(false);
@@ -521,6 +528,7 @@ export default class GUI2D{
         circle.horizontalAlignment = horizontal;
         circle.verticalAlignment   = verticle;
         circle.isVisible=false;
+        circle.isPointerBlocker=false;
         if(isadd)
             this.advancedTexture.addControl(circle);   
         // circle.onPointerDownObservable.add(function() {

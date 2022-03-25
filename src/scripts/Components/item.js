@@ -98,7 +98,7 @@ export default class Item{
                                 this.meshRoot.removeBehavior(this.pointerDragBehavior);
                                 showMenu = false;
                                 this.root.gui2D.drawRadialMenu(false);  
-                                this.hideOutLine();
+                                this.root.hideOutLine(this.meshRoot);
                                 if(this.name.includes("CCPD")){
                                     this.useccpdRecordBook(500);
                                 }
@@ -117,7 +117,7 @@ export default class Item{
                                 showMenu = false;
                                 this.root.gui2D.drawRadialMenu(false);  
                                 this.root.gamestate.state = GameState.active;
-                                this.hideOutLine();
+                                this.root.hideOutLine(this.meshRoot);
                             };
                        }     
                     )
@@ -257,11 +257,6 @@ export default class Item{
                 this.root.gamestate.state = GameState.active;
             }).start();
         }
-      }
-      hideOutLine(){
-        this.meshRoot.parent.getChildMeshes().forEach(childmesh=>{
-            childmesh.renderOutline=false;
-        });
       }
       usebpMachine(){
         console.log(this.state);

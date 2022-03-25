@@ -1,5 +1,6 @@
 import * as BABYLON from "babylonjs";
 import "babylonjs-loaders";
+export const FOV=.6;
 export default class LoaderManager {
   constructor(root) {
     this.root = root;
@@ -39,10 +40,37 @@ export default class LoaderManager {
       
       this.assetsManager.addMeshTask("fanswitch","","models/","fanswitch.glb");
       this.assetsManager.addMeshTask("APD_Package_v2","","models/Items/","APD_Package_v2.glb");
+      this.assetsManager.addMeshTask("PaperTowel","","models/Items/","PaperTowel.glb");
+      this.assetsManager.addMeshTask("LiquidHandsoap","","models/Items/","LiquidHandsoap.glb");
+      
       
       this.assetsManager.onTaskSuccessObservable.add((task)=> {
         
         
+        if(task.name === "LiquidHandsoap"){
+          const node   = new BABYLON.TransformNode("liquidhandsoap_node");
+          for(let i=0;i<task.loadedMeshes.length;i++){ //liquidhandsoap_node
+            task.loadedMeshes[i].parent = node;
+            task.loadedMeshes[i].scaling.set(.4,.4,.4);
+            this.setPickable(task.loadedMeshes[i],.01);
+          } 
+          node.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          node.position.set(0,0,0);
+          
+        }
+        if(task.name === "PaperTowel"){
+          const node   = new BABYLON.TransformNode("papertowel_node");
+          for(let i=0;i<task.loadedMeshes.length;i++){ //paper_towel
+            task.loadedMeshes[i].parent = node;
+            console.log(task.loadedMeshes[i].name);
+            task.loadedMeshes[i].scaling.set(.012,.012,.012);
+            this.setPickable(task.loadedMeshes[i],1);
+          } 
+          node.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(45).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          node.position.set(0,0,0);
+          
+          
+        }
         if(task.name === "APD_Package_v2"){
           const node   = new BABYLON.TransformNode("apd_package_node");
           for(let i=0;i<task.loadedMeshes.length;i++){ //fanswitch
@@ -711,7 +739,7 @@ export default class LoaderManager {
     this.assetsManager.load();
   }
   setPickable(mesh,width){
-    mesh.isPickable=true;
+    mesh.isPickable=width;
     mesh.renderOutline = false;
     mesh.outlineWidth = width;
     mesh.outlineColor = BABYLON.Color3.Yellow();

@@ -14,14 +14,18 @@ import GUI2D from "../gui.js";
 import LightSwitch from "../Components/lightswtich.js";
 import CabinetItem from "../Components/cabinetitem.js"; 
 import FanSwitch from "../Components/fanswitch.js";
+import SinkItem from "../Components/sinkitem.js";
 import TWEEN from '@tweenjs/tween.js';
 import * as GUI from 'babylonjs-gui';
-
+import { FOV } from "../LoaderManager.js";
+import HandWash from "../Components/handwash.js";
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
 export const ANIM_TIME=1000;
 export const event_objectivecomplete = "event_objectivecomplete";
+
+
 let gameObjectives=[];
 
 let SX=0,SY=0,SZ=0;
@@ -48,13 +52,22 @@ export default class MainScene {
     this.trollyObject=undefined,this.tableObject=undefined,this.cabinetObject=undefined,this.doorObject=undefined,this.windowObject=undefined;
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
     this.ccpdRecordBook=undefined,this.apdmachinePackage=undefined,this.lightswitchObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
-    this.fanAnim = null;
+    this.fanAnim = null,this.paperTowelObject=undefined,this.handSoapObject=undefined;
+
+    this.handwashactivity;
+
+
+
+    
     // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
     // this.sceneOptimiser.startOptimiser();
     this.level=0,this.isUp=false,this.objectiveCount=0,this.totalobjective=0,this.itemCount=0,this.dialysisItemCnt=0,this.handsanitiserCnt=0;
+    
     this.bpBalue="";
     this.initState();
     this.initacParticle();
+
+    this.handwashactivity = new HandWash(this);
     
   }
   initState(){
@@ -77,20 +90,15 @@ export default class MainScene {
     this.acItem            = new ACRemote(this,this.acRemoteRoot,{x:-5,y:.9,z:.5});
     this.lightswitchObject = new LightSwitch(this,this.lightswtich);
     this.fanswitchobject   = new FanSwitch(this,this.scene.getNodeByName("fanswitchnode"));
-
-
     
-    this.bpnumberTexture = new BABYLON.DynamicTexture("bpnumberTexture",256,this.scene);
+    
     this.bpMachineItem     = new Item("Blood Pressure Monitor",this,this.scene.getTransformNodeByID("bpmachinenode"),{x:-69,y:30,z:33},{x:-93,y:17,z:-8},undefined);
     this.createBpText();
     this.connectionItem    = new Item("Connection Shield",this,this.scene.getTransformNodeByID("ConnectionShield"),{x:-70,y:5,z:38.5},{x:-65,y:-55,z:-4},undefined); 
     this.alcohalItem       = new Item("Alchohal Wipe",this,this.scene.getTransformNodeByID("Alcohol_Wipe"),{x:-45,y:8,z:38.5},{x:-36,y:-53,z:-4},{x:0,y:0,z:90});
     this.maskItem          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
-    // this.maskItem1          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask").clone(),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
     this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
-
-    // this.ccpdRecordBook1    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook").clone("nik"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
     
     this.dissolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode"),{x:2.16,y:1.57,z:2.34});
@@ -107,7 +115,8 @@ export default class MainScene {
     const sanitizerclone3 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer3");
     this.sanitiserObject[2]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone3,{x:1.47,y:1.07,z:2.2});
 
-
+    this.paperTowelObject  = new SinkItem("PaperTowel",this,this.scene.getNodeByName("papertowel_node"),{x:1.98,y:2.02,z:-1.89});
+    this.handSoapObject    = new SinkItem("Hand Soap",this,this.scene.getNodeByName("liquidhandsoap_node"),{x:2.25,y:2.17,z:-2.19});
     
 
     this.createccpdCanvas();
@@ -119,7 +128,7 @@ export default class MainScene {
 
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
-      const val=.01;
+      const val=1;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -142,19 +151,11 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-
-      // this.inputpanel.leftInPixels =SX;
-      // this.inputpanel.topInPixels =SY;
-
-      // this.maskItem1.meshRoot.parent = this.scene.getCameraByName("maincamera");
-      // this.maskItem1.meshRoot.scaling.set(.01,.01,.01);
-      // this.maskItem1.meshRoot.position.set(SX,SY,SZ);
-      // this.maskItem1.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
-
-
+      // this.scene.getTransformNodeByName("liquidhandsoap_node").position =  new BABYLON.Vector3(SX,SY,SZ); 
+      // this.scene.getTransformNodeByName("papertowel_node").rotation =  new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
       // this.maskItem.meshRoot.scaling.set(.045,.01,.03);
-      // this.maskItem.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-55).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
-      // this.maskItem.meshRoot.position = new BABYLON.Vector3(.05,-.68,1.12); 
+      // this.scene.getTransformNodeByName("papertowel_node").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
+      
       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
     this.scene.onPointerObservable.add((pointerInfo) => {      	
@@ -200,6 +201,9 @@ export default class MainScene {
       document.addEventListener(event_objectivecomplete,this.objectiveListner);
   }
   createBpText(){
+    if(this.bpnumberTexture)
+     return;
+
     const bpPlan = BABYLON.MeshBuilder.CreatePlane("bptextplan",{width:8,height:5,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
     bpPlan.parent = this.bpMachineItem.meshRoot;
     bpPlan.isPickable=false;
@@ -210,6 +214,7 @@ export default class MainScene {
     planmat.diffuseColor  = new BABYLON.Color3.FromInts(128,135,148);
     planmat.emissiveColor = new BABYLON.Color3.FromInts(128,135,148);
     
+    this.bpnumberTexture   = new BABYLON.DynamicTexture("bpnumberTexture",256,this.scene);
     this.bpnumberTexture.hasAlpha=true;
     planmat.diffuseTexture = this.bpnumberTexture;
     bpPlan.material  = planmat;
@@ -289,6 +294,19 @@ export default class MainScene {
             this.gamestate.state = GameState.default;
           }
        }
+    }
+  }
+  hideOutLine(meshroot){
+      console.log(meshroot.parent);
+    if(meshroot.parent){
+        meshroot.parent.getChildMeshes().forEach(childmesh=>{
+          childmesh.renderOutline=false;
+      });
+    }
+    else{
+        meshroot.getChildMeshes().forEach(childmesh=>{
+          childmesh.renderOutline=false;
+      });
     }
   }
   updateObjectOutLine(value){
@@ -371,11 +389,21 @@ export default class MainScene {
           }
       });
     } 
+    else if(this.pickMesh.parent.name.includes("papertowel_node")){
+      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
+         if(childmesh.name === "PaperTowel_primitive1")
+            childmesh.renderOutline=value;
+          else
+            childmesh.renderOutline=false;            
+          // childmesh.outlineWidth=.01;
+      });
+    } 
+    
   }
   setCameraTarget(){
     this.showResetViewButton(false);
     this.gamestate.state = GameState.default;
-    this.camera.fov=.6;
+    this.camera.fov=FOV;
     this.sceneCommon.camVector  = new BABYLON.Vector3(0,3.2,0);
     this.camera.position.set(0,this.sceneCommon.camVector.y,0);
     this.camera.lowerAlphaLimit =  null;
@@ -738,6 +766,9 @@ export default class MainScene {
       }
    }
     createccpdCanvas(){
+       if(this.recordbookCanvas)
+           return;
+
       let ccpdPlan      =  BABYLON.MeshBuilder.CreatePlane("ccpdplane",{width:1,height:1,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
       ccpdPlan.parent   = this.scene.getCameraByName("maincamera");
       const mat           = new BABYLON.StandardMaterial("ccpdplanemat",this.scene);
@@ -748,10 +779,7 @@ export default class MainScene {
       ccpdPlan.isPickable=true;
       ccpdPlan.outlineWidth=0;
       ccpdPlan.isVisible=false;
-      // this.ccpdRecordBook.meshRoot.getChildMeshes().forEach(childmesh => {
-      //     if(childmesh.id ==="ccpdback")
-      //       ccpdCanvas.parent= childmesh;
-      // });
+
       this.recordbookCanvas = GUI.AdvancedDynamicTexture.CreateForMesh(ccpdPlan,512,512);
       const titlepanel  = this.gui2D.createStackPanel("titlepanel",170,500,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP);    
       titlepanel.leftInPixels =22;
@@ -794,9 +822,10 @@ export default class MainScene {
                     
                })
           }
-          else
-            inputfield.placeholderText = "";
-
+          else{
+              inputfield.placeholderText = "";
+              inputfield.isEnabled = false;
+          }
           this.inputpanel.addControl(inputfield);
       }  
         const pageCloseBtn  =   this.gui2D.createCircle("pageclose",56,36,"#FF000073",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
