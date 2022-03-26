@@ -44,8 +44,9 @@ export default class Item{
         }
         initAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-                if(childmesh.parent.name.includes("items"))
+                if(childmesh.parent.name.includes("items")){
                     this.addAction(childmesh);
+                }
             });
         }
         addAction(mesh){
@@ -66,6 +67,13 @@ export default class Item{
                 )
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                             console.log(this.root.gamestate.state+"!! OnPickTrigger!!! ")
+                            if(this.root.camera.radius>2.5){
+                                this.root.gamestate.state = GameState.focus;
+                                this.root.tableObject.setTableFocusAnim();
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.position.y,this.root.tableObject.meshRoot.position.z-.5));
+                                this.root.tableObject.state=0;
+                                return;
+                            }
                             if(this.state>=100){
                                 if(this.name.includes("Blood Pressure")){
                                     this.usebpMachine();
@@ -354,6 +362,8 @@ export default class Item{
             }).start();
             new TWEEN.Tween(this.meshRoot.position).to({x:.05,y:-1.19,z:1.5},anim_time).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                 this.removeAction();
+                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"mask_used",level:2}});
+                document.dispatchEvent(custom_event);        
             }).start();
      }
 

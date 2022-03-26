@@ -115,7 +115,7 @@ export default class MainScene {
     const sanitizerclone3 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer3");
     this.sanitiserObject[2]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone3,{x:1.47,y:1.07,z:2.2});
 
-    this.paperTowelObject  = new SinkItem("PaperTowel",this,this.scene.getNodeByName("papertowel_node"),{x:1.98,y:2.02,z:-1.89});
+    this.paperTowelObject  = new SinkItem("PaperTowel",this,this.scene.getNodeByName("papertowel_node"),{x:1.9,y:2.02,z:-1.89});
     this.handSoapObject    = new SinkItem("Hand Soap",this,this.scene.getNodeByName("liquidhandsoap_node"),{x:2.25,y:2.17,z:-2.19});
     
 
@@ -151,6 +151,8 @@ export default class MainScene {
             SZ-=val;
           break;
       }
+      // this.handwashactivity.handwashIcon[0].leftInPixels = SX;
+      // this.handwashactivity.handwashIcon[0].topInPixels  = SY;
       // this.scene.getTransformNodeByName("liquidhandsoap_node").position =  new BABYLON.Vector3(SX,SY,SZ); 
       // this.scene.getTransformNodeByName("papertowel_node").rotation =  new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
       // this.maskItem.meshRoot.scaling.set(.045,.01,.03);
@@ -553,11 +555,8 @@ export default class MainScene {
                         let tout = setTimeout(() => {
                           this.bpMachineItem.initAction();
                           this.tableObject.initAction();
-                          this.maskItem.initAction();
                           clearTimeout(tout);
                         }, ANIM_TIME*1.2);
-                        
-
                         this.gui2D.objectiveTitle.text = "Self Prepration";
                         this.totalobjective=6; 
                         const values = ["Measure your blood pressure  using the BP Monitor","Access the CCPD Record Book","Record your BP in the CCPD Record Book"
@@ -707,11 +706,11 @@ export default class MainScene {
 
                     for(let i=0;i<this.sanitiserObject.length;i++)
                       this.sanitiserObject[i].initAction();
-                      this.gamestate.state = GameState.default;
+                   this.gamestate.state = GameState.default;
                 }
           }
           if(this.dialysisItemCnt>1 && this.handsanitiserCnt>0){
-            this.cabinetObject.removeAction();
+                this.cabinetObject.removeAction();
             this.objectiveCount++;
             gameObjectives[1].status = true;
             for(let i=0;i<this.dissolutionObject.length;i++)
@@ -723,20 +722,27 @@ export default class MainScene {
       }
       if(this.level===2){
           if(detail.object_type === this.bpMachineItem){
-            this.objectiveCount=1;
-            gameObjectives[0].status = true;
-            this.ccpdRecordBook.initAction();
+              this.objectiveCount=1;
+              gameObjectives[0].status = true;
+              this.ccpdRecordBook.initAction();
           }
           if(detail.object_type === this.ccpdRecordBook){
-             if(detail.msg.includes("useccpd")){
-              this.objectiveCount=2;
-              gameObjectives[1].status = true;
-             }
-            if(detail.msg.includes("ccprd_record_fill")){
-                this.objectiveCount=3;
-                gameObjectives[2].status = true;
-                this.maskItem.initAction();
-             }  
+              if(detail.msg.includes("useccpd")){
+                  this.objectiveCount=2;
+                  gameObjectives[1].status = true;
+              }
+              if(detail.msg.includes("ccprd_record_fill")){
+                  if(this.objectiveCount<3){
+                    this.objectiveCount=3;
+                    gameObjectives[2].status = true;
+                    this.maskItem.initAction();
+                  }
+              }
+          }
+          if(detail.object_type === this.maskItem){
+              this.objectiveCount=4;
+              gameObjectives[3].status = true;
+              this.gamestate.state = GameState.default;
           }
       }   
       this.updateObjective();
@@ -824,7 +830,7 @@ export default class MainScene {
           }
           else{
               inputfield.placeholderText = "";
-              inputfield.isEnabled = false;
+              inputfield.isVisible=false;
           }
           this.inputpanel.addControl(inputfield);
       }  

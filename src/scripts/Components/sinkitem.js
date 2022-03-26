@@ -39,7 +39,7 @@ export default class SinkItem{
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                 console.log(this.root.gamestate.state+"!! OnPickTrigger!!! "+this.state);
-                if(this.state>0 && this.root.gamestate.state === GameState.default)
+                if(this.root.camera.radius>2.5)
                     this.state=0;
                 if(this.state>=100){
                     // if(this.name.includes("Mask")){
@@ -56,7 +56,7 @@ export default class SinkItem{
                                 this.state=1;
                             }).start();
                             new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:2.3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({radius:2.45},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                             // 1.98,y:2.02,z:-1.89
                             this.root.setFocusOnObject(new BABYLON.Vector3(1.98,2.02-.3,-1.89-1.2));
                         break;

@@ -739,7 +739,7 @@ export default class LoaderManager {
     this.assetsManager.load();
   }
   setPickable(mesh,width){
-    mesh.isPickable=width;
+    mesh.isPickable=true;
     mesh.renderOutline = false;
     mesh.outlineWidth = width;
     mesh.outlineColor = BABYLON.Color3.Yellow();
