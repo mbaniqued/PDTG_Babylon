@@ -10,7 +10,7 @@ const match=[];
 export default class HandWash{
      constructor(root){
         this.root = root;
-        this.containter = this.root.gui2D.createRect("handwash_container",1280,1080,5,"#ff0000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,true);
+        this.containter = this.root.gui2D.createRect("handwash_container",1280,1080,5,"#ff000000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,true);
         this.iconContainer = new GUI.Container("icon_container");
         this.handwashIcon=[];
         this.isplaced=[];
