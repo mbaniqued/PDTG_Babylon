@@ -11,6 +11,7 @@ export default class Cabinet{
         this.doorAnim   = false;
         this.state      = 0;
         this.setPos();
+        this.setDoor();
         this.initMeshOutline();
         // this.mesh = new BABYLON.TransformNode();
         this.initAction();
@@ -110,6 +111,15 @@ export default class Cabinet{
                 this.doorAnim = false;
             }
         }).start();
+    }
+    setDoor(){
+        this.meshRoot.getChildTransformNodes().forEach(childnode => {
+            if(childnode.name==="cabinetleftDoor"){
+                childnode.rotation.z=0;
+            }
+            if(childnode.name==="cabinetrightDoor")
+                childnode.rotation.z=0;
+        });
     }
     setLabel(){
         // console.log(this.root.gamestate.state)

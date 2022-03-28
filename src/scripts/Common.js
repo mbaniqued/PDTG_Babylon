@@ -1,3 +1,4 @@
+export const FOV=.7;
 export default class Common{
      constructor(root){
         this.root          = root;                    
@@ -32,8 +33,8 @@ export default class Common{
         this.camera.layerMask=1;
         this.camera.inputs.clear();
       
-        this.camera.inputs.addPointers();
-        this.camera.inputs.addMouseWheel();
+      //   this.camera.inputs.addPointers();
+      //   this.camera.inputs.addMouseWheel();
         this.camera.position.set(0,this.camVector.y,0);
         this.camera.setTarget(this.camVector);
         this.camera.attachControl(this.game.canvas, true);  
@@ -65,6 +66,9 @@ export default class Common{
 
       }
       setView(){
+            this.hemiLight.intensity         = .1;
+            this.directionalLight.intensity  = .1;
+            this.camera.fov   = 1;
             this.camera.setTarget(new BABYLON.Vector3(-3,3,0));
             this.camera.lowerRadiusLimit = 1;
             this.camera.upperRadiusLimit = 100;

@@ -9,7 +9,7 @@ export default class Item{
             this.root            = root;
             this.meshRoot        = meshobject;
             this.startPosition   = pos;
-            this.startRotation   = new BABYLON.Vector3(this.meshRoot.rotation.x,this.meshRoot.rotation.y,this.meshRoot.rotation.z);
+            this.startRotation   = new BABYLON.Vector3(0,0,0);
             this.startScaling    = new BABYLON.Vector3(this.meshRoot.scaling.x,this.meshRoot.scaling.y,this.meshRoot.scaling.z);
             this.placedPostion   = placedpos;
             if(rotation)
@@ -22,9 +22,9 @@ export default class Item{
             this.initAction();
             this.initDrag();
             this.meshRoot.addBehavior(this.pointerDragBehavior);
-            this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
+            this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-100);
             this.label.isVisible=false;
-            this.label.isPointerBlocker=true;
+            this.label.isPointerBlocker=false;
             this.useItem=false;
             this.tout=undefined;
             this.tween=undefined;
@@ -35,6 +35,12 @@ export default class Item{
                 this.meshRoot.name+="items";
             }
             this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
+            if(this.meshRoot.name.includes("apd_package_node")){
+                this.meshRoot.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(180).radians());
+            }
+            else   
+                this.meshRoot.rotation  = new BABYLON.Vector3(this.startRotation.x,this.startRotation.y,this.startRotation.z);
+                this.meshRoot.scaling   = new BABYLON.Vector3(1,1,1);
         }
         removeAction(){
                 this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -45,6 +51,7 @@ export default class Item{
         initAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 if(childmesh.parent.name.includes("items")){
+                    childmesh.isVisible=true;
                     this.addAction(childmesh);
                 }
             });
@@ -66,7 +73,7 @@ export default class Item{
                     )
                 )
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                            console.log(this.root.gamestate.state+"!! OnPickTrigger!!! ")
+                            console.log(this.root.gamestate.state+"!! OnPickTrigger!!! "+showMenu)
                             if(this.root.camera.radius>2.5){
                                 this.root.gamestate.state = GameState.focus;
                                 this.root.tableObject.setTableFocusAnim();
@@ -91,10 +98,10 @@ export default class Item{
                                 return;
                             this.label.isVisible=false;
                             showMenu =!showMenu;
+                            
                             this.root.gamestate.state = showMenu?GameState.radial:GameState.active;
                             this.root.gui2D.drawRadialMenu(showMenu);
-                            if(showMenu)
-                                this.root.gui2D.resetCamBtn.isVisible=false;
+                            this.root.gui2D.resetCamBtn.isVisible=this.root.gamestate.state!==GameState.radial;
                             this.root.gui2D.inspectBtn._onPointerUp = ()=>{
                                 console.log("inspectBtn Button");
                                 this.meshRoot.removeBehavior(this.pointerDragBehavior);
@@ -218,7 +225,7 @@ export default class Item{
             }
             
         if(this.isPlaced){
-            console.log(this.root.camera.radius)
+            // console.log(this.root.camera.radius)
             newPos = new BABYLON.Vector3(0,-80,-40)
             if(this.root.camera.radius<3)
                 scalAnim  *= .75;
@@ -269,6 +276,8 @@ export default class Item{
       usebpMachine(){
         console.log(this.state);
         if(this.state===100){
+                this.root.gui2D.resetCamBtn.isVisible=false;
+                this.root.gui2D.userExitBtn.isVisible=true;
                 this.state =101;
                 this.tout = setTimeout(() => {
                     clearTimeout(this.tout)
@@ -354,13 +363,14 @@ export default class Item{
             this.parent = this.root.scene.getCameraByName("maincamera");
             this.meshRoot.parent = this.parent;
             this.meshRoot.scaling.set(.01,.01,.01);
+            
             this.meshRoot.position.set(-.24,-1.14,4.78);
             this.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
 
             new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(-60).radians()},anim_time).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             new TWEEN.Tween(this.meshRoot.scaling).to({x:.06,y:.06,z:.06},anim_time).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
             }).start();
-            new TWEEN.Tween(this.meshRoot.position).to({x:.05,y:-1.19,z:1.5},anim_time).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.position).to({x:.06,y:-1.14,z:1.05},anim_time).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                 this.removeAction();
                 let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"mask_used",level:2}});
                 document.dispatchEvent(custom_event);        

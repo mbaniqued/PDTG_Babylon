@@ -39,7 +39,7 @@ export default class SinkItem{
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                 console.log(this.root.gamestate.state+"!! OnPickTrigger!!! "+this.state);
-                if(this.root.camera.radius>2.5)
+                if(this.root.camera.radius>2.9)
                     this.state=0;
                 if(this.state>=100){
                     // if(this.name.includes("Mask")){
@@ -56,9 +56,10 @@ export default class SinkItem{
                                 this.state=1;
                             }).start();
                             new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:2.45},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({radius:2.9},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                             // 1.98,y:2.02,z:-1.89
                             this.root.setFocusOnObject(new BABYLON.Vector3(1.98,2.02-.3,-1.89-1.2));
+                            
                         break;
                     case 1:
                         this.label.isVisible=false;
@@ -79,8 +80,15 @@ export default class SinkItem{
                             if( this.meshRoot.name  === "liquidhandsoap_node"){
                                 this.state=100;
                                 this.root.showResetViewButton(true);
+                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(40).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete( () => {
+                                    this.root.handwashactivity.reset();
+                                    this.root.handwashactivity.drawhandWash(true);
+                                }).start();
+
                             }
                             else{
+                                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:2,msg:"use_papertowel"}});
+                                document.dispatchEvent(custom_event);
                                 this.root.showResetViewButton(true);
                             }
                             

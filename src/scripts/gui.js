@@ -15,6 +15,7 @@ export default class GUI2D{
         // this.advancedTexture.useSmallestIdeal = true
         this.advancedTexture.renderAtIdealSize = true;
         this.resetCamBtn   =  this.createButon("resetcambtn","ui/move.png","#ffffffff","",0,0,72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
+        // this.resetCamBtn.zIndex =100;
         this.userExitBtn   =  this.createCircle("userexitbtn",72,72,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
         const userImg      =  this.createImage("userexitbtn","ui/Users-Exit-icon.png",48,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         userImg.isVisible  = true;
@@ -192,6 +193,7 @@ export default class GUI2D{
         
       }
       drawStageMenu(isDraw){
+          this.root.level   = 0;
           this.menuContainer.isVisible = isDraw;
           this.menuContainer.getChildByName("usermodetxt").text = "Select Stage";
           this.menuContainer.getChildByName("gamemodetxt").text = "Select Phase";
@@ -277,18 +279,22 @@ export default class GUI2D{
            }
         });
         this.roompreBtn.onPointerUpObservable.add(()=>{
+            this.root.level   = 0;
             hidephasebtn();
             this.phasebtn.children[1].text="Room Prepration";
         })
         this.itempreBtn.onPointerUpObservable.add(()=>{
+          this.root.level   = 1;
           hidephasebtn();
           this.phasebtn.children[1].text="Item Prepration";
         })
         this.selfpreBtn.onPointerUpObservable.add(()=>{
+          this.root.level   = 2;
           hidephasebtn();
           this.phasebtn.children[1].text="Self Prepration";
         })
         this.machinepreBtn.onPointerUpObservable.add(()=>{
+          this.root.level   = 3;
           hidephasebtn();
           this.phasebtn.children[1].text="Machine Prepration";
         })
@@ -382,17 +388,11 @@ export default class GUI2D{
          this.objectiveTitle2.heightInPixels=50;
          this.objectiveBg.addControl(this.objectiveTitle2);
 
-        //  this.objectiveBar    =  this.createBar("objectivebar");
-        //  this.objectiveBg.addControl(this.objectiveBar);
-        //  this.objectiveBar2    =  this.createBar("objectivebar2");
-        //  this.objectiveBg.addControl(this.objectiveBar2);
-        
          this.downArrow =  this.createImage("downarrow","ui/arrow.png",10,34,GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
          this.downArrow.isVisible=true;
          this.downArrow.leftInPixels =-20;
          this.downArrow.rotation =BABYLON.Angle.FromDegrees(270).radians(); 
-        //  this.objectiveBg.addControl(this.downArrow);
-        //  this.drawObjectiveMenu(true);
+
         this.drawObjectiveMenu(false);
       }
       createBar(msg,width,height){
@@ -459,6 +459,7 @@ export default class GUI2D{
         image.horizontalAlignment = horizontal;
         image.verticalAlignment   = verticle;
         image.color="#ff0000";
+        image.isPointerBlocker=false;
         if(isadd)
             this.advancedTexture.addControl(image);   
         return image;
@@ -474,7 +475,7 @@ export default class GUI2D{
         button.isVisible=false;
         button.horizontalAlignment = horizontal;
         button.verticalAlignment   = verticle;
-        button._moveToProjectedPosition
+        button.isPointerBlocker=true;
         if(txt.length>0){
           const text = new GUI.TextBlock(name);
           text.text = txt;
@@ -482,8 +483,8 @@ export default class GUI2D{
           text.fontSize = fontSize+"px";
           text.color    = fontcolor;
           text.isPointerBlocker=false;
-          text.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-          text.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTERverticle;
+          text.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+          text.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
           button.addControl(text);
         }
         if(isadd)
@@ -585,6 +586,30 @@ export default class GUI2D{
         rect.isPointerBlocker=true;
         rect.horizontalAlignment = horizontal;
         rect.verticalAlignment   = verticle;
+        if(isadd)
+          this.advancedTexture.addControl(rect);
+        return rect;
+      }
+      createRectBtn(name,width,height,radius,color,horizontal,verticle,_text,fontcolor,fontSize,isadd){
+        const rect = new GUI.Rectangle(name);
+        rect.widthInPixels  = width;
+        rect.heightInPixels = height;
+        rect.cornerRadius = radius;
+        rect.color = color;
+        rect.thickness = 4;
+        rect.background = color;
+        rect.isPointerBlocker=true;
+        rect.horizontalAlignment = horizontal;
+        rect.verticalAlignment   = verticle;
+        const text = new GUI.TextBlock(name);
+        text.text = _text;
+        text.fontFamily = "Shrikhand";
+        text.fontSizeInPixels = fontSize;
+        text.color    = fontcolor;
+        text.isPointerBlocker=false;
+        text.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        text.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        rect.addControl(text);
         if(isadd)
           this.advancedTexture.addControl(rect);
         return rect;

@@ -15,6 +15,7 @@ export default class DoorObject{
             this.label._children[0].text = "Door";
             this.label.isVisible=false;
             this.initAction();
+            this.setDoor();
             // let mesh = new BABYLON.TransformNode();
         }
         setPos(){
@@ -70,15 +71,17 @@ export default class DoorObject{
         openCloseDoor(){
             let val=325;
             if(this.meshRoot.rotation.y<= BABYLON.Angle.FromDegrees(325).radians())
-            val=360;
+                val=360;
             new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                 this.closedoor = !this.closedoor;
                 if(this.closedoor){
                     let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
                     document.dispatchEvent(custom_event);
                 }
-
             }).start();
+        }
+        setDoor(){
+            this.meshRoot.rotation.y = BABYLON.Angle.FromDegrees(325).radians();
         }
         setLabel(){
             if(this.root.gamestate.state === GameState.default)

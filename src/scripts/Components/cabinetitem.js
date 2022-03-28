@@ -30,9 +30,14 @@ export default class CabinetItem{
         this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
         this.label.isVisible=false;
         this.label.isPointerBlocker=true;
+        checktable_diapos=0;checktable_sanipos=0;checktrolly_diapos=0;checkapd_diapos=0;checktrolly_sanipos=0;
       }
       setPos(){
         this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
+        if(this.meshRoot.name.includes("diasolutionnode"))
+            this.meshRoot.rotation  = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(90).radians(),0);
+        else
+            this.meshRoot.rotation  = new BABYLON.Vector3(0,0,0);             
       }
       removeAction(){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -239,10 +244,12 @@ export default class CabinetItem{
               const final_diasolutionpos = [diasolutionpos1,diasolutionpos2];
               this.placedPosition = final_diasolutionpos[checktable_diapos];
               checktable_diapos++;
-              this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(180).radians(),0);
-              new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
-              new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-              }).start();
+              if(this.placedPosition){
+                this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(180).radians(),0);
+                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
+                new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                }).start();
+            }
         }
     }
     showItem(){ 

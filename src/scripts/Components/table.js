@@ -12,6 +12,7 @@ export default class Table{
         this.drawerAnim   = false;
         this.state=0;
         this.setPos();
+        this.setDrawer();
         // this.mesh = new BABYLON.TransformNode();
         this.initMeshOutline();
         this.initAction();
@@ -24,9 +25,9 @@ export default class Table{
         this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
     }
     removeAction(){
-            this.meshRoot.getChildMeshes().forEach(childmesh => {
-                if(childmesh.name.includes("table"))
-                    childmesh.actionManager = null;
+        this.meshRoot.getChildMeshes().forEach(childmesh => {
+            if(childmesh.name.includes("table"))
+                childmesh.actionManager = null;
         });
     }
     initAction(){
@@ -84,13 +85,12 @@ export default class Table{
                             break;    
                         case 10:
                                 this.setTableFocusAnim();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.meshRoot.position.z-.5));
-                                // this.meshRoot.getChildTransformNodes().forEach(childnode=>{
-                                //     if(childnode.name==="tabledrawer"){
-                                //         let drawerNode = childnode;  
-                                //            // this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z-1));
-                                //     }
-                                // });
+                                this.meshRoot.getChildTransformNodes().forEach(childnode=>{
+                                 if(childnode.name==="tabledrawer"){
+                                        let drawerNode = childnode;  
+                                        this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.meshRoot.position.z-.5));
+                                    }
+                                });
                             break;
                     }        
                     this.setLabel();    
@@ -109,7 +109,6 @@ export default class Table{
         new TWEEN.Tween(this.root.camera).to({radius:2.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
     }
     setDrawerAnim(){
-        
         this.meshRoot.getChildTransformNodes().forEach(childnode=>{
             if(childnode.name==="tabledrawer"){
                 this.root.gamestate.state = GameState.active;
@@ -126,12 +125,18 @@ export default class Table{
                     }).onComplete(() => {
                         this.drawerAnim = false;   
                         if(!this.isdrawerOpen){
-                            // this.state=0;
-                            // this.root.gamestate.state = GameState.default;
                             this.label.isVisible=false;
                         }
                     }).start();
                 }
+            }
+        });
+    }
+    setDrawer(){
+        this.meshRoot.getChildTransformNodes().forEach(childnode=>{
+            if(childnode.name==="tabledrawer"){
+                    let drawerNode = childnode;  
+                    drawerNode.position.y =0;
             }
         });
     }

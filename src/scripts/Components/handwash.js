@@ -1,4 +1,5 @@
 import * as GUI from 'babylonjs-gui';
+import { event_objectivecomplete } from '../scene/MainScene';
 const msg = "Drag the bubbles HERE in the correct 7 - Step Handwashing Sequence";
 // https://www.babylonjs-playground.com/#XCPP9Y#134
 // https://playground.babylonjs.com/#XCPP9Y#4718
@@ -6,7 +7,7 @@ const iconPos =[[0,-150],[-260,-110],[230,-80],[-109,30],[119,100],[377,60],[-24
 const iconTxt =["Palm to Palm","Between Fingers","Between Fingers","Back of Hands","Back of Fingers","Base of Thumbs","Fingernails","Wrists"];
 const endX=-400;
 const endY=-392;
-const match=[];
+const match=["step1","step3","step2","step4","step5","step6","step7"];
 export default class HandWash{
      constructor(root){
         this.root = root;
@@ -29,10 +30,18 @@ export default class HandWash{
             this.initEvents(i);
             this.isplaced[i] = false;
         }
-        this.allPlacedCorrect=false;
+        this.doneBtn = this.root.gui2D.createRectBtn("dont_btn",128,64,2,"#7EC5DD",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"Done","#000000",24,false);
+        this.containter.addControl(this.doneBtn);
+
         
-        this.iconContainer.onPointerMoveObservable.add(this.onMove); 
-     }
+        this.doneBtn.isVisible=false;
+        this.doneBtn.onPointerUpObservable.add(()=>{
+            this.containter.isVisible=false;
+            this.root.gui2D.advancedTexture.renderAtIdealSize = false;
+            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this.root.handSoapObject,level:2,msg:"wash_hands"}});
+            document.dispatchEvent(custom_event);
+        });
+      }
      createHeader(){
         
         this.topHeader  = this.root.gui2D.createRect("handwash_header",1000,200,5,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
@@ -87,22 +96,15 @@ export default class HandWash{
      }
     
      initEvents(i){
-         this.onMove = (coordinates)=>{
-            if (!this.startingPoint)
-                  return;
-               if (this.drag == true && this.drop == false) {
-                  let diff = this.startingPoint.subtract(new BABYLON.Vector2(coordinates.x, coordinates.y));
-                  this.handwashIcon[this.iconNo].left = -diff.x + this.iconStartPos.x;
-                  this.handwashIcon[this.iconNo].top = -diff.y +  this.iconStartPos.y;
-               }
-         }
+        
          this.handwashIcon[i].onPointerDownObservable.add((coordinates)=> {
+            this.iconNo=i;
             this.startingPoint    = new BABYLON.Vector2(coordinates.x, coordinates.y);
-            this.iconStartPos     = new BABYLON.Vector2(parseFloat(this.handwashIcon[i].left), parseFloat(this.handwashIcon[i].top));
+            this.iconStartPos     = new BABYLON.Vector2(this.handwashIcon[i].leftInPixels,this.handwashIcon[i].topInPixels);
             this.drag = true;
             this.drop = false;
-            this.iconNo=i;
-            // console.log("!! down!!! "+this.startingPoint+"   "+this.iconNo);
+            
+            console.log("!! down!!! "+this.startingPoint+"   "+this.iconNo);
          });
          this.handwashIcon[i].onPointerUpObservable.add((coordinates)=> {
             this.drag = false;
@@ -130,7 +132,18 @@ export default class HandWash{
              }
              this.msgtext.isVisible = this.iconStack.length<1;
          });
-         this.handwashIcon[i].onPointerMoveObservable.add(this.onMove); 
+         const onMove = (coordinates)=>{
+            if (!this.startingPoint)
+                  return;
+               if (this.drag == true && this.drop == false) {
+                  let diff = this.startingPoint.subtract(new BABYLON.Vector2(coordinates.x, coordinates.y));
+                  this.handwashIcon[this.iconNo].leftInPixels =   this.iconStartPos.x-diff.x;
+                  this.handwashIcon[this.iconNo].topInPixels  =   this.iconStartPos.y-diff.y;
+               }
+         }
+         
+         this.handwashIcon[i].onPointerMoveObservable.add(onMove); 
+         this.iconContainer.onPointerMoveObservable.add(onMove); 
      }
      createStakPanel(){
          this.stackPanel    =  new GUI.StackPanel();    
@@ -157,6 +170,79 @@ export default class HandWash{
             this.iconStack[i].topInPixels  = endY;
             console.log(this.iconStack[i].name);
          }
+         if(this.iconStack.length>=this.handwashIcon.length){
+            let allcorrect=false;
+            for(let i=0;i<this.iconStack.length;i++){
+               if(match[i] === this.iconStack[i].name)
+                  allcorrect = true;
+               else   
+                  allcorrect = false;
+            }
+            if(allcorrect){
+               this.doneBtn.isVisible=true;
+               let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:2,msg:"handwash_complete"}});
+               document.dispatchEvent(custom_event);
+            }
+         }
+     }
+     reset(){
+         this.doneBtn.isVisible=false;
+         this.iconStack=[];
+         this.iconStartPos=null;
+         this.iconNo=0;
+         shuffleArray(iconPos);
+         for (let i=0;i<iconPos.length;i++){
+               this.handwashIcon[i].leftInPixels = iconPos[i][0];
+               this.handwashIcon[i].topInPixels   =iconPos[i][1];
+               match[i] = "step"+(i+1);
+               this.isplaced[i] = false;
+         }
+         this.root.gui2D.advancedTexture.renderAtIdealSize = true;
+     }
+     test(){
+            var panel = new GUI.Container();
+            
+      
+            var drag = false;
+            var drop = true;
+            const iconcontainer = this.root.gui2D.createCircle("name",1000,1000,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER);
+            var button = GUI.Button.CreateSimpleButton("but", "Click Me");
+            button.width = "200px";
+            button.height = "40px";
+            button.color = "white";
+            button.background = "green";   
+            iconcontainer.addControl(button);
+            iconcontainer.isVisible=true;
+            var startingPoint = null;
+            var buttonStart = null;
+      
+            
+            iconcontainer.onPointerDownObservable.add(function(coordinates) {
+               startingPoint = new BABYLON.Vector2(coordinates.x, coordinates.y);
+               buttonStart = new BABYLON.Vector2(parseFloat(button.left), parseFloat(button.top));
+               drag = true;
+               drop = false;
+            });
+            iconcontainer.onPointerUpObservable.add(function(coordinates) {
+               drag = false;
+               drop = true;  
+               startingPoint = null;
+            });
+      
+            this.moveButton = function(coordinates) {
+               if (!startingPoint) return;
+               if (drag == true && drop == false) {
+                  var diff = startingPoint.subtract(new BABYLON.Vector2(coordinates.x, coordinates.y));
+                  button.left = -diff.x + buttonStart.x;
+                  button.top = -diff.y + buttonStart.y;
+               }
+            };
+      
+            panel.onPointerMoveObservable.add(this.moveButton); 
+            iconcontainer.onPointerMoveObservable.add(this.moveButton); 
+      
+            panel.addControl(iconcontainer);
+            this.containter.addControl(panel);   
      }
 
 }

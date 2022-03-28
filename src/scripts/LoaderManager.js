@@ -1,6 +1,6 @@
 import * as BABYLON from "babylonjs";
 import "babylonjs-loaders";
-export const FOV=.6;
+
 export default class LoaderManager {
   constructor(root) {
     this.root = root;
@@ -132,12 +132,6 @@ export default class LoaderManager {
             for(let i=0;i<task.loadedMeshes.length;i++){ //handsanitizernode
                 task.loadedMeshes[i].parent = node;
                 task.loadedMeshes[i].name="sanitizer"+i;
-                // if(task.loadedMeshes[i].id.includes("DialysisSolution_primitive")){
-                //     task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
-                // }
-                // else{
-                //   task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
-                // }
                 this.setPickable(task.loadedMeshes[i],.5);
             }
             node.scaling.set(.015,.015,.015);
@@ -728,10 +722,11 @@ export default class LoaderManager {
       switch(this.game.sceneManager.currentSceneState)
       {
            case this.game.sceneManager.sceneState.basic:
-                this.root.initScene();
-                this.isLoad=true;
+                this.root.isSceneCreated=true;
+                this.root.initScene().then(()=>{
+                    this.isLoad=true;
+                });
                break;
-
       }
       if(document.getElementById("loader_spiner"))
          document.getElementById("loader_spiner").style.display = "none";

@@ -17,8 +17,9 @@ import FanSwitch from "../Components/fanswitch.js";
 import SinkItem from "../Components/sinkitem.js";
 import TWEEN from '@tweenjs/tween.js';
 import * as GUI from 'babylonjs-gui';
-import { FOV } from "../LoaderManager.js";
+import { FOV } from "../Common.js";
 import HandWash from "../Components/handwash.js";
+import AlcohalWipe from "../Components/alcohalwipe.js";
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
@@ -31,6 +32,7 @@ let gameObjectives=[];
 let SX=0,SY=0,SZ=0;
 export default class MainScene {
   constructor(gameManager) {
+    this.isSceneCreated=false;
     this.game = gameManager;
     this.sceneCommon = new Common(this);
     this.scene  = this.sceneCommon.createScene("basic");
@@ -54,7 +56,7 @@ export default class MainScene {
     this.ccpdRecordBook=undefined,this.apdmachinePackage=undefined,this.lightswitchObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
     this.fanAnim = null,this.paperTowelObject=undefined,this.handSoapObject=undefined;
 
-    this.handwashactivity;
+    this.handwashactivity,this.wipeAlcohal;
 
 
 
@@ -66,16 +68,20 @@ export default class MainScene {
     this.bpBalue="";
     this.initState();
     this.initacParticle();
-
     this.handwashactivity = new HandWash(this);
-    
+    this.handwashactivity.drawhandWash(false);
+
+    this.wipeAlcohal = new AlcohalWipe(this);
+    this.addevents();
   }
   initState(){
     this.gamestate  = {state:GameState.menu}; 
     this.userMode   = usermode.patient;
     this.gamemode   = gamemode.training;
   }
-  initScene() {
+  
+  async initScene() {
+    return  new Promise(resolve => {
     this.viewportFrame =  this.gui2D.createRect("viewportFrame",400,228,0,"#FFFFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
     this.viewportFrame.width  =.22;
     this.viewportFrame.height = .3;
@@ -117,18 +123,22 @@ export default class MainScene {
 
     this.paperTowelObject  = new SinkItem("PaperTowel",this,this.scene.getNodeByName("papertowel_node"),{x:1.9,y:2.02,z:-1.89});
     this.handSoapObject    = new SinkItem("Hand Soap",this,this.scene.getNodeByName("liquidhandsoap_node"),{x:2.25,y:2.17,z:-2.19});
-    
 
     this.createccpdCanvas();
     this.startFan();
     this.gui2D.resetCamBtn.onPointerUpObservable.add(()=>{
-      this.setCameraTarget(); 
-      this.sceneCommon.removeMiniCam();
-    }) 
-
+        this.setCameraTarget(); 
+        this.sceneCommon.removeMiniCam();
+        this.handwashactivity.drawhandWash(false);
+        this.gui2D.advancedTexture.renderAtIdealSize=false;
+      }) 
+      resolve('resolved');
+    });
+  }
+  addevents(){
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
-      const val=1;
+      const val=.01;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -151,56 +161,117 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // this.handwashactivity.handwashIcon[0].leftInPixels = SX;
-      // this.handwashactivity.handwashIcon[0].topInPixels  = SY;
-      // this.scene.getTransformNodeByName("liquidhandsoap_node").position =  new BABYLON.Vector3(SX,SY,SZ); 
+      
+      // this.wipeAlcohal.alocohalwipe.position =  new BABYLON.Vector3(SX,SY,SZ); 
+      // this.maskItem.meshRoot.position =  new BABYLON.Vector3(SX,SY,SZ); 
       // this.scene.getTransformNodeByName("papertowel_node").rotation =  new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
       // this.maskItem.meshRoot.scaling.set(.045,.01,.03);
       // this.scene.getTransformNodeByName("papertowel_node").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
       
       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
-    this.scene.onPointerObservable.add((pointerInfo) => {      	
-      if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
-              return ;
+   this.scene.onPointerObservable.add((pointerInfo) => {      	
+    if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
+        return ;
       
-          switch (pointerInfo.type) {
-              case BABYLON.PointerEventTypes.POINTERDOWN:{
-                      const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-                        if(pickinfo.pickedMesh){
-                          this.onpickMesh(pickinfo.pickedMesh);
-                        }
-                    }
-                break;
-              case BABYLON.PointerEventTypes.POINTERUP:{
-                        // console.log(this.pickMesh);
-                        if(this.pickMesh){
-                          this.updateObjectOutLine(false);
-                            this.pickMesh.renderOutline=false;
-                            this.pickMesh = null;
-                        }
-                    }
-                break;
-              case BABYLON.PointerEventTypes.POINTERMOVE:{ 
-                          const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-                          if(pickinfo.pickedMesh) {
-                            this.onpickMesh(pickinfo.pickedMesh);
-                          }
-                          else{
-                            if(this.pickMesh)
-                              this.pickMesh.renderOutline=false;
-                              this.updateObjectOutLine(false);
-                              this.pickMesh = null;
-                          }
+      switch (pointerInfo.type) {
+            case BABYLON.PointerEventTypes.POINTERDOWN:{
+                    const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+                      if(pickinfo.pickedMesh){
+                        this.onpickMesh(pickinfo.pickedMesh);
+                      }
                   }
-                break;
-            }
+              break;
+            case BABYLON.PointerEventTypes.POINTERUP:{
+                    if(this.pickMesh){
+                      this.updateObjectOutLine(false);
+                        this.pickMesh.renderOutline=false;
+                        this.pickMesh = null;
+                    }
+                }
+              break;
+            case BABYLON.PointerEventTypes.POINTERMOVE:{ 
+                    const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+                    if(pickinfo.pickedMesh) {
+                      this.onpickMesh(pickinfo.pickedMesh);
+                    }
+                    else{
+                      if(this.pickMesh)
+                        this.pickMesh.renderOutline=false;
+                        this.updateObjectOutLine(false);
+                        this.pickMesh = null;
+                    }
+                }
+              break;
+          }
       });
       this.objectiveListner = (e) => {
           this.checkObjectives(e.detail);
-           
       }
       document.addEventListener(event_objectivecomplete,this.objectiveListner);
+  }
+  resetScene(){
+    this.objectiveCount=0;
+    this.trollyObject      = null;
+    this.tableObject       = null;
+    this.cabinetObject     = null;
+    this.doorObject        = null;
+    this.windowObject      = null;
+    this.acItem            = null;
+    this.lightswitchObject = null;
+    this.fanswitchobject   = null;
+    
+    
+    this.bpMachineItem     = null;
+    this.connectionItem    = null; 
+    this.alcohalItem       = null;
+    this.maskItem          = null;
+    this.drainBagItem      = null;
+    this.ccpdRecordBook    = null;
+    this.apdmachinePackage = null;
+    
+    this.dissolutionObject[0] = null;
+    this.removeNode(this.scene.getTransformNodeByID("diasolutionnode1"));
+    
+    this.dissolutionObject[1] = null;
+    this.removeNode(this.scene.getTransformNodeByID("diasolutionnode2"));
+    
+    this.dissolutionObject[2] = null;
+    this.removeNode(this.scene.getTransformNodeByID("diasolutionnode3"));
+    
+    this.dissolutionObject[3] = null;
+
+    this.sanitiserObject[0]   = null;
+    this.removeNode(this.scene.getTransformNodeByID("sanitizer2"));
+    this.sanitiserObject[1]   = null;
+    this.removeNode(this.scene.getTransformNodeByID("sanitizer3"));
+    this.sanitiserObject[2]   = null;
+    this.paperTowelObject  = null;
+    this.handSoapObject    = null;
+
+    
+    this.removeMesh(this.scene.getMeshByName("glassplane"));
+    this.removeMesh(this.scene.getMeshByName("windowframeplan"));
+
+    
+    console.log("reset suceesss");
+  }
+  removeMesh(mesh){
+    if(mesh){
+      this.scene.removeMesh(mesh);
+      
+      mesh.dispose();
+    }
+  }
+  removeNode(node){
+    if(node){
+        node.getChildMeshes().forEach(childmesh => {
+          this.scene.removeMesh(childmesh);
+          childmesh.dispose();
+      });
+      this.scene.removeTransformNode(node);
+      node.dispose();
+    }
   }
   createBpText(){
     if(this.bpnumberTexture)
@@ -250,12 +321,6 @@ export default class MainScene {
         this.bpnumberTexture.drawText("",90, 150, font, "#808794", "transparent", true);
         this.bpnumberTexture.drawText("",90, 230, font, "#808794", "transparent", true);
       }
-      
-      
-    
-    
-    
-    
   }
   onpickMesh(pickedMesh){
     // console.log(mesh.name);
@@ -299,7 +364,7 @@ export default class MainScene {
     }
   }
   hideOutLine(meshroot){
-      console.log(meshroot.parent);
+    // console.log(meshroot.parent);
     if(meshroot.parent){
         meshroot.parent.getChildMeshes().forEach(childmesh=>{
           childmesh.renderOutline=false;
@@ -315,9 +380,12 @@ export default class MainScene {
     if(!this.pickMesh){
       return;
     }
+    if(this.pickMesh.outlineWidth<.1)
+      return;
     if(!this.pickMesh.isPickable || this.pickMesh.actionManager === null){
         value = false;
         this.pickMesh.outlineWidth=0;
+        this.pickMesh.renderOutline=value;
     }
     if(this.pickMesh.parent.parent && (this.pickMesh.parent.parent.name.includes("cabinet"))){
       let leftnode = this.scene.getTransformNodeByID("cabinetleftDoor").getChildMeshes()[0];
@@ -484,115 +552,140 @@ export default class MainScene {
         this.acparticle.stop();  
    }
    setGame(){
-      this.resetObjectiveBar();
-      this.level = 2;
-      this.bpBalue="";
-      this.removeAllActions();
-      switch(this.gamemode){
-          case gamemode.training:
-                switch(this.level){
-                  case 0:
-                      {
-                        this.gui2D.objectiveTitle.text = "Room Prepration";
-                        this.totalobjective=5; 
-                        const values = ["Close The Door","Switch On The Light","Turn-off the Fan","Close the window","Turn-off the AC using remote"];   
-                        this.doorObject.initAction(); 
-                        this.lightswitchObject.initAction();
-                        this.fanswitchobject.initAction();
-                        this.acItem.initAction();
-                        this.windowObject.initAction();
-                        for(let i=0;i<values.length;i++){ 
-                            gameObjectives.push({status:false,msg:values[i]});
-                            this.objectivebar[i] = this.gui2D.createBar(values[i],380,42);
-                            this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
-                            this.objectivebar[i].isVisible = i===0;
-                            this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
-                        }
-                        this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
-                        this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
-                        this.gui2D.drawObjectiveMenu(true);
-                      }
-                    break;
-                  case 1:{
-                          this.gui2D.objectiveTitle.text = "Item Prepration";
-                          this.totalobjective=2; 
-                          const values = ["Place the required eqipment from the drawer on the top of the table: \n \u2022 BP Monitor \n \u2022 CCPD Record Book \n \u2022 Alcohal Wipe \n \u2022 Connection Shield \n \u2022 APD Cassette Package \n \u2022 Face Mask \n \u2022 Drain Bag",
-                                          "Place the required eqipment from the brown cabinet on top of the table: \n \u2022 Dialysis Solution x2 \n \u2022 Hand Sanitizer"];   
-
-                          this.tableObject.initAction();
-                          this.bpMachineItem.initAction();
-                          this.alcohalItem.initAction();
-                          this.maskItem.initAction();
-                          this.connectionItem.initAction();
-                          this.apdmachinePackage.initAction();
-                          this.drainBagItem .initAction();
-                          this.ccpdRecordBook.initAction();
-                          for(let i=0;i<values.length;i++){ 
-                            gameObjectives.push({status:false,msg:values[i]});
-                            this.objectivebar[i] = this.gui2D.createBar(values[i],380,i===0?250:160);
-                            this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
-                            this.objectivebar[i].isVisible = i===0;
-                            this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
-                        }
-                        this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
-                        this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
-                        this.gui2D.drawObjectiveMenu(true);
-                        this.gui2D.useBtn.isVisible=false;
-                      }
-                     break;
-                  case 2:{
-                        // this.tableObject.initAction();
-                        this.bpMachineItem.placeItem(ANIM_TIME);
-                        this.ccpdRecordBook.placeItem(ANIM_TIME);
-                        this.alcohalItem.placeItem(ANIM_TIME);
-                        this.connectionItem.placeItem(ANIM_TIME);
-                        this.maskItem.placeItem(ANIM_TIME);
-                        this.apdmachinePackage.placeItem(ANIM_TIME);
-                        this.drainBagItem.placeItem(ANIM_TIME);
-                        this.sanitiserObject[0].placeItem(ANIM_TIME);
-                        this.dissolutionObject[0].placeItem(ANIM_TIME);
-                        this.dissolutionObject[1].placeItem(ANIM_TIME);
-                        let tout = setTimeout(() => {
-                          this.bpMachineItem.initAction();
-                          this.tableObject.initAction();
-                          clearTimeout(tout);
-                        }, ANIM_TIME*1.2);
-                        this.gui2D.objectiveTitle.text = "Self Prepration";
-                        this.totalobjective=6; 
-                        const values = ["Measure your blood pressure  using the BP Monitor","Access the CCPD Record Book","Record your BP in the CCPD Record Book"
-                                         ,"Use a face mask","Navigate to the sink,and wash your hands","Dry your hands with the paper towel"];   
-                         for(let i=0;i<values.length;i++){ 
-                              gameObjectives.push({status:false,msg:values[i]});
-                              this.objectivebar[i] = this.gui2D.createBar(values[i],380,60);
-                              this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
-                              this.objectivebar[i].isVisible = i===0;
-                              this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
-                          }
-                          this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
-                          this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
-                          this.gui2D.drawObjectiveMenu(true);
-                        }
-                       break;
-                }
-            break;
-          case gamemode.practice:
-            break;            
-          case gamemode.assessment:
-            break;            
-      }
-      this.gui2D.downArrow._onPointerUp =()=>{
-        this.isUp =!this.isUp;
-        this.gui2D.objectiveBg.isVisible=false;
-        this.gui2D.downArrow.rotation = BABYLON.Angle.FromDegrees(this.isUp?90:270).radians(); 
-        this.updateObjective();
+    if(!this.isSceneCreated){
+        this.resetScene();
+        this.initScene().then(()=>{
+          this.startGame();
+          console.log("inn setGame ifffffffff");
+        }); 
+    }
+    else{
+        console.log("inn setGame elseeeeeeee");
+        this.isSceneCreated = false;
+        this.startGame(); 
       }
    }
+   focusTrolly(){
+    this.setFocusOnObject(new BABYLON.Vector3(this.trollyObject.meshRoot.position.x,this.trollyObject.meshRoot.position.y,this.trollyObject.meshRoot.position.z));
+    new TWEEN.Tween(this.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(35).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+   }
+   startGame(){
+    this.resetObjectiveBar();
+    this.level = 3;
+    this.bpBalue="";
+    this.removeAllActions();
+    switch(this.gamemode){
+        case gamemode.training:
+              switch(this.level){
+                case 0:
+                    {
+                      this.gui2D.objectiveTitle.text = "Room Prepration";
+                      this.totalobjective=5; 
+                      const values = ["Close The Door","Switch On The Light","Turn-off the Fan","Close the window","Turn-off the AC using remote"];   
+                      this.doorObject.initAction(); 
+                      this.lightswitchObject.initAction();
+                      this.fanswitchobject.initAction();
+                      this.acItem.initAction();
+                      this.windowObject.initAction();
+                      
+                      for(let i=0;i<values.length;i++){ 
+                          gameObjectives.push({status:false,msg:values[i]});
+                          this.objectivebar[i] = this.gui2D.createBar(values[i],380,42);
+                          this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
+                          this.objectivebar[i].isVisible = i===0;
+                          this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
+                      }
+                      this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
+                      this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
+                      this.gui2D.drawObjectiveMenu(true);
+                    }
+                  break;
+                case 1:{
+                        this.gui2D.objectiveTitle.text = "Item Prepration";
+                        this.totalobjective=2; 
+                        const values = ["Place the required eqipment from the drawer on the top of the table: \n \u2022 BP Monitor \n \u2022 CCPD Record Book \n \u2022 Alcohal Wipe \n \u2022 Connection Shield \n \u2022 APD Cassette Package \n \u2022 Face Mask \n \u2022 Drain Bag",
+                                        "Place the required eqipment from the brown cabinet on top of the table: \n \u2022 Dialysis Solution x2 \n \u2022 Hand Sanitizer"];   
+
+                        this.tableObject.initAction();
+                        this.bpMachineItem.initAction();
+                        this.alcohalItem.initAction();
+                        this.maskItem.initAction();
+                        this.connectionItem.initAction();
+                        this.apdmachinePackage.initAction();
+                        this.drainBagItem .initAction();
+                        this.ccpdRecordBook.initAction();
+                        for(let i=0;i<values.length;i++){ 
+                          gameObjectives.push({status:false,msg:values[i]});
+                          this.objectivebar[i] = this.gui2D.createBar(values[i],380,i===0?250:160);
+                          this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
+                          this.objectivebar[i].isVisible = i===0;
+                          this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
+                      }
+                      this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
+                      this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
+                      this.gui2D.drawObjectiveMenu(true);
+                      this.gui2D.useBtn.isVisible=false;
+                    }
+                   break;
+                case 2:{
+                      // this.tableObject.initAction();
+                      this.bpMachineItem.placeItem(ANIM_TIME);
+                      this.ccpdRecordBook.placeItem(ANIM_TIME);
+                      this.alcohalItem.placeItem(ANIM_TIME);
+                      this.connectionItem.placeItem(ANIM_TIME);
+                      this.maskItem.placeItem(ANIM_TIME);
+                      this.apdmachinePackage.placeItem(ANIM_TIME);
+                      this.drainBagItem.placeItem(ANIM_TIME);
+                      this.sanitiserObject[0].placeItem(ANIM_TIME);
+                      this.dissolutionObject[0].placeItem(ANIM_TIME);
+                      this.dissolutionObject[1].placeItem(ANIM_TIME);
+                      let tout = setTimeout(() => {
+                        this.bpMachineItem.initAction();
+                        this.tableObject.initAction();
+                        clearTimeout(tout);
+                      }, ANIM_TIME*1.2);
+                      this.gui2D.objectiveTitle.text = "Self Prepration";
+                      this.totalobjective=6; 
+                      const values = ["Measure your blood pressure  using the BP Monitor","Access the CCPD Record Book","Record your BP in the CCPD Record Book"
+                                       ,"Use a face mask","Navigate to the sink,and wash your hands","Dry your hands with the paper towel"];   
+                       for(let i=0;i<values.length;i++){ 
+                            gameObjectives.push({status:false,msg:values[i]});
+                            this.objectivebar[i] = this.gui2D.createBar(values[i],380,60);
+                            this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
+                            this.objectivebar[i].isVisible = i===0;
+                            this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
+                        }
+                        this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
+                        this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
+                        this.gui2D.drawObjectiveMenu(true);
+                      }
+                     break;
+                  case 3:
+                      this.focusTrolly();
+                     break;  
+              }
+          break;
+        case gamemode.practice:
+          break;            
+        case gamemode.assessment:
+          break;            
+    }
+    this.gui2D.downArrow._onPointerUp =()=>{
+      this.isUp =!this.isUp;
+      this.gui2D.objectiveBg.isVisible=false;
+      this.gui2D.downArrow.rotation = BABYLON.Angle.FromDegrees(this.isUp?90:270).radians(); 
+      this.updateObjective();
+    }
+   }
    resetObjectiveBar(){
-     this.gamestate.state = GameState.default;
+    this.gamestate.state = GameState.default;
     this.itemCount=0;
     this.dialysisItemCnt=0;
     this.handsanitiserCnt=0;
-    this.objectiveCount =0;
+    this.objectiveCount = 0;
+    this.totalobjective = 0; 
     this.isUp=false;
     if(this.objectivebar){
        for(let i=0;i<this.objectivebar.length;i++)
@@ -654,6 +747,8 @@ export default class MainScene {
        this.ccpdRecordBook.removeAction();  
        this.ccpdRecordBook.removeAction();  
        this.apdmachinePackage.removeAction();
+       this.handSoapObject.removeAction();
+       this.paperTowelObject.removeAction();
    }
    checkObjectives(detail){
 
@@ -725,6 +820,7 @@ export default class MainScene {
               this.objectiveCount=1;
               gameObjectives[0].status = true;
               this.ccpdRecordBook.initAction();
+              this.gui2D.resetCamBtn.isVisible=false;
           }
           if(detail.object_type === this.ccpdRecordBook){
               if(detail.msg.includes("useccpd")){
@@ -742,8 +838,22 @@ export default class MainScene {
           if(detail.object_type === this.maskItem){
               this.objectiveCount=4;
               gameObjectives[3].status = true;
+              this.handSoapObject.initAction();
+              this.paperTowelObject.initAction();
               this.gamestate.state = GameState.default;
           }
+          if(detail.object_type === this.handSoapObject ||  detail.object_type === this.paperTowelObject){
+              if(detail.msg === "wash_hands"){
+                this.objectiveCount=5;
+                 gameObjectives[4].status = true;
+              }
+              if(detail.msg === "use_papertowel"){
+                this.objectiveCount=6;
+                 gameObjectives[5].status = true;
+              }
+              
+          }
+          this.showResetViewButton(true);
       }   
       this.updateObjective();
       if(this.objectiveCount>=this.totalobjective){
@@ -761,9 +871,11 @@ export default class MainScene {
         this.gui2D.nextBtn._onPointerUp=()=>{
            this.gui2D.drawLevelComplete(false);
            this.level++;
+           this.isSceneCreated = true;
            this.setGame();
         }
         this.gui2D.endsessionBtn._onPointerUp=()=>{
+          this.isSceneCreated = false;
           this.gui2D.drawLevelComplete(false);
           this.gamestate.state = GameState.menu;
           this.gui2D.drawMainMenu(true);
@@ -848,6 +960,14 @@ export default class MainScene {
             ccpdPlan.isPickable=false;
             this.ccpdRecordBook.closeccpdRecordBook(300);
         }
+   }
+   getSceneCordinate(){
+    let vector= BABYLON.Vector3.Unproject(
+      new BABYLON.Vector2(this.scene.pointerX,this.scene.pointerY),
+      this.scene.getEngine().getRenderWidth(),
+      this.scene.getEngine().getRenderHeight(),
+      BABYLON.Matrix.Identity(),this.scene.getViewMatrix(),
+      this.scene.getProjectionMatrix());
    }
 
 }
