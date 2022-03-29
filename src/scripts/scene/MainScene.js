@@ -20,12 +20,13 @@ import * as GUI from 'babylonjs-gui';
 import { FOV } from "../Common.js";
 import HandWash from "../Components/handwash.js";
 import AlcohalWipe from "../Components/alcohalwipe.js";
-import { updateFor } from "typescript";
+
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
 export const ANIM_TIME=1000;
 export const event_objectivecomplete = "event_objectivecomplete";
+
 
 
 let gameObjectives=[];
