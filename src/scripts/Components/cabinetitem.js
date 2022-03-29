@@ -1,4 +1,4 @@
-import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
+import { GameState,gamemode,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 let showMenu = false;
 const diasolutionpos1 = new BABYLON.Vector3(.25,2,2.7);
@@ -76,15 +76,31 @@ export default class CabinetItem{
                     this.root.gui2D.resetCamBtn.isVisible=!showMenu;
                     this.hideOutLine();
                     this.root.gui2D.inspectBtn._onPointerUp = ()=>{
-                        this.meshRoot.removeBehavior(this.pointerDragBehavior);
+                        this.enableDrag(false);
                         showMenu = false;
+                        this.showItem();
                         this.root.gui2D.drawRadialMenu(false);  
                     };
                     this.root.gui2D.useBtn._onPointerUp = ()=>{
-                        this.meshRoot.removeBehavior(this.pointerDragBehavior);
                         showMenu = false;
                         this.root.gui2D.drawRadialMenu(false);  
-                        this.showItem();
+                        this.enableDrag(false);
+                        // this.showItem();
+                        if(this.name.includes("Hand")){
+                            this.root.gamestate.state = GameState.active;
+                            this.root.setFocusOnObject(new BABYLON.Vector3(1.98,2.02-.3,-1.89-1.2));
+                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(135).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                                this.root.handwashactivity.reset();
+                                this.root.handwashactivity.drawhandWash(true);
+                                this.root.gui2D.resetCamBtn.isVisible=true;
+                                this.root.gui2D.resetCamBtn.zIndex =100;
+                                this.state =100;
+                            }).start();
+                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({radius:2.9},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            
+                        }
+
                     };
                     this.root.gui2D.crossBtn._onPointerUp = ()=>{
                         showMenu = false;
@@ -163,7 +179,7 @@ export default class CabinetItem{
                       new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
                       new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                           checktable_sanipos++;
-                          this.meshRoot.removeBehavior(this.pointerDragBehavior);
+                          this.enableDrag(false);
                           this.root.handsanitiserCnt++;
                           this.label.isVisible=false;
                           let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,itemcount:this.root.handsanitiserCnt}});
@@ -178,7 +194,7 @@ export default class CabinetItem{
                       new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
                       new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                            checktable_diapos++;
-                           this.meshRoot.removeBehavior(this.pointerDragBehavior);
+                           this.enableDrag(false);
                            this.removeAction();
                            this.root.dialysisItemCnt++;
                            this.label.isVisible=false;
@@ -205,7 +221,7 @@ export default class CabinetItem{
                               checkapd_diapos++;  
                         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
                         new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                            this.meshRoot.removeBehavior(this.pointerDragBehavior);
+                            this.enableDrag(false);
                         }).start();
                     }
               }
@@ -216,14 +232,17 @@ export default class CabinetItem{
                       new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
                       new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                           checktrolly_sanipos++
-                          this.meshRoot.removeBehavior(this.pointerDragBehavior);
+                          this.enableDrag(false);
+                          let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_sanitizer"}});
+                          document.dispatchEvent(custom_event);
+
                       }).start();
                 }
           }
           if(!placed){
                   const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
                   new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                  this.meshRoot.addBehavior(this.pointerDragBehavior);
+                    this.enableDrag(true);
                 }).start();
            }
            this.root.scene.getMeshByName("tablecollider").visibility=0;
@@ -232,7 +251,7 @@ export default class CabinetItem{
         });
     }
     placeItem(time){
-        this.meshRoot.removeBehavior(this.pointerDragBehavior);
+        this.enableDrag(false);
         if(this.name.includes("Hand")){
             this.placedPosition = sanitizerpos1;
             this.placedRotation = new BABYLON.Vector3(0,0,0);
@@ -254,8 +273,8 @@ export default class CabinetItem{
     }
     showItem(){ 
       showMenu = false;
-      this.meshRoot.removeBehavior(this.pointerDragBehavior);
-      new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+      this.enableDrag(false);
+    //   new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
       if(this.name.includes("Hand"))
          new TWEEN.Tween(this.meshRoot.rotation).to({x:0,y:0,z:BABYLON.Angle.FromDegrees(360).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
       else
@@ -271,7 +290,7 @@ export default class CabinetItem{
       }).start();
     }
     resetItem(){
-        new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+        // new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         this.root.gui2D.userExitBtn.isVisible = false;
         let yAng = BABYLON.Angle.FromDegrees(90).radians();
         if(this.name.includes("Hand"))
@@ -283,7 +302,7 @@ export default class CabinetItem{
         const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
         new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
             if(!this.placedPosition)
-             this.meshRoot.addBehavior(this.pointerDragBehavior);
+                this.enableDrag(true);
              this.root.gamestate.state = GameState.active;
         }).start();
     }
@@ -291,5 +310,10 @@ export default class CabinetItem{
       this.meshRoot.getChildMeshes().forEach(childmesh=>{
           childmesh.renderOutline=false;
       });
+    }
+    enableDrag(val){
+        if(this.pointerDragBehavior)
+            this.pointerDragBehavior.enabled = val;
+
     }
 }

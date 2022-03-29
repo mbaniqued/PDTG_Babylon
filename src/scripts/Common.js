@@ -70,7 +70,7 @@ export default class Common{
             this.directionalLight.intensity  = .1;
             this.camera.fov   = 1;
             this.camera.setTarget(new BABYLON.Vector3(-3,3,0));
-            this.camera.lowerRadiusLimit = 1;
+            this.camera.lowerRadiusLimit = 0;
             this.camera.upperRadiusLimit = 100;
             this.camera.radius          = 3;
             this.camera.alpha           = BABYLON.Angle.FromDegrees(220).radians();

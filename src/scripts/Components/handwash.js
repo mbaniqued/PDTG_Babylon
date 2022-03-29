@@ -93,6 +93,15 @@ export default class HandWash{
      }
      drawhandWash(isdraw){
         this.containter.isVisible=isdraw;
+        if(isdraw){
+         this.root.gui2D.resetCamBtn.isVisible = true;
+         this.root.gui2D.resetCamBtn.zIndex =100;
+        }
+        else
+            this.root.gui2D.resetCamBtn.zIndex =0;
+
+
+
      }
     
      initEvents(i){
@@ -199,52 +208,7 @@ export default class HandWash{
          }
          this.root.gui2D.advancedTexture.renderAtIdealSize = true;
      }
-     test(){
-            var panel = new GUI.Container();
-            
-      
-            var drag = false;
-            var drop = true;
-            const iconcontainer = this.root.gui2D.createCircle("name",1000,1000,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER);
-            var button = GUI.Button.CreateSimpleButton("but", "Click Me");
-            button.width = "200px";
-            button.height = "40px";
-            button.color = "white";
-            button.background = "green";   
-            iconcontainer.addControl(button);
-            iconcontainer.isVisible=true;
-            var startingPoint = null;
-            var buttonStart = null;
-      
-            
-            iconcontainer.onPointerDownObservable.add(function(coordinates) {
-               startingPoint = new BABYLON.Vector2(coordinates.x, coordinates.y);
-               buttonStart = new BABYLON.Vector2(parseFloat(button.left), parseFloat(button.top));
-               drag = true;
-               drop = false;
-            });
-            iconcontainer.onPointerUpObservable.add(function(coordinates) {
-               drag = false;
-               drop = true;  
-               startingPoint = null;
-            });
-      
-            this.moveButton = function(coordinates) {
-               if (!startingPoint) return;
-               if (drag == true && drop == false) {
-                  var diff = startingPoint.subtract(new BABYLON.Vector2(coordinates.x, coordinates.y));
-                  button.left = -diff.x + buttonStart.x;
-                  button.top = -diff.y + buttonStart.y;
-               }
-            };
-      
-            panel.onPointerMoveObservable.add(this.moveButton); 
-            iconcontainer.onPointerMoveObservable.add(this.moveButton); 
-      
-            panel.addControl(iconcontainer);
-            this.containter.addControl(panel);   
-     }
-
+    
 }
 function shuffleArray(arr) {
    for (let i = arr.length - 1; i > 0; i--) {

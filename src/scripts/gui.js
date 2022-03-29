@@ -27,6 +27,7 @@ export default class GUI2D{
         this.initLoadingPage();
         this.initObjectiveMenu();
         this.initLevelComplete();
+        this.initValidationMenu();
 
         
       }
@@ -325,24 +326,24 @@ export default class GUI2D{
       }
       initRadialMenu(){
         
-        this.radialCircle    =  this.createImage("RadialCircleBig","ui/CircleBig.png",350,350,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.radialCircle    =  this.createImage("RadialCircleBig","ui/CircleBig.png",192,192,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.radialCircle.isPointerBlocker=true;
-        this.inspectBtn      =  this.createCircle("inspectBtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        const inspectImg     =  this.createImage("inspectBtn","ui/magnifying-glass-with-check-mark.png",72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.inspectBtn      =  this.createCircle("inspectBtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        const inspectImg     =  this.createImage("inspectBtn","ui/magnifying-glass-with-check-mark.png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         inspectImg.isVisible=true;
         inspectImg.isPointerBlocker = false;
         this.inspectBtn.isPointerBlocker = true;
         this.inspectBtn.addControl(inspectImg);
         
-        this.useBtn      =  this.createCircle("useBtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        const useImg     =  this.createImage("useBtn","ui/NicePng_hand-png_45955 (2).png",72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.useBtn      =  this.createCircle("useBtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        const useImg     =  this.createImage("useBtn","ui/NicePng_hand-png_45955 (2).png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         useImg.isVisible=true;
         useImg.isPointerBlocker=false;
         this.useBtn.isPointerBlocker = true;
         this.useBtn.addControl(useImg);
         
-        this.crossBtn      =  this.createCircle("crossbtn",120,120,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        const crossImg     =  this.createImage("crossbtn","ui/cross2_png.png",72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.crossBtn      =  this.createCircle("crossbtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        const crossImg     =  this.createImage("crossbtn","ui/cross2_png.png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         crossImg.isVisible=true;
         crossImg.isPointerBlocker=false;
         this.crossBtn.isPointerBlocker = true;
@@ -352,15 +353,15 @@ export default class GUI2D{
       }
       drawRadialMenu(isDraw){
         this.radialCircle.isVisible=isDraw;
-        this.inspectBtn.topInPixels =-150;
+        this.inspectBtn.topInPixels =-100;
         this.inspectBtn.isVisible=isDraw;
 
-        this.useBtn.topInPixels = 150;
-        if(this.root.gamemode === gamemode.training && this.root.level ===2)
+        this.useBtn.topInPixels = 100;
+        if(this.root.gamemode === gamemode.training && this.root.level >1)
             this.useBtn.isVisible=isDraw;
         else
             this.useBtn.isVisible=false;
-        this.crossBtn.leftInPixels = 150;
+        this.crossBtn.leftInPixels = 100;
         this.crossBtn.isVisible=isDraw;
       }
       initObjectiveMenu(){
@@ -448,6 +449,61 @@ export default class GUI2D{
         this.endsessionBtn.topInPixels =  120;
         
       }
+      initValidationMenu(){
+          this.rightBtn        =  this.createCircle("righBtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+          const rightImg       =  this.createImage("rightimg","ui/green.png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+          rightImg.isVisible=true;
+          rightImg.isPointerBlocker = false;
+          this.rightBtn.isPointerBlocker = true;
+          this.rightBtn.addControl(rightImg);
+          
+          this.wrongBtn      =  this.createCircle("wrongBtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+          const wrongimg     =  this.createImage("wrongimg2","ui/cross2_png.png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+          wrongimg.isVisible=true;
+          wrongimg.isPointerBlocker=false;
+          this.wrongBtn.isPointerBlocker = true;
+          this.wrongBtn.addControl(wrongimg);
+          
+          this.doneBtn      =  this.createCircle("crossbtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+          const doneimg     =  this.createImage("crossbtn","ui/Users-Exit-icon.png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+          doneimg.isVisible=true;
+          doneimg.isPointerBlocker=false;
+          this.doneBtn.isPointerBlocker = true;
+          this.doneBtn.addControl(doneimg);
+
+          this.validationRect = this.createRect("menucontiner",512,48,2,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true); 
+          const msg = "Is the APD Cassette Package still valid?"
+          this.validationText = this.createText("validation_txt",msg,24,"#000000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false) 
+          this.validationRect.addControl(this.validationText);
+          this.drawValidationMenu(false);
+        
+        
+      }
+      drawValidationMenu(isDraw){
+          this.radialCircle.isVisible=isDraw;
+
+          this.validationRect.topInPixels =-200;
+          this.validationRect.isVisible=isDraw;
+
+          this.rightBtn.topInPixels  =-64;
+          this.rightBtn.leftInPixels =-64;
+          this.rightBtn.isVisible=isDraw;
+  
+          this.wrongBtn.topInPixels  =-64;
+          this.wrongBtn.leftInPixels = 64;
+          this.wrongBtn.isVisible=isDraw;
+
+            
+          this.doneBtn.topInPixels  = 80;
+          this.doneBtn.isVisible=isDraw;
+        //   this.useBtn.topInPixels = 150;
+        //   if(this.root.gamemode === gamemode.training && this.root.level >1)
+        //       this.useBtn.isVisible=isDraw;
+        //   else
+        //       this.useBtn.isVisible=false;
+        //   this.crossBtn.leftInPixels = 150;
+        //   this.crossBtn.isVisible=isDraw;
+      }
       createImage(name,src,width,height,horizontal,verticle,isadd){
         const image  =  new GUI.Image(name,src);
         image.widthInPixels  = width;
@@ -459,7 +515,6 @@ export default class GUI2D{
         image.horizontalAlignment = horizontal;
         image.verticalAlignment   = verticle;
         image.color="#ff0000";
-        image.isPointerBlocker=false;
         if(isadd)
             this.advancedTexture.addControl(image);   
         return image;

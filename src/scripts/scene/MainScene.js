@@ -20,6 +20,7 @@ import * as GUI from 'babylonjs-gui';
 import { FOV } from "../Common.js";
 import HandWash from "../Components/handwash.js";
 import AlcohalWipe from "../Components/alcohalwipe.js";
+import { updateFor } from "typescript";
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
@@ -55,8 +56,7 @@ export default class MainScene {
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
     this.ccpdRecordBook=undefined,this.apdmachinePackage=undefined,this.lightswitchObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
     this.fanAnim = null,this.paperTowelObject=undefined,this.handSoapObject=undefined;
-
-    this.handwashactivity,this.wipeAlcohal;
+    this.handwashactivity,this.wipeAlcohal,this.apdValidationImage=[];
 
 
 
@@ -73,6 +73,14 @@ export default class MainScene {
 
     this.wipeAlcohal = new AlcohalWipe(this);
     this.addevents();
+
+    this.apdValidationImage[0]     = new Image();
+    this.apdValidationImage[0].src =  '/ui/questionmark.png';
+    this.apdValidationImage[1]     = new Image();
+    this.apdValidationImage[1].src = '/ui/green.png';
+    this.apdValidationImage[2]     = new Image();
+    this.apdValidationImage[2].src = '/ui/cross2_png.png';
+    
   }
   initState(){
     this.gamestate  = {state:GameState.menu}; 
@@ -106,6 +114,7 @@ export default class MainScene {
     this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
+    this.createApdPackageValidatiion();
     
     this.dissolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode"),{x:2.16,y:1.57,z:2.34});
     const solutionclone1 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode1");
@@ -138,7 +147,7 @@ export default class MainScene {
   addevents(){
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
-      const val=.01;
+      const val=1;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -161,12 +170,13 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      
-      // this.wipeAlcohal.alocohalwipe.position =  new BABYLON.Vector3(SX,SY,SZ); 
-      // this.maskItem.meshRoot.position =  new BABYLON.Vector3(SX,SY,SZ); 
-      // this.scene.getTransformNodeByName("papertowel_node").rotation =  new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
-      // this.maskItem.meshRoot.scaling.set(.045,.01,.03);
-      // this.scene.getTransformNodeByName("papertowel_node").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
+      // this.drawImageOnTexture(this.apdDateTexture,this.apdValidationImage[0],SX,SY,48,48);
+      // this.apdmachinePackage.meshRoot.position =  new BABYLON.Vector3(20,-38,-63); 
+      // this.apdmachinePackage.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());  
+      // this.setFocusOnObject(new BABYLON.Vector3(0,3,3));
+      // this.scene.getMeshByName("apddate_plan_hightlight").position  = new BABYLON.Vector3(SX,SY,SZ); 
+      // this.scene.getMeshByName("apddate_plan").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
+
       
       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
@@ -273,8 +283,80 @@ export default class MainScene {
       node.dispose();
     }
   }
+  createDialysisValidation(){
+    if(this.dialysisTexture)
+      return; 
+      const datePlan = new BABYLON.MeshBuilder.CreatePlane("dialysis_plan",{width:1,height:1,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+     datePlan.parent = this.dissolutionObject[0].meshRoot;
+     datePlan.isPickable=false;
+     datePlan.renderOutline=false;
+     datePlan.outlineWidth=0;
+      const planmat         = new BABYLON.StandardMaterial("dialysis_plan_mat", this.scene);
+      planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
+      planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+      this.dialysisTexture   = new BABYLON.DynamicTexture("dialysis_plan_texture",128,this.scene);
+      this.dialysisTexture.hasAlpha=true;
+      planmat.diffuseTexture = this.dialysisTexture;
+      datePlan.material      = planmat;
+      // datePlan.scaling   = new BABYLON.Vector3(1,2,1);
+      datePlan.position  = new BABYLON.Vector3(-9.7,-.5,-30.7);
+      datePlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+  }
+  createApdPackageValidatiion(){
+    if(this.apdDateTexture)
+     return;
+     const datePlan = new BABYLON.MeshBuilder.CreatePlane("apddate_plan",{width:22,height:20,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+     datePlan.parent = this.apdmachinePackage.meshRoot;
+     datePlan.isPickable=false;
+     datePlan.renderOutline=false;
+     datePlan.outlineWidth=0;
+      const planmat         = new BABYLON.StandardMaterial("apddate_mat", this.scene);
+      planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
+      planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+      this.apdDateTexture   = new BABYLON.DynamicTexture("apddate_texture",256,this.scene);
+      this.apdDateTexture.hasAlpha=true;
+      planmat.diffuseTexture = this.apdDateTexture;
+      datePlan.material      = planmat;
+      // datePlan.scaling   = new BABYLON.Vector3(1,2,1);
+      datePlan.position  = new BABYLON.Vector3(-9.7,-.5,-30.7);
+      datePlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+
+      this.updateApdValidatetion(0);
+      
+
+      const dateHighlightPlan    = this.scene.getMeshByName("apddate_plan").clone("apddate_plan_hightlight");
+      dateHighlightPlan.name = "apddate_plan_hightlight";
+      dateHighlightPlan.parent   = this.apdmachinePackage.meshRoot;
+      dateHighlightPlan.isPickable=true;
+      const planmat2         = new BABYLON.StandardMaterial("apddate_mat", this.scene);
+      planmat2.diffuseColor  = new BABYLON.Color3.FromInts(152,193,201);
+      planmat2.emissiveColor = new BABYLON.Color3.FromInts(152,193,201);
+      planmat2.alpha=.5;
+      dateHighlightPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+      dateHighlightPlan.material  = planmat2;
+      dateHighlightPlan.position  = new BABYLON.Vector3(-2.10,-.4,-29.8);
+      dateHighlightPlan.scaling  = new BABYLON.Vector3(1.3,.3,1);
+      dateHighlightPlan.visibility=0;
+      
+      this.onPickdateHighlightPlan = (value)=>{
+        dateHighlightPlan.visibility=value;
+      }
+  }
+  updateApdValidatetion(imgno){
+    let ctx = this.apdDateTexture.getContext();
+    const font =  "bold 28px Arial";
+    ctx.clearRect(0,0,256,256);
+    this.apdDateTexture.drawText("2021-2022",73,153,font,"#808794","transparent",true);
+    this.drawImageOnTexture(this.apdDateTexture,this.apdValidationImage[imgno],210,116,48,48);
+  }
+  drawImageOnTexture(texture,img,x,y,w,h){
+      const ctx =this.apdDateTexture.getContext();
+      ctx.drawImage(img,x,y,w,h);
+      texture.update();
+      
+  }
   createBpText(){
-    if(this.bpnumberTexture)
+    if(this.bpnumberTexture)  
      return;
 
     const bpPlan = BABYLON.MeshBuilder.CreatePlane("bptextplan",{width:8,height:5,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
@@ -283,7 +365,6 @@ export default class MainScene {
     bpPlan.renderOutline=false;
     bpPlan.outlineWidth=0;
     const planmat = new BABYLON.StandardMaterial("bptextmat", this.scene);
-    const size = 256;
     planmat.diffuseColor  = new BABYLON.Color3.FromInts(128,135,148);
     planmat.emissiveColor = new BABYLON.Color3.FromInts(128,135,148);
     
@@ -556,11 +637,11 @@ export default class MainScene {
         this.resetScene();
         this.initScene().then(()=>{
           this.startGame();
-          console.log("inn setGame ifffffffff");
+          // console.log("inn setGame ifffffffff");
         }); 
     }
     else{
-        console.log("inn setGame elseeeeeeee");
+        // console.log("inn setGame elseeeeeeee");
         this.isSceneCreated = false;
         this.startGame(); 
       }
@@ -568,7 +649,11 @@ export default class MainScene {
    focusTrolly(){
     this.setFocusOnObject(new BABYLON.Vector3(this.trollyObject.meshRoot.position.x,this.trollyObject.meshRoot.position.y,this.trollyObject.meshRoot.position.z));
     new TWEEN.Tween(this.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(35).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(45).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+      this.wipeAlcohal.usealcohalwipe=true;
+      this.wipeAlcohal.alocohalwipe.isVisible = true;
+      this.wipeAlcohal.reset();
+    }).start();
     new TWEEN.Tween(this.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
    }
    startGame(){
@@ -663,7 +748,44 @@ export default class MainScene {
                       }
                      break;
                   case 3:
-                      this.focusTrolly();
+                      this.bpMachineItem.placeItem(ANIM_TIME);
+                      this.ccpdRecordBook.placeItem(ANIM_TIME);
+                      this.alcohalItem.placeItem(ANIM_TIME);
+                      this.connectionItem.placeItem(ANIM_TIME);
+                      this.maskItem.placeItem(ANIM_TIME);
+                      this.apdmachinePackage.placeItem(ANIM_TIME);
+                      this.drainBagItem.placeItem(ANIM_TIME);
+                      this.sanitiserObject[0].placeItem(ANIM_TIME);
+                      this.dissolutionObject[0].placeItem(ANIM_TIME);
+                      this.dissolutionObject[1].placeItem(ANIM_TIME);
+                      this.alcohalItem.placeItem(ANIM_TIME);
+                      this.alcohalItem.initAction();
+                      this.gui2D.objectiveTitle.text = "Machine Prepration";
+                      this.totalobjective=11; 
+                      const values = ["Use the alcohal wipes to clean the APD Machin& Rack","Place the hand disinfectant on the APD Rack","Inspect & Validate the APD Cassette Package",
+                                      "Inspect & validate the selected Dialysis Solutions","Inspect & Validate the connection shield","Ispect & vvalidate the drain bag",
+                                      "Open the drain bag packaging","Place the Drain bag on the bottom tray od APD Rack","Place the dislysis solution on the top of the APD Machine",
+                                      "Place the following items on the top of the APD Rack:\n\u2022 Dialysis Solution \n\u2022 APD Cassette Package",
+                                      "Navigate to the APD MAcch,and click on the green button to turn-on the device"];   
+                       for(let i=0;i<values.length;i++){ 
+                            gameObjectives.push({status:false,msg:values[i]});
+                            if(i===5 || i===6)
+                              this.objectivebar[i] = this.gui2D.createBar(values[i],380,32);
+                            else if(i===9)
+                              this.objectivebar[i] = this.gui2D.createBar(values[i],380,105);
+                            else
+                              this.objectivebar[i] = this.gui2D.createBar(values[i],380,58);
+                            this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
+                            this.objectivebar[i].isVisible = i===0;
+                            this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
+                        }
+                        this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
+                        this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
+                        this.gui2D.drawObjectiveMenu(true);
+
+
+                        this.apdmachinePackage.initAction();
+                        this.apdmachinePackage.enableDrag(false);
                      break;  
               }
           break;
@@ -740,11 +862,11 @@ export default class MainScene {
       for(let i=0;i<this.sanitiserObject.length;i++)
        this.sanitiserObject[i].removeAction();
 
+       this.bpMachineItem.removeAction();  
        this.connectionItem.removeAction();  
        this.alcohalItem.removeAction();     
        this.maskItem.removeAction();        
        this.drainBagItem.removeAction();    
-       this.ccpdRecordBook.removeAction();  
        this.ccpdRecordBook.removeAction();  
        this.apdmachinePackage.removeAction();
        this.handSoapObject.removeAction();
@@ -752,109 +874,144 @@ export default class MainScene {
    }
    checkObjectives(detail){
 
-      if(this.level ===0){
-            if(detail.object_type ===  this.doorObject){
-                gameObjectives[0].status = true;
-                this.doorObject.removeAction();
-                this.objectiveCount++;
-            }
-            else if(detail.object_type ===  this.lightswitchObject){
-              gameObjectives[1].status = true;
-              this.lightswitchObject.removeAction();
-              this.objectiveCount++;
-            }
-            else if(detail.object_type ===  this.fanswitchobject){
-              gameObjectives[2].status = true;
-              this.fanswitchobject.removeAction();
-              this.objectiveCount++;
-            }
-            else if(detail.object_type ===  this.windowObject){
-              gameObjectives[3].status = true;
-              this.windowObject.removeAction();
-              this.objectiveCount++;
-            }
-            else if(detail.object_type ===  this.acItem){
-              gameObjectives[4].status = true;
-              this.acItem.removeAction();
-              this.objectiveCount++;
-            }
-      }
-      if(this.level===1){
-        if((detail.object_type ===  this.connectionItem || detail.object_type ===  this.alcohalItem|| detail.object_type ===  this.maskItem || detail.object_type ===  this.ccpdRecordBook 
-          || detail.object_type ===  this.apdmachinePackage||this.bpMachineItem)){
-                if(this.itemCount>=7){
-                    this.itemCount =0;
-                    this.objectiveCount++;
-                    gameObjectives[0].status = true;
-                    this.tableObject.setDrawerAnim();
-                    this.tableObject.removeAction();
-                    this.bpMachineItem.removeAction();
-                    this.alcohalItem.removeAction();
-                    this.maskItem.removeAction();
-                    this.connectionItem.removeAction();
-                    this.apdmachinePackage.removeAction();
-                    this.drainBagItem .removeAction();
-                    this.ccpdRecordBook.removeAction();
-                    this.cabinetObject.initAction();
-                    for(let i=0;i<this.dissolutionObject.length;i++)
-                      this.dissolutionObject[i].initAction();
-
-                    for(let i=0;i<this.sanitiserObject.length;i++)
-                      this.sanitiserObject[i].initAction();
-                   this.gamestate.state = GameState.default;
-                }
-          }
-          if(this.dialysisItemCnt>1 && this.handsanitiserCnt>0){
-                this.cabinetObject.removeAction();
-            this.objectiveCount++;
-            gameObjectives[1].status = true;
-            for(let i=0;i<this.dissolutionObject.length;i++)
-                this.dissolutionObject[i].removeAction();
-            for(let i=0;i<this.sanitiserObject.length;i++)
-                this.sanitiserObject[i].removeAction();
-              this.gamestate.state = GameState.default;
-          }
-      }
-      if(this.level===2){
-          if(detail.object_type === this.bpMachineItem){
-              this.objectiveCount=1;
-              gameObjectives[0].status = true;
-              this.ccpdRecordBook.initAction();
-              this.gui2D.resetCamBtn.isVisible=false;
-          }
-          if(detail.object_type === this.ccpdRecordBook){
-              if(detail.msg.includes("useccpd")){
-                  this.objectiveCount=2;
-                  gameObjectives[1].status = true;
-              }
-              if(detail.msg.includes("ccprd_record_fill")){
-                  if(this.objectiveCount<3){
-                    this.objectiveCount=3;
-                    gameObjectives[2].status = true;
-                    this.maskItem.initAction();
+        switch(this.level){
+            case 0:
+                  if(detail.object_type ===  this.doorObject){
+                      gameObjectives[0].status = true;
+                      this.doorObject.removeAction();
+                      this.objectiveCount++;
                   }
-              }
-          }
-          if(detail.object_type === this.maskItem){
-              this.objectiveCount=4;
-              gameObjectives[3].status = true;
-              this.handSoapObject.initAction();
-              this.paperTowelObject.initAction();
-              this.gamestate.state = GameState.default;
-          }
-          if(detail.object_type === this.handSoapObject ||  detail.object_type === this.paperTowelObject){
-              if(detail.msg === "wash_hands"){
-                this.objectiveCount=5;
-                 gameObjectives[4].status = true;
-              }
-              if(detail.msg === "use_papertowel"){
-                this.objectiveCount=6;
-                 gameObjectives[5].status = true;
-              }
-              
-          }
-          this.showResetViewButton(true);
-      }   
+                  else if(detail.object_type ===  this.lightswitchObject){
+                    gameObjectives[1].status = true;
+                    this.lightswitchObject.removeAction();
+                    this.objectiveCount++;
+                  }
+                  else if(detail.object_type ===  this.fanswitchobject){
+                    gameObjectives[2].status = true;
+                    this.fanswitchobject.removeAction();
+                    this.objectiveCount++;
+                  }
+                  else if(detail.object_type ===  this.windowObject){
+                    gameObjectives[3].status = true;
+                    this.windowObject.removeAction();
+                    this.objectiveCount++;
+                  }
+                  else if(detail.object_type ===  this.acItem){
+                    gameObjectives[4].status = true;
+                    this.acItem.removeAction();
+                    this.objectiveCount++;
+                  }
+            break;
+           case 1:
+                if((detail.object_type ===  this.connectionItem || detail.object_type ===  this.alcohalItem|| detail.object_type ===  this.maskItem || detail.object_type ===  this.ccpdRecordBook 
+                  || detail.object_type ===  this.apdmachinePackage||this.bpMachineItem)){
+                        if(this.itemCount>=7){
+                            this.itemCount =0;
+                            this.objectiveCount++;
+                            gameObjectives[0].status = true;
+                            this.tableObject.setDrawerAnim();
+                            this.tableObject.removeAction();
+                            this.bpMachineItem.removeAction();
+                            this.alcohalItem.removeAction();
+                            this.maskItem.removeAction();
+                            this.connectionItem.removeAction();
+                            this.apdmachinePackage.removeAction();
+                            this.drainBagItem .removeAction();
+                            this.ccpdRecordBook.removeAction();
+                            this.cabinetObject.initAction();
+                            for(let i=0;i<this.dissolutionObject.length;i++)
+                              this.dissolutionObject[i].initAction();
+        
+                            for(let i=0;i<this.sanitiserObject.length;i++)
+                              this.sanitiserObject[i].initAction();
+                          this.gamestate.state = GameState.default;
+                        }
+                  }
+                  if(this.dialysisItemCnt>1 && this.handsanitiserCnt>0){
+                        this.cabinetObject.removeAction();
+                    this.objectiveCount++;
+                    gameObjectives[1].status = true;
+                    for(let i=0;i<this.dissolutionObject.length;i++)
+                        this.dissolutionObject[i].removeAction();
+                    for(let i=0;i<this.sanitiserObject.length;i++)
+                        this.sanitiserObject[i].removeAction();
+                      this.gamestate.state = GameState.default;
+                  }
+             break; 
+          case 2:
+                  if(detail.object_type === this.bpMachineItem){
+                      this.objectiveCount=1;
+                      gameObjectives[0].status = true;
+                      this.ccpdRecordBook.initAction();
+                      this.gui2D.resetCamBtn.isVisible=false;
+                  }
+                  if(detail.object_type === this.ccpdRecordBook){
+                      if(detail.msg.includes("useccpd")){
+                          this.objectiveCount=2;
+                          gameObjectives[1].status = true;
+                      }
+                      if(detail.msg.includes("ccprd_record_fill")){
+                          if(this.objectiveCount<3){
+                            this.objectiveCount=3;
+                            gameObjectives[2].status = true;
+                            this.maskItem.initAction();
+                          }
+                      }
+                  }
+                  if(detail.object_type === this.maskItem){
+                      this.objectiveCount=4;
+                      gameObjectives[3].status = true;
+                      this.handSoapObject.initAction();
+                      this.paperTowelObject.initAction();
+                      this.gamestate.state = GameState.default;
+                  }
+                  if(detail.object_type === this.handSoapObject ||  detail.object_type === this.paperTowelObject){
+                      if(detail.msg === "wash_hands"){
+                        this.objectiveCount=5;
+                        gameObjectives[4].status = true;
+                      }
+                      if(detail.msg === "use_papertowel"){
+                        this.objectiveCount=6;
+                        gameObjectives[5].status = true;
+                      }
+                  }
+                  this.showResetViewButton(true);
+              break; 
+           case 3:
+
+                  console.log("$$$$$$$$$$  level 3333333 complete!!");
+                  if(detail.object_type === this.alcohalItem){
+                      gameObjectives[0].status = true;
+                      this.objectiveCount=1;
+                      this.tableObject.setTableFocusAnim();
+                      this.setFocusOnObject(new BABYLON.Vector3(this.tableObject.meshRoot.position.x,this.tableObject.meshRoot.position.y,this.tableObject.meshRoot.position.z-.5));
+                      this.sanitiserObject[0].initAction();
+                      this.sanitiserObject[0].enableDrag(true);
+                  }
+                  if( detail.msg && detail.msg.includes("placed_sanitizer")){
+                      for(let i=0;i<this.sanitiserObject.length;i++){
+                         if(this.sanitiserObject[i] === detail.object_type){
+                            gameObjectives[1].status = true;
+                            this.gamestate.state = GameState.focus;
+                            this.objectiveCount=2;
+                            this.tableObject.setTableFocusAnim();
+                            this.setFocusOnObject(new BABYLON.Vector3(this.tableObject.meshRoot.position.x,this.tableObject.meshRoot.position.y,this.tableObject.meshRoot.position.z-.5));
+                            this.apdmachinePackage.initAction();
+                            this.apdmachinePackage.enableDrag(false);
+                            
+                        }
+                    }
+                  }
+                  if(detail.object_type === this.apdmachinePackage){
+                     if(detail.msg.includes("apd_validation")){
+                          gameObjectives[2].status = true;
+                          this.objectiveCount=2;
+                     }
+                  }
+                  
+             break;   
+        }
+      
       this.updateObjective();
       if(this.objectiveCount>=this.totalobjective){
         this.gui2D.drawObjectiveMenu(false);
