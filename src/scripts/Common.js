@@ -33,8 +33,8 @@ export default class Common{
         this.camera.layerMask=1;
         this.camera.inputs.clear();
       
-      //   this.camera.inputs.addPointers();
-      //   this.camera.inputs.addMouseWheel();
+        this.camera.inputs.addPointers();
+        this.camera.inputs.addMouseWheel();
         this.camera.position.set(0,this.camVector.y,0);
         this.camera.setTarget(this.camVector);
         this.camera.attachControl(this.game.canvas, true);  

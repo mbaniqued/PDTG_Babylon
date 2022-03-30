@@ -353,15 +353,15 @@ export default class GUI2D{
       }
       drawRadialMenu(isDraw){
         this.radialCircle.isVisible=isDraw;
-        this.inspectBtn.topInPixels =-100;
+        this.inspectBtn.topInPixels =-80;
         this.inspectBtn.isVisible=isDraw;
 
-        this.useBtn.topInPixels = 100;
+        this.useBtn.topInPixels = 80;
         if(this.root.gamemode === gamemode.training && this.root.level >1)
             this.useBtn.isVisible=isDraw;
         else
             this.useBtn.isVisible=false;
-        this.crossBtn.leftInPixels = 100;
+        this.crossBtn.leftInPixels = 80;
         this.crossBtn.isVisible=isDraw;
       }
       initObjectiveMenu(){
@@ -485,11 +485,11 @@ export default class GUI2D{
           this.validationRect.topInPixels =-200;
           this.validationRect.isVisible=isDraw;
 
-          this.rightBtn.topInPixels  =-64;
+          this.rightBtn.topInPixels  =-54;
           this.rightBtn.leftInPixels =-64;
           this.rightBtn.isVisible=isDraw;
   
-          this.wrongBtn.topInPixels  =-64;
+          this.wrongBtn.topInPixels  =-54;
           this.wrongBtn.leftInPixels = 64;
           this.wrongBtn.isVisible=isDraw;
 

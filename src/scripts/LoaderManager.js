@@ -148,6 +148,7 @@ export default class LoaderManager {
                 else{
                   task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
                 }
+                task.loadedMeshes[i].isVisible = false;
                 this.setPickable(task.loadedMeshes[i],1);
             }
             node.scaling.set(-.005,.005,.005);

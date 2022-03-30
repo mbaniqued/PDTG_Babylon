@@ -66,13 +66,20 @@ export default class Item{
 
                     console.log(mesh.name);
                     this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state<100;
-                    if(mesh.name ==="apddate_plan_hightlight"){
-                        this.root.onPickdateHighlightPlan(1);
+                    if(mesh.name ==="highlight_plan"){
+                        if(this.name.includes("APD Cassette"))
+                            this.root.onHighlightApdPlan(1);
+                        if(this.name.includes("Connection Shield"))
+                            this.root.onhighlightConnectionPlan(1);
+                        if(this.name.includes("Drain Bag"))
+                            this.root.onhighlightDrainBagPlan(1);
                     }
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
-                    this.root.onPickdateHighlightPlan(0);
+                    this.root.onHighlightApdPlan(0);
+                    this.root.onhighlightConnectionPlan(0);
+                    this.root.onhighlightDrainBagPlan(0);
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                         // console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
@@ -83,29 +90,9 @@ export default class Item{
                 )
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                             console.log(this.root.gamestate.state+"!! OnPickTrigger!!! "+showMenu)
-                            if(mesh.name ==="apddate_plan_hightlight"){
-                                this.root.gui2D.drawValidationMenu(true);
-                                this.valdiationCheck=0;
-                                this.root.updateApdValidatetion(this.valdiationCheck);
-                                this.root.gui2D.rightBtn._onPointerUp = ()=>{
-                                    this.root.gui2D.validationText.text =  "Are all the connection lines intact?";
-                                    this.valdiationCheck=1;
-                                    this.root.updateApdValidatetion(this.valdiationCheck);
-                                };
-                                this.root.gui2D.wrongBtn._onPointerUp = ()=>{
-                                    this.valdiationCheck=2;
-                                    this.root.updateApdValidatetion(this.valdiationCheck);
-                                    
-                                };
-                                this.root.gui2D.doneBtn._onPointerUp = ()=>{
-                                    
-                                    let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"apd_validation",level:3}});
-                                    document.dispatchEvent(custom_event);
-                                    this.root.gui2D.drawValidationMenu(false);
-                                    
-                                };
-
-
+                            if(mesh.name ==="highlight_plan"){
+                                this.onValidationPick();
+                                return
                             }
                             if(this.root.camera.radius>2.5){
                                 this.root.gamestate.state = GameState.focus;
@@ -132,7 +119,7 @@ export default class Item{
                             this.root.gui2D.resetCamBtn.isVisible=this.root.gamestate.state!==GameState.radial;
                             if(showMenu){
                                 if(this.root.gamemode === gamemode.training && this.root.level ===3){
-                                    if(this.name.includes("APD Cassette"))
+                                    if(this.name.includes("APD Cassette") || this.name.includes("Connection Shield"))
                                         this.root.gui2D.useBtn.isVisible = false;
                                 }
                             }
@@ -416,6 +403,55 @@ export default class Item{
             this.pointerDragBehavior.enabled = value;
 
             
+     }
+     onValidationPick(){
+        this.root.gui2D.drawValidationMenu(true);
+        this.valdiationCheck=0;
+        if(this.name.includes("APD Cassette")){
+            this.root.updateApdValidatetion(this.valdiationCheck);
+        }
+        if(this.name.includes("Connection Shield")){
+            this.root.gui2D.validationText.text =  "is the Connection Shield still valid?";
+            this.root.conectionValidatetion(this.valdiationCheck);
+        }
+        if(this.name.includes("Drain Bag")){
+            this.root.gui2D.validationText.text =  "is the Drain Bag still valid?";
+            this.root.updatedrainbagValidatetion(this.valdiationCheck);
+        }
+        
+        this.root.gui2D.rightBtn._onPointerUp = ()=>{
+            this.valdiationCheck=1;
+            if(this.name.includes("APD Cassette")){
+                this.root.gui2D.validationText.text =  "Are all the connection lines intact?";
+                this.root.updateApdValidatetion(this.valdiationCheck);
+            }
+            if(this.name.includes("Connection Shield"))
+                this.root.conectionValidatetion(this.valdiationCheck);
+            if(this.name.includes("Drain Bag"))
+                this.root.updatedrainbagValidatetion(this.valdiationCheck);
+        };
+        this.root.gui2D.wrongBtn._onPointerUp = ()=>{
+            this.valdiationCheck=2;
+            if(this.name.includes("APD Cassette"))
+                this.root.updateApdValidatetion(this.valdiationCheck);
+            if(this.name.includes("Connection Shield"))
+                this.root.conectionValidatetion(this.valdiationCheck);
+            if(this.name.includes("Drain Bag"))
+                this.root.updatedrainbagValidatetion(this.valdiationCheck);
+        };
+        this.root.gui2D.doneBtn._onPointerUp = ()=>{
+            let custom_event;
+            if(this.name.includes("APD Cassette"))
+               custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"apd_validation",level:3}});
+            if(this.name.includes("Connection Shield"))
+               custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"connection_validation",level:3}});
+            if(this.name.includes("Drain Bag"))
+               custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"drainbag_validation",level:3}});
+
+            document.dispatchEvent(custom_event);
+            this.root.gui2D.drawValidationMenu(false);
+            
+        };
      }
 
 }

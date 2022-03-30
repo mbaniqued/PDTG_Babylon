@@ -57,10 +57,10 @@ export default class MainScene {
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
     this.ccpdRecordBook=undefined,this.apdmachinePackage=undefined,this.lightswitchObject=undefined,this.dissolutionObject=[],this.sanitiserObject=[];
     this.fanAnim = null,this.paperTowelObject=undefined,this.handSoapObject=undefined;
-    this.handwashactivity,this.wipeAlcohal,this.apdValidationImage=[];
+    this.handwashactivity,this.wipeAlcohal,this.validationImage=[];
 
-
-
+    const size= 512;
+    this.dynamicTexture   = new BABYLON.DynamicTexture("dynamictexture",size,this.scene);
     
     // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
     // this.sceneOptimiser.startOptimiser();
@@ -75,12 +75,12 @@ export default class MainScene {
     this.wipeAlcohal = new AlcohalWipe(this);
     this.addevents();
 
-    this.apdValidationImage[0]     = new Image();
-    this.apdValidationImage[0].src =  '/ui/questionmark.png';
-    this.apdValidationImage[1]     = new Image();
-    this.apdValidationImage[1].src = '/ui/green.png';
-    this.apdValidationImage[2]     = new Image();
-    this.apdValidationImage[2].src = '/ui/cross2_png.png';
+    this.validationImage[0]     = new Image();
+    this.validationImage[0].src =  '/ui/questionmark.png';
+    this.validationImage[1]     = new Image();
+    this.validationImage[1].src = '/ui/green.png';
+    this.validationImage[2]     = new Image();
+    this.validationImage[2].src = '/ui/cross2_png.png';
     
   }
   initState(){
@@ -110,21 +110,32 @@ export default class MainScene {
     this.bpMachineItem     = new Item("Blood Pressure Monitor",this,this.scene.getTransformNodeByID("bpmachinenode"),{x:-69,y:30,z:33},{x:-93,y:17,z:-8},undefined);
     this.createBpText();
     this.connectionItem    = new Item("Connection Shield",this,this.scene.getTransformNodeByID("ConnectionShield"),{x:-70,y:5,z:38.5},{x:-65,y:-55,z:-4},undefined); 
+    this.createconnectionItemValidation();
     this.alcohalItem       = new Item("Alchohal Wipe",this,this.scene.getTransformNodeByID("Alcohol_Wipe"),{x:-45,y:8,z:38.5},{x:-36,y:-53,z:-4},{x:0,y:0,z:90});
     this.maskItem          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
     this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
+    this.createdrainBagValidation();
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
     this.createApdPackageValidatiion();
     
-    this.dissolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode"),{x:2.16,y:1.57,z:2.34});
-    const solutionclone1 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode1");
-    this.dissolutionObject[1] = new CabinetItem("Dialysis Solution",this,solutionclone1,{x:2.16,y:1.17,z:2.34});
-    const solutionclone2 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode2");
-    this.dissolutionObject[2] = new CabinetItem("Dialysis Solution",this,solutionclone2,{x:2.16,y:.78,z:2.34});
-    const solutionclone3 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode3");
-    this.dissolutionObject[3] = new CabinetItem("Dialysis Solution",this,solutionclone3,{x:2.16,y:.31,z:2.34});
+    // const solutionclone = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode");
+    this.dissolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode0"),{x:2.16,y:1.57,z:2.34});
 
+    // const solutionclone1 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode1");
+    // this.scene.getTransformNodeByID("diasolutionnode").setEnabled(true);
+    this.dissolutionObject[1] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode1"),{x:2.16,y:1.17,z:2.34});
+    // const solutionclone2 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode2");
+    this.dissolutionObject[2] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode3"),{x:2.16,y:.78,z:2.34});
+    // const solutionclone3 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode3");
+    this.dissolutionObject[3] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode3"),{x:2.16,y:.31,z:2.34});
+
+    this.scene.getTransformNodeByID("diasolutionnode").getChildMeshes().forEach(childmesh => {
+      childmesh.isVisible = false;
+    });
+    
+    
+    
     this.sanitiserObject[0]   = new CabinetItem("Hand Sanitizer ",this,this.scene.getTransformNodeByID("handsanitizernode"),{x:1.47,y:1.07,z:2.6});
     const sanitizerclone2 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer2");
     this.sanitiserObject[1]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone2,{x:1.47,y:1.07,z:2.4});
@@ -136,6 +147,8 @@ export default class MainScene {
 
     this.createccpdCanvas();
     this.startFan();
+
+    
     this.gui2D.resetCamBtn.onPointerUpObservable.add(()=>{
         this.setCameraTarget(); 
         this.sceneCommon.removeMiniCam();
@@ -171,12 +184,21 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // this.drawImageOnTexture(this.apdDateTexture,this.apdValidationImage[0],SX,SY,48,48);
-      // this.apdmachinePackage.meshRoot.position =  new BABYLON.Vector3(20,-38,-63); 
-      // this.apdmachinePackage.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());  
-      // this.setFocusOnObject(new BABYLON.Vector3(0,3,3));
-      // this.scene.getMeshByName("apddate_plan_hightlight").position  = new BABYLON.Vector3(SX,SY,SZ); 
-      // this.scene.getMeshByName("apddate_plan").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
+      // let ctx = this.dissolutionObject[0].dynamicTexture.getContext();
+      // const font =  "bold 14px Arial";
+      // ctx.clearRect(0,0,512,512);
+      // this.dissolutionObject[0].drainBagTexture.drawText("1.5%",SX,SY,font,"#000000","transparent",true);
+      // this.drawImageOnTexture(this.dissolutionObject[0].dynamicTexture,this.validationImage[0],SX,SY,38,22);
+
+
+      // this.scene.getMeshByName("concentration_highlight_plan").position  = new BABYLON.Vector3(SX,.1,SZ); 
+      // this.scene.getMeshByName("cap_highlight_plan").scaling   = new BABYLON.Vector3(.26,.05,1); 
+      // this.scene.getMeshByName("cap_highlight_plan").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
+      // this.scene.getMeshByName("validation_plan").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
+      // let ctx = this.connectionTexture.getContext();
+      // const font =  "bold 28px Arial";
+      // ctx.clearRect(0,0,128,128);
+      // this.connectionTexture.drawText("2024",SX,SY,font,"#0000ff","transparent",true);
 
       
       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
@@ -241,36 +263,43 @@ export default class MainScene {
     this.ccpdRecordBook    = null;
     this.apdmachinePackage = null;
     
-    this.dissolutionObject[0] = null;
-    this.removeNode(this.scene.getTransformNodeByID("diasolutionnode1"));
+    for(let i=0;i<this.dissolutionObject.length;i++){
+      this.dissolutionObject[i].removeValidation();
+      this.removeNode(this.dissolutionObject[i].meshRoot);
+      this.dissolutionObject[i] = null;
+    }
     
-    this.dissolutionObject[1] = null;
-    this.removeNode(this.scene.getTransformNodeByID("diasolutionnode2"));
-    
-    this.dissolutionObject[2] = null;
-    this.removeNode(this.scene.getTransformNodeByID("diasolutionnode3"));
-    
-    this.dissolutionObject[3] = null;
+    // this.dissolutionObject[1].removeValidation();
+    // this.removeNode(this.scene.getTransformNodeByID("diasolutionnode1"));
+    // this.dissolutionObject[1] = null;
 
-    this.sanitiserObject[0]   = null;
-    this.removeNode(this.scene.getTransformNodeByID("sanitizer2"));
-    this.sanitiserObject[1]   = null;
-    this.removeNode(this.scene.getTransformNodeByID("sanitizer3"));
-    this.sanitiserObject[2]   = null;
+    // this.dissolutionObject[2].removeValidation();
+    // this.removeNode(this.scene.getTransformNodeByID("diasolutionnode2"));
+    // this.dissolutionObject[2] = null;
+
+    
+    // this.dissolutionObject[2].removeValidation();
+    // this.removeNode(this.scene.getTransformNodeByID("diasolutionnode3"));
+    // this.dissolutionObject[3] = null;
+    for(let i=0;i<this.sanitiserObject.length;i++){
+      if(i!==0)
+        this.removeNode(this.sanitiserObject[i].meshRoot);
+        this.sanitiserObject[i]   = null;
+    }
+    
+    // this.sanitiserObject[1]   = null;
+    // this.removeNode(this.scene.getTransformNodeByID("sanitizer3"));
+    // this.sanitiserObject[2]   = null;
+
     this.paperTowelObject  = null;
     this.handSoapObject    = null;
-
-    
     this.removeMesh(this.scene.getMeshByName("glassplane"));
     this.removeMesh(this.scene.getMeshByName("windowframeplan"));
-
-    
     console.log("reset suceesss");
   }
   removeMesh(mesh){
     if(mesh){
       this.scene.removeMesh(mesh);
-      
       mesh.dispose();
     }
   }
@@ -284,77 +313,153 @@ export default class MainScene {
       node.dispose();
     }
   }
-  createDialysisValidation(){
-    if(this.dialysisTexture)
+
+  createconnectionItemValidation(){
+    if(this.connectionTexture)
       return; 
-      const datePlan = new BABYLON.MeshBuilder.CreatePlane("dialysis_plan",{width:1,height:1,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
-     datePlan.parent = this.dissolutionObject[0].meshRoot;
-     datePlan.isPickable=false;
-     datePlan.renderOutline=false;
-     datePlan.outlineWidth=0;
-      const planmat         = new BABYLON.StandardMaterial("dialysis_plan_mat", this.scene);
-      planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
-      planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
-      this.dialysisTexture   = new BABYLON.DynamicTexture("dialysis_plan_texture",128,this.scene);
-      this.dialysisTexture.hasAlpha=true;
-      planmat.diffuseTexture = this.dialysisTexture;
-      datePlan.material      = planmat;
-      // datePlan.scaling   = new BABYLON.Vector3(1,2,1);
-      datePlan.position  = new BABYLON.Vector3(-9.7,-.5,-30.7);
-      datePlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+    const plan = BABYLON.MeshBuilder.CreatePlane("connection_plan",{width:1,height:1,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+    plan.parent = this.connectionItem.meshRoot;
+    plan.isPickable=false;
+    plan.renderOutline=false;
+    plan.outlineWidth=0;
+    
+    this.connectionTexture   = this.dynamicTexture.clone(); //new BABYLON.DynamicTexture("connection_plan_texture",size,this.scene);
+    this.connectionTexture.scale(.5);
+    const size=this.connectionTexture.getSize();
+    this.connectionTexture.hasAlpha=true;
+    const planmat         = new BABYLON.StandardMaterial("connection_plan_mat", this.scene);
+    planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
+    planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+    planmat.diffuseTexture = this.connectionTexture;
+    plan.material      = planmat;
+    plan.scaling   = new BABYLON.Vector3(8,4,1); 
+    plan.position  = new BABYLON.Vector3(-5.2,-9.8,-.5); 
+    plan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+
+    const plan2 = plan.clone();
+    plan2.name = "highlight_plan";
+    plan2.scaling   = new BABYLON.Vector3(4.5,4,1); 
+    plan2.parent   = this.connectionItem.meshRoot;
+    plan2.isPickable=true;
+    plan2.position  = new BABYLON.Vector3(-6.8,-9.8,-.5); 
+    
+    const planmat2         = new BABYLON.StandardMaterial("highlight_mat", this.scene);
+    planmat2.diffuseColor  = new BABYLON.Color3.FromInts(152,193,201);
+    planmat2.emissiveColor = new BABYLON.Color3.FromInts(152,193,201);
+    planmat2.alpha=.5;
+    plan2.material = planmat2; 
+    plan2.visibility=0;
+
+    this.onhighlightConnectionPlan = (value)=>{
+      plan2.visibility=value;
+    }
+    this.conectionValidatetion = (imgno)=>{
+     let ctx = this.connectionTexture.getContext();
+      const font =  "bold 64px Arial";
+      ctx.clearRect(0,0,size.width,size.height);
+      this.connectionTexture.drawText("2024",14,208,font,"#0000ff","transparent",true);
+      if(imgno>-1)
+        this.drawImageOnTexture(this.connectionTexture,this.validationImage[imgno],160,40,72,128);
+    }
+    this.conectionValidatetion(-1);
+  }
+  createdrainBagValidation(){
+    if(this.drainBagTexture)
+      return; 
+      const plan = BABYLON.MeshBuilder.CreatePlane("drainbag_plan",{width:15,height:8,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+     plan.parent = this.drainBagItem.meshRoot;
+     plan.isPickable=false;
+     plan.renderOutline=false;
+     plan.outlineWidth=0;
+     
+     plan.position  = new BABYLON.Vector3(-12, 9.59,-10);
+     plan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(90).radians());
+     
+     this.drainBagTexture   = this.dynamicTexture.clone();// new BABYLON.DynamicTexture("drain_bag_texture",size,this.scene);
+     this.drainBagTexture.scale(.5);
+     this.drainBagTexture.hasAlpha=true;
+     const size=this.dynamicTexture.getSize();
+     const planmat         = new BABYLON.StandardMaterial("drainbag_plan_mat", this.scene);
+     planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
+     planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+     planmat.diffuseTexture = this.drainBagTexture;
+     plan.material      = planmat;
+      
+
+     const plan2 = plan.clone();
+      plan2.name = "highlight_plan";
+      plan2.scaling   = new BABYLON.Vector3(.75,.6,1); 
+      plan2.parent   = this.drainBagItem.meshRoot;
+      plan2.isPickable=true;
+      plan2.position  = new BABYLON.Vector3(-12.6, 7.2,-10);
+      const planmat2         = this.scene.getMaterialByName("highlight_mat").clone();
+      planmat2.name = "highlight_plan";
+      plan2.material = planmat2; 
+      plan2.visibility=0;
+
+      this.onhighlightDrainBagPlan = (value)=>{
+        plan2.visibility=value;
+      }
+      this.updatedrainbagValidatetion = (imgno)=>{
+        let ctx = this.drainBagTexture.getContext();
+        const font =  "bold 32px Arial";
+        ctx.clearRect(0,0,size.width,size.height);
+        this.drainBagTexture.drawText("2020-04-08",4,70,font,"#000000","transparent",true);
+        this.drainBagTexture.drawText("2023-04-08",4,160,font,"#000000","transparent",true);
+        if(imgno>-1)
+          this.drawImageOnTexture(this.drainBagTexture,this.validationImage[imgno],190,60,56,112);
+      }
+      this.updatedrainbagValidatetion(-1);
+     
   }
   createApdPackageValidatiion(){
     if(this.apdDateTexture)
      return;
-     const datePlan = new BABYLON.MeshBuilder.CreatePlane("apddate_plan",{width:22,height:20,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+     const datePlan = BABYLON.MeshBuilder.CreatePlane("apddate_plan",{width:22,height:20,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
      datePlan.parent = this.apdmachinePackage.meshRoot;
      datePlan.isPickable=false;
      datePlan.renderOutline=false;
      datePlan.outlineWidth=0;
-      const planmat         = new BABYLON.StandardMaterial("apddate_mat", this.scene);
-      planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
-      planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
-      this.apdDateTexture   = new BABYLON.DynamicTexture("apddate_texture",256,this.scene);
-      this.apdDateTexture.hasAlpha=true;
-      planmat.diffuseTexture = this.apdDateTexture;
-      datePlan.material      = planmat;
-      // datePlan.scaling   = new BABYLON.Vector3(1,2,1);
-      datePlan.position  = new BABYLON.Vector3(-9.7,-.5,-30.7);
-      datePlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
-
-      this.updateApdValidatetion(0);
-      
-
-      const dateHighlightPlan    = this.scene.getMeshByName("apddate_plan").clone("apddate_plan_hightlight");
-      dateHighlightPlan.name = "apddate_plan_hightlight";
+     datePlan.position  = new BABYLON.Vector3(-9.7,-.5,-30.7);
+     datePlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+     
+     this.apdDateTexture   = this.dynamicTexture.clone(); //new BABYLON.DynamicTexture("apddate_texture",size,this.scene);
+     this.apdDateTexture.scale(.5);
+     const size=this.apdDateTexture.getSize();
+     this.apdDateTexture.hasAlpha=true;
+     const planmat         = new BABYLON.StandardMaterial("apddate_mat", this.scene);
+     planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
+     planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+     planmat.diffuseTexture = this.apdDateTexture;
+     datePlan.material      = planmat;
+     const dateHighlightPlan    = datePlan.clone();
+      dateHighlightPlan.name     = "highlight_plan";
       dateHighlightPlan.parent   = this.apdmachinePackage.meshRoot;
       dateHighlightPlan.isPickable=true;
-      const planmat2         = new BABYLON.StandardMaterial("apddate_mat", this.scene);
-      planmat2.diffuseColor  = new BABYLON.Color3.FromInts(152,193,201);
-      planmat2.emissiveColor = new BABYLON.Color3.FromInts(152,193,201);
-      planmat2.alpha=.5;
-      dateHighlightPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
-      dateHighlightPlan.material  = planmat2;
       dateHighlightPlan.position  = new BABYLON.Vector3(-2.10,-.4,-29.8);
       dateHighlightPlan.scaling  = new BABYLON.Vector3(1.3,.3,1);
       dateHighlightPlan.visibility=0;
+      const planmat2         = this.scene.getMaterialByName("highlight_mat").clone();
+      dateHighlightPlan.material  = planmat2;
       
-      this.onPickdateHighlightPlan = (value)=>{
+      this.onHighlightApdPlan = (value)=>{
         dateHighlightPlan.visibility=value;
       }
+      this.updateApdValidatetion = (imgno)=>{
+        let ctx = this.apdDateTexture.getContext();
+        const font =  "bold 28px Arial";
+        ctx.clearRect(0,0,size.width,size.height);
+        this.apdDateTexture.drawText("2021-2022",73,153,font,"#808794","transparent",true);
+        if(imgno>-1)
+          this.drawImageOnTexture(this.apdDateTexture,this.validationImage[imgno],210,116,48,48);
+      }
+      this.updateApdValidatetion(-1);
   }
-  updateApdValidatetion(imgno){
-    let ctx = this.apdDateTexture.getContext();
-    const font =  "bold 28px Arial";
-    ctx.clearRect(0,0,256,256);
-    this.apdDateTexture.drawText("2021-2022",73,153,font,"#808794","transparent",true);
-    this.drawImageOnTexture(this.apdDateTexture,this.apdValidationImage[imgno],210,116,48,48);
-  }
+  
   drawImageOnTexture(texture,img,x,y,w,h){
-      const ctx =this.apdDateTexture.getContext();
+      const ctx = texture.getContext();
       ctx.drawImage(img,x,y,w,h);
       texture.update();
-      
   }
   createBpText(){
     if(this.bpnumberTexture)  
@@ -365,12 +470,12 @@ export default class MainScene {
     bpPlan.isPickable=false;
     bpPlan.renderOutline=false;
     bpPlan.outlineWidth=0;
-    const planmat = new BABYLON.StandardMaterial("bptextmat", this.scene);
+    this.bpnumberTexture   = this.dynamicTexture.clone(); //new BABYLON.DynamicTexture("bpnumberTexture",256,this.scene);
+    this.bpnumberTexture.scale(.5);
+    this.bpnumberTexture.hasAlpha=true;
+    const planmat         = new BABYLON.StandardMaterial("bptextmat", this.scene);
     planmat.diffuseColor  = new BABYLON.Color3.FromInts(128,135,148);
     planmat.emissiveColor = new BABYLON.Color3.FromInts(128,135,148);
-    
-    this.bpnumberTexture   = new BABYLON.DynamicTexture("bpnumberTexture",256,this.scene);
-    this.bpnumberTexture.hasAlpha=true;
     planmat.diffuseTexture = this.bpnumberTexture;
     bpPlan.material  = planmat;
     bpPlan.scaling   = new BABYLON.Vector3(1.4,3.2,1);
@@ -384,7 +489,7 @@ export default class MainScene {
     const font_size = 64;
     const font_type = "Orbitron";
     const font = font_size + "px " + font_type;
-    ctx.clearRect(0,0,256,256);
+    ctx.clearRect(0,0,this.bpnumberTexture.getSize().width,this.bpnumberTexture.getSize().height);
     let v2=0,v3=0;
     if(v1>0)
       this.bpnumberTexture.drawText(parseInt(v1)+"",90, 70, font,  "#808794", "transparent", true);
@@ -787,6 +892,16 @@ export default class MainScene {
 
                         this.apdmachinePackage.initAction();
                         this.apdmachinePackage.enableDrag(false);
+                        this.connectionItem.initAction();
+                        this.connectionItem.enableDrag(false);
+
+                        this.drainBagItem.initAction();
+                        this.drainBagItem.enableDrag(false);
+
+                        this.dissolutionObject[0].initAction();
+                        this.dissolutionObject[0].enableDrag(false);
+                        this.dissolutionObject[1].initAction();
+                        this.dissolutionObject[1].enableDrag(false);
                      break;  
               }
           break;
@@ -1004,7 +1119,7 @@ export default class MainScene {
                     }
                   }
                   if(detail.object_type === this.apdmachinePackage){
-                     if(detail.msg.includes("apd_validation")){
+                     if( detail.msg && detail.msg.includes("apd_validation")){
                           gameObjectives[2].status = true;
                           this.objectiveCount=2;
                      }
