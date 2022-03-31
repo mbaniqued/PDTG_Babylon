@@ -8,48 +8,50 @@ const diasolutionpos4 = new BABYLON.Vector3(-3.30,2.15,2.50);
 const sanitizerpos1   = new BABYLON.Vector3(-.8,1.90,2.7);
 const sanitizerpos2   = new BABYLON.Vector3(-1.795,1.78,2);
 let checktable_diapos=0,checktable_sanipos=0,checktrolly_diapos=0,checkapd_diapos=0,checktrolly_sanipos=0;
-
+let checkdiaValidation=0;
 export default class CabinetItem{
 
       constructor(name,root,meshobject,pos){
         this.name            = name;
         this.root            = root;
         this.meshRoot        = meshobject;
-        this.meshRoot.getChildMeshes().forEach(childmesh => {
-              childmesh.isVisible=true;
-        });
+        
         this.startPosition   = pos;
         this.placedPosition   = undefined;
         this.placedRotation   = undefined;
         this.setPos(); 
-        this.initAction();
-        
         this.pickObject = false;
         this.initDrag();
-        this.meshRoot.addBehavior(this.pointerDragBehavior);
+        this.initAction();
         this.meshRoot.name+="items";
         this.state =0;
         this.isPlaced=false;
         this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
         this.label.isVisible=false;
         this.label.isPointerBlocker=true;
-        checktable_diapos=0;checktable_sanipos=0;checktrolly_diapos=0;checkapd_diapos=0;checktrolly_sanipos=0;
-
-        this.validationNode = new BABYLON.TransformNode("validation_node");
+        this.validationDone=false;
         if(this.meshRoot.name.includes("diasolutionnode")){
+            this.validationNode = new BABYLON.TransformNode("validation_node");
             this.validationTxt=[];
             this.validationPos=[];
             this.checkValidation=[];
             this.createValidation();
-        }
+         }
+         checktable_diapos=0;checktable_sanipos=0;checktrolly_diapos=0;checkapd_diapos=0;checktrolly_sanipos=0;checkdiaValidation=0;
       }
       setPos(){
-        this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
-        if(this.meshRoot.name.includes("diasolutionnode")){
-            this.meshRoot.rotation  = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(90).radians(),0);
-        }
-        else
-            this.meshRoot.rotation  = new BABYLON.Vector3(0,0,0);             
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                childmesh.isVisible=true;
+            });
+            this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
+            if(this.meshRoot.name.includes("diasolutionnode"))
+                this.meshRoot.rotation  = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(90).radians(),0);
+            else
+                this.meshRoot.rotation  = new BABYLON.Vector3(0,0,0);             
+            this.meshRoot.setEnabled(true);
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                childmesh.isVisible=true;
+            });
       }
       removeAction(){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -57,10 +59,10 @@ export default class CabinetItem{
           });
       }
       initAction(){
+        this.enableDrag(false);
           this.meshRoot.getChildMeshes().forEach(childmesh => {
               if(!childmesh.actionManager)
                   this.addAction(childmesh);
-
                 childmesh.isVisible=true;
           });
       }
@@ -125,16 +127,13 @@ export default class CabinetItem{
                         }
                     }
                     this.root.gui2D.inspectBtn._onPointerUp = ()=>{
-                        this.enableDrag(false);
                         showMenu = false;
                         this.showItem();
                         this.root.gui2D.drawRadialMenu(false);  
                     };
                     this.root.gui2D.useBtn._onPointerUp = ()=>{
                         showMenu = false;
-                        this.root.gui2D.drawRadialMenu(false);  
-                        this.enableDrag(false);
-                        // this.showItem();
+                        this.root.gui2D.drawRadialMenu(showMenu);  
                         if(this.name.includes("Hand") && this.root.level>2){
                             this.root.gamestate.state = GameState.active;
                             this.root.setFocusOnObject(new BABYLON.Vector3(1.98,2.02-.3,-1.89-1.2));
@@ -147,9 +146,7 @@ export default class CabinetItem{
                             }).start();
                             new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                             new TWEEN.Tween(this.root.camera).to({radius:2.9},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            
                         }
-
                     };
                     this.root.gui2D.crossBtn._onPointerUp = ()=>{
                         showMenu = false;
@@ -163,6 +160,8 @@ export default class CabinetItem{
     initDrag(){
       this.pointerDragBehavior = new BABYLON.PointerDragBehavior();
       this.pointerDragBehavior.useObjectOrientationForDragging = false;
+      this.pointerDragBehavior.updateDragPlane =false;
+      this.meshRoot.addBehavior(this.pointerDragBehavior);
       this.pointerDragBehavior.onDragStartObservable.add((event)=>{
           if( !this.pickObject || this.root.gamestate.state ===  GameState.radial){
               this.state =0;
@@ -170,12 +169,14 @@ export default class CabinetItem{
           }
       });
       this.pointerDragBehavior.onDragObservable.add((event)=>{
+
+           console.log(this.root.gamestate.state+"    "+this.pickObject) 
           if(!this.pickObject || this.root.gamestate.state ===  GameState.radial){
               this.state =0;
               return;
           }
-          this.meshRoot.position.z = this.startPosition.z;
-          // console.log(this.meshRoot.position.x);
+        //   this.meshRoot.position.z = this.startPosition.z;
+          console.log(this.meshRoot.position);
           if(this.meshRoot.position.x>-1.5 && this.meshRoot.position.x<1.1){
               this.root.scene.getMeshByName("tablecollider").visibility=1;
               this.root.scene.getMeshByName("trollycollider").visibility=0;
@@ -228,10 +229,12 @@ export default class CabinetItem{
                       new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
                       new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                           checktable_sanipos++;
+                          if(checktrolly_sanipos>0)
+                            checktrolly_sanipos--;
                           this.enableDrag(false);
                           this.root.handsanitiserCnt++;
                           this.label.isVisible=false;
-                          let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,itemcount:this.root.handsanitiserCnt}});
+                          let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.handsanitiserCnt}});
                           document.dispatchEvent(custom_event);
                       }).start();
                 }
@@ -243,11 +246,15 @@ export default class CabinetItem{
                       new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
                       new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                            checktable_diapos++;
-                           this.enableDrag(false);
-                           this.removeAction();
+                           if(checkapd_diapos>0)
+                                checkapd_diapos--;
+                            if(checktrolly_diapos>0)
+                                checktrolly_diapos--;
+                        //    this.enableDrag(false);
+                        //    this.removeAction();
                            this.root.dialysisItemCnt++;
                            this.label.isVisible=false;
-                           let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,itemcount:this.root.dialysisItemCnt}});
+                           let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.dialysisItemCnt}});
                            document.dispatchEvent(custom_event);
                       }).start();
                 }
@@ -264,26 +271,47 @@ export default class CabinetItem{
                         const final_diasolutionpos = this.root.scene.getMeshByName("trollycollider").visibility>0?diasolutionpos3:diasolutionpos4;
                         this.placedPosition = final_diasolutionpos;
                         this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(this.root.scene.getMeshByName("trollycollider").visibility>0?180:90).radians(),0);
-                        if(this.root.scene.getMeshByName("trollycollider").visibility>0)
+                        if(this.root.scene.getMeshByName("trollycollider").visibility>0){
                               checktrolly_diapos++;
-                        if(this.root.scene.getMeshByName("apdcollider").visibility>0)
+                              if(checkapd_diapos>0)
+                                checkapd_diapos--;
+                              if(checktable_diapos>0)
+                                checktable_diapos--;
+                                
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_dialysis_apd"}});
+                            document.dispatchEvent(custom_event);
+
+                        }
+                        if(this.root.scene.getMeshByName("apdcollider").visibility>0){
                               checkapd_diapos++;  
+                              if(checktrolly_diapos>0)
+                                checktrolly_diapos--;
+                              if(checktable_diapos>0)
+                                checktable_diapos--;
+                        }
                         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
                         new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                            this.enableDrag(false);
+                            // this.enableDrag(false);
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_dialysis_apd_top"}});
+                            document.dispatchEvent(custom_event);
                         }).start();
                     }
               }
               if(this.name.includes("Hand") && checktrolly_sanipos<1){
                       placed = true;  
+
                       this.placedPosition = sanitizerpos2;
                       this.placedRotation = new BABYLON.Vector3(0,0,0);
                       new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
                       new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                          checktrolly_sanipos++
-                          this.enableDrag(false);
-                          let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_sanitizer"}});
-                          document.dispatchEvent(custom_event);
+                          checktrolly_sanipos++;
+                          if(checktable_sanipos>0)
+                            checktable_sanipos--;
+                        //   this.enableDrag(false);
+                         
+                           let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_sanitizer"}});
+                           document.dispatchEvent(custom_event);
+                         
 
                       }).start();
                 }
@@ -300,7 +328,6 @@ export default class CabinetItem{
         });
     }
     placeItem(time){
-        this.enableDrag(false);
         if(this.name.includes("Hand")){
             this.placedPosition = sanitizerpos1;
             this.placedRotation = new BABYLON.Vector3(0,0,0);
@@ -366,8 +393,6 @@ export default class CabinetItem{
 
     }
     createValidation(){
-        
-         
          this.validationNode.parent = this.meshRoot;   
          this.validationNode.scaling.set(-1,1,1)
          this.validationNode.position = new BABYLON.Vector3(0,3.9,0);
@@ -386,8 +411,6 @@ export default class CabinetItem{
          planmat.emissiveColor  = new BABYLON.Color3.FromInts(255,255,255);
          planmat.diffuseTexture = this.dynamicTexture;
          plan.material          = planmat;
-          
-
          this.validationTxt["cap_highlight_plan"] = "is the blue cap present?";
          this.validationPos["cap_highlight_plan"] = [435,5];
          this.checkValidation["cap_highlight_plan"] = -1;
@@ -474,8 +497,7 @@ export default class CabinetItem{
         concentration_highlight_plan.parent    = this.validationNode;
         concentration_highlight_plan.isPickable=true;
         concentration_highlight_plan.visibility=0;
-    
-          this.onhighlightDValidation = (name,value)=>{
+        this.onhighlightDValidation = (name,value)=>{
             this.validationNode.getChildMeshes().forEach(childmesh => {
                  if(childmesh.name.includes("highlight_plan")){
                         if(childmesh.name  === name)
@@ -483,9 +505,27 @@ export default class CabinetItem{
                   }
             });
           }
+          this.checkValidationComplete=()=>{
+            let cnt=0;
+            this.validationNode.getChildMeshes().forEach(childmesh => {
+               if(childmesh.name.includes("highlight_plan")){
+                  if(this.checkValidation[childmesh.name]>0)
+                      cnt++;
+               }
+           });
+           this.checkValidation.length=7;
+          if(cnt>=this.checkValidation.length && !this.validationDone){
+               checkdiaValidation++;
+               this.validationDone = true;
+               if(checkdiaValidation>=2){
+                   console.log(" $$$$ validation complete $$$");
+                  const custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"dialysis_validation",level:3}});
+                  document.dispatchEvent(custom_event);
+               }    
+           }
+        }
           this.updatedrainbagValidatetion = ()=>{
-
-               console.log(this.meshRoot.name);
+            //  console.log(this.meshRoot.name);
                 let ctx = this.dynamicTexture.getContext();
                 const font =  "bold 9px Arial";
                 ctx.clearRect(0,0,size,size);
@@ -495,7 +535,6 @@ export default class CabinetItem{
                 this.dynamicTexture.drawText("5000",317,162,font2,"#000000","transparent",true);
                 const font3 =  "bold 14px Arial";
                 this.dynamicTexture.drawText("1.5%",171,237,font3,"#000000","transparent",true);
-
                 this.validationNode.getChildMeshes().forEach(childmesh => {
                     if(childmesh.name.includes("highlight_plan")){
                         if(this.checkValidation[childmesh.name]>-1){
@@ -507,6 +546,7 @@ export default class CabinetItem{
                         }
                      }
                });
+               this.checkValidationComplete();
           }
           this.updatedrainbagValidatetion();
           this.setValidation = (name)=>{
@@ -517,25 +557,21 @@ export default class CabinetItem{
             this.updatedrainbagValidatetion()
             this.root.gui2D.rightBtn._onPointerUp = ()=>{
                 this.checkValidation[name]=1;
-                this.updatedrainbagValidatetion()
+                this.updatedrainbagValidatetion();
+                this.root.gui2D.drawValidationMenu(false);
             };
             this.root.gui2D.wrongBtn._onPointerUp = ()=>{
                 this.checkValidation[name]=2;
-                this.updatedrainbagValidatetion()
+                this.updatedrainbagValidatetion();
+                
+                this.root.gui2D.drawValidationMenu(false);
             };
             this.root.gui2D.doneBtn._onPointerUp = ()=>{
-                let custom_event;
+                
                 if(this.checkValidation[name]<1){
                     this.checkValidation[name] =-1;
-                    this.updatedrainbagValidatetion()
+                    this.updatedrainbagValidatetion();
                 }
-                // if(this.name.includes("APD Cassette"))
-                //    custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"apd_validation",level:3}});
-                // if(this.name.includes("Connection Shield"))
-                //    custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"connection_validation",level:3}});
-                // if(this.name.includes("Drain Bag"))
-                //    custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"drainbag_validation",level:3}});
-                // document.dispatchEvent(custom_event);
                 this.root.gui2D.drawValidationMenu(false);
              };
           }
@@ -544,6 +580,7 @@ export default class CabinetItem{
             this.dynamicTexture.dispose();
             this.root.removeNode(this.validationNode);
          }
+        
       }
       checkName(str){
         str = str.replaceAll(".", " "); 

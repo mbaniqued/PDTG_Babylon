@@ -215,7 +215,7 @@ function shuffleArray(arr) {
      const j = Math.floor(Math.random() * (i + 1));
      [arr[i], arr[j]] = [arr[j], arr[i]];
    }
-   console.log(arr);
+   // console.log(arr);
  }
 function CircRectsOverlap(CRX, CRY, CRDX, CRDY, centerX, centerY, radius) {
 	if ((Math.abs(centerX - CRX) <= (CRDX + radius)) && (Math.abs(centerY - CRY) <= (CRDY + radius)))

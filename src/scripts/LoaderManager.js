@@ -51,7 +51,7 @@ export default class LoaderManager {
           const node   = new BABYLON.TransformNode("liquidhandsoap_node");
           for(let i=0;i<task.loadedMeshes.length;i++){ //liquidhandsoap_node
             task.loadedMeshes[i].parent = node;
-            task.loadedMeshes[i].scaling.set(.4,.4,.4);
+            task.loadedMeshes[i].scaling.set(-.4,.4,.4);
             this.setPickable(task.loadedMeshes[i],.01);
           } 
           node.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
@@ -62,7 +62,7 @@ export default class LoaderManager {
           const node   = new BABYLON.TransformNode("papertowel_node");
           for(let i=0;i<task.loadedMeshes.length;i++){ //paper_towel
             task.loadedMeshes[i].parent = node;
-            console.log(task.loadedMeshes[i].name);
+            // console.log(task.loadedMeshes[i].name);
             task.loadedMeshes[i].scaling.set(.012,.012,.012);
             this.setPickable(task.loadedMeshes[i],1);
           } 
@@ -90,8 +90,6 @@ export default class LoaderManager {
           const node   = new BABYLON.TransformNode("fanswitchnode");
             for(let i=0;i<task.loadedMeshes.length;i++){ //fanswitch
               task.loadedMeshes[i].parent = node;
-
-              console.log(task.loadedMeshes[i].id);
               if(task.loadedMeshes[i].id === "OnSwitch2"){
                   const mat           = standerdMat.clone("fanswitch");
                   mat.diffuseColor    = new BABYLON.Color3.FromInts(192,192,192);
@@ -197,7 +195,9 @@ export default class LoaderManager {
               task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(180).radians());
               task.loadedMeshes[i].name="DrainBag"+i;
               task.loadedMeshes[i].scaling.set(.6,.6,.6);
+              
             }
+            
             // node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
             
         }
@@ -698,15 +698,22 @@ export default class LoaderManager {
     trollyCollider.position = new BABYLON.Vector3(-2.2,1.80,2.50);
     trollyCollider.scaling.set(.3,.8,1)
     trollyCollider.visibility=0;
+    trollyCollider.isPickable=false;
+    trollyCollider.renderOutline=false;
+
+    const trollyreckCollider =   trollyCollider.clone("trollyreckcollider")  
+    trollyreckCollider.visibility=0;
+    trollyreckCollider.position  = new BABYLON.Vector3(-2.9,.5,2.5); 
+    trollyreckCollider.scaling.set(.83,.83,1);
 
     const apdCollider = tableupperColllider.clone("apdcollider"); 
     apdCollider.renderOutline=false;
     apdCollider.isPickable=false;
     
-  this.scene.getMeshByName("apdcollider").position = new BABYLON.Vector3(-3.4,2.1,2.5);
-  apdCollider.position = new BABYLON.Vector3(-3.4,2.1,2.5);
-  apdCollider.scaling.set(.3,.4,1)
-  apdCollider.visibility=0;
+    this.scene.getMeshByName("apdcollider").position = new BABYLON.Vector3(-3.4,2.1,2.5);
+    apdCollider.position = new BABYLON.Vector3(-3.4,2.1,2.5);
+    apdCollider.scaling.set(.3,.4,1)
+    apdCollider.visibility=0;
   
   // console.log("meshes", meshes)
    this.assetsManager.onProgress = (
