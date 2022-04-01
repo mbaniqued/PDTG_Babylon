@@ -30,6 +30,7 @@ export default class CabinetItem{
         this.label.isVisible=false;
         this.label.isPointerBlocker=true;
         this.validationDone=false;
+        this.interaction = false;
         if(this.meshRoot.name.includes("diasolutionnode")){
             this.validationNode = new BABYLON.TransformNode("validation_node");
             this.validationTxt=[];
@@ -54,11 +55,13 @@ export default class CabinetItem{
             });
       }
       removeAction(){
+        this.interaction = false;
         this.meshRoot.getChildMeshes().forEach(childmesh => {
             childmesh.actionManager = null;
           });
       }
       initAction(){
+        this.interaction = true;
         this.enableDrag(false);
           this.meshRoot.getChildMeshes().forEach(childmesh => {
               if(!childmesh.actionManager)
@@ -92,7 +95,7 @@ export default class CabinetItem{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                 //   console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                     this.pickObject = true;
-                    this.label.isVisible= this.state!==100 && this.root.gamestate.state !== GameState.radial && this.root.gamestate.state !== GameState.menu && this.root.gamestate.state !== GameState.levelstage;
+                    this.label.isVisible= this.state!==100 && this.state!==20 && this.root.gamestate.state !== GameState.radial && this.root.gamestate.state !== GameState.menu && this.root.gamestate.state !== GameState.levelstage;
                     let name = mesh.name;
                     if(name.includes(".")){
                         name =this.checkName(mesh.name);
@@ -129,6 +132,7 @@ export default class CabinetItem{
                     this.root.gui2D.inspectBtn._onPointerUp = ()=>{
                         showMenu = false;
                         this.showItem();
+                        this.state =20;
                         this.root.gui2D.drawRadialMenu(false);  
                     };
                     this.root.gui2D.useBtn._onPointerUp = ()=>{
@@ -152,6 +156,7 @@ export default class CabinetItem{
                         showMenu = false;
                         this.root.gui2D.drawRadialMenu(false);  
                         this.root.gamestate.state = GameState.active;
+                        this.state =0;
                     };
                }     
             )
@@ -163,27 +168,28 @@ export default class CabinetItem{
       this.pointerDragBehavior.updateDragPlane =false;
       this.meshRoot.addBehavior(this.pointerDragBehavior);
       this.pointerDragBehavior.onDragStartObservable.add((event)=>{
-          if( !this.pickObject || this.root.gamestate.state ===  GameState.radial){
+            console.log(this.interaction+"  onDragStartObservable  "+this.pickObject);
+          if((!this.interaction && !this.pickObject) || this.root.gamestate.state ===  GameState.radial){
+              this.enableDrag(false);
               this.state =0;
               return;
           }
       });
       this.pointerDragBehavior.onDragObservable.add((event)=>{
-
-           console.log(this.root.gamestate.state+"    "+this.pickObject) 
-          if(!this.pickObject || this.root.gamestate.state ===  GameState.radial){
+          if((!this.interaction && !this.pickObject) || this.root.gamestate.state ===  GameState.radial){
               this.state =0;
+              this.enableDrag(false);
               return;
           }
-        //   this.meshRoot.position.z = this.startPosition.z;
-          console.log(this.meshRoot.position);
+        // this.meshRoot.position.z = this.startPosition.z;
+        //   console.log(this.meshRoot.position);
           if(this.meshRoot.position.x>-1.5 && this.meshRoot.position.x<1.1){
               this.root.scene.getMeshByName("tablecollider").visibility=1;
               this.root.scene.getMeshByName("trollycollider").visibility=0;
               this.root.scene.getMeshByName("apdcollider").visibility=0;
 
             new TWEEN.Tween(this.root.camera.target).to({x:0,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+            // new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
             new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
           }
           else if(this.meshRoot.position.x>-2.5 && this.meshRoot.position.x<=-1.5){
@@ -192,7 +198,7 @@ export default class CabinetItem{
               this.root.scene.getMeshByName("apdcollider").visibility=0;
               new TWEEN.Tween(this.root.camera.target).to({x:-2,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
               }).start();
-              new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+            //   new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
               new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
           }
           else if(this.meshRoot.position.x<-2.5){
@@ -205,7 +211,7 @@ export default class CabinetItem{
             this.root.scene.getMeshByName("trollycollider").visibility=0;
             this.root.scene.getMeshByName("apdcollider").visibility=0;
             new TWEEN.Tween(this.root.camera.target).to({x:1.5,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+            // new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
             new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
             }).start();
           }
@@ -240,6 +246,8 @@ export default class CabinetItem{
                 }
                 else if(this.name.includes("Dialysis") && checktable_diapos<2){ 
                       placed = true;
+                      if(this.root.itemCount>0)
+                        this.root.itemCount--;
                       const final_diasolutionpos = [diasolutionpos1,diasolutionpos2];
                       this.placedPosition = final_diasolutionpos[checktable_diapos];
                       this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(180).radians(),0);
@@ -277,10 +285,9 @@ export default class CabinetItem{
                                 checkapd_diapos--;
                               if(checktable_diapos>0)
                                 checktable_diapos--;
-                                
-                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_dialysis_apd"}});
+                            this.root.itemCount++;    
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_2item_apdreck"}});
                             document.dispatchEvent(custom_event);
-
                         }
                         if(this.root.scene.getMeshByName("apdcollider").visibility>0){
                               checkapd_diapos++;  

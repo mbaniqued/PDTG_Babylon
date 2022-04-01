@@ -43,7 +43,6 @@ export default class Table{
             if(childnode.name==="tablenode"){
                     childnode.getChildMeshes().forEach(childmesh => {
                         if(childmesh.name.includes("table")){
-                            console.log(childmesh.name)   
                             this.addAction(childmesh);
                         }
                 });
@@ -53,8 +52,9 @@ export default class Table{
     addAction(mesh){
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-                    this.setLabel();
                     this.label.isVisible=this.root.gamestate.state !== GameState.radial && this.root.gamestate.state !== GameState.menu && this.root.gamestate.state !== GameState.levelstage;
+                    this.setLabel();
+                    
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                        this.label.isVisible=false;
@@ -147,6 +147,8 @@ export default class Table{
             this.label._children[0].text = this.isdrawerOpen?"Close Drawer":"Open Drawer";
             
         this.label.isVisible=true;
+        if(this.root.level===3)
+            this.label.isVisible=false;  
     }
     initMeshOutline(){
         this.meshRoot.getChildTransformNodes().forEach(childnode=>{

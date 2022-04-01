@@ -98,6 +98,7 @@ export default class MainScene {
     this.viewportFrame.leftInPixels=400;
 
     this.trollyObject      = new Trolly(this,this.trollyRoot,{x:-2.85,y:1.78,z:2.5});
+    this.createapdmachineText();
     this.tableObject       = new Table(this,this.tableRoot,{x:-.25,y:1.9,z:2.5});
     this.cabinetObject     = new Cabinet(this,this.cabinetRoot,{x:1.9,y:1,z:2.5});
     this.doorObject        = new DoorObject(this,this.doorRoot,{x:8.8,y:2.2,z:2.75});
@@ -118,6 +119,7 @@ export default class MainScene {
     this.createdrainBagValidation();
     this.ccpdRecordBook    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
+    this.apdmachinePackage.setTrollyPosition({x:-231,y:-16,z:8});
     this.createApdPackageValidatiion();
     
     // const solutionclone = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode");
@@ -185,15 +187,14 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // let ctx = this.dialysisSolutionObject[0].dynamicTexture.getContext();
-      // const font =  "bold 14px Arial";
-      // ctx.clearRect(0,0,512,512);
-      // this.dialysisSolutionObject[0].drainBagTexture.drawText("1.5%",SX,SY,font,"#000000","transparent",true);
-      // this.drawImageOnTexture(this.dialysisSolutionObject[0].dynamicTexture,this.validationImage[0],SX,SY,38,22);
+      // let ctx = this.apdmachineTexture.getContext();
+      //   const font =  "bold 52px Orbitron";
+      //   ctx.clearRect(0,0,512,512);
+      //   this.apdmachineTexture.drawText("LOAD THE SET",SX,SY,font,"#0000ff","transparent",true);
 
       
-      // this.drainBagItem.meshRoot.position  = new BABYLON.Vector3(SX,SY,SZ); 
-      // this.scene.getMeshByName("trollyreckcollider").scaling   = new BABYLON.Vector3(SX,SY,1); 
+      // this.apdmachinePackage.meshRoot.position  = new BABYLON.Vector3(SX,SY,SZ); 
+      // this.scene.getMeshByName("apd_machinetxt_plan").position   = new BABYLON.Vector3(SX,SY,SZ); 
       
       // this.scene.getMeshByName("cap_highlight_plan").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
       // this.scene.getMeshByName("validation_plan").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
@@ -270,20 +271,7 @@ export default class MainScene {
       this.removeNode(this.dialysisSolutionObject[i].meshRoot);
       this.dialysisSolutionObject[i] = null;
     }
-    
-    // this.dialysisSolutionObject[1].removeValidation();
-    // this.removeNode(this.scene.getTransformNodeByID("diasolutionnode1"));
-    // this.dialysisSolutionObject[1] = null;
-
-    // this.dialysisSolutionObject[2].removeValidation();
-    // this.removeNode(this.scene.getTransformNodeByID("diasolutionnode2"));
-    // this.dialysisSolutionObject[2] = null;
-
-    
-    // this.dialysisSolutionObject[2].removeValidation();
-    // this.removeNode(this.scene.getTransformNodeByID("diasolutionnode3"));
-    // this.dialysisSolutionObject[3] = null;
-    for(let i=0;i<this.sanitiserObject.length;i++){
+   for(let i=0;i<this.sanitiserObject.length;i++){
       if(i!==0)
         this.removeNode(this.sanitiserObject[i].meshRoot);
         this.sanitiserObject[i]   = null;
@@ -315,7 +303,29 @@ export default class MainScene {
       node.dispose();
     }
   }
-
+  createapdmachineText(){
+    if(this.apdmachineTexture)
+        return
+    const plan = BABYLON.MeshBuilder.CreatePlane("apd_machinetxt_plan",{width:.3,height:.3,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);  
+    plan.position.set(-3.589,2.02,2.13);
+    plan.isPickable=false;
+    plan.renderOutline=false;
+    plan.visibility=0;
+    const planmat         = new BABYLON.StandardMaterial("validation_connection_plan_mat", this.scene);
+    planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
+    planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+    plan.material = planmat;
+    this.apdmachineTexture   = this.dynamicTexture.clone();
+    this.apdmachineTexture.hasAlpha=true;
+    planmat.diffuseTexture = this.apdmachineTexture;
+    const size=this.apdmachineTexture.getSize();
+    
+    let ctx = this.apdmachineTexture.getContext();
+    const font =  "bold 48px Orbitron";
+    ctx.clearRect(0,0,size.width,size.height);
+    this.apdmachineTexture.drawText("LOAD THE SET",30,270,font,"#FFCD46","transparent",true);
+    
+  }
   createconnectionItemValidation(){
     if(this.connectionTexture)
       return; 
@@ -817,6 +827,15 @@ export default class MainScene {
                         this.apdmachinePackage.initAction();
                         this.drainBagItem .initAction();
                         this.ccpdRecordBook.initAction();
+
+                        this.bpMachineItem.enableDrag(true);
+                        this.alcohalItem.enableDrag(true);
+                        this.maskItem.enableDrag(true);
+                        this.connectionItem.enableDrag(true);
+                        this.apdmachinePackage.enableDrag(true);
+                        this.drainBagItem.enableDrag(true);
+                        this.ccpdRecordBook.enableDrag(true);
+
                         for(let i=0;i<values.length;i++){ 
                           gameObjectives.push({status:false,msg:values[i]});
                           this.objectivebar[i] = this.gui2D.createBar(values[i],380,i===0?250:160);
@@ -831,7 +850,7 @@ export default class MainScene {
                     }
                    break;
                 case 2:{
-                      // this.tableObject.initAction();
+                      this.tableObject.initAction();
                       this.bpMachineItem.placeItem(ANIM_TIME);
                       this.ccpdRecordBook.placeItem(ANIM_TIME);
                       this.alcohalItem.placeItem(ANIM_TIME);
@@ -890,7 +909,7 @@ export default class MainScene {
                             else if(i===9)
                               this.objectivebar[i] = this.gui2D.createBar(values[i],380,105);
                             else if(i===10)
-                               this.objectivebar[i] = this.gui2D.createBar(values[i],380,70);
+                               this.objectivebar[i] = this.gui2D.createBar(values[i],380,80);
                             else
                               this.objectivebar[i] = this.gui2D.createBar(values[i],380,60);
                             this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
@@ -900,7 +919,11 @@ export default class MainScene {
                         this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
                         this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
                         this.gui2D.drawObjectiveMenu(true);
+                        this.tableObject.initAction();
                         this.alcohalItem.initAction();
+                        this.trollyObject.initAction();
+                        this.apdmachinePackage.initAction();                        
+                        this.apdmachinePackage.enableDrag(true);
                      break;  
               }
           break;
@@ -1034,11 +1057,14 @@ export default class MainScene {
                             this.drainBagItem .removeAction();
                             this.ccpdRecordBook.removeAction();
                             this.cabinetObject.initAction();
-                            for(let i=0;i<this.dialysisSolutionObject.length;i++)
+                            for(let i=0;i<this.dialysisSolutionObject.length;i++){
                               this.dialysisSolutionObject[i].initAction();
-        
-                            for(let i=0;i<this.sanitiserObject.length;i++)
-                              this.sanitiserObject[i].initAction();
+                              this.dialysisSolutionObject[i].enableDrag(true);
+                            }
+                            for(let i=0;i<this.sanitiserObject.length;i++){
+                               this.sanitiserObject[i].initAction();
+                               this.sanitiserObject[i].enableDrag(true);
+                            }
                           this.gamestate.state = GameState.default;
                         }
                   }
@@ -1144,13 +1170,10 @@ export default class MainScene {
                           if(detail.msg.includes("placed_dialysis_apd_top")){
                             if(!gameObjectives[8].status)
                                 this.objectiveCount++;
-                                gameObjectives[8].status = true;
+                              gameObjectives[8].status = true;
+                                
                           }
-                          if(detail.msg.includes("placed_dialysis_apd")){
-                            if(!gameObjectives[9].status)
-                                this.objectiveCount++;
-                              gameObjectives[9].status = true;
-                          }
+                          
                       }
                   }
                   if(detail.object_type === this.connectionItem && detail.msg.includes("connection_validation")){
@@ -1162,7 +1185,6 @@ export default class MainScene {
                   }
                   
                   if(detail.object_type === this.drainBagItem){
-
                        if(detail.msg.includes("drain_bag_trolly")){
                           console.log("#############");
                             if(!gameObjectives[7].status)
@@ -1185,8 +1207,21 @@ export default class MainScene {
                             this.objectiveCount++;
                           gameObjectives[5].status = true;
                       }
-
                   }
+                  if(detail.msg.includes("placed_2item_apdreck")){
+                    if(!gameObjectives[9].status && this.itemCount>1){
+                          this.objectiveCount++;
+                        gameObjectives[9].status = true;
+
+                        this.trollyObject.initAction();
+                     }
+                  }
+                  if(detail.msg.includes("apd_machine_on")){
+                    if(!gameObjectives[10].status)
+                        this.objectiveCount++;
+                      gameObjectives[10].status = true;
+                  }
+                  
                 //   if(detail.object_type === this.drainBagItem){
                 //     if( detail.msg && detail.msg.includes("drainbag_use")){
                 //          gameObjectives[3].status = true;

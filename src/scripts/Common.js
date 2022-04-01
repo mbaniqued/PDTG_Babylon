@@ -163,25 +163,4 @@ export default class Common{
         removeMiniCam(){
             this.scene.activeCameras.splice(1,1);
         }
-      // updateCam(){
-      //     if(this.scene.pointerX>0 && this.scene.pointerX<=this.camDirection.margin){
-      //           this.camera.rotation.y -= BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
-      //     }
-      //     else if( this.scene.pointerX>window.innerWidth-this.camDirection.margin &&  this.scene.pointerX<window.innerWidth){
-      //           this.camera.rotation.y = BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
-      //     }
-      //     else if(this.scene.pointerY>0 && this.scene.pointerY<=this.camDirection.margin){
-      //           if(this.camera.rotation.x>-.1)
-      //              this.camera.cameraRotation.x = -BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
-      //           else
-      //              this.camera.cameraRotation.x = 0;
-      //     }
-      //     else if( this.scene.pointerY>window.innerHeight-this.camDirection.margin &&  this.scene.pointerY<window.innerHeight){
-      //         let val  =  BABYLON.Angle.FromRadians(this.camera.rotation.x).degrees();
-      //         if(this.camera.rotation.x<.5)
-      //             this.camera.cameraRotation.x = BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
-      //         else
-      //             this.camera.cameraRotation.x = 0;
-      //     }
-      // } 
 }

@@ -29,6 +29,7 @@ export default class Item{
             this.valdiationCheck=0;
             this.inspectDone=false;
             this.trollyPosition=undefined;
+            this.interaction=false;
         }
         setPos(){
             if(this.parent){
@@ -51,7 +52,7 @@ export default class Item{
             this.trollyPosition = position;
         }
         removeAction(){
-            console.log(this.meshRoot.name);
+            this.interaction = false;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                     if(childmesh.parent.name.includes("items"))
                         childmesh.actionManager = null;
@@ -59,6 +60,7 @@ export default class Item{
             this.enableDrag(false);
         }
         initAction(){
+            this.interaction = true;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 if(childmesh.parent.name.includes("items"))
                     this.addAction(childmesh);
@@ -192,31 +194,45 @@ export default class Item{
             this.pointerDragBehavior.useObjectOrientationForDragging = false;
             this.pointerDragBehavior.updateDragPlane = false;
             this.enableDrag(false);    
-            
             this.pointerDragBehavior.onDragStartObservable.add((event)=>{
                 console.log("!!! gamestate!!! "+this.root.gamestate.state);
-                if( !this.pickObject && this.root.gamestate.state ===  GameState.radial){
+                if( (!this.interaction && !this.pickObject)  || this.root.gamestate.state ===  GameState.radial){
                     this.state =0;
+                    this.enableDrag(false);
                     return;
                 }
             });
             this.pointerDragBehavior.onDragObservable.add((event)=>{
-                if(!this.pickObject &&  this.root.gamestate.state ===  GameState.radial){
+                if( (!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial){
                     this.state =0;
+                    this.enableDrag(false);
                     return;
                 }
-                if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>30))
+                // this.pointerDragBehavior.attachedNode.position.x += event.delta.x;
+                // this.pointerDragBehavior.attachedNode.position.y += event.delta.y;
+                console.log(this.meshRoot.position)
+                if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>5 && this.meshRoot.position.z<0))
                     this.root.scene.getMeshByName("tablecollider").visibility=1;
                 else    
                     this.root.scene.getMeshByName("tablecollider").visibility=0;
 
                  if(this.trollyPosition){   
-                    if(this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<130))   
+                    if(this.meshRoot.position.x<-100){
+                        new TWEEN.Tween(this.root.camera.target).to({x:-2,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                        }).start();
+                    }
+                    if( this.meshRoot.name.includes("DrainBag") && this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<130))
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=1;
                     else  
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
+
+                   if( this.meshRoot.name.includes("apd_package_node") && this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<15))
+                        this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=1;
+                   else
+                        this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;     
+                   
+                    
                  }
-                 console.log(this.meshRoot.position);
                 this.state++;
                 // console.log(event);
             });
@@ -225,11 +241,22 @@ export default class Item{
                 this.pickObject = false;
                 
                 // if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>30) && this.state>10 || this.isPlaced ){ 
-                if(this.trollyPosition && this.root.scene.getMeshByName("trollyreckcollider").visibility>0 && this.isPlaced ){
+
+                if(this.trollyPosition && this.meshRoot.name.includes("DrainBag") && this.root.scene.getMeshByName("trollyreckcollider").visibility>0 && this.isPlaced ){
                     new TWEEN.Tween(this.meshRoot).to({position:this.trollyPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
                         if(this.root.level ===3){
                             const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"drain_bag_trolly",level:3}});
+                            document.dispatchEvent(custom_event);
+                        }
+                    }).start();
+                }
+                else if(this.trollyPosition && this.meshRoot.name.includes("apd_package_node") && this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility>0 && this.isPlaced ){
+                    new TWEEN.Tween(this.meshRoot).to({position:this.trollyPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                        this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;
+                        if(this.root.level ===3){
+                            this.root.itemCount++;
+                            const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"placed_2item_apdreck",level:3}});
                             document.dispatchEvent(custom_event);
                         }
                     }).start();

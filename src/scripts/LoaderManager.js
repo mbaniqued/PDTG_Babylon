@@ -694,12 +694,17 @@ export default class LoaderManager {
     const trollyCollider = tableupperColllider.clone("trollycollider"); 
     trollyCollider.renderOutline=false;
     trollyCollider.isPickable=false;
-    
     trollyCollider.position = new BABYLON.Vector3(-2.2,1.80,2.50);
     trollyCollider.scaling.set(.3,.8,1)
     trollyCollider.visibility=0;
     trollyCollider.isPickable=false;
     trollyCollider.renderOutline=false;
+
+    const apdCassetteTrolly = trollyCollider.clone("apdCassetteTrolly_collider")
+    apdCassetteTrolly.isPickable=false;
+    apdCassetteTrolly.renderOutline=false;
+    apdCassetteTrolly.visibility=0;
+    apdCassetteTrolly.position = new BABYLON.Vector3(-2.7,1.80,2.50);
 
     const trollyreckCollider =   trollyCollider.clone("trollyreckcollider")  
     trollyreckCollider.visibility=0;
@@ -714,6 +719,16 @@ export default class LoaderManager {
     apdCollider.position = new BABYLON.Vector3(-3.4,2.1,2.5);
     apdCollider.scaling.set(.3,.4,1)
     apdCollider.visibility=0;
+
+
+    const apdSwitch = BABYLON.MeshBuilder.CreateSphere("apdswitch_sphere", {diameter:.05});
+    apdSwitch.position.set(-3.689,1.89,2.139);
+    apdSwitch.visibility=0;
+    const apdSwitchmat = new BABYLON.StandardMaterial("apdswitch_sphere_mat")
+    apdSwitchmat.diffuseColor = new BABYLON.Color3.FromInts(0,255,0);
+    apdSwitch.material =  apdSwitchmat;
+    apdSwitch.isPickable = true;
+    apdSwitch.renderOutline = false;
   
   // console.log("meshes", meshes)
    this.assetsManager.onProgress = (

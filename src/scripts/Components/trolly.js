@@ -1,5 +1,5 @@
 
-import { GameState,ANIM_TIME } from "../scene/MainScene";
+import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class Trolly{
         constructor(root,meshobject,pos){
@@ -18,7 +18,34 @@ export default class Trolly{
             //     this.addAction(childmesh);
             // });
             this.initAction();
+            this.addswitchAction();
             this.apdMachine.position = new BABYLON.Vector3(-50,0,0);
+
+            
+        }
+        addswitchAction(){
+            const mesh = this.root.scene.getMeshByName("apdswitch_sphere");
+            mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+                        console.log(" !!! switch!! "+mesh.name);
+                        if(this.root.camera.alpha!=BABYLON.Angle.FromDegrees(270).radians()){
+                            new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            this.root.setFocusOnObject(new BABYLON.Vector3(this.apdMachine.absolutePosition.x,this.apdMachine.absolutePosition.y-.5,this.apdMachine.absolutePosition.z+1));    
+
+                        }
+                        else{
+                            if(this.root.level==3){
+                                this.root.scene.getMeshByName("apd_machinetxt_plan").visibility =1;
+                                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"apd_machine_on"}});
+                                document.dispatchEvent(custom_event);
+                            }
+                        }
+                    }
+
+                )
+            )
         }
         setPos(){
             this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
