@@ -72,13 +72,12 @@ export default class GUI2D{
         this.drawMainMenu(true);
       }
       drawMainMenu(isDraw){ 
+        this.advancedTexture.renderAtIdealSize = true;
         this.menuContainer.isVisible  =  isDraw;
         this.menuContainer.getChildByName("usermodetxt").text = "User Mode";
         this.menuContainer.getChildByName("usermodetxt").topInPixels =-100;
         this.menuContainer.getChildByName("gamemodetxt").text = "Game Mode";
         this.menuContainer.getChildByName("gamemodetxt").topInPixels =60;
-        
-
         const y  = -40;
         const dy = 54;
         this.userModeBtn.children[1].leftInPixels =-20;
@@ -92,23 +91,23 @@ export default class GUI2D{
         const hideusermode= ()=>{
                 new TWEEN.Tween(this.patientModeBtn).to({topInPixels:y},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
                   isOpen = false;
-                  this.patientModeBtn.isVisible       =  false;
-                  this.caregiverModeBtn.isVisible     =  false;
+                  this.patientModeBtn.isVisible    =  false;
+                  this.caregiverModeBtn.isVisible  =  false;
               }).start();
               new TWEEN.Tween(this.caregiverModeBtn).to({topInPixels:y},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
         };
         this.userModeBtn.onPointerUpObservable.add(()=> {
-                if(!isOpen){
-                  this.patientModeBtn.isVisible       =  true;
-                  this.caregiverModeBtn.isVisible     =  true;
-                  new TWEEN.Tween(this.patientModeBtn).to({topInPixels:y+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
-                    isOpen = true;
-                  }).start();
-                  new TWEEN.Tween(this.caregiverModeBtn).to({topInPixels:y+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-                }
-                else{
-                  hideusermode();
-                }
+              if(!isOpen){
+                this.patientModeBtn.isVisible      =  true;
+                this.caregiverModeBtn.isVisible    =  true;
+                new TWEEN.Tween(this.patientModeBtn).to({topInPixels:y+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                  isOpen = true;
+                }).start();
+                new TWEEN.Tween(this.caregiverModeBtn).to({topInPixels:y+dy*2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+              }
+              else{
+                hideusermode();
+              }
           });
           this.patientModeBtn.onPointerUpObservable.add(()=> {
                 hideusermode();
@@ -123,21 +122,18 @@ export default class GUI2D{
           const y2 = 120;  
           this.gameModeBtn.children[1].leftInPixels =-20;
           this.gameModeBtn.isVisible = isDraw;
-          this.gameModeBtn.topInPixels    = y2;
+          this.gameModeBtn.topInPixels      = y2;
           this.practiceModeBtn.topInPixels  = y2;
           this.trainingModeBtn.topInPixels  = y2;
           this.assesmentModeBtn.topInPixels = y2;
-
-          
           let isOpen2 =false;
           const hidegamemode= ()=>{
-            
-            new TWEEN.Tween(this.practiceModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             new TWEEN.Tween(this.trainingModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
+            new TWEEN.Tween(this.practiceModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
             new TWEEN.Tween(this.assesmentModeBtn).to({topInPixels:y2},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
               isOpen2 = false;
-              this.practiceModeBtn.isVisible     =  false;
               this.trainingModeBtn.isVisible     =  false;
+              this.practiceModeBtn.isVisible     =  false;
               this.assesmentModeBtn.isVisible     =  false;
             }).start();
           };
@@ -156,14 +152,14 @@ export default class GUI2D{
                 hidegamemode();
             }
           });
-          this.practiceModeBtn.onPointerUpObservable.add(()=> {
-            this.gameModeBtn.children[1].text="Practice";
-            this.root.gamemode = gamemode.practice;
-            hidegamemode();
-          });
           this.trainingModeBtn.onPointerUpObservable.add(()=> {
             this.gameModeBtn.children[1].text="Training";
             this.root.gamemode = gamemode.training;
+            hidegamemode();
+          });
+          this.practiceModeBtn.onPointerUpObservable.add(()=> {
+            this.gameModeBtn.children[1].text="Practice";
+            this.root.gamemode = gamemode.practice;
             hidegamemode();
           });
           this.assesmentModeBtn.onPointerUpObservable.add(()=> {
@@ -172,13 +168,12 @@ export default class GUI2D{
             hidegamemode();
           });
           this.proceedBtn._onPointerUp=()=>{
-              this.drawMainMenu(false);
               hideusermode();
               hidegamemode();
+              this.drawMainMenu(false);
               this.root.gamestate.state = GameState.levelstage; 
               this.drawStageMenu(true);
           }
-
       }
       initStageMenu(){
         this.backBtn        = this.createButon("backbtn","ui/backbtn.png","#ffffff00","",24,"#808080",119,67,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
@@ -194,6 +189,7 @@ export default class GUI2D{
         
       }
       drawStageMenu(isDraw){
+          this.advancedTexture.renderAtIdealSize = true;
           this.root.level   = 0;
           this.menuContainer.isVisible = isDraw;
           this.menuContainer.getChildByName("usermodetxt").text = "Select Stage";
@@ -214,13 +210,13 @@ export default class GUI2D{
                   this.drawLoadingPage(false);
                   this.root.gamestate.state = GameState.default;
                   this.root.setCameraTarget();
-                  new TWEEN.Tween(this.root.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                  new TWEEN.Tween(this.root.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
                   this.root.setGame();
               }, 10);
 
           }
-          this.backBtn.topInPixels =400;
-          this.backBtn.isVisible  = isDraw;
+          this.backBtn.topInPixels = 400;
+          this.backBtn.isVisible   = isDraw;
           this.backBtn._onPointerUp=()=>{
             this.drawStageMenu(false);
             this.stage1btn.isVisible=false;
@@ -235,19 +231,12 @@ export default class GUI2D{
           this.stage1btn.topInPixels = y;
           this.stage1btn.scaleX = 1.2;
           let isOpen =false;
-            this.stagebtn.onPointerUpObservable.add(()=> {
-              if(!isOpen){
-                this.stage1btn.isVisible       =  true;
-                new TWEEN.Tween(this.stage1btn).to({topInPixels:y+dy},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
-                  isOpen = true;
+          this.stagebtn.onPointerUpObservable.add(()=> {
+                isOpen =!isOpen;
+                // this.stage1btn.isVisible       =  isOpen;
+                new TWEEN.Tween(this.stage1btn).to({topInPixels:isOpen?y+dy:y},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+                  this.stage1btn.isVisible       =  isOpen;
                 }).start();
-              }
-              else{
-                  new TWEEN.Tween(this.stage1btn).to({topInPixels:y},100).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
-                    isOpen = false;
-                    this.stage1btn.isVisible       =  false;
-                  }).start();
-            }
           });
          this.stage1btn.onPointerUpObservable.add(()=>{
             isOpen = false;

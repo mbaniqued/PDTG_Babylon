@@ -33,6 +33,7 @@ export default class Item{
         }
         setPos(){
             if(this.parent){
+                this.meshRoot.parent = null;
                 this.meshRoot.parent = this.parent;
                 this.meshRoot.name   +="items";
             }
@@ -54,8 +55,10 @@ export default class Item{
         removeAction(){
             this.interaction = false;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-                    if(childmesh.parent.name.includes("items"))
-                        childmesh.actionManager = null;
+                if(childmesh.parent.name.includes("items"))
+                    childmesh.actionManager = null;
+                childmesh.isPickable=false;
+                childmesh.renderOutline = false;   
             });
             this.enableDrag(false);
         }
@@ -64,6 +67,7 @@ export default class Item{
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 if(childmesh.parent.name.includes("items"))
                     this.addAction(childmesh);
+                childmesh.isPickable=true;
             });
         }
         addAction(mesh){
@@ -71,17 +75,24 @@ export default class Item{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                     // console.log(mesh.name);
                     this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state<100;
-                    if(mesh.name ==="highlight_plan"){
-                        if(this.name.includes("APD Cassette"))
-                            this.root.onHighlightApdPlan(1);
-                        if(this.name.includes("Connection Shield"))
-                            this.root.onhighlightConnectionPlan(1);
-                        if(this.name.includes("Drain Bag"))
-                            this.root.onhighlightDrainBagPlan(1);
+                    this.updateoutLine(this.label.isVisible);
+                    if(this.root.gamestate.state === GameState.inspect){
+                        if(mesh.name ==="highlight_plan"){
+                            this.updateoutLine(false);
+                            this.label.isVisible=false;
+                            if(this.name.includes("APD Cassette"))
+                                this.root.onHighlightApdPlan(1);
+                            if(this.name.includes("Connection Shield"))
+                                this.root.onhighlightConnectionPlan(1);
+                            if(this.name.includes("Drain Bag"))
+                                this.root.onhighlightDrainBagPlan(1);
+                        }
                     }
+                   
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
+                    this.updateoutLine(false);
                     this.root.onHighlightApdPlan(0);
                     this.root.onhighlightConnectionPlan(0);
                     this.root.onhighlightDrainBagPlan(0);
@@ -90,20 +101,25 @@ export default class Item{
                         // console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                             this.pickObject = true;
                             this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state<100;
-                            if(mesh.name ==="highlight_plan"){
-                                if(this.name.includes("APD Cassette"))
-                                    this.root.onHighlightApdPlan(1);
-                                if(this.name.includes("Connection Shield"))
-                                    this.root.onhighlightConnectionPlan(1);
-                                if(this.name.includes("Drain Bag"))
-                                    this.root.onhighlightDrainBagPlan(1);
+                            this.updateoutLine(this.label.isVisible);
+                            if(this.root.gamestate.state === GameState.inspect){
+                                this.updateoutLine(false);
+                                this.label.isVisible=false;
+                                if(mesh.name ==="highlight_plan"){
+                                    if(this.name.includes("APD Cassette"))
+                                        this.root.onHighlightApdPlan(1);
+                                    if(this.name.includes("Connection Shield"))
+                                        this.root.onhighlightConnectionPlan(1);
+                                    if(this.name.includes("Drain Bag"))
+                                        this.root.onhighlightDrainBagPlan(1);
+                                }
                             }
                         }
                     )
                 )
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                             this.label.isVisible=false;
-                             console.log(this.pointerDragBehavior.enabled);
+                            this.updateoutLine(false);
                             if(this.root.camera.radius>2.5){
                                 this.root.gamestate.state = GameState.focus;
                                 this.root.tableObject.setTableFocusAnim();
@@ -111,12 +127,14 @@ export default class Item{
                                 this.root.tableObject.state=0;
                                 return;
                             }
-                            if(mesh.name ==="highlight_plan"){
-                                console.log("!!! validation!!! ");
-                                this.onValidationPick();
-                                return
+                            if(this.root.gamestate.state === GameState.inspect){
+                                if(mesh.name ==="highlight_plan"){
+                                    console.log("!!! validation!!! ");
+                                    this.onValidationPick();
+                                    return
+                                }
                             }
-                            if(this.state>=100){
+                            if(this.state>=100){ // use item
                                 if(this.name.includes("Blood Pressure")){
                                     this.usebpMachine();
                                     }
@@ -137,11 +155,12 @@ export default class Item{
                                 }
                             }
                             this.root.gui2D.inspectBtn._onPointerUp = ()=>{
-                                console.log("inspectBtn Button");
+                                this.root.gamestate.state = GameState.inspect; 
                                 this.enableDrag(false);
                                 showMenu = false;
                                 this.root.gui2D.drawRadialMenu(false);  
                                 this.showItem();
+                                this.root.hideOutLine(this.meshRoot);
                             };
                             this.root.gui2D.useBtn._onPointerUp = ()=>{
                                 showMenu = false;
@@ -168,14 +187,12 @@ export default class Item{
                                 }
                                 else if(this.name.includes("Drain Bag")){
                                     this.meshRoot.getChildMeshes().forEach(childmesh => {
+                                       this.root.gamestate.state = GameState.active; 
                                        if(childmesh.id.includes("DrainBagPlasticCover"))
-                                           childmesh.isVisible = false;
-                                           const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"drainbag_use",level:3}});
-                                           document.dispatchEvent(custom_event);
+                                            childmesh.isVisible = false;
+                                        const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"drainbag_use",level:3}});
+                                        document.dispatchEvent(custom_event);
                                     });
-                                }
-                                else{
-                                    
                                 }
                             };
                             this.root.gui2D.crossBtn._onPointerUp = ()=>{
@@ -216,22 +233,24 @@ export default class Item{
                 else    
                     this.root.scene.getMeshByName("tablecollider").visibility=0;
 
-                 if(this.trollyPosition){   
+                 if(this.trollyPosition && this.root.level >2){   
                     if(this.meshRoot.position.x<-100){
-                        new TWEEN.Tween(this.root.camera.target).to({x:-2,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                        new TWEEN.Tween(this.root.camera.target).to({x:-2,y:2,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                         }).start();
                     }
-                    if( this.meshRoot.name.includes("DrainBag") && this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<130))
+                    else{
+                        new TWEEN.Tween(this.root.camera.target).to({x:0,y:2,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                        }).start();
+                    }
+                    if(this.meshRoot.name.includes("DrainBag") && this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<130))
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=1;
                     else  
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
 
-                   if( this.meshRoot.name.includes("apd_package_node") && this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<15))
+                   if(this.meshRoot.name.includes("apd_package_node") && this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<15))
                         this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=1;
                    else
                         this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;     
-                   
-                    
                  }
                 this.state++;
                 // console.log(event);
@@ -239,9 +258,8 @@ export default class Item{
             this.pointerDragBehavior.onDragEndObservable.add((event)=>{
                 this.label.isVisible=false;
                 this.pickObject = false;
-                
+                this.updateoutLine(false);
                 // if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>30) && this.state>10 || this.isPlaced ){ 
-
                 if(this.trollyPosition && this.meshRoot.name.includes("DrainBag") && this.root.scene.getMeshByName("trollyreckcollider").visibility>0 && this.isPlaced ){
                     new TWEEN.Tween(this.meshRoot).to({position:this.trollyPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
@@ -275,7 +293,6 @@ export default class Item{
                     }).start();
                 }
                 this.root.scene.getMeshByName("tablecollider").visibility=0;
-                
                 // console.log(event);
             });
         }
@@ -284,6 +301,7 @@ export default class Item{
                time=ANIM_TIME;
             this.state=0;
             this.parent           = this.root.scene.getTransformNodeByID("tablenode");
+            this.meshRoot.parent = null;
             this.meshRoot.parent  = this.parent;
             new TWEEN.Tween(this.meshRoot).to({position:this.placedPostion},time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                 this.isPlaced=true;
@@ -296,50 +314,38 @@ export default class Item{
         }
        showItem(){
             this.enableDrag(false);
+            showMenu = false;
+            this.root.gui2D.drawRadialMenu(false);  
             this.label.isVisible=false;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.renderOutline = false;
             });
-           let scalAnim=4.3;
-           let newPos = new BABYLON.Vector3(0,-25,-60);
+           let scalAnim=1.2;
+           let newPos  = new BABYLON.Vector3(0,0,0);
+           if(this.parent ===  this.root.scene.getTransformNodeByID("tabledrawer"))
+                newPos  = new BABYLON.Vector3(0,-80,-60);
+           else     
+                newPos = new BABYLON.Vector3(0,-200,-60);
            let upAng  = -BABYLON.Angle.FromDegrees(60).radians();
-           let zAng   = BABYLON.Angle.FromDegrees(0).radians();
-           if(this.meshRoot.name.includes("bpmachinenode")){
-                scalAnim  = 1.8;
-                upAng  = -BABYLON.Angle.FromDegrees(45).radians();
-           }
-           else if(this.meshRoot.name.includes("DrainBag")){
-                scalAnim = 1.8;
-                // upAng=-BABYLON.Angle.FromDegrees(60).radians();
-            }
-            else if(this.meshRoot.name.includes("ccpdrecordbook")){
-                scalAnim = 3.3;
-            }
-            else if(this.meshRoot.name.includes("SurgicalMask")){
-                upAng =0;
-            }
-            else if(this.meshRoot.name.includes("apd_package_node")){
-                upAng = BABYLON.Angle.FromDegrees(60).radians();
-                scalAnim  = 1.8;
-                if(this.root.gamemode === gamemode.training && this.root.level ===3)
-                    zAng   = -BABYLON.Angle.FromDegrees(180).radians();
-            }
-            
-        if(this.isPlaced){
-            // console.log(this.root.camera.radius)
-            newPos = new BABYLON.Vector3(0,-80,-40)
-            if(this.root.camera.radius<3)
-                scalAnim  *= .75;
-        }   
-        showMenu = false;
+           let zAng   =  BABYLON.Angle.FromDegrees(0).radians();
         
+        if(this.meshRoot.name.includes("ccpdrecordbook") || this.meshRoot.name.includes("Connection") ||  this.meshRoot.name.includes("Alchohal")){
+                scalAnim = 2;
+        }
+        if(this.meshRoot.name.includes("SurgicalMask")){
+                upAng =0;
+        }
+        if(this.meshRoot.name.includes("apd_package_node")){
+            upAng = BABYLON.Angle.FromDegrees(60).radians();
+            if(this.root.gamemode === gamemode.training && this.root.level ===3)
+                    zAng   = -BABYLON.Angle.FromDegrees(180).radians();
+        }
         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x+upAng,y:this.startRotation.y,z:this.startRotation.z+BABYLON.Angle.FromDegrees(360).radians()+zAng},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x,y:this.root.camera.target.y+newPos.y,z:this.root.camera.target.z+newPos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.scaling).to({x:scalAnim,y:scalAnim,z:scalAnim},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
             this.root.gui2D.userExitBtn.isVisible = true;
             this.root.gui2D.userExitBtn._onPointerUp = ()=>{
                 showMenu = false;
-                this.root.gui2D.drawRadialMenu(false);  
                 this.resetItem();
                 this.state =0;
             };
@@ -401,8 +407,6 @@ export default class Item{
       }
       useccpdRecordBook(anim_time){
           if(this.name.includes("CCPD")){
-            // 210 !!sy!!  -225!! sz !! -42
-            // 199 !!sy!!  -239!! sz !! -50
             new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(-75).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                 new TWEEN.Tween(this.meshRoot.position).to({x:220,y:-239,z:-50},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                     this.meshRoot.parent = null;
@@ -424,7 +428,7 @@ export default class Item{
         this.label.isVisible = false;
         let frontpage;
         this.meshRoot.getChildMeshes().forEach(childmesh => {
-            console.log(childmesh.id);
+            // console.log(childmesh.id);
             if(childmesh.id ==="ccpdfront")
                 frontpage =childmesh;
         });
@@ -446,6 +450,7 @@ export default class Item{
         this.meshRoot.getChildMeshes().forEach(childmesh => {
             if(childmesh.id ==="ccpdfront")
                 frontpage =childmesh;
+            childmesh.isPickable=false;
         });
         new TWEEN.Tween(frontpage.rotation).to({y:0},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.scaling).to({x:.003,y:.003,z:.003},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
@@ -508,8 +513,9 @@ export default class Item{
                 this.root.conectionValidatetion(this.valdiationCheck);
             if(this.name.includes("Drain Bag"))
                 this.root.updatedrainbagValidatetion(this.valdiationCheck);
-            this.root.gui2D.drawValidationMenu(false);
             this.checkValidation();
+            this.root.gui2D.drawValidationMenu(false);
+            this.root.gamestate.state = GameState.active;
         };
         this.root.gui2D.wrongBtn._onPointerUp = ()=>{
             this.valdiationCheck=2;
@@ -519,16 +525,16 @@ export default class Item{
                 this.root.conectionValidatetion(this.valdiationCheck);
             if(this.name.includes("Drain Bag"))
                 this.root.updatedrainbagValidatetion(this.valdiationCheck);
-            this.root.gui2D.drawValidationMenu(false);
             this.checkValidation();
+            this.root.gamestate.state = GameState.active;
+            this.root.gui2D.drawValidationMenu(false);
         };
         this.root.gui2D.doneBtn._onPointerUp = ()=>{
-            
-             if(this.valdiationCheck<1)
+            if(this.valdiationCheck<1)
                 this.valdiationCheck=-1;
             this.checkValidation();
             this.root.gui2D.drawValidationMenu(false);
-            
+            this.root.gamestate.state = GameState.active;
         };
      }
      checkValidation(){
@@ -551,6 +557,35 @@ export default class Item{
         if(custom_event)
            document.dispatchEvent(custom_event);
      }
+     updateoutLine(value){
+        this.meshRoot.getChildMeshes().forEach(childmesh => {
+             childmesh.renderOutline = value;
+             if(childmesh.name.includes("ccpd")){
+                childmesh.outlineWidth=.1;
+             }
+             if(childmesh.parent.name.includes("DrainBag")){
+                if(childmesh.id === "DrainBagPlasticCover" || childmesh.id === "DrainBagA_2"){
+                    childmesh.renderOutline = value;
+                    childmesh.outlineWidth  = 2;
+                }
+                else{
+                    childmesh.renderOutline = false;   
+                }
+             }
+             
+             if(childmesh.parent.name.includes("apd_package_node")){
+                    childmesh.renderOutline = value;
+                    if(childmesh.name.includes("APDCassetteRevisedWithPackaging2.001_primitive42") || childmesh.name.includes("APDCassetteRevisedWithPackaging2.001_primitive12")){
+                        childmesh.renderOutline = value;
+                        childmesh.outlineWidth  = 5;
+                    }
+                    else{
+                        childmesh.renderOutline = false;   
+                    }
+             }
+
+        });
+    }
 
 }
 

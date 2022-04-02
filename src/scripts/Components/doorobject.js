@@ -36,13 +36,17 @@ export default class DoorObject{
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                 this.setLabel();
+                this.updateoutLine(true);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
+                    this.updateoutLine(false);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                     this.setLabel();
+                    this.updateoutLine(true);
                     this.root.scene.onPointerUp=()=>{
+                        this.updateoutLine(false);
                         this.label.isVisible=false;
                     }
             }))
@@ -91,5 +95,15 @@ export default class DoorObject{
 
             this.label.isVisible=true;
             this.label.isPointerBlocker=true;
+        }
+        updateoutLine(value){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                if(childmesh.outlineWidth>0)
+                    childmesh.renderOutline = value;
+                else                    
+                    childmesh.renderOutline = false;
+                childmesh.outlineColor  = BABYLON.Color3.Yellow();
+
+            });
         }
 }

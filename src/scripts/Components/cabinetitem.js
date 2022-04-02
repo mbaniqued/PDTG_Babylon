@@ -52,12 +52,15 @@ export default class CabinetItem{
             this.meshRoot.setEnabled(true);
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.isVisible=true;
+                
             });
       }
       removeAction(){
         this.interaction = false;
         this.meshRoot.getChildMeshes().forEach(childmesh => {
             childmesh.actionManager = null;
+            childmesh.isPickable=false;
+            childmesh.renderOutline = false;   
           });
       }
       initAction(){
@@ -66,24 +69,32 @@ export default class CabinetItem{
           this.meshRoot.getChildMeshes().forEach(childmesh => {
               if(!childmesh.actionManager)
                   this.addAction(childmesh);
+                childmesh.isPickable=true;
                 childmesh.isVisible=true;
           });
       }
       addAction(mesh){
         mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-            this.label.isVisible= this.state!==100 && this.root.gamestate.state !== GameState.radial && this.root.gamestate.state !== GameState.menu && this.root.gamestate.state !== GameState.levelstage;
-            let name = mesh.name;
-            if(mesh.name.includes(".")){
-                name =this.checkName(mesh.name);
+            this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state!==100 && this.state!==20;
+            this.updateoutLine(true);
+            if(this.root.gamestate.state === GameState.inspect){
+                this.updateoutLine(false);
+                this.label.isVisible = false;
+                let name = mesh.name;
+                if(mesh.name.includes(".")){
+                    name =this.checkName(mesh.name);
+                }
+                if(name.includes("highlight_plan")){
+                    // console.log(name);
+                    this.onhighlightDValidation(name,1);
+                }
             }
-            if(name.includes("highlight_plan")){
-                // console.log(name);
-                this.onhighlightDValidation(name,1);
-            }
+
         }))
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
           this.label.isVisible=false;
+          this.updateoutLine(false);
           let name = mesh.name;
             if(name.includes(".")){
                 name =this.checkName(mesh.name);
@@ -95,29 +106,39 @@ export default class CabinetItem{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                 //   console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                     this.pickObject = true;
-                    this.label.isVisible= this.state!==100 && this.state!==20 && this.root.gamestate.state !== GameState.radial && this.root.gamestate.state !== GameState.menu && this.root.gamestate.state !== GameState.levelstage;
-                    let name = mesh.name;
-                    if(name.includes(".")){
-                        name =this.checkName(mesh.name);
+                    this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state!==100 && this.state!==20;
+                    this.updateoutLine(true);
+                    if(this.root.gamestate.state === GameState.inspect){
+                        this.updateoutLine(false);
+                        this.label.isVisible = false;
+                        let name = mesh.name;
+                        if(mesh.name.includes(".")){
+                            name =this.checkName(mesh.name);
+                        }
+                        if(name.includes("highlight_plan")){
+                            // console.log(name);
+                            this.onhighlightDValidation(name,1);
+                        }
                     }
-                    if(name.includes("highlight_plan"))
-                        this.onhighlightDValidation(name,1);
                 }
             )
         )
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                     // console.log(this.root.gamestate.state+"!! OnPickTrigger!!! ")
                     // console.log(mesh.name);
-                    let name = mesh.name;
-                    if(name.includes("."))
-                        name =this.checkName(mesh.name);
-                    if(name.includes("highlight_plan")){
-                        this.setValidation(name);
-                        return
+                    this.label.isVisible=false;
+                    this.updateoutLine(false);
+                    if(this.root.gamestate.state === GameState.inspect){
+                        let name = mesh.name;
+                        if(name.includes("."))
+                            name =this.checkName(mesh.name);
+                        if(name.includes("highlight_plan")){
+                            this.setValidation(name);
+                            return
+                        }
                     }
                   if(this.root.gui2D.userExitBtn.isVisible)
                         return
-                    this.label.isVisible=false;
                     showMenu =!showMenu;
                     this.root.gamestate.state = showMenu?GameState.radial:GameState.active;
                     this.root.gui2D.drawRadialMenu(showMenu);
@@ -130,6 +151,7 @@ export default class CabinetItem{
                         }
                     }
                     this.root.gui2D.inspectBtn._onPointerUp = ()=>{
+                        this.root.gamestate.state = GameState.inspect;
                         showMenu = false;
                         this.showItem();
                         this.state =20;
@@ -187,9 +209,7 @@ export default class CabinetItem{
               this.root.scene.getMeshByName("tablecollider").visibility=1;
               this.root.scene.getMeshByName("trollycollider").visibility=0;
               this.root.scene.getMeshByName("apdcollider").visibility=0;
-
             new TWEEN.Tween(this.root.camera.target).to({x:0,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-            // new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
             new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
           }
           else if(this.meshRoot.position.x>-2.5 && this.meshRoot.position.x<=-1.5){
@@ -198,7 +218,6 @@ export default class CabinetItem{
               this.root.scene.getMeshByName("apdcollider").visibility=0;
               new TWEEN.Tween(this.root.camera.target).to({x:-2,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
               }).start();
-            //   new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
               new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
           }
           else if(this.meshRoot.position.x<-2.5){
@@ -211,7 +230,6 @@ export default class CabinetItem{
             this.root.scene.getMeshByName("trollycollider").visibility=0;
             this.root.scene.getMeshByName("apdcollider").visibility=0;
             new TWEEN.Tween(this.root.camera.target).to({x:1.5,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-            // new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
             new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
             }).start();
           }
@@ -221,7 +239,6 @@ export default class CabinetItem{
               this.root.scene.getMeshByName("apdcollider").visibility=0;
           }
           this.state++;
-          // console.log(event);
       });
       this.pointerDragBehavior.onDragEndObservable.add((event)=>{
             this.label.isVisible = false;
@@ -335,6 +352,8 @@ export default class CabinetItem{
         });
     }
     placeItem(time){
+        if(!time)
+          time =ANIM_TIME;
         if(this.name.includes("Hand")){
             this.placedPosition = sanitizerpos1;
             this.placedRotation = new BABYLON.Vector3(0,0,0);
@@ -357,12 +376,10 @@ export default class CabinetItem{
     showItem(){ 
       showMenu = false;
       this.enableDrag(false);
-    //   new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
       if(this.name.includes("Hand"))
          new TWEEN.Tween(this.meshRoot.rotation).to({x:0,y:0,z:BABYLON.Angle.FromDegrees(360).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
       else
          new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(110).radians(),y:0,z:BABYLON.Angle.FromDegrees(180).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
-      // new TWEEN.Tween(this.meshRoot.position).to({x:1.9,y:2.32,z:.05},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
         new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x,y:this.root.camera.target.y+.8,z:this.root.camera.position.z+1},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
         this.root.gui2D.userExitBtn.isVisible = true;
         this.root.gui2D.userExitBtn._onPointerUp = ()=>{
@@ -373,7 +390,6 @@ export default class CabinetItem{
       }).start();
     }
     resetItem(){
-        // new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         this.root.gui2D.userExitBtn.isVisible = false;
         let yAng = BABYLON.Angle.FromDegrees(90).radians();
         if(this.name.includes("Hand"))
@@ -505,14 +521,14 @@ export default class CabinetItem{
         concentration_highlight_plan.isPickable=true;
         concentration_highlight_plan.visibility=0;
         this.onhighlightDValidation = (name,value)=>{
-            this.validationNode.getChildMeshes().forEach(childmesh => {
-                 if(childmesh.name.includes("highlight_plan")){
-                        if(childmesh.name  === name)
-                            childmesh.visibility=value;
-                  }
+           this.validationNode.getChildMeshes().forEach(childmesh => {
+               if(childmesh.name.includes("highlight_plan")){
+                  if(childmesh.name  === name)
+                    childmesh.visibility=value;
+                }
             });
-          }
-          this.checkValidationComplete=()=>{
+         }
+         this.checkValidationComplete=()=>{
             let cnt=0;
             this.validationNode.getChildMeshes().forEach(childmesh => {
                if(childmesh.name.includes("highlight_plan")){
@@ -531,29 +547,28 @@ export default class CabinetItem{
                }    
            }
         }
-          this.updatedrainbagValidatetion = ()=>{
-            //  console.log(this.meshRoot.name);
-                let ctx = this.dynamicTexture.getContext();
-                const font =  "bold 9px Arial";
-                ctx.clearRect(0,0,size,size);
-                this.dynamicTexture.drawText("2020-04-08",303,140,font,"#000000","transparent",true);
-                this.dynamicTexture.drawText("2023-04-08",303,151,font,"#000000","transparent",true);
-                const font2 =  "bold 12px Arial";
-                this.dynamicTexture.drawText("5000",317,162,font2,"#000000","transparent",true);
-                const font3 =  "bold 14px Arial";
-                this.dynamicTexture.drawText("1.5%",171,237,font3,"#000000","transparent",true);
-                this.validationNode.getChildMeshes().forEach(childmesh => {
-                    if(childmesh.name.includes("highlight_plan")){
-                        if(this.checkValidation[childmesh.name]>-1){
-                            const i =  this.checkValidation[childmesh.name];
-                            const x =  this.validationPos[childmesh.name][0];
-                            const y =  this.validationPos[childmesh.name][1];
-                            if(i>-1)
-                                this.root.drawImageOnTexture(this.dynamicTexture,this.root.validationImage[i],x,y,28,20);
-                        }
-                     }
-               });
-               this.checkValidationComplete();
+        this.updatedrainbagValidatetion = ()=>{
+            let ctx = this.dynamicTexture.getContext();
+            const font =  "bold 9px Arial";
+            ctx.clearRect(0,0,size,size);
+            this.dynamicTexture.drawText("2020-04-08",303,140,font,"#000000","transparent",true);
+            this.dynamicTexture.drawText("2023-04-08",303,151,font,"#000000","transparent",true);
+            const font2 =  "bold 12px Arial";
+            this.dynamicTexture.drawText("5000",317,162,font2,"#000000","transparent",true);
+            const font3 =  "bold 14px Arial";
+            this.dynamicTexture.drawText("1.5%",171,237,font3,"#000000","transparent",true);
+            this.validationNode.getChildMeshes().forEach(childmesh => {
+                if(childmesh.name.includes("highlight_plan")){
+                    if(this.checkValidation[childmesh.name]>-1){
+                        const i =  this.checkValidation[childmesh.name];
+                        const x =  this.validationPos[childmesh.name][0];
+                        const y =  this.validationPos[childmesh.name][1];
+                        if(i>-1)
+                            this.root.drawImageOnTexture(this.dynamicTexture,this.root.validationImage[i],x,y,28,20);
+                    }
+                }
+            });
+            this.checkValidationComplete();
           }
           this.updatedrainbagValidatetion();
           this.setValidation = (name)=>{
@@ -566,19 +581,20 @@ export default class CabinetItem{
                 this.checkValidation[name]=1;
                 this.updatedrainbagValidatetion();
                 this.root.gui2D.drawValidationMenu(false);
+                this.root.gamestate.state = GameState.active;
             };
             this.root.gui2D.wrongBtn._onPointerUp = ()=>{
                 this.checkValidation[name]=2;
                 this.updatedrainbagValidatetion();
-                
                 this.root.gui2D.drawValidationMenu(false);
+                this.root.gamestate.state = GameState.active;
             };
             this.root.gui2D.doneBtn._onPointerUp = ()=>{
-                
                 if(this.checkValidation[name]<1){
                     this.checkValidation[name] =-1;
                     this.updatedrainbagValidatetion();
                 }
+                this.root.gamestate.state = GameState.active;
                 this.root.gui2D.drawValidationMenu(false);
              };
           }
@@ -596,5 +612,11 @@ export default class CabinetItem{
         return name;
 
       }
+      updateoutLine(value){
+        this.meshRoot.getChildMeshes().forEach(childmesh => {
+             childmesh.renderOutline = value;
+             childmesh.outlineWidth =1;
+        });
+    }
       
 }

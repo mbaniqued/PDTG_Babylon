@@ -12,7 +12,7 @@ export default class Cabinet{
         this.state      = 0;
         this.setPos();
         this.setDoor();
-        this.initMeshOutline();
+        // this.initMeshOutline();
         // this.mesh = new BABYLON.TransformNode();
         this.initAction();
         this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-150);
@@ -26,6 +26,7 @@ export default class Cabinet{
     removeAction(){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
             childmesh.actionManager = null;
+            childmesh.renderOutline = false;   
         });
     }
     initAction(){
@@ -38,27 +39,29 @@ export default class Cabinet{
         mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
             this.setLabel();
-            
+            this.updateoutLine(mesh,true);
         }))
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                 this.label.isVisible=false;
+                this.updateoutLine(mesh,false);
         }))
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                 this.setLabel();
+                this.updateoutLine(mesh,true);
                 this.root.scene.onPointerUp=()=>{
                     this.label.isVisible=false;
+                    this.updateoutLine(mesh,false);
                 }
         }))
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                // document.getElementById("debugtext").textContent= "cabinetstate==before== "+this.state+"  !!! GameState!!  "+this.root.gamestate.state;
-                if(this.state>0 && this.root.gamestate.state === GameState.default){
+                    this.updateoutLine(mesh,false);
+                    if(this.state>0 && this.root.gamestate.state === GameState.default){
                         if(this.state>0 && this.isdoorOpen)
                             this.state =10;
-                         else   
+                        else   
                             this.state =0;
-                }
-                // document.getElementById("debugtext").textContent= "cabinetstate==after== "+this.state+"  !!! GameState!!  "+this.root.gamestate.state;
-                        this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));
+                    }
+                    this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));
                     switch(this.state){
                         case 0:
                                 this.root.gamestate.state = GameState.default;
@@ -84,7 +87,7 @@ export default class Cabinet{
         new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
             this.root.gamestate.state = GameState.focus;
             this.state =1;
-            this.setCabinetDoorBorder(1);
+            // this.setCabinetDoorBorder(1);
         }).start();
         new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
     }
@@ -136,7 +139,7 @@ export default class Cabinet{
                         this.root.loaderManager.setPickable(childmesh,1); 
                     });
                 }
-                this.setCabinetDoorBorder(-1);
+                // this.setCabinetDoorBorder(-1);
         });
     }
     setCabinetDoorBorder(value){
@@ -154,5 +157,12 @@ export default class Cabinet{
         });
         
     }
+    updateoutLine(mesh,value){
+        if((mesh.parent.name ==="cabinetleftDoor"|| mesh.parent.name ==="cabinetrightDoor") && this.root.camera.radius>=3){
+            mesh.renderOutline = false;
+        }
+        else
+            mesh.renderOutline = value;
+        }
    
 }

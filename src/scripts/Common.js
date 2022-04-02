@@ -33,8 +33,8 @@ export default class Common{
         this.camera.layerMask=1;
         this.camera.inputs.clear();
       
-      //   this.camera.inputs.addPointers();
-      //   this.camera.inputs.addMouseWheel();
+        this.camera.inputs.addPointers();
+        this.camera.inputs.addMouseWheel();
         this.camera.position.set(0,this.camVector.y,0);
         this.camera.setTarget(this.camVector);
         this.camera.attachControl(this.game.canvas, true);  
@@ -116,24 +116,9 @@ export default class Common{
             this.miniMapCam.upperAlphaLimit=this.miniMapCam.alpha;
             this.miniMapCam.lowerBetaLimit=this.miniMapCam.beta;
             this.miniMapCam.upperBetaLimit=this.miniMapCam.beta;
-            this.miniMapCam.layerMask=2;
+            this.miniMapCam.layerMask=1;
             this.miniMapCam.inputs.clear();
             
-            
-
-            // const camframe = BABYLON.MeshBuilder.CreatePlane("camframe_plane",{width:.5,height:.25,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
-            // let camframeplanMaterial = new BABYLON.StandardMaterial("camframeplane_mat", this.scene);
-            // camframe.rotation.y = 0;
-            // camframe.position   = new BABYLON.Vector3(2.04,.57,.5);
-            // camframe.parent = this.camera;
-            // camframe.layerMask=1;
-            // camframe.material   = camframeplanMaterial;
-            // camframeplanMaterial.emissiveColor = new BABYLON.Color3.FromInts(0,0,0);
-            // camframe.isPickable=false;
-            // camframe.renderOutline=false;
-            // camframe.enableEdgesRendering(.9999999);	
-            // camframe.edgesWidth = 1.0;
-            // camframe.edgesColor = new BABYLON.Color4(.5,.5,.5,1);
         }
         setminiCamTarget(objecttype){
             this.addMiniCam();  

@@ -28,13 +28,17 @@ export default class Table{
         this.meshRoot.getChildMeshes().forEach(childmesh => {
             if(childmesh.name.includes("table"))
                 childmesh.actionManager = null;
+            childmesh.isPickable = false;
+            childmesh.renderOutline = false;       
         });
+
     }
     initAction(){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
             if(!childmesh.actionManager){
                 if(childmesh.name.includes("table"))
                     this.addAction(childmesh);
+                childmesh.isPickable = true;
             }
         });
     }
@@ -52,22 +56,41 @@ export default class Table{
     addAction(mesh){
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-                    this.label.isVisible=this.root.gamestate.state !== GameState.radial && this.root.gamestate.state !== GameState.menu && this.root.gamestate.state !== GameState.levelstage;
+                    this.label.isVisible=this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
                     this.setLabel();
+                    if(this.root.gamestate.state === GameState.inspect)
+                        this.updateoutLine(mesh,false);
+                    else
+                        this.updateoutLine(mesh,true);                        
+
                     
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                        this.label.isVisible=false;
+                       this.updateoutLine(mesh,false);
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+                    this.label.isVisible=this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
+                    this.updateoutLine(mesh,true);
                         this.setLabel();
                         this.root.scene.onPointerUp=()=>{
                             this.label.isVisible=false;
+                            this.updateoutLine(mesh,false);
                         }
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
+                    this.label.isVisible= this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
+                    this.updateoutLine(mesh,false);
                     if(this.root.gui2D.radialCircle.isVisible)
                         return;
+                    if(this.root.camera.radius>2.5){
+                        // this.root.gamestate.state = GameState.focus;
+                        this.setTableFocusAnim();
+                        if(this.isdrawerOpen)
+                            this.state=10;
+                        else    
+                            this.state=0;
+                    }
                     if(this.state>0 && this.root.gamestate.state === GameState.default){
                         if(this.state>0 && this.isdrawerOpen)
                             this.state=10;
@@ -145,8 +168,7 @@ export default class Table{
             this.label._children[0].text = "Table";
          else   
             this.label._children[0].text = this.isdrawerOpen?"Close Drawer":"Open Drawer";
-            
-        this.label.isVisible=true;
+        this.label.isVisible=this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
         if(this.root.level===3)
             this.label.isVisible=false;  
     }
@@ -170,5 +192,12 @@ export default class Table{
                 });
             }
         });
+    }
+    updateoutLine(mesh,value){
+            if((mesh.parent.name ==="tableknob"|| mesh.parent.name ==="tabledrawer") && this.root.camera.radius>=3){
+                mesh.renderOutline = false;
+            }
+            else
+                mesh.renderOutline = value;
     }
 }

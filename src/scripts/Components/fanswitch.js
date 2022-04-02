@@ -18,11 +18,13 @@ export default class FanSwitch{
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 if(!childmesh.actionManager)
                     this.addAction(childmesh);
+                childmesh.isPickable = true;
             });
         }
         removeAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.actionManager=null;
+                childmesh.isPickable = false;
             });
         }
         addAction(mesh){
@@ -30,17 +32,21 @@ export default class FanSwitch{
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                 if(this.state>0 && this.root.gamestate.state === GameState.default)
                     this.state =0;
-                    this.setLabel();
+                this.setLabel();
+                this.updateoutLine(true);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
+                    this.updateoutLine(false);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                     if(this.state>0 && this.root.gamestate.state === GameState.default)
                         this.state =0;
                     this.setLabel();
+                    this.updateoutLine(true);
                     this.root.scene.onPointerUp=()=>{
                         this.label.isVisible=false;
+                        this.updateoutLine(false);
                     }
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
@@ -83,6 +89,15 @@ export default class FanSwitch{
             this.label.isVisible=true;
             this.label.isPointerBlocker=true;
         }
-        
+        updateoutLine(value){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                if(childmesh.outlineWidth>0)
+                    childmesh.renderOutline = value;
+                else                    
+                    childmesh.renderOutline = false;
+                childmesh.outlineColor  = BABYLON.Color3.Yellow();
+
+            });
+        }
 
 }

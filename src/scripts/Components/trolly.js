@@ -64,27 +64,44 @@ export default class Trolly{
             });
         }
         addAction(mesh){
-                mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                        console.log(this.root.gamestate.state+" "+mesh.name);
-                        switch(this.state){
-                                case 0:
-                                    this.root.gamestate.state = GameState.default;
-                                    new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                                    new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                                        this.root.gamestate.state = GameState.focus;
-                                        this.setApdDeviceBorder(.1);
-                                    }).start();
-                                    new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                                    if(mesh.name.includes("trolly")){
-                                        this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z-1));
-                                     }
-                                     if(mesh.name.includes("apdmachine")){
-                                        this.root.setFocusOnObject(new BABYLON.Vector3(this.apdMachine.absolutePosition.x,this.apdMachine.absolutePosition.y-.5,this.apdMachine.absolutePosition.z+1));    
-                                        console.log(" !!! focus apd!!!");
+            mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+                if(this.root.gamestate.state === GameState.inspect)
+                    this.updateoutLine(mesh,false);
+                else
+                    this.updateoutLine(mesh,true);                        
+
+                
+            }))
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+                   this.updateoutLine(mesh,false);
+            }))
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+                this.updateoutLine(mesh,true);
+                    this.root.scene.onPointerUp=()=>{
+                        this.updateoutLine(mesh,false);
+                    }
+            }))
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+                    console.log(this.root.gamestate.state+" "+mesh.name);
+                    switch(this.state){
+                            case 0:
+                                this.root.gamestate.state = GameState.default;
+                                new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                                    this.root.gamestate.state = GameState.focus;
+                                    this.setApdDeviceBorder(.1);
+                                }).start();
+                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                if(mesh.name.includes("trolly")){
+                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z-1));
                                     }
-                                    break;
-                            }
+                                    if(mesh.name.includes("apdmachine")){
+                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.apdMachine.absolutePosition.x,this.apdMachine.absolutePosition.y-.5,this.apdMachine.absolutePosition.z+1));    
+                                    console.log(" !!! focus apd!!!");
+                                }
+                                break;
+                        }
                     }
                 )
             )
@@ -113,6 +130,32 @@ export default class Trolly{
                     });
                 }
             });
+        }
+        updateoutLine(mesh,value){
+            if(mesh.parent.name ==="apdnode" &&  this.root.gamestate.state != GameState.focus){
+                mesh.renderOutline = false;
+            }
+            else{
+                console.log(mesh.parent.name);
+                if(mesh.parent.name ==="apdnode"){
+                    this.meshRoot.getChildMeshes().forEach(childmesh=>{
+                        mesh.outlineWidth  = .3;
+                        if(childmesh.id.includes("DeviceDialysisReference_primitive1"))
+                            childmesh.renderOutline = value;
+                         else   
+                            childmesh.renderOutline = false;
+                     });
+                  }
+                 else{   
+                    this.meshRoot.getChildMeshes().forEach(childmesh=>{
+                        childmesh.outlineWidth  = 1;
+                        if(childmesh.name.includes("apd"))
+                            childmesh.renderOutline = false;
+                        else
+                            childmesh.renderOutline = value;    
+                    });
+                 }
+            }
         }
 
 }

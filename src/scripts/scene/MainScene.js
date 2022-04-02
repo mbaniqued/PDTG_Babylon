@@ -21,7 +21,7 @@ import { FOV } from "../Common.js";
 import HandWash from "../Components/handwash.js";
 import AlcohalWipe from "../Components/alcohalwipe.js";
 
-export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7};
+export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7,inspect:8};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
 export const ANIM_TIME=1000;
@@ -194,7 +194,7 @@ export default class MainScene {
 
       
       // this.apdmachinePackage.meshRoot.position  = new BABYLON.Vector3(SX,SY,SZ); 
-      // this.scene.getMeshByName("apd_machinetxt_plan").position   = new BABYLON.Vector3(SX,SY,SZ); 
+      // this.scene.getMeshByName("backsidePlan").position   = new BABYLON.Vector3(SX,SY,SZ); 
       
       // this.scene.getMeshByName("cap_highlight_plan").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
       // this.scene.getMeshByName("validation_plan").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
@@ -206,35 +206,39 @@ export default class MainScene {
       
       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
-   this.scene.onPointerObservable.add((pointerInfo) => {      	
-    if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
-        return ;
-      
+   this.scene.onPointerObservable.add((pointerInfo) => {    
+    
+    // if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
+    //     return ;
       switch (pointerInfo.type) {
             case BABYLON.PointerEventTypes.POINTERDOWN:{
                     const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+                    console.log(pickinfo);
                       if(pickinfo.pickedMesh){
+                        console.log(pickinfo.pickedMesh.name);  	
                         this.onpickMesh(pickinfo.pickedMesh);
                       }
                   }
               break;
             case BABYLON.PointerEventTypes.POINTERUP:{
                     if(this.pickMesh){
-                      this.updateObjectOutLine(false);
-                        this.pickMesh.renderOutline=false;
+                      // this.updateObjectOutLine(false);
+                        // this.pickMesh.renderOutline=false;
                         this.pickMesh = null;
                     }
                 }
               break;
             case BABYLON.PointerEventTypes.POINTERMOVE:{ 
                     const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+
                     if(pickinfo.pickedMesh) {
+                      console.log(pickinfo.pickedMesh.name);
                       this.onpickMesh(pickinfo.pickedMesh);
                     }
                     else{
                       if(this.pickMesh)
-                        this.pickMesh.renderOutline=false;
-                        this.updateObjectOutLine(false);
+                        // this.pickMesh.renderOutline=false;
+                        // this.updateObjectOutLine(false);
                         this.pickMesh = null;
                     }
                 }
@@ -522,10 +526,9 @@ export default class MainScene {
       }
   }
   onpickMesh(pickedMesh){
-    // console.log(mesh.name);
     if(this.pickMesh && pickedMesh.name !== this.pickMesh.name){
-      this.updateObjectOutLine(false);
-      this.pickMesh.renderOutline=false;
+      // this.updateObjectOutLine(false);
+      // this.pickMesh.renderOutline=false;
     }
     if(pickedMesh.name ==="glassplane")
         this.pickMesh = this.windowbox;
@@ -541,9 +544,7 @@ export default class MainScene {
         this.focusMesh = pickedMesh;
         this.pickMesh = pickedMesh;
     }
-
-    this.updateObjectOutLine(true);
-    this.pickMesh.renderOutline=true;
+    // this.updateObjectOutLine(true);
   }
 
   checkObjectChange(root1,root2){
@@ -579,8 +580,11 @@ export default class MainScene {
     if(!this.pickMesh){
       return;
     }
-    if(this.pickMesh.outlineWidth<.1)
+    console.log(this.pickMesh.name + "    "+this.pickMesh.outlineWidth);
+    if(this.pickMesh.outlineWidth<.01)
       return;
+
+     
     if(!this.pickMesh.isPickable || this.pickMesh.actionManager === null){
         value = false;
         this.pickMesh.outlineWidth=0;
@@ -687,23 +691,19 @@ export default class MainScene {
     this.camera.upperAlphaLimit =  null;
     this.camera.lowerBetaLimit  =  null;
     this.camera.upperBetaLimit  =  null;
-    new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-      }).start();
-    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(()=>{}).start();
+    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
     // new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
     // }).start();
-    new TWEEN.Tween(this.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
     
   }
   setFocusOnObject(pos){
     new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
         // this.camera.lowerAlphaLimit = this.camera.upperAlphaLimit=this.camera.alpha;
         // this.camera.lowerBetaLimit = this.camera.upperBetaLimit=this.camera.beta;
-        if(this.gamestate.state === GameState.focus || this.gamestate.state === GameState.active)
-            this.showResetViewButton(true);
-        else
-            this.showResetViewButton(false);
-
+        // if(this.gamestate.state === GameState.focus || this.gamestate.state === GameState.active)
+        this.showResetViewButton(true);
     }).start();
   }
   showResetViewButton(isVisible){
@@ -759,6 +759,7 @@ export default class MainScene {
         this.acparticle.stop();  
    }
    setGame(){
+     this.level=1;
     if(!this.isSceneCreated){
         this.resetScene();
         this.initScene().then(()=>{
@@ -783,8 +784,8 @@ export default class MainScene {
     new TWEEN.Tween(this.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
    }
    startGame(){
+    this.gamemode =  gamemode.training;
     this.resetObjectiveBar();
-    this.level = 3;
     this.bpBalue="";
     this.removeAllActions();
     switch(this.gamemode){
@@ -819,6 +820,8 @@ export default class MainScene {
                         const values = ["Place the required eqipment from the drawer on the top of the table: \n \u2022 BP Monitor \n \u2022 CCPD Record Book \n \u2022 Alcohal Wipe \n \u2022 Connection Shield \n \u2022 APD Cassette Package \n \u2022 Face Mask \n \u2022 Drain Bag",
                                         "Place the required eqipment from the brown cabinet on top of the table: \n \u2022 Dialysis Solution x2 \n \u2022 Hand Sanitizer"];   
 
+                        this.handSoapObject.initAction();
+                        this.paperTowelObject.initAction();                                        
                         this.tableObject.initAction();
                         this.bpMachineItem.initAction();
                         this.alcohalItem.initAction();
@@ -1011,7 +1014,6 @@ export default class MainScene {
        this.paperTowelObject.removeAction();
    }
    checkObjectives(detail){
-
         switch(this.level){
             case 0:
                   if(detail.object_type ===  this.doorObject){

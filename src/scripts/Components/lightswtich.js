@@ -17,9 +17,11 @@ export default class LightSwitch{
         initAction(){
             if(!this.meshRoot.actionManager)
                 this.addAction(this.meshRoot);
+                this.meshRoot.isPickable = true;
         }
         removeAction(){
             this.meshRoot.actionManager=null;
+            this.meshRoot.isPickable = false;
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
@@ -27,16 +29,20 @@ export default class LightSwitch{
                 if(this.state>0 && this.root.gamestate.state === GameState.default)
                     this.state =0;
                     this.setLabel();
+                    this.updateoutLine(mesh,true);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
+                    this.updateoutLine(mesh,false);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                     if(this.state>0 && this.root.gamestate.state === GameState.default)
                         this.state=0;
                     this.setLabel();
+                    this.updateoutLine(mesh,true);
                     this.root.scene.onPointerUp=()=>{
                         this.label.isVisible=false;
+                        this.updateoutLine(mesh,false);
                     }
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
@@ -80,6 +86,13 @@ export default class LightSwitch{
         setLight(){
             this.root.sceneCommon.hemiLight.intensity        =  this.isLightOff?.5:.1;
             this.root.sceneCommon.directionalLight.intensity = this.isLightOff?.5:.1;
+        }
+        updateoutLine(mesh,value){
+            if(mesh.outlineWidth>0)
+                mesh.renderOutline = value;
+            else    
+                mesh.renderOutline = false;
+            
         }
 
 }

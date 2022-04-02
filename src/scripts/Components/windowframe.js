@@ -19,6 +19,7 @@ export default class WindowFrame{
             this.plan.position.set(-7.6,3.45,1);
             this.plan.rotation.y = BABYLON.Angle.FromDegrees(90).radians();
             this.plan.visibility=0;
+            this.plan.outlineWidth=1;
             
 
             this.glasssplan = this.plan.clone("windowframeplan");
@@ -26,7 +27,8 @@ export default class WindowFrame{
             this.glasssplan.scaling.set(55,100,1);
             this.glasssplan.position.set(50,0,-5);
             this.glasssplan.visibility=0;
-            this.glasssplan.outlineWidth = 0;
+            this.glasssplan.outlineWidth=1;
+            this.glasssplan.outlineWidth =1;
             this.glasssplan.renderOutline=false;
             
             this.initMeshOutline();
@@ -94,14 +96,18 @@ export default class WindowFrame{
             )
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                 this.setLabel();
+                this.updateoutLine(mesh,true);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
+                    this.updateoutLine(mesh,false);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                     this.setLabel();
+                    this.updateoutLine(mesh,true);
                     this.root.scene.onPointerUp=()=>{
                         this.label.isVisible=false;
+                        this.updateoutLine(mesh,false);
                     }
             }))
         }
@@ -109,7 +115,7 @@ export default class WindowFrame{
             this.meshRoot.getChildTransformNodes().forEach(childnode=>{
                 if(childnode.name.includes("windownode")){
                     childnode.getChildMeshes().forEach(childmesh=>{
-                        this.root.loaderManager.setPickable(childmesh,.0001); 
+                        this.root.loaderManager.setPickable(childmesh,1); 
                     });
                 }
             });
@@ -124,5 +130,30 @@ export default class WindowFrame{
             this.label.isVisible=true;
             this.label.isPointerBlocker=true;
             this.label._children[0].isPointerBlocker=true;
+        }
+        updateoutLine(mesh,value){
+            if(mesh.outlineWidth>0){
+                 if(mesh.name === "glassplane"){
+                    this.root.windowbox.renderOutline = value;
+                    this.root.windowbox.outlineWidth =1;
+                    this.root.windowbox.outlineColor  = BABYLON.Color3.Yellow();
+                    console.log("innnnnnn glassplan");
+                 }
+                 if(mesh.name === "windowframeplan"){
+                    this.meshRoot.getChildMeshes().forEach(childmesh => {
+                          if(childmesh.name==="windowframe"){
+                             childmesh.renderOutline = value;
+                             childmesh.outlineWidth  = 1;
+                             childmesh.outlineColor  = BABYLON.Color3.Yellow();
+                          }
+                          else{
+                            childmesh.renderOutline = false;
+                          }
+                      });
+                 }
+            }
+            else{
+                mesh.renderOutline = false;
+             }   
         }
 }

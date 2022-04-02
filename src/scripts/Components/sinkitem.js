@@ -18,6 +18,7 @@ export default class SinkItem{
         removeAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.actionManager = null;
+                childmesh.renderOutline=false;
             });
         }
         initAction(){
@@ -29,16 +30,20 @@ export default class SinkItem{
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                 this.label.isVisible =  this.state<100;
+                this.updateoutLine(mesh,this.label.isVisible);
 
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
-                this.label.isVisible=false
+                this.label.isVisible=false;
+                this.updateoutLine(mesh,this.label.isVisible);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                 this.label.isVisible =  this.state<100;
+                this.updateoutLine(mesh,this.label.isVisible);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                 console.log(this.root.gamestate.state+"!! OnPickTrigger!!! "+this.state);
+                this.updateoutLine(mesh,false);
                 if(this.root.camera.radius>2.9)
                     this.state=0;
                 if(this.state>=100){
@@ -135,4 +140,9 @@ export default class SinkItem{
             this.root.showResetViewButton(true);
           }).start();
       }
+      updateoutLine(mesh,value){
+        this.meshRoot.getChildMeshes().forEach(childmesh => {
+            childmesh.renderOutline = value;
+        });
+     }
 }

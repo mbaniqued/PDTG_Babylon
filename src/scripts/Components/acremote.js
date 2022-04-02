@@ -22,11 +22,13 @@ export default class ACRemote{
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 if(!childmesh.actionManager)
                     this.addAction(childmesh);
+                childmesh.isPickable = true;
             });
         }
         removeAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.actionManager=null;
+                childmesh.isPickable = false;
             });
         }
         addAction(mesh){
@@ -38,10 +40,12 @@ export default class ACRemote{
                             this.root.gamestate.state = GameState.focus;
                             this.state =1;
                         }
-                           this.setLabel();
+                        this.updateoutLine(true);
+                        this.setLabel();
                     }))
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                             this.label.isVisible=false;
+                            this.updateoutLine(false);
                     }))
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                             if(this.state>0 && this.root.gamestate.state === GameState.default)
@@ -51,9 +55,11 @@ export default class ACRemote{
                                 this.state =1;
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.1,this.meshRoot.position.y,this.meshRoot.position.z));
                             }
+                            this.updateoutLine(true);
                             this.setLabel();
                             this.root.scene.onPointerUp=()=>{
                                 this.label.isVisible=false;
+                                this.updateoutLine(false);
                             }
                     }))
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
@@ -92,5 +98,11 @@ export default class ACRemote{
                 this.label._children[0].text = this.isAcOff?"Power On AC":"Power Off AC";
             this.label.isVisible=true;
             this.label.isPointerBlocker=true;
+        }
+        updateoutLine(value){
+            this.meshRoot.getChildMeshes().forEach(childmesh => {
+                childmesh.renderOutline = value;
+                childmesh.outlineWidth  = 1;
+            });
         }
 }
