@@ -1,4 +1,5 @@
 // https://github.com/mbaniqued/PDTG_Babylon
+// Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The HTMLImageElement provided is in the 'broken' state.
 import * as BABYLON from "babylonjs";
 import "babylonjs-loaders";
 import LoaderManager from "../LoaderManager.js";
@@ -1213,7 +1214,7 @@ export default class MainScene {
                       
                   }
 
-                  if(this.sanitiserObject.indexOf(detail.object_type)>-1 && detail.msg.includes("placed_sanitizer")){
+                  if(this.sanitiserObject.indexOf(detail.object_type)>-1 && detail.msg && detail.msg.includes("placed_sanitizer")){
                         if(!gameObjectives[1].status)
                             this.objectiveCount++;
                         gameObjectives[1].status = true
@@ -1237,7 +1238,7 @@ export default class MainScene {
                          }
                      }
                   }
-                  if(detail.object_type instanceof CabinetItem){
+                  if(detail.msg && detail.object_type instanceof CabinetItem){
                        if(this.dialysisSolutionObject.indexOf(detail.object_type)>-1){
                           if(detail.msg.includes("dialysis_validation")){
                               if(!gameObjectives[3].status)
@@ -1246,14 +1247,14 @@ export default class MainScene {
                               this.connectionItem.initAction();
                               this.connectionItem.enableDrag(false);
                           }
-                          if(detail.msg.includes("placed_dialysis_apd_top")){
+                          if(detail.msg && detail.msg.includes("placed_dialysis_apd_top")){
                             if(!gameObjectives[8].status)
                                 this.objectiveCount++;
                               gameObjectives[8].status = true;
                           }
                       }
                   }
-                  if(detail.object_type === this.connectionItem && detail.msg.includes("connection_validation")){
+                  if(detail.object_type === this.connectionItem && detail.msg && detail.msg.includes("connection_validation")){
                         if(!gameObjectives[4].status)
                         this.objectiveCount++;
                         gameObjectives[4].status = true;
@@ -1262,7 +1263,7 @@ export default class MainScene {
                   }
                   
                   if(detail.object_type === this.drainBagItem){
-                       if(detail.msg.includes("drain_bag_trolly")){
+                       if(detail.msg && detail.msg.includes("drain_bag_trolly")){
                           console.log("#############");
                             if(!gameObjectives[7].status)
                               this.objectiveCount++;
@@ -1274,7 +1275,7 @@ export default class MainScene {
                           }
                           this.gamestate.state = GameState.active;
                        }
-                      else if(detail.msg.includes("drainbag_use")){
+                      else if(detail.msg && detail.msg.includes("drainbag_use")){
                           if(!gameObjectives[6].status)
                               this.objectiveCount++;
                             gameObjectives[6].status = true;
@@ -1286,7 +1287,7 @@ export default class MainScene {
                           gameObjectives[5].status = true;
                       }
                   }
-                  if(detail.msg.includes("placed_2item_apdreck")){
+                  if(detail.msg &&  detail.msg.includes("placed_2item_apdreck")){
                     if(!gameObjectives[9].status && this.itemCount>1){
                           this.objectiveCount++;
                         gameObjectives[9].status = true;
