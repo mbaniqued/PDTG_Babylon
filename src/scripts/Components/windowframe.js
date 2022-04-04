@@ -82,8 +82,7 @@ export default class WindowFrame{
                                 break;
                             case 1:
                                     this.root.gamestate.state = GameState.active;
-                                    this.windowClose =!this.windowClose;
-                                    new TWEEN.Tween(this.meshRoot.position).to({z:this.meshRoot.position.z>0?0:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                    this.closeWindow();
                                     if(this.windowClose){
                                         let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
                                         document.dispatchEvent(custom_event);
@@ -110,6 +109,10 @@ export default class WindowFrame{
                         this.updateoutLine(mesh,false);
                     }
             }))
+        }
+        closeWindow(){
+            this.windowClose =!this.windowClose;
+            new TWEEN.Tween(this.meshRoot.position).to({z:this.meshRoot.position.z>0?0:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         }
         initMeshOutline(){
             this.meshRoot.getChildTransformNodes().forEach(childnode=>{

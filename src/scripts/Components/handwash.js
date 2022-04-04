@@ -99,20 +99,14 @@ export default class HandWash{
         }
         else
             this.root.gui2D.resetCamBtn.zIndex =0;
-
-
-
      }
-    
      initEvents(i){
-        
          this.handwashIcon[i].onPointerDownObservable.add((coordinates)=> {
             this.iconNo=i;
             this.startingPoint    = new BABYLON.Vector2(coordinates.x, coordinates.y);
             this.iconStartPos     = new BABYLON.Vector2(this.handwashIcon[i].leftInPixels,this.handwashIcon[i].topInPixels);
             this.drag = true;
             this.drop = false;
-            
             console.log("!! down!!! "+this.startingPoint+"   "+this.iconNo);
          });
          this.handwashIcon[i].onPointerUpObservable.add((coordinates)=> {
@@ -126,7 +120,6 @@ export default class HandWash{
                   this.isplaced[i] = true;
                }
                this.updateStack();
-               
             }
             else{
                   if(this.isplaced[this.iconNo]){

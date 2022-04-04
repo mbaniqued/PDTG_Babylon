@@ -29,9 +29,11 @@ export default class Table{
             if(childmesh.name.includes("table"))
                 childmesh.actionManager = null;
             childmesh.isPickable = false;
+            this.updateoutLine(childmesh,false);
             childmesh.renderOutline = false;       
+            
         });
-
+        
     }
     initAction(){
         this.meshRoot.getChildMeshes().forEach(childmesh => {

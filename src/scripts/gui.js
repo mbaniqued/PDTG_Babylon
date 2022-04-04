@@ -34,6 +34,7 @@ export default class GUI2D{
       initMainMenu(){
         
         this.menuContainer =  this.createRect("menucontiner",1920,1080,0,"#FFFFFF00",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+
         const menuBg       =  this.createRect("menubg2",1920,1080,0,"#7EC5DDE6",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         const whiteimg     =  this.createRect("menubg3",1920,1080,0,"#FFFFFF73",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         const menuBgImg    =  this.createImage("menubg1","ui/apd_bg.PNG",1920,1080,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
@@ -73,6 +74,7 @@ export default class GUI2D{
       }
       drawMainMenu(isDraw){ 
         this.advancedTexture.renderAtIdealSize = true;
+        this.menuContainer.isPointerBlocker=true;
         this.menuContainer.isVisible  =  isDraw;
         this.menuContainer.getChildByName("usermodetxt").text = "User Mode";
         this.menuContainer.getChildByName("usermodetxt").topInPixels =-100;
@@ -190,7 +192,7 @@ export default class GUI2D{
       }
       drawStageMenu(isDraw){
           this.advancedTexture.renderAtIdealSize = true;
-          this.root.level   = 0;
+          // this.root.level   = 0;
           this.menuContainer.isVisible = isDraw;
           this.menuContainer.getChildByName("usermodetxt").text = "Select Stage";
           this.menuContainer.getChildByName("gamemodetxt").text = "Select Phase";
@@ -205,14 +207,41 @@ export default class GUI2D{
             this.stage1btn.isVisible  =  false;
             this.drawLoadingPage(true);
             this.root.sceneCommon.setView();
-              let tout = setTimeout(() => {
-                  clearTimeout(tout);
-                  this.drawLoadingPage(false);
-                  this.root.gamestate.state = GameState.default;
-                  this.root.setCameraTarget();
-                  new TWEEN.Tween(this.root.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-                  this.root.setGame();
-              }, 10);
+
+            switch(this.root.level){
+               case 0:
+                  this.root.enterScene(1000)
+                 break;
+               case 1:
+                  this.root.enterScene(3000);
+                  this.root.gameTaskManager.completeRoomSetUp();
+                 break;  
+               case 2:
+                  this.root.enterScene(3000);
+                  this.root.gameTaskManager.completeRoomSetUp();
+                  setTimeout(() => {
+                    this.root.gameTaskManager.completeItemSetUp();  
+                  }, 1500);
+                break;  
+               case 3:
+                  this.root.enterScene(3000);
+                  this.root.gameTaskManager.completeRoomSetUp();
+                  setTimeout(() => {
+                    this.root.gameTaskManager.completeItemSetUp();  
+                  }, 1500);
+                  setTimeout(() => {
+                    this.root.gameTaskManager.completeSelfSetUp();  
+                  }, 3200);
+                 break; 
+            }
+              // let tout = setTimeout(() => {
+                  // clearTimeout(tout);
+            // this.drawLoadingPage(false);
+            // this.root.gamestate.state = GameState.default;
+            // this.root.setCameraTarget();
+            // new TWEEN.Tween(this.root.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+            this.root.setGame();
+              // }, 10);
 
           }
           this.backBtn.topInPixels = 400;
@@ -341,6 +370,7 @@ export default class GUI2D{
         this.drawRadialMenu(false);
       }
       drawRadialMenu(isDraw){
+        this.radialCircle.isPointerBlocker=true;
         this.radialCircle.isVisible=isDraw;
         this.inspectBtn.topInPixels =-80;
         this.inspectBtn.isVisible=isDraw;
@@ -431,6 +461,7 @@ export default class GUI2D{
         this.drawLevelComplete(false);
       }
       drawLevelComplete(isDraw){
+        this.winPopUp.isPointerBlocker=true;
         this.winPopUp.isVisible        =  isDraw;
         this.nextBtn.isVisible         =  isDraw;
         this.nextBtn.topInPixels       =  40;
@@ -469,6 +500,7 @@ export default class GUI2D{
         
       }
       drawValidationMenu(isDraw){
+          this.radialCircle.isPointerBlocker=true;
           this.radialCircle.isVisible=isDraw;
 
           this.validationRect.topInPixels =-200;
@@ -607,7 +639,6 @@ export default class GUI2D{
         rect.linkOffsetYInPixels = linkOffsetY;
         rect.linkWithMesh(mesh);   
         
-
         const label = new GUI.TextBlock(name+"txt");
         label.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
         label.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;

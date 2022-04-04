@@ -20,6 +20,7 @@ export default class FanSwitch{
                     this.addAction(childmesh);
                 childmesh.isPickable = true;
             });
+            this.updateoutLine(false);
         }
         removeAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {

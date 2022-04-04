@@ -27,7 +27,9 @@ export default class Cabinet{
         this.meshRoot.getChildMeshes().forEach(childmesh => {
             childmesh.actionManager = null;
             childmesh.renderOutline = false;   
+            this.updateoutLine(childmesh,false);
         });
+        
     }
     initAction(){
         this.meshRoot.getChildMeshes().forEach(childmesh => {

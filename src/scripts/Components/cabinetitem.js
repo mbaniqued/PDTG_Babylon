@@ -1,4 +1,4 @@
-import { GameState,gamemode,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
+import { GameState,gamemode,ANIM_TIME,event_objectivecomplete,IS_DRAG } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 let showMenu = false;
 const diasolutionpos1 = new BABYLON.Vector3(.25,2,2.7);
@@ -62,6 +62,7 @@ export default class CabinetItem{
             childmesh.isPickable=false;
             childmesh.renderOutline = false;   
           });
+          this.updateoutLine(false);
       }
       initAction(){
         this.interaction = true;
@@ -69,14 +70,17 @@ export default class CabinetItem{
           this.meshRoot.getChildMeshes().forEach(childmesh => {
               if(!childmesh.actionManager)
                   this.addAction(childmesh);
+            if(childmesh.name.includes("validation"))    
+                childmesh.isPickable=false;
+            else  
                 childmesh.isPickable=true;
-                childmesh.isVisible=true;
+             childmesh.isVisible=true;
           });
       }
       addAction(mesh){
         mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-            this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state!==100 && this.state!==20;
+            this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) || (this.state!==100 && this.state!==20);
             this.updateoutLine(true);
             if(this.root.gamestate.state === GameState.inspect){
                 this.updateoutLine(false);
@@ -106,7 +110,7 @@ export default class CabinetItem{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                 //   console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                     this.pickObject = true;
-                    this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state!==100 && this.state!==20;
+                    this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) || (this.state!==100 && this.state!==20);
                     this.updateoutLine(true);
                     if(this.root.gamestate.state === GameState.inspect){
                         this.updateoutLine(false);
@@ -125,7 +129,7 @@ export default class CabinetItem{
         )
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                     // console.log(this.root.gamestate.state+"!! OnPickTrigger!!! ")
-                    // console.log(mesh.name);
+                    console.log(mesh.name);
                     this.label.isVisible=false;
                     this.updateoutLine(false);
                     if(this.root.gamestate.state === GameState.inspect){
@@ -205,6 +209,7 @@ export default class CabinetItem{
           }
         // this.meshRoot.position.z = this.startPosition.z;
         //   console.log(this.meshRoot.position);
+            IS_DRAG.value=true;
           if(this.meshRoot.position.x>-1.5 && this.meshRoot.position.x<1.1){
               this.root.scene.getMeshByName("tablecollider").visibility=1;
               this.root.scene.getMeshByName("trollycollider").visibility=0;
@@ -349,6 +354,7 @@ export default class CabinetItem{
            this.root.scene.getMeshByName("tablecollider").visibility=0;
            this.root.scene.getMeshByName("trollycollider").visibility=0;
            this.root.scene.getMeshByName("apdcollider").visibility=0;
+           IS_DRAG.value=false;
         });
     }
     placeItem(time){
@@ -581,20 +587,17 @@ export default class CabinetItem{
                 this.checkValidation[name]=1;
                 this.updatedrainbagValidatetion();
                 this.root.gui2D.drawValidationMenu(false);
-                this.root.gamestate.state = GameState.active;
             };
             this.root.gui2D.wrongBtn._onPointerUp = ()=>{
                 this.checkValidation[name]=2;
                 this.updatedrainbagValidatetion();
                 this.root.gui2D.drawValidationMenu(false);
-                this.root.gamestate.state = GameState.active;
             };
             this.root.gui2D.doneBtn._onPointerUp = ()=>{
                 if(this.checkValidation[name]<1){
                     this.checkValidation[name] =-1;
                     this.updatedrainbagValidatetion();
                 }
-                this.root.gamestate.state = GameState.active;
                 this.root.gui2D.drawValidationMenu(false);
              };
           }
@@ -614,8 +617,12 @@ export default class CabinetItem{
       }
       updateoutLine(value){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
-             childmesh.renderOutline = value;
+            if( childmesh.name.includes("highlight_plan"))
+                childmesh.renderOutline = false;
+             else   
+                childmesh.renderOutline = value;
              childmesh.outlineWidth =1;
+            //  console.log(childmesh.name);
         });
     }
       

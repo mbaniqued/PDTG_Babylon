@@ -62,9 +62,9 @@ export default class LoaderManager {
           const node   = new BABYLON.TransformNode("papertowel_node");
           for(let i=0;i<task.loadedMeshes.length;i++){ //paper_towel
             task.loadedMeshes[i].parent = node;
-            
+            // console.log(task.loadedMeshes[i].id)
             task.loadedMeshes[i].scaling.set(.012,.012,.012);
-            this.setPickable(task.loadedMeshes[i],.01);
+            this.setPickable(task.loadedMeshes[i],1);
           } 
           node.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(45).radians(),BABYLON.Angle.FromDegrees(0).radians());
           node.position.set(0,0,0);
@@ -75,7 +75,7 @@ export default class LoaderManager {
           const node   = new BABYLON.TransformNode("apd_package_node");
           for(let i=0;i<task.loadedMeshes.length;i++){ //apd_package
             task.loadedMeshes[i].parent = node;
-            console.log(task.loadedMeshes[i].id);
+            // console.log(task.loadedMeshes[i].id);
             task.loadedMeshes[i].scaling.set(-.5,.5,.5);
             if(task.loadedMeshes[i].name === "APDCassetteRevisedWithPackaging2.001_primitive11"){
               task.loadedMeshes[i].isVisible = false;
@@ -245,7 +245,7 @@ export default class LoaderManager {
           const apdnode       = new BABYLON.TransformNode("apdnode");
           for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
             task.loadedMeshes[i].parent  = apdnode;
-            // console.log(task.loadedMeshes[i].id);
+            ;
             task.loadedMeshes[i].name="apdmachine"+i;
             this.setPickable(task.loadedMeshes[i],.3);
             // task.loadedMeshes[i]..setPivotMatrix(BABYLON.Matrix.Translation(0, 0, 0), false);
@@ -281,9 +281,10 @@ export default class LoaderManager {
         if(task.name === "trolley"){
           const trolly         = new BABYLON.TransformNode("trollynode");
           for(let i=0;i<task.loadedMeshes.length;i++){ // trolly
+            
             task.loadedMeshes[i].parent  = trolly;
             task.loadedMeshes[i].name="trolly"+i;
-            this.setPickable(task.loadedMeshes[i],-1);
+            this.setPickable(task.loadedMeshes[i],1);
           }
           trolly.parent = this.root.trollyRoot;
           this.root.trollyRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
@@ -731,7 +732,7 @@ export default class LoaderManager {
       switch(this.game.sceneManager.currentSceneState)
       {
            case this.game.sceneManager.sceneState.basic:
-                this.root.isSceneCreated=true;
+                this.root.isResetScene=false;
                 this.root.initScene().then(()=>{
                     this.isLoad=true;
                 });

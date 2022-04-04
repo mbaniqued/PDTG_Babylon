@@ -22,6 +22,7 @@ export default class LightSwitch{
         removeAction(){
             this.meshRoot.actionManager=null;
             this.meshRoot.isPickable = false;
+            this.updateoutLine(this.meshRoot,false);
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
@@ -46,12 +47,13 @@ export default class LightSwitch{
                     }
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                        if(this.state>0 && this.root.gamestate.state === GameState.default)
-                           this.state =0;
-                        if(this.root.camera.radius<3)
+                      if(this.root.camera.radius<3){
                             this.state =1;
+                            this.root.gamestate.state  =  GameState.active
+                        }
                         this.setLabel();
                         this.root.sceneCommon.setminiCamTarget(0);
+                        console.log(" ------- OnPickTrigger-------- "+this.state )
                         if(this.root.gamestate.state === GameState.default){
                             this.root.gamestate.state  =  GameState.active;
                             this.state=1;
@@ -63,13 +65,13 @@ export default class LightSwitch{
                             this.root.setFocusOnObject(new BABYLON.Vector3(node.position.x,node.position.y,node.position.z+.5));
                         }
                         else if(this.state>0){
-                            this.isLightOff =!this.isLightOff;
+                            
                             this.setLight();
                             let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
                             document.dispatchEvent(custom_event);
                         }
                         this.setLabel();
-                        console.log("innnnnnnnnnnnn OnPickTrigger")
+                        
                     }
                 )
              )
@@ -84,7 +86,9 @@ export default class LightSwitch{
             this.label.isPointerBlocker=true;
         }
         setLight(){
-            this.root.sceneCommon.hemiLight.intensity        =  this.isLightOff?.5:.1;
+            console.log(" !!! light state!! " +this.state+"      "+this.isLightOff)
+            this.isLightOff =!this.isLightOff;
+            this.root.sceneCommon.hemiLight.intensity        = this.isLightOff?.5:.1;
             this.root.sceneCommon.directionalLight.intensity = this.isLightOff?.5:.1;
         }
         updateoutLine(mesh,value){

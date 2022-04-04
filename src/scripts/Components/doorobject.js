@@ -16,18 +16,21 @@ export default class DoorObject{
             this.label.isVisible=false;
             this.initAction();
             this.setDoor();
+            this.interaction=false;
             // let mesh = new BABYLON.TransformNode();
         }
         setPos(){
             this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
         }
         initAction(){
+            this.interaction=true;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                if(childmesh.name ==="mydoor" && !childmesh.actionManager)
                   this.addAction(childmesh);
             });
         }
         removeAction(){
+            this.interaction=false;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.actionManager = null;
             });
@@ -79,6 +82,7 @@ export default class DoorObject{
             new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                 this.closedoor = !this.closedoor;
                 if(this.closedoor){
+                    this.label.isVisible=false;
                     let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
                     document.dispatchEvent(custom_event);
                 }
@@ -93,8 +97,8 @@ export default class DoorObject{
             else
                 this.label._children[0].text = this.closedoor?"Open Door":"Close Door"; 
 
-            this.label.isVisible=true;
-            this.label.isPointerBlocker=true;
+            this.label.isVisible= this.interaction && (this.root.gamestate.state === GameState.default || this.root.gamestate.state === GameState.active);
+            this.label.isPointerBlocker=false;
         }
         updateoutLine(value){
             this.meshRoot.getChildMeshes().forEach(childmesh => {

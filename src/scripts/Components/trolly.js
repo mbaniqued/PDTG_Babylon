@@ -53,7 +53,9 @@ export default class Trolly{
         removeAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.actionManager = null;
-        });
+                this.updateoutLine(childmesh,false);
+            });
+            
         }
         initAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -139,7 +141,7 @@ export default class Trolly{
                 console.log(mesh.parent.name);
                 if(mesh.parent.name ==="apdnode"){
                     this.meshRoot.getChildMeshes().forEach(childmesh=>{
-                        mesh.outlineWidth  = .3;
+                        childmesh.outlineWidth  = .3;
                         if(childmesh.id.includes("DeviceDialysisReference_primitive1"))
                             childmesh.renderOutline = value;
                          else   
@@ -151,8 +153,12 @@ export default class Trolly{
                         childmesh.outlineWidth  = 1;
                         if(childmesh.name.includes("apd"))
                             childmesh.renderOutline = false;
-                        else
-                            childmesh.renderOutline = value;    
+                        else{
+                            if(childmesh.id === "Trolley_primitive1" || childmesh.id === "Trolley_primitive3") 
+                                childmesh.renderOutline = false;    
+                            else 
+                                childmesh.renderOutline = value; 
+                        }
                     });
                  }
             }

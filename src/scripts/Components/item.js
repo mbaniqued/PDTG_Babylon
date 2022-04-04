@@ -1,5 +1,5 @@
 
-import { GameState,gamemode,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
+import { GameState,gamemode,ANIM_TIME,event_objectivecomplete,IS_DRAG } from "../scene/MainScene";
 import { randomNumber } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 let showMenu = false;
@@ -34,6 +34,7 @@ export default class Item{
         setPos(){
             if(this.parent){
                 this.meshRoot.parent = null;
+                this.parent          = this.root.scene.getTransformNodeByID("tabledrawer");
                 this.meshRoot.parent = this.parent;
                 this.meshRoot.name   +="items";
             }
@@ -60,30 +61,38 @@ export default class Item{
                 childmesh.isPickable=false;
                 childmesh.renderOutline = false;   
             });
+            this.updateoutLine(false);
             this.enableDrag(false);
         }
         initAction(){
             this.interaction = true;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 if(childmesh.parent.name.includes("items"))
-                    this.addAction(childmesh);
-                childmesh.isPickable=true;
+                    if(childmesh.name.includes("validation") || childmesh.name.includes("bptextplan"))    
+                        childmesh.isPickable=false;
+                    else  
+                        childmesh.isPickable=true;
+                if(childmesh.isPickable)
+                     this.addAction(childmesh);
             });
         }
         addAction(mesh){
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-                    // console.log(mesh.name);
                     this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state<100;
                     this.updateoutLine(this.label.isVisible);
+                    // console.log(mesh.name);
                     if(this.root.gamestate.state === GameState.inspect){
-                        if(mesh.name ==="highlight_plan"){
+                        if(mesh.name.includes("highlight_plan")){
                             this.updateoutLine(false);
                             this.label.isVisible=false;
+                            console.log(this.root.gamestate.state+" OnPointerOverTrigger "+this.name);
                             if(this.name.includes("APD Cassette"))
                                 this.root.onHighlightApdPlan(1);
-                            if(this.name.includes("Connection Shield"))
+                            if(this.name.includes("Connection")){
+                                console.log("OnPointerOverTrigger");
                                 this.root.onhighlightConnectionPlan(1);
+                            }
                             if(this.name.includes("Drain Bag"))
                                 this.root.onhighlightDrainBagPlan(1);
                         }
@@ -93,9 +102,16 @@ export default class Item{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
                     this.updateoutLine(false);
-                    this.root.onHighlightApdPlan(0);
-                    this.root.onhighlightConnectionPlan(0);
-                    this.root.onhighlightDrainBagPlan(0);
+                        
+                        if(this.root.gamestate.state === GameState.inspect){
+                            if(this.name.includes("APD Cassette"))
+                                this.root.onHighlightApdPlan(0);
+                            if(this.name.includes("Connection")){
+                                this.root.onhighlightConnectionPlan(0);
+                            }
+                            if(this.name.includes("Drain Bag"))
+                                this.root.onhighlightDrainBagPlan(0);
+                        }
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                         // console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
@@ -105,11 +121,13 @@ export default class Item{
                             if(this.root.gamestate.state === GameState.inspect){
                                 this.updateoutLine(false);
                                 this.label.isVisible=false;
-                                if(mesh.name ==="highlight_plan"){
+                                if(mesh.name.includes("highlight_plan")){
                                     if(this.name.includes("APD Cassette"))
                                         this.root.onHighlightApdPlan(1);
-                                    if(this.name.includes("Connection Shield"))
+                                    if(this.name.includes("Connection")){
+                                        console.log("OnPickDownTrigger");
                                         this.root.onhighlightConnectionPlan(1);
+                                    }
                                     if(this.name.includes("Drain Bag"))
                                         this.root.onhighlightDrainBagPlan(1);
                                 }
@@ -120,15 +138,21 @@ export default class Item{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                             this.label.isVisible=false;
                             this.updateoutLine(false);
-                            if(this.root.camera.radius>2.5){
+                            if(this.root.camera.radius>2.5 && this.state<100){
                                 this.root.gamestate.state = GameState.focus;
                                 this.root.tableObject.setTableFocusAnim();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.position.y,this.root.tableObject.meshRoot.position.z-.5));
+                                this.root.tableObject.meshRoot.getChildTransformNodes().forEach(childnode=>{
+                                    if(childnode.name==="tabledrawer"){
+                                        let drawerNode = childnode;  
+                                        this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.root.tableObject.meshRoot.position.z-.5));
+                                    }
+                                });
                                 this.root.tableObject.state=0;
                                 return;
                             }
+                            console.log(mesh.name);
                             if(this.root.gamestate.state === GameState.inspect){
-                                if(mesh.name ==="highlight_plan"){
+                                if(mesh.name.includes("highlight_plan")){
                                     console.log("!!! validation!!! ");
                                     this.onValidationPick();
                                     return
@@ -136,10 +160,11 @@ export default class Item{
                             }
                             if(this.state>=100){ // use item
                                 if(this.name.includes("Blood Pressure")){
+                                    this.root.gui2D.resetCamBtn.isVisible=false;
                                     this.usebpMachine();
-                                    }
+                                }
                                 if(this.name.includes("CCPD")){
-                                    this.openccpdRecordBook(300);
+                                    this.openccpdRecordBook(ANIM_TIME*.5);
                                 }
                                 return;
                             }
@@ -149,13 +174,16 @@ export default class Item{
                             this.root.gamestate.state = showMenu?GameState.radial:GameState.active;
                             this.root.gui2D.drawRadialMenu(showMenu);
                             this.root.gui2D.resetCamBtn.isVisible=!showMenu;
+                            console.log("$$$$$$$$$$$$$$$$$");
                             if(showMenu){
                                 if(this.root.gamemode === gamemode.training && this.root.level ===3){
                                     this.updateUseBtn();       
                                 }
                             }
                             this.root.gui2D.inspectBtn._onPointerUp = ()=>{
-                                this.root.gamestate.state = GameState.inspect; 
+
+                                if(this.root.level>2 && this.root.gamemode === gamemode.training)
+                                        this.root.gamestate.state = GameState.inspect; 
                                 this.enableDrag(false);
                                 showMenu = false;
                                 this.root.gui2D.drawRadialMenu(false);  
@@ -170,7 +198,7 @@ export default class Item{
                                 
                                 if(this.name.includes("CCPD")){
                                     this.state=100;
-                                    this.useccpdRecordBook(500);
+                                    this.useccpdRecordBook(ANIM_TIME*.5,true);
                                 }
                                 else if(this.name.includes("Blood Pressure")){
                                     this.state=100;
@@ -178,7 +206,7 @@ export default class Item{
                                 }
                                 else if(this.name.includes("Mask")){
                                     this.state=100;
-                                    this.useMask(500);
+                                    this.useMask(ANIM_TIME*.5);
                                 }
                                 else if(this.name.includes("Alchohal Wipe")){
                                     this.state=100;
@@ -216,19 +244,26 @@ export default class Item{
                 if( (!this.interaction && !this.pickObject)  || this.root.gamestate.state ===  GameState.radial){
                     this.state =0;
                     this.enableDrag(false);
+                    console.log("onDragStartObservable");   
                     return;
                 }
+                
             });
             this.pointerDragBehavior.onDragObservable.add((event)=>{
                 if( (!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial){
                     this.state =0;
                     this.enableDrag(false);
+                    console.log("onDragObservable");
                     return;
                 }
-                // this.pointerDragBehavior.attachedNode.position.x += event.delta.x;
-                // this.pointerDragBehavior.attachedNode.position.y += event.delta.y;
-                console.log(this.meshRoot.position)
-                if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>5 && this.meshRoot.position.z<0))
+                this.label.isVisible=false;
+                IS_DRAG.value = true;
+                console.log(this.meshRoot.position);
+                if(this.meshRoot.position.z<-45)
+                   this.meshRoot.position.z=-45;
+                if(this.meshRoot.position.y>80)
+                   this.meshRoot.position.y=80;
+                if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>0 && this.meshRoot.position.z<20))
                     this.root.scene.getMeshByName("tablecollider").visibility=1;
                 else    
                     this.root.scene.getMeshByName("tablecollider").visibility=0;
@@ -279,32 +314,42 @@ export default class Item{
                         }
                     }).start();
                 }
-                else if((this.root.scene.getMeshByName("tablecollider").visibility>0) && this.state>10 || this.isPlaced ){ 
-                    this.placeItem(ANIM_TIME*.3);
-                    if(this.root.level ===1){
-                        this.root.itemCount++;
+                else if((this.root.scene.getMeshByName("tablecollider").visibility>0) || this.isPlaced ){ 
+                    if(this.root.level ===1 ){
+                        if(!this.isPlaced)
+                            this.root.itemCount++;
                         const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.itemCount,level:1}});
                         document.dispatchEvent(custom_event);
                     }
+                    this.placeItem(ANIM_TIME*.3);
+                    
+                    
                 }
                 else{
-                    new TWEEN.Tween(this.meshRoot).to({position:this.startPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                     console.log("innnnnnnnnnnn else place     "+this.isPlaced+"     "+this.name);
+                    new TWEEN.Tween(this.meshRoot.position).to({x:this.startPosition.x,y:this.startPosition.y,z:this.startPosition.z},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                         this.enableDrag(true);
                     }).start();
+                    this.root.scene.getMeshByName("tablecollider").visibility=0;
+                    this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
+                    this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;
                 }
-                this.root.scene.getMeshByName("tablecollider").visibility=0;
+                IS_DRAG.value = false;
                 // console.log(event);
             });
         }
         placeItem(time){
+
+            console.log("!!!! placeItem!!! ");
             if(!time)
                time=ANIM_TIME;
             this.state=0;
+            this.isPlaced=true;
             this.parent           = this.root.scene.getTransformNodeByID("tablenode");
             this.meshRoot.parent = null;
             this.meshRoot.parent  = this.parent;
-            new TWEEN.Tween(this.meshRoot).to({position:this.placedPostion},time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                this.isPlaced=true;
+            console.log(this.placedPostion);
+            new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPostion.x,y:this.placedPostion.y,z:this.placedPostion.z},time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                 this.root.scene.getMeshByName("tablecollider").visibility=0;
                 this.label.isVisible=false;
             }).start();
@@ -324,8 +369,12 @@ export default class Item{
            let newPos  = new BABYLON.Vector3(0,0,0);
            if(this.parent ===  this.root.scene.getTransformNodeByID("tabledrawer"))
                 newPos  = new BABYLON.Vector3(0,-80,-60);
-           else     
-                newPos = new BABYLON.Vector3(0,-200,-60);
+           else{     
+                if(this.root.tableObject.isdrawerOpen)
+                    newPos = new BABYLON.Vector3(0,-200,-60);
+                else    
+                    newPos = new BABYLON.Vector3(0,-80,-40);
+           }
            let upAng  = -BABYLON.Angle.FromDegrees(60).radians();
            let zAng   =  BABYLON.Angle.FromDegrees(0).radians();
         
@@ -405,23 +454,25 @@ export default class Item{
             
         } 
       }
-      useccpdRecordBook(anim_time){
+      useccpdRecordBook(anim_time,callevent){
           if(this.name.includes("CCPD")){
-            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(-75).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                new TWEEN.Tween(this.meshRoot.position).to({x:220,y:-239,z:-50},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(-45).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                new TWEEN.Tween(this.meshRoot.position).to({x:143,y:-136,z:1.01},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                     this.meshRoot.parent = null;
                     this.parent = this.root.scene.getCameraByName("maincamera");
                     this.meshRoot.parent = this.parent;
                     this.meshRoot.scaling.set(.003,.003,.003);
-                    this.meshRoot.position = new BABYLON.Vector3(.55,-0.23,1.1);
+                    // this.meshRoot.position = new BABYLON.Vector3(.55,-0.23,1.1);
+                    this.meshRoot.position = new BABYLON.Vector3(.78,-0.34,1.01);
                     this.meshRoot.rotation = new BABYLON.Vector3(0,0,0);
                     this.label.isVisible = false;
                     this.enableDrag(false);
-                    const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"useccpd",level:2}});
-                    document.dispatchEvent(custom_event);
+                    if(callevent){
+                        const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"useccpd",level:2}});
+                        document.dispatchEvent(custom_event);
+                    }
                 }).start();
             }).start();
-            
           }
       }
       openccpdRecordBook(anim_time){
@@ -438,7 +489,7 @@ export default class Item{
                 this.root.scene.getMeshByName("ccpdplane").isVisible=true;
                 this.root.scene.getMeshByName("ccpdplane").isPickable=true;
             }).start();
-            new TWEEN.Tween(this.meshRoot.position).to({x:.5,y:.0,z:1.1},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.position).to({x:.73,y:.0,z:1.1},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                 this.removeAction();
             }).start();
         }
@@ -450,26 +501,31 @@ export default class Item{
         this.meshRoot.getChildMeshes().forEach(childmesh => {
             if(childmesh.id ==="ccpdfront")
                 frontpage =childmesh;
-            childmesh.isPickable=false;
         });
         new TWEEN.Tween(frontpage.rotation).to({y:0},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.scaling).to({x:.003,y:.003,z:.003},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
         }).start();
-        new TWEEN.Tween(this.meshRoot.position).to({x:.55,y:-.23,z:1.1},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+        new TWEEN.Tween(this.meshRoot.position).to({x:.78,y:-.34,z:1.01},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
         }).start();
      }
      useMask(anim_time){
             // -0.24 !!sy!!  -1.1400000000000008!! sz !! 4.7799999999999425
-            this.meshRoot.parent = null;
-            this.parent = this.root.scene.getCameraByName("maincamera");
-            this.meshRoot.parent = this.parent;
-            this.meshRoot.scaling.set(.01,.01,.01);
-            this.meshRoot.position.set(-.24,-1.14,4.78);
-            this.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
-            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(-60).radians()},anim_time).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {}).start();
-            new TWEEN.Tween(this.meshRoot.scaling).to({x:.06,y:.06,z:.06},anim_time).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
-            }).start();
-            new TWEEN.Tween(this.meshRoot.position).to({x:.06,y:-1.14,z:1.05},anim_time).easing(TWEEN.Easing.Quadratic.Out).onComplete(() => {
+            anim_time =500;
+            // this.meshRoot.parent = null;
+            // this.parent = this.root.scene.getCameraByName("maincamera");
+            // this.meshRoot.parent = this.parent;
+            // this.meshRoot.scaling.set(.01,.01,.01);
+            // this.meshRoot.position.set(-.24,-1.14,4.78);
+            // this.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
+
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(-60).radians()},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+            new TWEEN.Tween(this.meshRoot.scaling).to({x:4,y:4,z:4},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+            new TWEEN.Tween(this.meshRoot.position).to({x:this.meshRoot.position.x,y:this.meshRoot.position.y-80,z:this.meshRoot.position.z},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+                this.meshRoot.parent = null;
+                this.parent = this.root.scene.getCameraByName("maincamera");
+                this.meshRoot.parent = this.parent;
+                this.meshRoot.scaling = new BABYLON.Vector3(.06,.06,.06); 
+                this.meshRoot.position = new BABYLON.Vector3(.06,-1.15,1.05); 
                 this.removeAction();
                 const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"mask_used",level:2}});
                 document.dispatchEvent(custom_event);        
@@ -515,7 +571,6 @@ export default class Item{
                 this.root.updatedrainbagValidatetion(this.valdiationCheck);
             this.checkValidation();
             this.root.gui2D.drawValidationMenu(false);
-            this.root.gamestate.state = GameState.active;
         };
         this.root.gui2D.wrongBtn._onPointerUp = ()=>{
             this.valdiationCheck=2;
@@ -526,7 +581,6 @@ export default class Item{
             if(this.name.includes("Drain Bag"))
                 this.root.updatedrainbagValidatetion(this.valdiationCheck);
             this.checkValidation();
-            this.root.gamestate.state = GameState.active;
             this.root.gui2D.drawValidationMenu(false);
         };
         this.root.gui2D.doneBtn._onPointerUp = ()=>{
@@ -534,7 +588,6 @@ export default class Item{
                 this.valdiationCheck=-1;
             this.checkValidation();
             this.root.gui2D.drawValidationMenu(false);
-            this.root.gamestate.state = GameState.active;
         };
      }
      checkValidation(){
@@ -559,35 +612,29 @@ export default class Item{
      }
      updateoutLine(value){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
-             childmesh.renderOutline = value;
+            if(childmesh.name.includes("highlight_plan"))
+                childmesh.renderOutline = false;
+            else
+                childmesh.renderOutline = value;
              if(childmesh.name.includes("ccpd")){
                 childmesh.outlineWidth=.1;
              }
              if(childmesh.parent.name.includes("DrainBag")){
                 if(childmesh.id === "DrainBagPlasticCover" || childmesh.id === "DrainBagA_2"){
-                    childmesh.renderOutline = value;
                     childmesh.outlineWidth  = 2;
                 }
                 else{
                     childmesh.renderOutline = false;   
                 }
              }
-             
              if(childmesh.parent.name.includes("apd_package_node")){
-                    childmesh.renderOutline = value;
                     if(childmesh.name.includes("APDCassetteRevisedWithPackaging2.001_primitive42") || childmesh.name.includes("APDCassetteRevisedWithPackaging2.001_primitive12")){
-                        childmesh.renderOutline = value;
                         childmesh.outlineWidth  = 5;
                     }
                     else{
                         childmesh.renderOutline = false;   
                     }
              }
-
         });
     }
-
 }
-
-
-

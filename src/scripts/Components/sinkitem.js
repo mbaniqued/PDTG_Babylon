@@ -20,6 +20,7 @@ export default class SinkItem{
                 childmesh.actionManager = null;
                 childmesh.renderOutline=false;
             });
+            this.updateoutLine(false);
         }
         initAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -30,20 +31,20 @@ export default class SinkItem{
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                 this.label.isVisible =  this.state<100;
-                this.updateoutLine(mesh,this.label.isVisible);
+                this.updateoutLine(this.label.isVisible);
 
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                 this.label.isVisible=false;
-                this.updateoutLine(mesh,this.label.isVisible);
+                this.updateoutLine(this.label.isVisible);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                 this.label.isVisible =  this.state<100;
-                this.updateoutLine(mesh,this.label.isVisible);
+                this.updateoutLine(this.label.isVisible);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                 console.log(this.root.gamestate.state+"!! OnPickTrigger!!! "+this.state);
-                this.updateoutLine(mesh,false);
+                this.updateoutLine(false);
                 if(this.root.camera.radius>2.9)
                     this.state=0;
                 if(this.state>=100){
@@ -140,9 +141,19 @@ export default class SinkItem{
             this.root.showResetViewButton(true);
           }).start();
       }
-      updateoutLine(mesh,value){
+      updateoutLine(value){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
-            childmesh.renderOutline = value;
+            if( this.meshRoot.name  === "liquidhandsoap_node")
+                childmesh.renderOutline = value;
+            else{
+                if(childmesh.id ==="PaperTowel_primitive1"){
+                    childmesh.renderOutline = value;
+                }
+                else
+                    childmesh.renderOutline = false;
+            }  
+            
+            
         });
      }
 }
