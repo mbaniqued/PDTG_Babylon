@@ -61,7 +61,6 @@ export default class MainScene {
 
     const size= 512;
     this.dynamicTexture   = new BABYLON.DynamicTexture("dynamictexture",size,this.scene);
-    
     // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
     // this.sceneOptimiser.startOptimiser();
     this.level=0,this.isUp=false,this.objectiveCount=0,this.totalobjective=0,this.itemCount=0,this.dialysisItemCnt=0,this.handsanitiserCnt=0;
@@ -71,19 +70,14 @@ export default class MainScene {
     this.initacParticle();
     this.handwashactivity = new HandWash(this);
     this.handwashactivity.drawhandWash(false);
-
     this.wipeAlcohal = new AlcohalWipe(this);
     this.addevents();
-
-    
     this.validationImage[0]     = new Image();
     this.validationImage[0].src =  '/ui/questionmark.png';
     this.validationImage[1]     = new Image();
     this.validationImage[1].src = '/ui/green.png';
     this.validationImage[2]     = new Image();
     this.validationImage[2].src = '/ui/cross2_png.png';
-    
-    
   }
   initState(){
     this.gamestate  = {state:GameState.menu}; 
@@ -1091,8 +1085,12 @@ export default class MainScene {
               }
           break;
         case gamemode.practice:
+              this.gameTaskManager.setPracticeMode();
+              this.drawObjectiveMenu(false);
           break;            
         case gamemode.assessment:
+            this.gameTaskManager.setPracticeMode();
+            this.drawObjectiveMenu(false);
           break;            
     }
     this.gui2D.downArrow._onPointerUp =()=>{

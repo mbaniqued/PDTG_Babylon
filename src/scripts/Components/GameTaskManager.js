@@ -73,4 +73,42 @@ export default class GameTaskManager{
             this.root.maskItem.useMask(ANIM_TIME*.5); 
         },1000);
     }
+    setPracticeMode(){
+        this.root.doorObject.initAction(); 
+        this.root.lightswitchObject.initAction();
+        this.root.fanswitchobject.initAction();
+        this.root.acItem.initAction();
+        this.root.windowObject.initAction();
+
+
+        this.root.tableObject.initAction();
+
+        this.root.bpMachineItem.initAction();
+        this.root.alcohalItem.initAction();
+        this.root.maskItem.initAction();
+        this.root.connectionItem.initAction();
+        this.root.apdmachinePackage.initAction();
+        this.root.drainBagItem .initAction();
+        this.root.ccpdRecordBook.initAction();
+
+        this.root.bpMachineItem.enableDrag(true);
+        this.root.alcohalItem.enableDrag(true);
+        this.root.maskItem.enableDrag(true);
+        this.root.connectionItem.enableDrag(true);
+        this.root.apdmachinePackage.enableDrag(true);
+        this.root.drainBagItem.enableDrag(true);
+        this.root.ccpdRecordBook.enableDrag(true);
+
+        this.root.cabinetObject.initAction();
+        for(let i=0;i<this.root.dialysisSolutionObject.length;i++){
+            this.root.dialysisSolutionObject[i].initAction();
+            this.root.dialysisSolutionObject[i].enableDrag(true);
+          }
+          for(let i=0;i<this.root.sanitiserObject.length;i++){
+                this.root.sanitiserObject[i].initAction();
+                this.root.sanitiserObject[i].enableDrag(true);
+          }
+          this.root.handSoapObject.initAction();
+          this.root.paperTowelObject.initAction();
+    }
 }
