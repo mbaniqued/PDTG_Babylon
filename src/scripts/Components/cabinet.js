@@ -1,4 +1,4 @@
-import { GameState,ANIM_TIME } from "../scene/MainScene";
+import { GameState,ANIM_TIME,rotateState } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class Cabinet{
 
@@ -40,6 +40,8 @@ export default class Cabinet{
     addAction(mesh){
         mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+            if(rotateState.value===1)
+                return;
             this.setLabel();
             this.updateoutLine(mesh,true);
         }))
@@ -48,6 +50,8 @@ export default class Cabinet{
                 this.updateoutLine(mesh,false);
         }))
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+            if(rotateState.value===1)
+                return;
                 this.setLabel();
                 this.updateoutLine(mesh,true);
                 this.root.scene.onPointerUp=()=>{
@@ -56,6 +60,8 @@ export default class Cabinet{
                 }
         }))
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+                if(rotateState.value===1)
+                    return;
                     this.updateoutLine(mesh,false);
                     if(this.state>0 && this.root.gamestate.state === GameState.default){
                         if(this.state>0 && this.isdoorOpen)

@@ -29,26 +29,20 @@ export default class Common{
      }
      createCamera(scene) {
         this.camera = new BABYLON.ArcRotateCamera("maincamera",0,0,10,this.camVector,scene);
-      //   this.camRoot = new BABYLON.TransformNode("camroot");
-      //   this.camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(0,3,-1),scene);
         this.camera.fov   = start_fov;
         this.camera.layerMask=1;
         this.camera.inputs.clear();
-      
       //   this.camera.inputs.addPointers();
       //   this.camera.inputs.addMouseWheel();
-        this.camera.position.set(0,this.camVector.y,0);
+        this.camera.position.set(0,0,0);
         this.camera.setTarget(this.camVector);
         this.camera.attachControl(this.game.canvas, true);  
         this.camera.maxZ = 100;
-        
         this.camera.wheelPrecision = 50;
         this.camera.useBouncingBehavior = false;
-      //   this.camera.parent = this.camRoot;
         this.createminiMapCamera();
         this.scene.activeCameras = [];
         this.scene.activeCameras.push(this.camera);
-      //this.scene.activeCameras.push(this.miniMapCam);
         this.setView();
         this.scene.cameraToUseForPointers = this.camera;
         return this.camera;
@@ -72,6 +66,7 @@ export default class Common{
             this.directionalLight.intensity  = .1;
             this.camera.fov   = start_fov;
             this.camera.setTarget(new BABYLON.Vector3(-3,3,0));
+            this.camera.position.set(0,0,0);
             this.camera.lowerRadiusLimit = 0;
             this.camera.upperRadiusLimit = 100;
             this.camera.radius          = 3;
@@ -81,11 +76,10 @@ export default class Common{
             this.camera.upperBetaLimit  = BABYLON.Angle.FromDegrees(180).radians();
       }
       updateCam(){
-            if(IS_DRAG.value)
+            if(IS_DRAG.value || this.root.scene.getMeshByName("ccpdplane").isVisible)
                 return;  
-            if(this.root.gamestate.state != GameState.default && this.root.gui2D.resetCamBtn.isVisible && this.root.gui2D.radialCircle.isVisible)
+            if(this.root.gui2D.resetCamBtn.isVisible ||  this.root.gui2D.radialCircle.isVisible)
                  return; 
-
             if(this.scene.pointerX>0 && this.scene.pointerX<=this.camDirection.margin){
                   this.camera.alpha += BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
                   if(this.camera.alpha>=BABYLON.Angle.FromDegrees(359).radians())

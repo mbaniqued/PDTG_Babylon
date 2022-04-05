@@ -19,8 +19,15 @@ export default class GUI2D{
         this.userExitBtn   =  this.createCircle("userexitbtn",72,72,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
         const userImg      =  this.createImage("userexitbtn","ui/Users-Exit-icon.png",48,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         userImg.isVisible  = true;
+
+        
+        this.userBackBtn   =  this.createButon("userbackbtn","ui/exit_icon.png","#ffffff","",0,"",48,48,GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT,GUI.Control.VERTICAL_ALIGNMENT_TOP,true);
+        this.userBackBtn.leftInPixels =-20;
+        this.userBackBtn.topInPixels  =20;
+
         this.userExitBtn.addControl(userImg);
         this.userExitBtn.isVisible=false;
+        
         this.initMainMenu();
         this.initStageMenu();
         this.initRadialMenu();
@@ -28,7 +35,7 @@ export default class GUI2D{
         this.initObjectiveMenu();
         this.initLevelComplete();
         this.initValidationMenu();
-
+        this.initbackMenu();
         
       }
       initMainMenu(){
@@ -66,11 +73,11 @@ export default class GUI2D{
         this.menuContainer.addControl(menuBgImg);
         this.menuContainer.addControl(whiteimg);
         this.menuContainer.addControl(menuBg);
-        
         this.menuContainer.addControl(menufont);
         this.menuContainer.addControl(userModeText);
         this.menuContainer.addControl(gameModeText);
         this.drawMainMenu(true);
+        
       }
       drawMainMenu(isDraw){ 
         this.advancedTexture.renderAtIdealSize = true;
@@ -525,6 +532,45 @@ export default class GUI2D{
         //   this.crossBtn.leftInPixels = 150;
         //   this.crossBtn.isVisible=isDraw;
       }
+      initbackMenu(){
+          this.backMenuContainer = new GUI.Container("backMenuContainer");
+          const popupRect = this.createRect("popuprect",450,250,5,"#91E2EA",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+          popupRect.isPointerBlocker=true;
+          const title     = this.createText("title_txt","Return to Main Menu?",32,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          title.topInPixels = -100;
+          const subtitle  = this.createText("subtitle_txt","(progress will not be saved)",24,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          subtitle.topInPixels = -60;
+          const continueBtn     = this.createRectBtn("continue_btn",156,52,2,"#62F56F",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"No Continue"
+          ,"#FFFFFF",20,false);  
+          const arrowTxt = this.createText("arrow_txt","\u2192",32,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          continueBtn.addControl(arrowTxt);
+          continueBtn.topInPixels =20;
+          continueBtn.children[0].topInPixels=-10;
+          arrowTxt.topInPixels=10;
+          arrowTxt.isPointerBlocker = false;
+          const menuBtn     = this.createRectBtn("menu_btn",128,36,2,"#F55656",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"Retun To Main"
+          ,"#FFFFFF",14,false);  
+          const menuTxt = this.createText("menu_txt","Menu",14,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          menuTxt.isPointerBlocker = false;
+          menuBtn.topInPixels = 75;
+          menuBtn.children[0].topInPixels=-7;
+          menuTxt.topInPixels=10;
+          menuBtn.addControl(menuTxt);
+          
+          this.backMenuContainer.addControl(popupRect);
+          this.backMenuContainer.addControl(subtitle);
+          this.backMenuContainer.addControl(title);
+          this.backMenuContainer.addControl(continueBtn);
+          this.backMenuContainer.addControl(menuBtn);
+          this.advancedTexture.addControl(this.backMenuContainer);
+          this.drawbackMenu(false);
+      }
+      drawbackMenu(isdraw){
+        
+        this.backMenuContainer.isPointerBlocker=false;
+        this.backMenuContainer.isVisible = isdraw;
+        
+      }
       createImage(name,src,width,height,horizontal,verticle,isadd){
         const image  =  new GUI.Image(name,src);
         image.widthInPixels  = width;
@@ -666,7 +712,7 @@ export default class GUI2D{
         return rect;
       }
       createRectBtn(name,width,height,radius,color,horizontal,verticle,_text,fontcolor,fontSize,isadd){
-        const rect = new GUI.Rectangle(name);
+        const rect = new GUI.Button(name);
         rect.widthInPixels  = width;
         rect.heightInPixels = height;
         rect.cornerRadius = radius;

@@ -26,6 +26,7 @@ export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
 export const ANIM_TIME=1000;
+export const rotateState={value:0};
 export const IS_DRAG={value:false};
 export const event_objectivecomplete = "event_objectivecomplete";
 let gameObjectives=[];
@@ -74,12 +75,15 @@ export default class MainScene {
     this.wipeAlcohal = new AlcohalWipe(this);
     this.addevents();
 
+    
     this.validationImage[0]     = new Image();
     this.validationImage[0].src =  '/ui/questionmark.png';
     this.validationImage[1]     = new Image();
     this.validationImage[1].src = '/ui/green.png';
     this.validationImage[2]     = new Image();
     this.validationImage[2].src = '/ui/cross2_png.png';
+    
+    
   }
   initState(){
     this.gamestate  = {state:GameState.menu}; 
@@ -135,13 +139,13 @@ export default class MainScene {
       childmesh.isVisible = false;
     });
     this.sanitiserObject[0]   = new CabinetItem("Hand Sanitizer ",this,this.scene.getTransformNodeByID("handsanitizernode"),{x:1.47,y:1.07,z:2.6});
-    const sanitizerclone2 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer2");
+    const sanitizerclone2     = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer2");
     this.sanitiserObject[1]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone2,{x:1.47,y:1.07,z:2.4});
-    const sanitizerclone3 = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer3");
+    const sanitizerclone3     = this.scene.getTransformNodeByID("handsanitizernode").clone("sanitizer3");
     this.sanitiserObject[2]   = new CabinetItem("Hand Sanitizer ",this,sanitizerclone3,{x:1.47,y:1.07,z:2.2});
 
-    this.paperTowelObject  = new SinkItem("PaperTowel",this,this.scene.getNodeByName("papertowel_node"),{x:1.9,y:2.02,z:-1.89});
-    this.handSoapObject    = new SinkItem("Hand Soap",this,this.scene.getNodeByName("liquidhandsoap_node"),{x:2.25,y:2.17,z:-2.19});
+    this.paperTowelObject     = new SinkItem("PaperTowel",this,this.scene.getNodeByName("papertowel_node"),{x:1.9,y:2.02,z:-1.89});
+    this.handSoapObject       = new SinkItem("Hand Soap",this,this.scene.getNodeByName("liquidhandsoap_node"),{x:2.25,y:2.17,z:-2.19});
 
     this.createccpdCanvas();
     this.startFan();
@@ -180,23 +184,13 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // let ctx = this.apdmachineTexture.getContext();
-      //   const font =  "bold 52px Orbitron";
-      //   ctx.clearRect(0,0,512,512);
-      //   this.apdmachineTexture.drawText("LOAD THE SET",SX,SY,font,"#0000ff","transparent",true);
-
-        // this.maskItem2.meshRoot.parent = this.scene.getCameraByName("maincamera");
-        // this.maskItem2.meshRoot.position = new BABYLON.Vector3(.06,-1.15,1.05); 
-        // this.maskItem2.meshRoot.scaling = new BABYLON.Vector3(.06,.06,.06); 
-        // this.maskItem2.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-60).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
-        // this.maskItem.meshRoot.position = new BABYLON.Vector3(SX,SY,0); 
-        // this.maskItem.meshRoot.scaling = new BABYLON.Vector3(SZ,SZ,SZ); 
-       
-      
-      console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
+        // this.apdmachinePackage.meshRoot.position = new BABYLON.Vector3(0,-125,-100); 
+        // this.apdmachinePackage.meshRoot.scaling  = new BABYLON.Vector3(2,2,2); 
+        // this.apdmachinePackage.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
+        // this.scene.getMeshByName("validation_tube_plan").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
+        console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
-    
     // if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
     //     return ;
       switch (pointerInfo.type) {
@@ -236,7 +230,7 @@ export default class MainScene {
       this.objectiveListner = (e) => {
           this.checkObjectives(e.detail);
       }
-      document.addEventListener(event_objectivecomplete,this.objectiveListner);
+     document.addEventListener(event_objectivecomplete,this.objectiveListner);
   }
   removeLabel(label){
     label.dispose();
@@ -271,6 +265,7 @@ export default class MainScene {
     this.removeLabel(this.lightswitchObject.label);
     this.lightswitchObject = null;
     delete this.lightswitchObject;
+    
     this.removeLabel(this.fanswitchobject.label);
     this.fanswitchobject   = null;
     delete this.fanswitchobject;
@@ -279,24 +274,30 @@ export default class MainScene {
     this.removeLabel(this.bpMachineItem.label);
     this.bpMachineItem     = null;
     delete this.bpMachineItem;
+
     this.removeValidation(this.connectionItem.meshRoot);
     this.removeLabel(this.connectionItem.label);
     this.connectionItem    = null; 
     delete this.connectionItem;
+
     this.removeValidation(this.alcohalItem.meshRoot);
     this.removeLabel(this.alcohalItem.label);
     this.alcohalItem       = null;
     delete this.alcohalItem;
+
     this.removeLabel(this.maskItem.label);
     this.maskItem          = null;
     delete this.maskItem;
+
     this.removeValidation(this.drainBagItem.meshRoot);
     this.removeLabel(this.drainBagItem.label);
     this.drainBagItem      = null;
     delete this.drainBagItem;
+
     this.removeLabel(this.ccpdRecordBook.label);
     this.ccpdRecordBook    = null;
     delete this.ccpdRecordBook;
+
     this.removeLabel(this.apdmachinePackage.label);
     this.removeValidation(this.apdmachinePackage.meshRoot);
     this.apdmachinePackage = null;
@@ -446,8 +447,13 @@ export default class MainScene {
       const font =  "bold 64px Arial";
       ctx.clearRect(0,0,size.width,size.height);
       this.connectionTexture.drawText("2024",14,208,font,"#0000ff","transparent",true);
-      if(imgno>-1)
-        this.drawImageOnTexture(this.connectionTexture,this.validationImage[imgno],160,40,72,128);
+      if(imgno>-1){
+        const font2 = "bold 96px Arial";
+        const symbol=["\u003F","\u2713","\u274C"]
+        const symbolcolor=["#808080","#00FF00","#FF0000"];
+        this.connectionTexture.drawText(symbol[imgno],160,140,font2,symbolcolor[imgno],"transparent",true);
+          // this.drawImageOnTexture(this.connectionTexture,this.validationImage[imgno],160,40,72,128);
+      }
     }
     this.conectionValidatetion(-1);
   }
@@ -504,8 +510,13 @@ export default class MainScene {
         ctx.clearRect(0,0,size.width,size.height);
         this.drainBagTexture.drawText("2020-04-08",4,70,font,"#000000","transparent",true);
         this.drainBagTexture.drawText("2023-04-08",4,160,font,"#000000","transparent",true);
-        if(imgno>-1)
-          this.drawImageOnTexture(this.drainBagTexture,this.validationImage[imgno],190,60,56,112);
+        if(imgno>-1){
+          const font2 = "bold 64px Arial";
+          const symbol=["\u003F","\u2713","\u274C"]
+          const symbolcolor=["#000000","#00FF00","#FF0000"];
+          this.drainBagTexture.drawText(symbol[imgno],190,130,font2,symbolcolor[imgno],"transparent",true);
+            // this.drawImageOnTexture(this.drainBagTexture,this.validationImage[imgno],190,60,56,112);
+        }
       }
       this.updatedrainbagValidatetion(-1);
      
@@ -536,28 +547,83 @@ export default class MainScene {
      planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
      planmat.diffuseTexture = this.apdDateTexture;
      datePlan.material      = planmat;
-     const dateHighlightPlan    = datePlan.clone("apd_highlight_plan");
-     dateHighlightPlan.name    = "apd_highlight_plan";
-     dateHighlightPlan.parent  = null;
-     dateHighlightPlan.parent  = this.apdmachinePackage.meshRoot;
+     
+     const dateHighlightPlan     = datePlan.clone("apd_highlight_plan");
+     dateHighlightPlan.name      = "apd_highlight_plan";
+     dateHighlightPlan.parent    = null;
+     dateHighlightPlan.parent    = this.apdmachinePackage.meshRoot;
      dateHighlightPlan.isPickable=true;
      dateHighlightPlan.position  = new BABYLON.Vector3(-2.10,-.4,-29.8);
-     dateHighlightPlan.scaling  = new BABYLON.Vector3(1.3,.3,1);
+     dateHighlightPlan.scaling   = new BABYLON.Vector3(1.3,.3,1);
      dateHighlightPlan.visibility=0;
-     const planmat2         = this.scene.getMaterialByName("highlight_mat").clone();
+     const planmat2              = this.scene.getMaterialByName("highlight_mat").clone();
      dateHighlightPlan.material  = planmat2;
-     this.onHighlightApdPlan = (value)=>{
-        dateHighlightPlan.visibility=value;
+
+
+     const tubevalidationPlan = BABYLON.MeshBuilder.CreatePlane("validation_tube_plan",{width:20,height:20,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.scene);
+     tubevalidationPlan.parent = this.apdmachinePackage.meshRoot;
+     tubevalidationPlan.isPickable=false;
+     tubevalidationPlan.renderOutline=false;
+     tubevalidationPlan.outlineWidth=0;
+     tubevalidationPlan.position  = new BABYLON.Vector3(1,-17,-24);
+     tubevalidationPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+
+     this.apdDateTexture2   = this.dynamicTexture.clone(); //new BABYLON.DynamicTexture("apddate_texture",size,this.scene);
+     this.apdDateTexture2.scale(.5);
+     this.apdDateTexture2.hasAlpha=true;
+     const planmat3         = new BABYLON.StandardMaterial("validation2_apddate_mat", this.scene);
+     planmat3.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
+     planmat3.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+     planmat3.diffuseTexture = this.apdDateTexture2;
+     tubevalidationPlan.material      = planmat3;
+
+
+     
+     const tubeHighlightPlan     = dateHighlightPlan.clone("tubeapd_highlight_plan");
+     tubeHighlightPlan.name      = "tubeapd_highlight_plan";
+     tubeHighlightPlan.parent    = null;
+     tubeHighlightPlan.parent    = this.apdmachinePackage.meshRoot;
+     tubeHighlightPlan.isPickable=true;
+     tubeHighlightPlan.position  = new BABYLON.Vector3(0,-22,-20);
+     tubeHighlightPlan.scaling   = new BABYLON.Vector3(1.35,.9,-1);
+     tubeHighlightPlan.visibility=0;
+
+
+
+     this.onHighlightApdPlan = (value,type)=>{
+        if(type===0)
+            dateHighlightPlan.visibility=value;
+        if(type===1)
+            tubeHighlightPlan.visibility=value;
+
       }
-      this.updateApdValidatetion = (imgno)=>{
-        let ctx = this.apdDateTexture.getContext();
-        const font =  "bold 28px Arial";
-        ctx.clearRect(0,0,size.width,size.height);
-        this.apdDateTexture.drawText("2021-2022",73,153,font,"#808794","transparent",true);
-        if(imgno>-1)
-          this.drawImageOnTexture(this.apdDateTexture,this.validationImage[imgno],210,116,48,48);
+      this.updateApdValidatetion = (imgno,type)=>{
+         if(type===0){
+            let ctx = this.apdDateTexture.getContext();
+            const font =  "bold 28px Arial";
+            ctx.clearRect(0,0,size.width,size.height);
+            this.apdDateTexture.drawText("2021-2022",73,153,font,"#808794","transparent",true);
+            if(imgno>-1){
+                const font2 = "bold 48px Arial";
+                const symbol=["\u003F","\u2714","\u274C"]
+                const symbolcolor=["#808080","#00FF00","#FF0000"];
+                this.apdDateTexture.drawText(symbol[imgno],190,116,font2,symbolcolor[imgno],"transparent",true);
+                this.apdDateTexture.update();
+                // this.drawImageOnTexture(this.apdDateTexture,this.validationImage[imgno],210,116,48,48);
+            }
+         }else{
+            let ctx = this.apdDateTexture2.getContext();
+            ctx.clearRect(0,0,size.width,size.height);
+            if(imgno>-1){
+              const font2 = "bold 48px Arial";
+              const symbol=["\u003F","\u2714","\u274C"]
+              const symbolcolor=["#808080","#00FF00","#FF0000"];
+              this.apdDateTexture2.drawText(symbol[imgno],127,117,font2,symbolcolor[imgno],"transparent",true);
+              this.apdDateTexture2.update();
+          }
+         }
       }
-      this.updateApdValidatetion(-1);
+      this.updateApdValidatetion(-1,0);
   }
   
   drawImageOnTexture(texture,img,x,y,w,h){
@@ -785,7 +851,7 @@ export default class MainScene {
     this.gamestate.state = GameState.default;
     // this.camera.fov=FOV;
     this.sceneCommon.camVector  = new BABYLON.Vector3(0,3.2,0);
-    this.camera.position.set(0,this.sceneCommon.camVector.y,0);
+    this.camera.position.set(0,0,0);
     this.camera.lowerAlphaLimit =  null;
     this.camera.upperAlphaLimit =  null;
     this.camera.lowerBetaLimit  =  null;
@@ -884,8 +950,29 @@ export default class MainScene {
         this.gamestate.state = GameState.default;
         this.setCameraTarget();
         if(this.gui2D.loaginBg.isVisible)
-          new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-        this.gui2D.drawLoadingPage(false);
+            new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+         this.gui2D.drawLoadingPage(false);
+         this.gui2D.drawObjectiveMenu(true);
+         this.gui2D.userBackBtn.isVisible=true;
+         this.gui2D.userBackBtn.onPointerUpObservable.add(()=>{
+            this.gui2D.drawbackMenu(true);
+         })
+         const menuBtn = this.gui2D.backMenuContainer.getChildByName("menu_btn");
+         menuBtn.onPointerUpObservable.add(()=>{
+            console.log(this.gui2D.backMenuContainer.getChildByName("menu_btn"));
+            this.gui2D.drawbackMenu(false);
+            this.isResetScene = true;
+            this.gui2D.resetCamBtn.isVisible=false;
+            this.gamestate.state = GameState.menu;
+            this.gui2D.drawMainMenu(true);
+            this.sceneCommon.removeMiniCam();
+            this.gui2D.drawObjectiveMenu(false);
+          })
+          const continueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
+          continueBtn.onPointerUpObservable.add(()=>{
+             console.log(this.gui2D.backMenuContainer.getChildByName("continue_btn"));
+             this.gui2D.drawbackMenu(false);
+           })
       }, time);
    }
    startGame(){
@@ -915,7 +1002,7 @@ export default class MainScene {
                       }
                       this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
                       this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
-                      this.gui2D.drawObjectiveMenu(true);
+                      // this.gui2D.drawObjectiveMenu(true);
                     }
                   break;
                 case 1:{
@@ -949,7 +1036,7 @@ export default class MainScene {
                       }
                       this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
                       this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
-                      this.gui2D.drawObjectiveMenu(true);
+                      // this.gui2D.drawObjectiveMenu(true);
                       this.gui2D.useBtn.isVisible=false;
                     }
                    break;
@@ -969,7 +1056,7 @@ export default class MainScene {
                           }
                           this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
                           this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
-                          this.gui2D.drawObjectiveMenu(true);
+                          // this.gui2D.drawObjectiveMenu(true);
                       }
                      break;
                   case 3:
@@ -996,7 +1083,7 @@ export default class MainScene {
                         }
                         this.gui2D.objectiveBg.getChildByName("objectivetitle2").text = "Current Objective :";
                         this.gui2D.objectiveBg.addControl(this.gui2D.downArrow);
-                        this.gui2D.drawObjectiveMenu(true);
+                        // this.gui2D.drawObjectiveMenu(true);
                         this.tableObject.initAction();
                         this.alcohalItem.initAction();
                         this.ccpdRecordBook.initAction();
@@ -1197,7 +1284,7 @@ export default class MainScene {
                         gameObjectives[5].status = true;
                       }
                   }
-                  this.showResetViewButton(true);
+                  // this.showResetViewButton(true);
               break; 
            case 3:
                   console.log("$$$$$$$$$$  level 3333333 complete!!");
@@ -1331,6 +1418,7 @@ export default class MainScene {
               this.gamestate.state = GameState.menu;
               this.gui2D.drawMainMenu(true);
               this.sceneCommon.removeMiniCam();
+              this.gui2D.drawObjectiveMenu(false);
            }
            else
               this.setGame();
@@ -1387,7 +1475,6 @@ export default class MainScene {
           titlepanel.addControl(titletxt);
           titletxt.isPointerBlocker=true;
 
-
           const inputfield = this.gui2D.createInputField("ccpdinput"+i,"","DD/MM/Year",this.inputpanel.widthInPixels,20,"#FFFF0000","#000000",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP) ;
           inputfield.fontSizeInPixels=12;
           inputfield.thickness=0;
@@ -1397,20 +1484,19 @@ export default class MainScene {
               inputfield.placeholderText = "SYS/DIA(PH)";
               this.ccpdbpInputField = inputfield;
               inputfield.onTextChangedObservable.add(()=>{
-                //  if(this.bpRecord ===inputfield.text)
+                //if(this.bpRecord ===inputfield.text)
                  {
                     let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this.ccpdRecordBook,msg:"ccprd_record_fill",level:2}});
                     document.dispatchEvent(custom_event);                                                
-                  }
-                    
+                 }
                })
           }
           else{
               inputfield.placeholderText = "";
               inputfield.isVisible=false;
           }
-          this.inputpanel.addControl(inputfield);
-      }  
+           this.inputpanel.addControl(inputfield);
+        }  
         const pageCloseBtn  =   this.gui2D.createCircle("pageclose",56,36,"#FF000073",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         pageCloseBtn.isPointerBlocker=true;
         this.recordbookCanvas.addControl(pageCloseBtn);
@@ -1420,24 +1506,78 @@ export default class MainScene {
         pageCloseBtn.addControl(crossimg);
         pageCloseBtn.leftInPixels=190;
         pageCloseBtn.isVisible  = true;
-
         pageCloseBtn._onPointerUp=()=>{
             ccpdPlan.isVisible=false;
             ccpdPlan.isPickable=false;
             this.ccpdRecordBook.closeccpdRecordBook(300);
-        }
+       }
    }
    setbpValueCCPD(){
       this.ccpdbpInputField.text = this.bpRecord; 
    }
    getSceneCordinate(){
-    let vector= BABYLON.Vector3.Unproject(
+      let vector= BABYLON.Vector3.Unproject(
       new BABYLON.Vector2(this.scene.pointerX,this.scene.pointerY),
       this.scene.getEngine().getRenderWidth(),
       this.scene.getEngine().getRenderHeight(),
       BABYLON.Matrix.Identity(),this.scene.getViewMatrix(),
       this.scene.getProjectionMatrix());
    }
+   rotateMesh(mesh){
+      let lastPointerX;
+      let lastPointerY; 
+      let isTouch = false;
+      console.log("!! rotateMesh    !!!");
+        this.scene.onPointerDown = (evt,pickResult)=>{
+          if(rotateState.value ===1){
+              // console.log("!! onPointerDown!!!");
+              lastPointerX = this.scene.pointerX;
+              lastPointerY = this.scene.pointerY;
+              isTouch = true;
+            }
+        }
+        this.scene.onPointerUp = (evt,pickResult)=>{
+            console.log("!! onPointerUp!!!");
+            isTouch = false;
+        }
+        this.scene.onPointerMove = (evt,pickResult)=>{
+          if(rotateState.value ===1){
+              // console.log("!! onPointerMove!!!");
+              if(isTouch){
+                  const diffX = this.scene.pointerX - lastPointerX;
+                  const diffY = this.scene.pointerY - lastPointerY;
+                  console.log(diffX+" "+diffY);
+                  mesh.rotation.y -= diffX * 0.005;
+                  mesh.rotation.x -= diffY * 0.005;
+                  lastPointerX = this.scene.pointerX;
+                  lastPointerY = this.scene.pointerY;
+              }
+          }
+      }
+   }
+  //   this.scene.onPointerObservable.add((pointerInfo) => {    
+  //       switch (pointerInfo.type) {
+  //             case BABYLON.PointerEventTypes.POINTERDOWN:{
+  //                     const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+  //                   }
+  //               break;
+  //             case BABYLON.PointerEventTypes.POINTERUP:{
+  //                 }
+  //               break;
+  //             case BABYLON.PointerEventTypes.POINTERMOVE:{ 
+  //                     // const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+                      
+  //                     else{
+  //                       if(this.pickMesh)
+  //                         // this.pickMesh.renderOutline=false;
+  //                         // this.updateObjectOutLine(false);
+  //                         this.pickMesh = null;
+  //                     }
+  //                 }
+  //               break;
+  //           }
+  //       });
+  //  }
 }
 
 

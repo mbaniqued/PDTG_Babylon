@@ -67,7 +67,7 @@ export default class DoorObject{
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z));
                                 break;
                             case 1:
-                                this.openCloseDoor();
+                                this.openCloseDoor(true);
                                 break;    
                         }
                         this.setLabel();
@@ -75,7 +75,7 @@ export default class DoorObject{
                 )
             )
         }
-        openCloseDoor(){
+        openCloseDoor(eventcall){
             let val=325;
             if(this.meshRoot.rotation.y<= BABYLON.Angle.FromDegrees(325).radians())
                 val=360;
@@ -83,8 +83,10 @@ export default class DoorObject{
                 this.closedoor = !this.closedoor;
                 if(this.closedoor){
                     this.label.isVisible=false;
-                    let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
-                    document.dispatchEvent(custom_event);
+                    if(eventcall){
+                        let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"door_event"}});
+                        document.dispatchEvent(custom_event);
+                    }
                 }
             }).start();
         }

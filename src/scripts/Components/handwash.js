@@ -1,5 +1,5 @@
 import * as GUI from 'babylonjs-gui';
-import { event_objectivecomplete } from '../scene/MainScene';
+import { event_objectivecomplete,gamemode } from '../scene/MainScene';
 const msg = "Drag the bubbles HERE in the correct 7 - Step Handwashing Sequence";
 // https://www.babylonjs-playground.com/#XCPP9Y#134
 // https://playground.babylonjs.com/#XCPP9Y#4718
@@ -7,13 +7,15 @@ const iconPos =[[0,-150],[-260,-110],[230,-80],[-109,30],[119,100],[377,60],[-24
 const iconTxt =["Palm to Palm","Between Fingers","Between Fingers","Back of Hands","Back of Fingers","Base of Thumbs","Fingernails","Wrists"];
 const endX=-400;
 const endY=-392;
-const match=["step1","step3","step2","step4","step5","step6","step7"];
+const match=["step1","step2","step3","step4","step5","step6","step7"];
 export default class HandWash{
      constructor(root){
         this.root = root;
         this.containter = this.root.gui2D.createRect("handwash_container",1280,1080,5,"#ff000000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,true);
         this.iconContainer = new GUI.Container("icon_container");
+        this.iconContainer.isPointerBlocker=true;
         this.handwashIcon=[];
+        this.handwashIconWrong=[];
         this.isplaced=[];
         this.createHeader();
         this.containter.addControl(this.iconContainer);
@@ -25,12 +27,12 @@ export default class HandWash{
         this.iconStack=[];
         shuffleArray(iconPos);
         for (let i=0;i<iconPos.length;i++){
-            this.handwashIcon[i] = this.createhandIcon("step"+(i+1),"ui/handwash/Step"+(i+1)+".png",iconTxt[i],iconPos[i][0],iconPos[i][1]);
+            this.handwashIcon[i]      =  this.createhandIcon("step"+(i+1),"ui/handwash/Step"+(i+1)+".png","ui/handwash/Step"+(i+1)+"_incorrect.png",iconTxt[i],iconPos[i][0],iconPos[i][1]);
             match[i] = "step"+(i+1);
             this.initEvents(i);
             this.isplaced[i] = false;
         }
-        this.doneBtn = this.root.gui2D.createRectBtn("dont_btn",128,64,2,"#7EC5DD",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"Done","#000000",24,false);
+        this.doneBtn = this.root.gui2D.createRectBtn("dont_btn",128,64,2,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"Done \u2713","#00BAFF",24,false);
         this.containter.addControl(this.doneBtn);
 
         
@@ -65,28 +67,39 @@ export default class HandWash{
         this.containter.topInPixels =30;
         this.containter.isVisible=true;
      }
-     createhandIcon(name,path,msg,xpos,ypos){
+     createhandIcon(name,path,path2,msg,xpos,ypos){
          const width  =100;
          const height =100; 
          const iconcontainer = this.root.gui2D.createCircle(name,width+50,height+35,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER);
-         const handicon    = this.root.gui2D.createImage("bubbleleft",path,width,height,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+         const handicon    = this.root.gui2D.createImage("handicon",path,width,height,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
          handicon.isVisible=true;
          handicon.isPointerBlocker=false;
+
+         const handiconincorrect    = this.root.gui2D.createImage("handicon_incorrect",path2,width,height,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+         handiconincorrect.isVisible=false;
+         handiconincorrect.isPointerBlocker=false;
+
          const bubbleicon  = this.root.gui2D.createImage("bubbleleft","ui/handwash/bubblev2.png",width,height,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
          bubbleicon.isVisible=true;
          bubbleicon.alpha=.5;
          bubbleicon.isPointerBlocker=false;
+
+
          const msgtext    = this.root.gui2D.createText(msg,msg,12,"#000000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,false);
          msgtext.textHorizontalAlignment  = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
          msgtext.textVerticalAlignment    = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
          msgtext.topInPixels -=10;
+                  
          iconcontainer.addControl(handicon);
+         iconcontainer.addControl(handiconincorrect);
          iconcontainer.addControl(bubbleicon);
          iconcontainer.addControl(msgtext);
-         iconcontainer.isPointerBlocker=false;
+         iconcontainer.isPointerBlocker=true;
          iconcontainer.isVisible=true;
          iconcontainer.leftInPixels = xpos;
          iconcontainer.topInPixels  = ypos;
+
+         
          this.iconContainer.addControl(iconcontainer);
          return iconcontainer;
       
@@ -107,17 +120,24 @@ export default class HandWash{
             this.iconStartPos     = new BABYLON.Vector2(this.handwashIcon[i].leftInPixels,this.handwashIcon[i].topInPixels);
             this.drag = true;
             this.drop = false;
-            console.log("!! down!!! "+this.startingPoint+"   "+this.iconNo);
+            // console.log("!! down!!! "+this.startingPoint+"   "+this.iconNo);
          });
          this.handwashIcon[i].onPointerUpObservable.add((coordinates)=> {
             this.drag = false;
             this.drop = true; 
             this.startingPoint = null;
             // console.log(this.iconNo+"  22222  "+this.handwashIcon[i].leftInPixels+"     222222 "+this.handwashIcon[i].topInPixels);
-            if(this.handwashIcon[i].leftInPixels>-485 && this.handwashIcon[i].topInPixels<-282 && this.handwashIcon[i].leftInPixels<485){
-               if(!this.isplaced[i]){
+            if(this.handwashIcon[this.iconNo].leftInPixels>-485 && this.handwashIcon[this.iconNo].topInPixels<-282 && this.handwashIcon[this.iconNo].leftInPixels<485){
+               if(!this.isplaced[this.iconNo]){
                   this.iconStack.push(this.handwashIcon[this.iconNo]);
-                  this.isplaced[i] = true;
+                  this.isplaced[this.iconNo] = true;
+                  if(this.iconStack.length>0 && this.root.gamemode === gamemode.training){
+                     // console.log(match[this.iconStack.length-1]+"   check match  "+this.handwashIcon[this.iconNo].name)
+                     if(match[this.iconStack.length-1] !==  this.handwashIcon[this.iconNo].name){
+                         this.handwashIcon[this.iconNo].getChildByName("handicon_incorrect").isVisible=true;
+                        //  console.log(this.iconStack.length+"  $$$$$$$$   33333333333  "+i);
+                     }
+                  }
                }
                this.updateStack();
             }
@@ -125,12 +145,12 @@ export default class HandWash{
                   if(this.isplaced[this.iconNo]){
                      this.remove();
                      this.updateStack();
-                     console.log(this.iconStack.length+"     33333333333  "+i);
+                     this.handwashIcon[this.iconNo].getChildByName("handicon_incorrect").isVisible=false;
                      this.isplaced[this.iconNo] = false;
                   }
                 this.isplaced[this.iconNo] = false;
                 this.handwashIcon[this.iconNo].leftInPixels = iconPos[i][0];
-                this.handwashIcon[this.iconNo].topInPixels = iconPos[i][1];
+                this.handwashIcon[this.iconNo].topInPixels  = iconPos[i][1];
              }
              this.msgtext.isVisible = this.iconStack.length<1;
          });
@@ -143,7 +163,6 @@ export default class HandWash{
                   this.handwashIcon[this.iconNo].topInPixels  =   this.iconStartPos.y-diff.y;
                }
          }
-         
          this.handwashIcon[i].onPointerMoveObservable.add(onMove); 
          this.iconContainer.onPointerMoveObservable.add(onMove); 
      }
@@ -169,7 +188,7 @@ export default class HandWash{
      updateStack(){
          for(let i=0;i<this.iconStack.length;i++){
             this.iconStack[i].leftInPixels =  endX+i*135;  
-            this.iconStack[i].topInPixels  = endY;
+            this.iconStack[i].topInPixels  =  endY;
             console.log(this.iconStack[i].name);
          }
          if(this.iconStack.length>=this.handwashIcon.length){
@@ -196,19 +215,18 @@ export default class HandWash{
          for (let i=0;i<iconPos.length;i++){
                this.handwashIcon[i].leftInPixels = iconPos[i][0];
                this.handwashIcon[i].topInPixels   =iconPos[i][1];
+               this.handwashIcon[i].getChildByName("handicon_incorrect").isVisible=false;
                match[i] = "step"+(i+1);
                this.isplaced[i] = false;
          }
          this.root.gui2D.advancedTexture.renderAtIdealSize = true;
      }
-    
 }
 function shuffleArray(arr) {
    for (let i = arr.length - 1; i > 0; i--) {
      const j = Math.floor(Math.random() * (i + 1));
      [arr[i], arr[j]] = [arr[j], arr[i]];
    }
-   // console.log(arr);
  }
 function CircRectsOverlap(CRX, CRY, CRDX, CRDY, centerX, centerY, radius) {
 	if ((Math.abs(centerX - CRX) <= (CRDX + radius)) && (Math.abs(centerY - CRY) <= (CRDY + radius)))

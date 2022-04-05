@@ -1,4 +1,4 @@
-import { GameState,gamemode,ANIM_TIME,event_objectivecomplete,IS_DRAG } from "../scene/MainScene";
+import { GameState,gamemode,ANIM_TIME,event_objectivecomplete,IS_DRAG,rotateState } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 let showMenu = false;
 const diasolutionpos1 = new BABYLON.Vector3(.25,2,2.7);
@@ -381,6 +381,8 @@ export default class CabinetItem{
     }
     showItem(){ 
       showMenu = false;
+      rotateState.value=1;
+      let getdrag = this.pointerDragBehavior.enabled;
       this.enableDrag(false);
       if(this.name.includes("Hand"))
          new TWEEN.Tween(this.meshRoot.rotation).to({x:0,y:0,z:BABYLON.Angle.FromDegrees(360).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
@@ -388,14 +390,16 @@ export default class CabinetItem{
          new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(110).radians(),y:0,z:BABYLON.Angle.FromDegrees(180).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
         new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x,y:this.root.camera.target.y+.8,z:this.root.camera.position.z+1},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
         this.root.gui2D.userExitBtn.isVisible = true;
+        this.root.rotateMesh(this.meshRoot);
         this.root.gui2D.userExitBtn._onPointerUp = ()=>{
+              rotateState.value=0;
               showMenu = false;
               this.root.gui2D.drawRadialMenu(false);  
-              this.resetItem();
+              this.resetItem(getdrag);
           };
       }).start();
     }
-    resetItem(){
+    resetItem(setdrag){
         this.root.gui2D.userExitBtn.isVisible = false;
         let yAng = BABYLON.Angle.FromDegrees(90).radians();
         if(this.name.includes("Hand"))
@@ -406,8 +410,7 @@ export default class CabinetItem{
             new TWEEN.Tween(this.meshRoot.rotation).to({x:0,y:yAng,z:0},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();    
         const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
         new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-            if(!this.placedPosition)
-                this.enableDrag(true);
+             this.enableDrag(setdrag);
              this.root.gamestate.state = GameState.active;
         }).start();
     }
@@ -424,7 +427,7 @@ export default class CabinetItem{
     createValidation(){
          this.validationNode.parent = this.meshRoot;   
          this.validationNode.scaling.set(-1,1,1)
-         this.validationNode.position = new BABYLON.Vector3(0,3.9,0);
+         this.validationNode.position = new BABYLON.Vector3(0,5,0);
          const plan = BABYLON.MeshBuilder.CreatePlane("validation_plan",{width:90,height:150,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.root.scene);
          plan.parent = this.validationNode;
          plan.isPickable=false;
@@ -432,7 +435,7 @@ export default class CabinetItem{
          plan.outlineWidth=0;
          plan.position  = new BABYLON.Vector3(0,0,0);
          plan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
-         const size=512
+         const size=1024;
          this.dynamicTexture   =  new BABYLON.DynamicTexture("validation_plan_texture",size,this.root.scene);
          this.dynamicTexture.hasAlpha=true;
          const planmat          = new BABYLON.StandardMaterial("drainbag_plan_mat",this.root.scene);
@@ -441,7 +444,7 @@ export default class CabinetItem{
          planmat.diffuseTexture = this.dynamicTexture;
          plan.material          = planmat;
          this.validationTxt["cap_highlight_plan"] = "is the blue cap present?";
-         this.validationPos["cap_highlight_plan"] = [435,5];
+         this.validationPos["cap_highlight_plan"] = [445,10];
          this.checkValidation["cap_highlight_plan"] = -1;
          const cap_highlight_plan = plan.clone();
          cap_highlight_plan.name = "cap_highlight_plan";
@@ -455,7 +458,7 @@ export default class CabinetItem{
          cap_highlight_plan.visibility=0;
 
          this.validationTxt["greencap_highlight_plan"] = "is the Green Franginle seal present?";
-         this.validationPos["greencap_highlight_plan"] = [264,8];
+         this.validationPos["greencap_highlight_plan"] = [300,15];
          this.checkValidation["greencap_highlight_plan"] = -1;
          const greencap_highlight_plan = cap_highlight_plan.clone();
          greencap_highlight_plan.name = "greencap_highlight_plan";
@@ -555,22 +558,27 @@ export default class CabinetItem{
         }
         this.updatedrainbagValidatetion = ()=>{
             let ctx = this.dynamicTexture.getContext();
-            const font =  "bold 9px Arial";
+            const font =  "bold 18px Arial";
             ctx.clearRect(0,0,size,size);
-            this.dynamicTexture.drawText("2020-04-08",303,140,font,"#000000","transparent",true);
-            this.dynamicTexture.drawText("2023-04-08",303,151,font,"#000000","transparent",true);
-            const font2 =  "bold 12px Arial";
-            this.dynamicTexture.drawText("5000",317,162,font2,"#000000","transparent",true);
-            const font3 =  "bold 14px Arial";
-            this.dynamicTexture.drawText("1.5%",171,237,font3,"#000000","transparent",true);
+            this.dynamicTexture.drawText("2020-04-08",303*2,140*2,font,"#000000","transparent",true);
+            this.dynamicTexture.drawText("2023-04-08",303*2,151*2,font,"#000000","transparent",true);
+            const font2 =  "bold 24px Arial";
+            this.dynamicTexture.drawText("5000",317*2,162*2,font2,"#000000","transparent",true);
+            const font3 =  "bold 28px Arial";
+            this.dynamicTexture.drawText("1.5%",171*2,237*2,font3,"#000000","transparent",true);
             this.validationNode.getChildMeshes().forEach(childmesh => {
                 if(childmesh.name.includes("highlight_plan")){
                     if(this.checkValidation[childmesh.name]>-1){
                         const i =  this.checkValidation[childmesh.name];
                         const x =  this.validationPos[childmesh.name][0];
                         const y =  this.validationPos[childmesh.name][1];
-                        if(i>-1)
-                            this.root.drawImageOnTexture(this.dynamicTexture,this.root.validationImage[i],x,y,28,20);
+                        if(i>-1){
+                                const font2 = "bold 36px Arial";
+                                const symbol=["\u003F","\u2713","\u274C"]
+                                const symbolcolor=["#808080","#00FF00","#FF0000"];
+                                this.dynamicTexture.drawText(symbol[i],x*2-18,y*2+20,font2,symbolcolor[i],"transparent",true);
+                            // this.root.drawImageOnTexture(this.dynamicTexture,this.root.validationImage[i],x,y,28,20);
+                        }
                     }
                 }
             });
@@ -604,6 +612,7 @@ export default class CabinetItem{
           this.removeValidation =()=>{
             this.dynamicTexture.clear();
             this.dynamicTexture.dispose();
+            this.dynamicTexture = null;
             this.root.removeNode(this.validationNode);
          }
         

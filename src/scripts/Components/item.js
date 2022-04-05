@@ -1,5 +1,5 @@
 
-import { GameState,gamemode,ANIM_TIME,event_objectivecomplete,IS_DRAG } from "../scene/MainScene";
+import { GameState,gamemode,ANIM_TIME,event_objectivecomplete,IS_DRAG,rotateState } from "../scene/MainScene";
 import { randomNumber } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 let showMenu = false;
@@ -27,6 +27,7 @@ export default class Item{
             this.tout=undefined;
             this.tween=undefined;
             this.valdiationCheck=0;
+            this.valdiationCount=0,this.isValidationDone=[];
             this.inspectDone=false;
             this.trollyPosition=undefined;
             this.interaction=false;
@@ -81,14 +82,22 @@ export default class Item{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                     this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state<100;
                     this.updateoutLine(this.label.isVisible);
-                    // console.log(mesh.name);
+                    console.log(mesh.name);
                     if(this.root.gamestate.state === GameState.inspect){
                         if(mesh.name.includes("highlight_plan")){
                             this.updateoutLine(false);
                             this.label.isVisible=false;
-                            console.log(this.root.gamestate.state+" OnPointerOverTrigger "+this.name);
-                            if(this.name.includes("APD Cassette"))
-                                this.root.onHighlightApdPlan(1);
+                            this.enableDrag(false);
+                            if(this.name.includes("APD Cassette")){
+                                if(mesh.name === "apd_highlight_plan"){
+                                    this.root.onHighlightApdPlan(1,0);
+                                    console.log(" ifffffffffff");
+                                }
+                                else{
+                                    this.root.onHighlightApdPlan(1,1);    
+                                    console.log(" else eeee ");
+                                }
+                            }
                             if(this.name.includes("Connection")){
                                 console.log("OnPointerOverTrigger");
                                 this.root.onhighlightConnectionPlan(1);
@@ -102,10 +111,11 @@ export default class Item{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
                     this.updateoutLine(false);
-                        
                         if(this.root.gamestate.state === GameState.inspect){
-                            if(this.name.includes("APD Cassette"))
-                                this.root.onHighlightApdPlan(0);
+                            if(this.name.includes("APD Cassette")){
+                                this.root.onHighlightApdPlan(0,0);
+                                this.root.onHighlightApdPlan(0,1);
+                            }
                             if(this.name.includes("Connection")){
                                 this.root.onhighlightConnectionPlan(0);
                             }
@@ -122,14 +132,17 @@ export default class Item{
                                 this.updateoutLine(false);
                                 this.label.isVisible=false;
                                 if(mesh.name.includes("highlight_plan")){
-                                    if(this.name.includes("APD Cassette"))
-                                        this.root.onHighlightApdPlan(1);
+                                    if(this.name.includes("APD Cassette")){
+                                        if(mesh.name  === "apd_highlight_plan")
+                                            this.root.onHighlightApdPlan(1,0);
+                                        else
+                                            this.root.onHighlightApdPlan(1,1);    
+                                    }
                                     if(this.name.includes("Connection")){
-                                        console.log("OnPickDownTrigger");
-                                        this.root.onhighlightConnectionPlan(1);
+                                       this.root.onhighlightConnectionPlan(1);
                                     }
                                     if(this.name.includes("Drain Bag"))
-                                        this.root.onhighlightDrainBagPlan(1);
+                                       this.root.onhighlightDrainBagPlan(1);
                                 }
                             }
                         }
@@ -154,7 +167,7 @@ export default class Item{
                             if(this.root.gamestate.state === GameState.inspect){
                                 if(mesh.name.includes("highlight_plan")){
                                     console.log("!!! validation!!! ");
-                                    this.onValidationPick();
+                                    this.onValidationPick(mesh.name);
                                     return
                                 }
                             }
@@ -174,16 +187,14 @@ export default class Item{
                             this.root.gamestate.state = showMenu?GameState.radial:GameState.active;
                             this.root.gui2D.drawRadialMenu(showMenu);
                             this.root.gui2D.resetCamBtn.isVisible=!showMenu;
-                            console.log("$$$$$$$$$$$$$$$$$");
                             if(showMenu){
                                 if(this.root.gamemode === gamemode.training && this.root.level ===3){
                                     this.updateUseBtn();       
                                 }
                             }
                             this.root.gui2D.inspectBtn._onPointerUp = ()=>{
-
                                 if(this.root.level>2 && this.root.gamemode === gamemode.training)
-                                        this.root.gamestate.state = GameState.inspect; 
+                                    this.root.gamestate.state = GameState.inspect; 
                                 this.enableDrag(false);
                                 showMenu = false;
                                 this.root.gui2D.drawRadialMenu(false);  
@@ -322,14 +333,19 @@ export default class Item{
                         document.dispatchEvent(custom_event);
                     }
                     this.placeItem(ANIM_TIME*.3);
-                    
-                    
                 }
                 else{
-                     console.log("innnnnnnnnnnn else place     "+this.isPlaced+"     "+this.name);
-                    new TWEEN.Tween(this.meshRoot.position).to({x:this.startPosition.x,y:this.startPosition.y,z:this.startPosition.z},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                        this.enableDrag(true);
-                    }).start();
+                    console.log("innnnnnnnnnnn else place     "+this.isPlaced+"     ");
+                    if(this.parent === this.root.scene.getTransformNodeByID("tabledrawer")){
+                        new TWEEN.Tween(this.meshRoot.position).to({x:this.startPosition.x,y:this.startPosition.y,z:this.startPosition.z},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                            this.enableDrag(true);
+                        }).start();
+                     }
+                     else{
+                        new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPostion.x,y:this.placedPostion.y,z:this.placedPostion.z},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                            this.enableDrag(true);
+                        }).start();
+                     }
                     this.root.scene.getMeshByName("tablecollider").visibility=0;
                     this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
                     this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;
@@ -339,8 +355,6 @@ export default class Item{
             });
         }
         placeItem(time){
-
-            console.log("!!!! placeItem!!! ");
             if(!time)
                time=ANIM_TIME;
             this.state=0;
@@ -387,21 +401,26 @@ export default class Item{
         if(this.meshRoot.name.includes("apd_package_node")){
             upAng = BABYLON.Angle.FromDegrees(60).radians();
             if(this.root.gamemode === gamemode.training && this.root.level ===3)
-                    zAng   = -BABYLON.Angle.FromDegrees(180).radians();
+                   zAng = -BABYLON.Angle.FromDegrees(180).radians();
         }
+        rotateState.value=1;
         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x+upAng,y:this.startRotation.y,z:this.startRotation.z+BABYLON.Angle.FromDegrees(360).radians()+zAng},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x,y:this.root.camera.target.y+newPos.y,z:this.root.camera.target.z+newPos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.scaling).to({x:scalAnim,y:scalAnim,z:scalAnim},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+            this.root.rotateMesh(this.meshRoot);
             this.root.gui2D.userExitBtn.isVisible = true;
             this.root.gui2D.userExitBtn._onPointerUp = ()=>{
                 showMenu = false;
+                rotateState.value=0;
                 this.resetItem();
                 this.state =0;
             };
         }).start();
       }
       resetItem(){
+
         this.root.gui2D.userExitBtn.isVisible = false;
+        this.root.gui2D.resetCamBtn.isVisible = true;
         // new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(50).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         // new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         this.root.gamestate.state = GameState.active;
@@ -544,11 +563,18 @@ export default class Item{
 
         }
      }
-     onValidationPick(){
+     onValidationPick(mesh_name){
         this.root.gui2D.drawValidationMenu(true);
         this.valdiationCheck=0;
         if(this.name.includes("APD Cassette")){
-            this.root.updateApdValidatetion(this.valdiationCheck);
+            if(mesh_name ===  "apd_highlight_plan"){
+                this.root.gui2D.validationText.text =  "is the APD Cassette Package still valid?";
+                this.root.updateApdValidatetion(this.valdiationCheck,0);
+            }
+            else{
+                this.root.gui2D.validationText.text =  "Are all the connection lines intact?";
+                this.root.updateApdValidatetion(this.valdiationCheck,1);
+            }
         }
         if(this.name.includes("Connection Shield")){
             this.root.gui2D.validationText.text =  "is the Connection Shield still valid?";
@@ -558,44 +584,56 @@ export default class Item{
             this.root.gui2D.validationText.text =  "is the Drain Bag still valid?";
             this.root.updatedrainbagValidatetion(this.valdiationCheck);
         }
-        
         this.root.gui2D.rightBtn._onPointerUp = ()=>{
             this.valdiationCheck=1;
             if(this.name.includes("APD Cassette")){
-                this.root.gui2D.validationText.text =  "Are all the connection lines intact?";
-                this.root.updateApdValidatetion(this.valdiationCheck);
+                if(mesh_name === "apd_highlight_plan")
+                    this.root.updateApdValidatetion(this.valdiationCheck,0);
+                else
+                    this.root.updateApdValidatetion(this.valdiationCheck,1);
             }
             if(this.name.includes("Connection Shield"))
                 this.root.conectionValidatetion(this.valdiationCheck);
             if(this.name.includes("Drain Bag"))
                 this.root.updatedrainbagValidatetion(this.valdiationCheck);
-            this.checkValidation();
+            this.checkValidation(mesh_name);
             this.root.gui2D.drawValidationMenu(false);
         };
         this.root.gui2D.wrongBtn._onPointerUp = ()=>{
             this.valdiationCheck=2;
-            if(this.name.includes("APD Cassette"))
-                this.root.updateApdValidatetion(this.valdiationCheck);
+            if(this.name.includes("APD Cassette")){
+                if(mesh_name === "apd_highlight_plan")
+                    this.root.updateApdValidatetion(this.valdiationCheck,0);
+                else
+                    this.root.updateApdValidatetion(this.valdiationCheck,1);
+            }
             if(this.name.includes("Connection Shield"))
                 this.root.conectionValidatetion(this.valdiationCheck);
             if(this.name.includes("Drain Bag"))
                 this.root.updatedrainbagValidatetion(this.valdiationCheck);
-            this.checkValidation();
+            this.checkValidation(mesh_name);
             this.root.gui2D.drawValidationMenu(false);
         };
         this.root.gui2D.doneBtn._onPointerUp = ()=>{
             if(this.valdiationCheck<1)
                 this.valdiationCheck=-1;
-            this.checkValidation();
+            this.checkValidation(mesh_name);
             this.root.gui2D.drawValidationMenu(false);
         };
      }
-     checkValidation(){
+     checkValidation(mesh_name){
         let custom_event = undefined;
         if(this.name.includes("APD Cassette")){
-             this.root.updateApdValidatetion(this.valdiationCheck);
-            if(this.valdiationCheck>0)
-               custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"apd_validation",level:3}});
+             if(!this.isValidationDone[this.valdiationCount]){
+                this.isValidationDone[this.valdiationCount]=true;
+                this.valdiationCount++;
+             }
+            if(mesh_name === "apd_highlight_plan")
+                this.root.updateApdValidatetion(this.valdiationCheck,0);
+            else
+                this.root.updateApdValidatetion(this.valdiationCheck,1);
+            if(this.valdiationCount>=2)
+                custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"apd_validation",level:3}});
         }
         if(this.name.includes("Connection Shield")){
             this.root.conectionValidatetion(this.valdiationCheck);

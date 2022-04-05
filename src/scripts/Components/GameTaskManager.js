@@ -10,7 +10,7 @@ export default class GameTaskManager{
 
         setTimeout(() => {
             this.root.doorObject.closedoor=false;
-            this.root.doorObject.openCloseDoor();
+            this.root.doorObject.openCloseDoor(false);
             console.log(" 111completeRoomSetUp 1111");    
         }, action_time*.2);
         setTimeout(() => {

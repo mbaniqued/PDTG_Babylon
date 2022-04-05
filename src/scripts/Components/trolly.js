@@ -1,5 +1,5 @@
 
-import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
+import { GameState,ANIM_TIME,event_objectivecomplete,rotateState } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class Trolly{
         constructor(root,meshobject,pos){
@@ -27,6 +27,9 @@ export default class Trolly{
             const mesh = this.root.scene.getMeshByName("apdswitch_sphere");
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+                        if(rotateState.value===1)
+                            return;
+                            
                         console.log(" !!! switch!! "+mesh.name);
                         if(this.root.camera.alpha!=BABYLON.Angle.FromDegrees(270).radians()){
                             new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();

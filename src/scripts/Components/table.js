@@ -1,4 +1,4 @@
-import { GameState,ANIM_TIME } from "../scene/MainScene";
+import { GameState,ANIM_TIME,rotateState } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 
 export default class Table{
@@ -58,6 +58,8 @@ export default class Table{
     addAction(mesh){
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+                    if(rotateState.value ===1)
+                        return;
                     this.label.isVisible=this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
                     this.setLabel();
                     if(this.root.gamestate.state === GameState.inspect)
@@ -72,15 +74,19 @@ export default class Table{
                        this.updateoutLine(mesh,false);
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+                    if(rotateState.value ===1)
+                        return;
                     this.label.isVisible=this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
                     this.updateoutLine(mesh,true);
-                        this.setLabel();
-                        this.root.scene.onPointerUp=()=>{
-                            this.label.isVisible=false;
-                            this.updateoutLine(mesh,false);
-                        }
+                    this.setLabel();
+                    this.root.scene.onPointerUp=()=>{
+                        this.label.isVisible=false;
+                        this.updateoutLine(mesh,false);
+                    }
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
+                    if(rotateState.value ===1)
+                        return;
                     this.label.isVisible= this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
                     this.updateoutLine(mesh,false);
                     if(this.root.gui2D.radialCircle.isVisible)
