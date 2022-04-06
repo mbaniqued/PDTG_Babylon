@@ -7,8 +7,11 @@ const diasolutionpos3 = new BABYLON.Vector3(-2,1.9,2.5);
 const diasolutionpos4 = new BABYLON.Vector3(-3.30,2.15,2.50);
 const sanitizerpos1   = new BABYLON.Vector3(-.8,1.90,2.7);
 const sanitizerpos2   = new BABYLON.Vector3(-1.795,1.78,2);
-let checktable_diapos=0,checktable_sanipos=0,checktrolly_diapos=0,checkapd_diapos=0,checktrolly_sanipos=0;
-let checkdiaValidation=0;
+let dialysis_tablepos=0,sanitiser_tablepos=0,dialysis_trollypos=0,dialysis_apdpos=0,sanitiser_trollypos=0;
+let checkdialysisValidation=0;
+
+
+
 export default class CabinetItem{
 
       constructor(name,root,meshobject,pos){
@@ -28,9 +31,9 @@ export default class CabinetItem{
         this.isPlaced=false;
         this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
         this.label.isVisible=false;
-        this.label.isPointerBlocker=true;
-        this.validationDone=false;
-        this.interaction = false;
+        this.validationDone = false;
+        this.interaction    = false;
+        this.isDraging    = false;
         if(this.meshRoot.name.includes("diasolutionnode")){
             this.validationNode = new BABYLON.TransformNode("validation_node");
             this.validationTxt=[];
@@ -38,7 +41,7 @@ export default class CabinetItem{
             this.checkValidation=[];
             this.createValidation();
          }
-         checktable_diapos=0;checktable_sanipos=0;checktrolly_diapos=0;checkapd_diapos=0;checktrolly_sanipos=0;checkdiaValidation=0;
+         dialysis_tablepos=0;sanitiser_tablepos=0;dialysis_trollypos=0;dialysis_apdpos=0;sanitiser_trollypos=0;checkdialysisValidation=0;
       }
       setPos(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -110,6 +113,7 @@ export default class CabinetItem{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                 //   console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                     this.pickObject = true;
+                    
                     this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) || (this.state!==100 && this.state!==20);
                     this.updateoutLine(true);
                     if(this.root.gamestate.state === GameState.inspect){
@@ -129,7 +133,7 @@ export default class CabinetItem{
         )
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                     // console.log(this.root.gamestate.state+"!! OnPickTrigger!!! ")
-                    console.log(mesh.name);
+                    this.isDraging = false; 
                     this.label.isVisible=false;
                     this.updateoutLine(false);
                     if(this.root.gamestate.state === GameState.inspect){
@@ -209,7 +213,8 @@ export default class CabinetItem{
           }
         // this.meshRoot.position.z = this.startPosition.z;
         //   console.log(this.meshRoot.position);
-            IS_DRAG.value=true;
+        this.isDraging=this.pointerDragBehavior.dragging;
+        IS_DRAG.value=true;
           if(this.meshRoot.position.x>-1.5 && this.meshRoot.position.x<1.1){
               this.root.scene.getMeshByName("tablecollider").visibility=1;
               this.root.scene.getMeshByName("trollycollider").visibility=0;
@@ -249,108 +254,88 @@ export default class CabinetItem{
             this.label.isVisible = false;
             this.pickObject      = false;
             let placed=false;
-            if(this.root.scene.getMeshByName("tablecollider").visibility>0){    
-                if(this.name.includes("Hand") && checktable_sanipos<1){
-                    placed = true;
-                    this.placedPosition = sanitizerpos1;
-                    this.placedRotation = new BABYLON.Vector3(0,0,0);
-                      new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
-                      new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                          checktable_sanipos++;
-                          if(checktrolly_sanipos>0)
-                            checktrolly_sanipos--;
-                          this.enableDrag(false);
-                          this.root.handsanitiserCnt++;
-                          this.label.isVisible=false;
-                          let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.handsanitiserCnt}});
-                          document.dispatchEvent(custom_event);
-                      }).start();
-                }
-                else if(this.name.includes("Dialysis") && checktable_diapos<2){ 
-                      placed = true;
-                      if(this.root.itemCount>0)
-                        this.root.itemCount--;
-                      const final_diasolutionpos = [diasolutionpos1,diasolutionpos2];
-                      this.placedPosition = final_diasolutionpos[checktable_diapos];
-                      this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(180).radians(),0);
-                      new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
-                      new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                           checktable_diapos++;
-                           if(checkapd_diapos>0)
-                                checkapd_diapos--;
-                            if(checktrolly_diapos>0)
-                                checktrolly_diapos--;
-                        //    this.enableDrag(false);
-                        //    this.removeAction();
-                           this.root.dialysisItemCnt++;
-                           this.label.isVisible=false;
-                           let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.dialysisItemCnt}});
-                           document.dispatchEvent(custom_event);
-                      }).start();
-                }
-          }
-          else if(this.root.scene.getMeshByName("trollycollider").visibility>0  || this.root.scene.getMeshByName("apdcollider").visibility>0){
-              if(this.name.includes("Dialysis")){
-                    placed = true;  
-                    if(checktrolly_diapos>0 && this.root.scene.getMeshByName("trollycollider").visibility>0)
-                        placed = false;
-                    if(checkapd_diapos>0 && this.root.scene.getMeshByName("apdcollider").visibility>0)
-                        placed = false;
-                //   console.log(placed +"   11111111  "+checktrolly_diapos);
-                    if(placed){
-                        const final_diasolutionpos = this.root.scene.getMeshByName("trollycollider").visibility>0?diasolutionpos3:diasolutionpos4;
-                        this.placedPosition = final_diasolutionpos;
-                        this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(this.root.scene.getMeshByName("trollycollider").visibility>0?180:90).radians(),0);
-                        if(this.root.scene.getMeshByName("trollycollider").visibility>0){
-                              checktrolly_diapos++;
-                              if(checkapd_diapos>0)
-                                checkapd_diapos--;
-                              if(checktable_diapos>0)
-                                checktable_diapos--;
-                            this.root.itemCount++;    
-                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_2item_apdreck"}});
-                            document.dispatchEvent(custom_event);
-                        }
-                        if(this.root.scene.getMeshByName("apdcollider").visibility>0){
-                              checkapd_diapos++;  
-                              if(checktrolly_diapos>0)
-                                checktrolly_diapos--;
-                              if(checktable_diapos>0)
-                                checktable_diapos--;
-                        }
+            if(this.isDraging){
+                if(this.root.scene.getMeshByName("tablecollider").visibility>0){    
+                    if(this.name.includes("Hand") && getsanitiserTablePosition(this.root)>-1){
+                        placed = true;
+                        this.placedPosition = sanitizerpos1;
+                        this.placedRotation = new BABYLON.Vector3(0,0,0);
                         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
                         new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                            // this.enableDrag(false);
-                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_dialysis_apd_top"}});
+                            this.enableDrag(false);
+                            this.root.handsanitiserCnt++;
+                            this.label.isVisible=false;
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.handsanitiserCnt}});
                             document.dispatchEvent(custom_event);
                         }).start();
                     }
-              }
-              if(this.name.includes("Hand") && checktrolly_sanipos<1){
-                      placed = true;  
-
-                      this.placedPosition = sanitizerpos2;
-                      this.placedRotation = new BABYLON.Vector3(0,0,0);
-                      new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
-                      new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                          checktrolly_sanipos++;
-                          if(checktable_sanipos>0)
-                            checktable_sanipos--;
-                        //   this.enableDrag(false);
-                         
-                           let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_sanitizer"}});
-                           document.dispatchEvent(custom_event);
-                         
-
-                      }).start();
+                    // else if(this.name.includes("Dialysis") && dialysis_tablepos<2){
+                else if(this.name.includes("Dialysis") && getdialysisTablePos(this.root)>-1){ 
+                    placed = true;
+                    console.log(getdialysisTablePos(this.root)); 
+                    if(this.root.itemCount>0)
+                        this.root.itemCount--;
+                    const index = getdialysisTablePos(this.root);   
+                    const final_diasolutionpos = [diasolutionpos1,diasolutionpos2];
+                    this.placedPosition = final_diasolutionpos[index];
+                    console.log("  !!!! count!!!! "+index);     
+                    this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(180).radians(),0);
+                    new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
+                    new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                        //    this.enableDrag(false);
+                        //    this.removeAction();
+                        this.root.dialysisItemCnt++;
+                        this.label.isVisible=false;
+                        let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.dialysisItemCnt}});
+                        document.dispatchEvent(custom_event);
+                    }).start();
                 }
-          }
-          if(!placed){
-                  const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
-                  new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                    this.enableDrag(true);
-                }).start();
-           }
+            }
+            else if(this.root.scene.getMeshByName("trollycollider").visibility>0  || this.root.scene.getMeshByName("apdcollider").visibility>0){
+                if(this.name.includes("Dialysis")){
+                        placed = true;  
+                        if(getdialysisTrollyPosition(this.root)<0 && this.root.scene.getMeshByName("trollycollider").visibility>0)
+                            placed = false;
+                        if(getdialysisApdPosition(this.root)<0 && this.root.scene.getMeshByName("apdcollider").visibility>0)
+                            placed = false;
+                    //   console.log(placed +"   11111111  "+dialysis_trollypos);
+                        console.log(" %%%%%%%%%%%%%% "+getdialysisTrollyPosition(this.root));
+                        if(placed){
+                            const final_diasolutionpos = this.root.scene.getMeshByName("trollycollider").visibility>0?diasolutionpos3:diasolutionpos4;
+                            this.placedPosition = final_diasolutionpos;
+                            this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(this.root.scene.getMeshByName("trollycollider").visibility>0?180:90).radians(),0);
+                            if(this.root.scene.getMeshByName("trollycollider").visibility>0){
+                                this.root.itemCount++;    
+                                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_2item_apdreck"}});
+                                document.dispatchEvent(custom_event);
+                            }
+                            new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
+                            new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                                // this.enableDrag(false);
+                                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_dialysis_apd_top"}});
+                                document.dispatchEvent(custom_event);
+                            }).start();
+                        }
+                }
+                if(this.name.includes("Hand") && getsanitiserTrollyPosition(this.root)>-1){
+                        placed = true;  
+                        this.placedPosition = sanitizerpos2;
+                        this.placedRotation = new BABYLON.Vector3(0,0,0);
+                        new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
+                        new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                            //   this.enableDrag(false);
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_sanitizer"}});
+                            document.dispatchEvent(custom_event);
+                        }).start();
+                    }
+            }
+            if(!placed){
+                    const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
+                    new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                        this.enableDrag(true);
+                    }).start();
+            }
+            }
            this.root.scene.getMeshByName("tablecollider").visibility=0;
            this.root.scene.getMeshByName("trollycollider").visibility=0;
            this.root.scene.getMeshByName("apdcollider").visibility=0;
@@ -369,8 +354,8 @@ export default class CabinetItem{
         }
         else if(this.name.includes("Dialysis")){ 
               const final_diasolutionpos = [diasolutionpos1,diasolutionpos2];
-              this.placedPosition = final_diasolutionpos[checktable_diapos];
-              checktable_diapos++;
+              this.placedPosition = final_diasolutionpos[dialysis_tablepos];
+              dialysis_tablepos++;
               if(this.placedPosition){
                 this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(180).radians(),0);
                 new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
@@ -547,9 +532,9 @@ export default class CabinetItem{
            });
            this.checkValidation.length=7;
           if(cnt>=this.checkValidation.length && !this.validationDone){
-               checkdiaValidation++;
+               checkdialysisValidation++;
                this.validationDone = true;
-               if(checkdiaValidation>=2){
+               if(checkdialysisValidation>=2){
                    console.log(" $$$$ validation complete $$$");
                   const custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"dialysis_validation",level:3}});
                   document.dispatchEvent(custom_event);
@@ -635,4 +620,85 @@ export default class CabinetItem{
         });
     }
       
+}
+function getdialysisTablePos(root){
+    let index=-1;
+    let arr=[0,0]
+    const pos = [diasolutionpos1,diasolutionpos2];
+    for(let i=0;i<root.dialysisSolutionObject.length;i++){
+        for(let j=0;j<pos.length;j++){
+            if(root.dialysisSolutionObject[i].placedPosition === pos[j]){
+                arr[j]=1;
+            }
+        }
+    }
+    // console.table(arr);
+    for(let i=0;i<arr.length;i++){
+        if(arr[i] ===0){
+            index = i;
+            return index;
+        }
+    }
+    return index;
+}
+
+function getdialysisTrollyPosition(root){
+    let index=-1;
+    let arr=[0];
+    for(let i=0;i<root.dialysisSolutionObject.length;i++){
+        if(root.dialysisSolutionObject[i].placedPosition === diasolutionpos3){
+                arr[0]=1;
+        }
+    }
+    // console.table(arr);
+    if(arr[0]===0){
+        index = 0;
+        return index;
+    }
+    return index;
+}
+function getdialysisApdPosition(root){
+    let index=-1;
+    let arr=[0];
+    for(let i=0;i<root.dialysisSolutionObject.length;i++){
+        if(root.dialysisSolutionObject[i].placedPosition === diasolutionpos4){
+            arr[0]=1;
+        }
+    }
+    // console.table(arr);
+    if(arr[0]===0){
+        index = 0;
+        return index;
+    }
+    return index;
+}
+function getsanitiserTablePosition(root){
+    let index=-1;
+    let arr=[0]
+    for(let i=0;i<root.sanitiserObject.length;i++){
+        if(root.sanitiserObject[i].placedPosition === sanitizerpos1){
+            arr[0]=1;
+        }
+    }
+    // console.table(arr);
+    if(arr[0]===0){
+        index = 0;
+        return index;
+    }
+    return index;
+}
+function getsanitiserTrollyPosition(root){
+    let index=-1;
+    let arr=[0]
+    for(let i=0;i<root.sanitiserObject.length;i++){
+        if(root.sanitiserObject[i].placedPosition === sanitizerpos2){
+            arr[0]=1;
+        }
+    }
+    // console.table(arr);
+    if(arr[0]===0){
+        index = 0;
+        return index;
+    }
+    return index;
 }

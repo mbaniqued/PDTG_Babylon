@@ -22,7 +22,7 @@ export default class Item{
             this.initAction();
             this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-100);
             this.label.isVisible=false;
-            this.label.isPointerBlocker=false;
+            
             this.useItem=false;
             this.tout=undefined;
             this.tween=undefined;
@@ -31,6 +31,7 @@ export default class Item{
             this.inspectDone=false;
             this.trollyPosition=undefined;
             this.interaction=false;
+            this.isDraging=false;
         }
         setPos(){
             if(this.parent){
@@ -150,6 +151,7 @@ export default class Item{
                 )
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                             this.label.isVisible=false;
+                            this.isDraging = false;
                             this.updateoutLine(false);
                             if(this.root.camera.radius>2.5 && this.state<100){
                                 this.root.gamestate.state = GameState.focus;
@@ -252,21 +254,23 @@ export default class Item{
             this.enableDrag(false);    
             this.pointerDragBehavior.onDragStartObservable.add((event)=>{
                 console.log("!!! gamestate!!! "+this.root.gamestate.state);
-                if( (!this.interaction && !this.pickObject)  || this.root.gamestate.state ===  GameState.radial){
+                if( (!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect){
                     this.state =0;
                     this.enableDrag(false);
                     console.log("onDragStartObservable");   
                     return;
                 }
                 
+                
             });
             this.pointerDragBehavior.onDragObservable.add((event)=>{
-                if( (!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial){
+                if( (!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect){
                     this.state =0;
                     this.enableDrag(false);
                     console.log("onDragObservable");
                     return;
                 }
+                this.isDraging=this.pointerDragBehavior.dragging;
                 this.label.isVisible=false;
                 IS_DRAG.value = true;
                 console.log(this.meshRoot.position);
@@ -279,7 +283,7 @@ export default class Item{
                 else    
                     this.root.scene.getMeshByName("tablecollider").visibility=0;
 
-                 if(this.trollyPosition && this.root.level >2){   
+                 if(this.trollyPosition || (this.root.level >2 && this.root.gamemode === gamemode.training) || this.root.gamemode !== gamemode.training){   
                     if(this.meshRoot.position.x<-100){
                         new TWEEN.Tween(this.root.camera.target).to({x:-2,y:2,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                         }).start();
@@ -293,10 +297,10 @@ export default class Item{
                     else  
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
 
-                   if(this.meshRoot.name.includes("apd_package_node") && this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<15))
-                        this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=1;
-                   else
-                        this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;     
+                    if(this.meshRoot.name.includes("apd_package_node") && this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<15))
+                            this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=1;
+                    else
+                            this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;     
                  }
                 this.state++;
                 // console.log(event);
@@ -305,51 +309,55 @@ export default class Item{
                 this.label.isVisible=false;
                 this.pickObject = false;
                 this.updateoutLine(false);
-                // if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90  && this.meshRoot.position.y>30) && this.state>10 || this.isPlaced ){ 
-                if(this.trollyPosition && this.meshRoot.name.includes("DrainBag") && this.root.scene.getMeshByName("trollyreckcollider").visibility>0 && this.isPlaced ){
-                    new TWEEN.Tween(this.meshRoot).to({position:this.trollyPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                        this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
-                        if(this.root.level ===3){
-                            const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"drain_bag_trolly",level:3}});
-                            document.dispatchEvent(custom_event);
+                console.log(this.isDraging);
+                if(this.isDraging){
+                    if(this.parent !== this.root.scene.getTransformNodeByID("tabledrawer")){
+                        if(this.trollyPosition && ((this.meshRoot.name.includes("DrainBag") && this.root.scene.getMeshByName("trollyreckcollider").visibility>0) || this.isPlaced)){
+                            new TWEEN.Tween(this.meshRoot).to({position:this.trollyPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                                this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
+                                if(this.root.level ===3){
+                                    const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"drain_bag_trolly",level:3}});
+                                    document.dispatchEvent(custom_event);
+                                }
+                            }).start();
                         }
-                    }).start();
-                }
-                else if(this.trollyPosition && this.meshRoot.name.includes("apd_package_node") && this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility>0 && this.isPlaced ){
-                    new TWEEN.Tween(this.meshRoot).to({position:this.trollyPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                        this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;
-                        if(this.root.level ===3){
-                            this.root.itemCount++;
-                            const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"placed_2item_apdreck",level:3}});
-                            document.dispatchEvent(custom_event);
+                        else if(this.trollyPosition && ((this.meshRoot.name.includes("apd_package_node") && this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility>0) || this.isPlaced)){
+                            new TWEEN.Tween(this.meshRoot).to({position:this.trollyPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                                this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;
+                                if(this.root.level ===3){
+                                    this.root.itemCount++;
+                                    const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"placed_2item_apdreck",level:3}});
+                                    document.dispatchEvent(custom_event);
+                                }
+                            }).start();
                         }
-                    }).start();
-                }
-                else if((this.root.scene.getMeshByName("tablecollider").visibility>0) || this.isPlaced ){ 
-                    if(this.root.level ===1 ){
-                        if(!this.isPlaced)
-                            this.root.itemCount++;
-                        const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.itemCount,level:1}});
-                        document.dispatchEvent(custom_event);
                     }
-                    this.placeItem(ANIM_TIME*.3);
+                    else if((this.root.scene.getMeshByName("tablecollider").visibility>0) || this.isPlaced ){ 
+                        if(this.root.level ===1 && this.root.gamemode === gamemode.training){
+                            if(!this.isPlaced){
+                                this.root.itemCount++;
+                                const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.itemCount,level:1}});
+                                document.dispatchEvent(custom_event);
+                            }
+                        }
+                        this.placeItem(ANIM_TIME*.3);
+                    }
+                    else{
+                        console.log("innnnnnnnnnnn else place     "+this.isPlaced+"     ");
+                        this.enableDrag(true);
+                        if(this.parent === this.root.scene.getTransformNodeByID("tabledrawer")){
+                            new TWEEN.Tween(this.meshRoot.position).to({x:this.startPosition.x,y:this.startPosition.y,z:this.startPosition.z},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                            }).start();
+                         }
+                         else{
+                            new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPostion.x,y:this.placedPostion.y,z:this.placedPostion.z},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                            }).start();
+                         }
+                    }
                 }
-                else{
-                    console.log("innnnnnnnnnnn else place     "+this.isPlaced+"     ");
-                    if(this.parent === this.root.scene.getTransformNodeByID("tabledrawer")){
-                        new TWEEN.Tween(this.meshRoot.position).to({x:this.startPosition.x,y:this.startPosition.y,z:this.startPosition.z},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                            this.enableDrag(true);
-                        }).start();
-                     }
-                     else{
-                        new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPostion.x,y:this.placedPostion.y,z:this.placedPostion.z},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                            this.enableDrag(true);
-                        }).start();
-                     }
-                    this.root.scene.getMeshByName("tablecollider").visibility=0;
-                    this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
-                    this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;
-                }
+                this.root.scene.getMeshByName("tablecollider").visibility=0;
+                this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
+                this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;
                 IS_DRAG.value = false;
                 // console.log(event);
             });

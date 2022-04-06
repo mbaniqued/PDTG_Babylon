@@ -8,7 +8,7 @@ export default class LightSwitch{
             this.camera     = root.camera;
             this.meshRoot   = meshobject;
             this.state      = 0;
-            this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,0,-50);
+            this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,-20,-80);
             this.label._children[0].text = "Switches";
             this.label.isVisible=false;
             this.isLightOff=false;
@@ -83,7 +83,6 @@ export default class LightSwitch{
                 this.label._children[0].text = this.isLightOff?"Turn Off Lights":"Turn On Lights"; 
             }
             this.label.isVisible=true;
-            this.label.isPointerBlocker=true;
         }
         setLight(){
             console.log(" !!! light state!! " +this.state+"      "+this.isLightOff)

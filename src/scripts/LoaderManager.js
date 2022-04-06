@@ -437,6 +437,9 @@ export default class LoaderManager {
                       mat.metallic   = .8;
                       mat.roughness  = 1;
                       task.loadedMeshes[i].material = mat;
+                      this.root.sinkArea  = task.loadedMeshes[i];
+                      this.root.sinkArea.name  = "kitchen_sink"
+                      this.setPickable(this.root.sinkArea,1);
                 }
                 else if(task.loadedMeshes[i].name === "StoveExhaust"){
                       const mat         = standerdMat.clone("StoveExhaustMat");

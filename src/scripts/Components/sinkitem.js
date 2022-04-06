@@ -20,31 +20,35 @@ export default class SinkItem{
                 childmesh.actionManager = null;
                 childmesh.renderOutline=false;
             });
-            this.updateoutLine(false);
+            if(this.meshRoot.name === "liquidhandsoap_node")
+                this.root.sinkArea.actionManager = null;
+
+            this.updateoutLine(this.root.sinkArea.name,false);
         }
         initAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 this.addAction(childmesh);
             });
+            this.addAction(this.root.sinkArea);
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                 this.label.isVisible =  this.state<100;
-                this.updateoutLine(this.label.isVisible);
+                this.updateoutLine(mesh.name,this.label.isVisible);
 
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
                 this.label.isVisible=false;
-                this.updateoutLine(this.label.isVisible);
+                this.updateoutLine(mesh.name,this.label.isVisible);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                 this.label.isVisible =  this.state<100;
-                this.updateoutLine(this.label.isVisible);
+                this.updateoutLine(mesh.name,this.label.isVisible);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                 console.log(this.root.gamestate.state+"!! OnPickTrigger!!! "+this.state);
-                this.updateoutLine(false);
+                this.updateoutLine(mesh.name,false);
                 if(this.root.camera.radius>2.9)
                     this.state=0;
                 if(this.state>=100){
@@ -141,7 +145,7 @@ export default class SinkItem{
             this.root.showResetViewButton(true);
           }).start();
       }
-      updateoutLine(value){
+      updateoutLine(mesh_name,value){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
             if( this.meshRoot.name  === "liquidhandsoap_node")
                 childmesh.renderOutline = value;
@@ -152,8 +156,8 @@ export default class SinkItem{
                 else
                     childmesh.renderOutline = false;
             }  
-            
-            
         });
+        if(mesh_name.includes("kitchen_sink"))
+            this.root.sinkArea.renderOutline = value;
      }
 }

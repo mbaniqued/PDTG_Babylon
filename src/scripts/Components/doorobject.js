@@ -10,6 +10,7 @@ export default class DoorObject{
             this.position   = pos;
             this.state     = 0;
             this.closedoor = false;
+            this.anim = false;
             this.setPos();
             this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,0);
             this.label._children[0].text = "Door";
@@ -79,16 +80,20 @@ export default class DoorObject{
             let val=325;
             if(this.meshRoot.rotation.y<= BABYLON.Angle.FromDegrees(325).radians())
                 val=360;
-            new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                this.closedoor = !this.closedoor;
-                if(this.closedoor){
-                    this.label.isVisible=false;
-                    if(eventcall){
-                        let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"door_event"}});
-                        document.dispatchEvent(custom_event);
+           if(!this.anim){     
+                this.anim=true;
+                new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                    this.closedoor = !this.closedoor;
+                    this.anim=false;
+                    if(this.closedoor){
+                        this.label.isVisible=false;
+                        if(eventcall){
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"door_event"}});
+                            document.dispatchEvent(custom_event);
+                        }
                     }
-                }
-            }).start();
+                }).start();
+            }
         }
         setDoor(){
             this.meshRoot.rotation.y = BABYLON.Angle.FromDegrees(325).radians();
@@ -99,8 +104,8 @@ export default class DoorObject{
             else
                 this.label._children[0].text = this.closedoor?"Open Door":"Close Door"; 
 
-            this.label.isVisible= this.interaction && (this.root.gamestate.state === GameState.default || this.root.gamestate.state === GameState.active);
-            this.label.isPointerBlocker=false;
+            this.label.isVisible= this.interaction;
+         
         }
         updateoutLine(value){
             this.meshRoot.getChildMeshes().forEach(childmesh => {

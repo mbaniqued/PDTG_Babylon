@@ -48,6 +48,7 @@ export default class MainScene {
     this.acRemoteRoot     = new BABYLON.TransformNode("ACREMOTe");
     this.apdmachineRoot   = new BABYLON.TransformNode("APDMACHINE");
     this.windowFrameRoot  = new BABYLON.TransformNode("WINDOW");
+    
     this.loaderManager    = new LoaderManager(this);
     this.game.engine.hideLoadingUI();
     
@@ -57,14 +58,13 @@ export default class MainScene {
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
     this.ccpdRecordBook=undefined,this.apdmachinePackage=undefined,this.lightswitchObject=undefined,this.dialysisSolutionObject=[],this.sanitiserObject=[];
     this.fanAnim = null,this.paperTowelObject=undefined,this.handSoapObject=undefined;
-    this.handwashactivity,this.wipeAlcohal,this.validationImage=[];
+    this.handwashactivity,this.wipeAlcohal,this.validationImage=[],this.sinkArea=undefined;
 
     const size= 512;
     this.dynamicTexture   = new BABYLON.DynamicTexture("dynamictexture",size,this.scene);
     // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
     // this.sceneOptimiser.startOptimiser();
     this.level=0,this.isUp=false,this.objectiveCount=0,this.totalobjective=0,this.itemCount=0,this.dialysisItemCnt=0,this.handsanitiserCnt=0;
-    
     this.bpRecord="",this.ccpdbpInputField;
     this.initState();
     this.initacParticle();
@@ -222,7 +222,15 @@ export default class MainScene {
           }
       });
       this.objectiveListner = (e) => {
-          this.checkObjectives(e.detail);
+         switch(this.gamemode){
+            case gamemode.training:
+              this.checkObjectives(e.detail);
+              break;
+            case gamemode.practice:
+              break;
+            case gamemode.assessment:
+             break;
+         }
       }
      document.addEventListener(event_objectivecomplete,this.objectiveListner);
   }
@@ -232,8 +240,8 @@ export default class MainScene {
   }
   resetScene(){
     this.objectiveCount=0;
+    this.totalobjective=0;
 
-    
     this.trollyObject      = null;
     delete this.trollyObject;
 
@@ -325,6 +333,7 @@ export default class MainScene {
     delete this.handSoapObject;
     this.removeMesh(this.scene.getMeshByName("glassplane"));
     this.removeMesh(this.scene.getMeshByName("windowframeplan"));
+
     console.log("reset suceesss");
   }
   removeValidation(node){
@@ -362,7 +371,7 @@ export default class MainScene {
       let ctx = this.apdmachineTexture.getContext();
        ctx.clearRect(0,0,this.apdmachineTexture.getSize().width,this.apdmachineTexture.getSize().height);
        const font =  "bold 48px Orbitron";
-       this.apdmachineTexture.drawText("",30,270,font,"#FFCD46","transparent",true);
+       this.apdmachineTexture.drawText("",30,270,font,"#00FF00","transparent",true);
        this.apdmachineTexture.clear();
        this.apdmachineTexture.dispose()
        this.apdmachineTexture = null;
@@ -581,15 +590,11 @@ export default class MainScene {
      tubeHighlightPlan.position  = new BABYLON.Vector3(0,-22,-20);
      tubeHighlightPlan.scaling   = new BABYLON.Vector3(1.35,.9,-1);
      tubeHighlightPlan.visibility=0;
-
-
-
      this.onHighlightApdPlan = (value,type)=>{
         if(type===0)
             dateHighlightPlan.visibility=value;
         if(type===1)
             tubeHighlightPlan.visibility=value;
-
       }
       this.updateApdValidatetion = (imgno,type)=>{
          if(type===0){
@@ -603,7 +608,6 @@ export default class MainScene {
                 const symbolcolor=["#808080","#00FF00","#FF0000"];
                 this.apdDateTexture.drawText(symbol[imgno],190,116,font2,symbolcolor[imgno],"transparent",true);
                 this.apdDateTexture.update();
-                // this.drawImageOnTexture(this.apdDateTexture,this.validationImage[imgno],210,116,48,48);
             }
          }else{
             let ctx = this.apdDateTexture2.getContext();
@@ -614,12 +618,11 @@ export default class MainScene {
               const symbolcolor=["#808080","#00FF00","#FF0000"];
               this.apdDateTexture2.drawText(symbol[imgno],127,117,font2,symbolcolor[imgno],"transparent",true);
               this.apdDateTexture2.update();
-          }
+            } 
          }
       }
       this.updateApdValidatetion(-1,0);
   }
-  
   drawImageOnTexture(texture,img,x,y,w,h){
       const ctx = texture.getContext();
       ctx.drawImage(img,x,y,w,h);
@@ -634,7 +637,6 @@ export default class MainScene {
       this.bpnumberTexture.dispose();
       this.bpnumberTexture =null;
       // this.removeMesh(this.scene.getMeshByName("bptextplan"));
-
     }
     const bpPlan = BABYLON.MeshBuilder.CreatePlane("bptextplan",{width:8,height:5,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
     bpPlan.parent = null;
@@ -654,7 +656,6 @@ export default class MainScene {
     bpPlan.position  = new BABYLON.Vector3(17.8,13,-8);
     bpPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-30).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
     this.setbpRecord(0,false);
-  
   }
   setbpRecord(v1,isupdate){
     let ctx = this.bpnumberTexture.getContext();
@@ -667,7 +668,6 @@ export default class MainScene {
       this.bpnumberTexture.drawText(parseInt(v1)+"",90, 70, font,  "#808794", "transparent", true);
     else
       this.bpnumberTexture.drawText("",90, 70, font,  "#808794", "transparent", true);
-
       if(isupdate){
         v2 = randomNumber(70,90);
         v3 = randomNumber(60,80);
@@ -705,21 +705,17 @@ export default class MainScene {
   }
   checkObjectChange(root1,root2){
     if(this.gamestate.state === GameState.default || this.gamestate.state === GameState.active){
-        while(root1.parent !== null) {
+        while(root1.parent !== null){
             root1 = root1.parent;
         }
-        while(root2.parent !== null) {
+        while(root2.parent !== null){
             root2 = root2.parent;
         }
         if(root1.name !== root2.name){
           if(!root1.name.includes("items") && !root2.name.includes("items")){
-              // if(this.gamestate.state != GameState.radial || this.gamestate.state != GameState.inspect)
-              {
-                // console.log(root1.name+"      "+root2.name);
                 this.gamestate.state = GameState.default;
-              }
           }
-        }
+       }
      }
   }
   hideOutLine(meshroot){
@@ -893,10 +889,8 @@ export default class MainScene {
     this.acparticle.minSize         = .03;
     this.acparticle.maxSize         = .03;
     
-
     this.acparticle.minLifeTime = .5;
     this.acparticle.maxLifeTime = .5;
-
     
     this.acparticle.emitRate = 300;
     this.acparticle.isBillboardBased=true;
@@ -944,9 +938,9 @@ export default class MainScene {
         this.gamestate.state = GameState.default;
         this.setCameraTarget();
         if(this.gui2D.loaginBg.isVisible)
-            new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(-90).radians()},1000).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+            new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
          this.gui2D.drawLoadingPage(false);
-         this.gui2D.drawObjectiveMenu(true);
+         this.gui2D.drawObjectiveMenu(this.gamemode === gamemode.training);
          this.gui2D.userBackBtn.isVisible=true;
          this.gui2D.userBackBtn.onPointerUpObservable.add(()=>{
             this.gui2D.drawbackMenu(true);
@@ -970,7 +964,7 @@ export default class MainScene {
       }, time);
    }
    startGame(){
-    this.gamemode =  gamemode.training;
+    this.gamemode =  gamemode.practice;
     this.resetObjectiveBar();
     this.bpRecord="";
     this.removeAllActions();
@@ -986,7 +980,6 @@ export default class MainScene {
                       this.fanswitchobject.initAction();
                       this.acItem.initAction();
                       this.windowObject.initAction();
-                      
                       for(let i=0;i<values.length;i++){ 
                           gameObjectives.push({status:false,msg:values[i]});
                           this.objectivebar[i] = this.gui2D.createBar(values[i],380,42);
@@ -1086,11 +1079,11 @@ export default class MainScene {
           break;
         case gamemode.practice:
               this.gameTaskManager.setPracticeMode();
-              this.drawObjectiveMenu(false);
+              this.gui2D.drawObjectiveMenu(false);
           break;            
         case gamemode.assessment:
             this.gameTaskManager.setPracticeMode();
-            this.drawObjectiveMenu(false);
+            this.gui2D.drawObjectiveMenu(false);
           break;            
     }
     this.gui2D.downArrow._onPointerUp =()=>{

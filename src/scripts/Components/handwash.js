@@ -199,7 +199,9 @@ export default class HandWash{
                else   
                   allcorrect = false;
             }
-            if(allcorrect){
+            if(this.root.gamemode !== gamemode.training)
+               allcorrect = true;
+            if(allcorrect ){
                this.doneBtn.isVisible=true;
                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:2,msg:"handwash_complete"}});
                document.dispatchEvent(custom_event);

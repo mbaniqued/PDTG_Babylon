@@ -93,13 +93,14 @@ export default class Table{
                         return;
                     if(this.root.camera.radius>2.5){
                         // this.root.gamestate.state = GameState.focus;
-                        this.setTableFocusAnim();
+                        console.log("111111111111");
                         if(this.isdrawerOpen)
                             this.state=10;
                         else    
                             this.state=0;
                     }
                     if(this.state>0 && this.root.gamestate.state === GameState.default){
+                        console.log("222222222222");
                         if(this.state>0 && this.isdrawerOpen)
                             this.state=10;
                          else   
@@ -115,11 +116,12 @@ export default class Table{
                                 this.setDrawerAnim();
                             break;    
                         case 10:
+                                console.log("100000000000");
                                 this.setTableFocusAnim();
                                 this.meshRoot.getChildTransformNodes().forEach(childnode=>{
                                  if(childnode.name==="tabledrawer"){
                                         let drawerNode = childnode;  
-                                        this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.meshRoot.position.z-.5));
+                                        this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z:this.meshRoot.position.z-.5));
                                     }
                                 });
                             break;

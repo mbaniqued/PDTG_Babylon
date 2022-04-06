@@ -1,5 +1,5 @@
 
-import { GameState,ANIM_TIME,event_objectivecomplete,rotateState } from "../scene/MainScene";
+import { GameState,ANIM_TIME,event_objectivecomplete,rotateState,gamemode } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 export default class Trolly{
         constructor(root,meshobject,pos){
@@ -10,7 +10,7 @@ export default class Trolly{
             this.position   = pos;
             this.state      = 0;
             this.setPos();
-            this.initMeshOutline();
+            
             // this.mesh = new BABYLON.Mesh();
             // this.meshRoot.getChildMeshes().forEach(childmesh => {
             //     if(childmesh.name.includes("apdmachine0"))
@@ -18,7 +18,7 @@ export default class Trolly{
             //     this.addAction(childmesh);
             // });
             this.initAction();
-            this.addswitchAction();
+            
             this.apdMachine.position = new BABYLON.Vector3(-50,0,0);
 
             
@@ -29,8 +29,7 @@ export default class Trolly{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                         if(rotateState.value===1)
                             return;
-                            
-                        console.log(" !!! switch!! "+mesh.name);
+                        // console.log(" !!! switch!! "+mesh.name);
                         if(this.root.camera.alpha!=BABYLON.Angle.FromDegrees(270).radians()){
                             new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                             new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
@@ -39,7 +38,7 @@ export default class Trolly{
 
                         }
                         else{
-                            if(this.root.level==3){
+                            if((this.root.level==3 && this.root.gamemode === gamemode.training)  || this.root.gamemode !== gamemode.training){
                                 this.root.scene.getMeshByName("apd_machinetxt_plan").visibility =1;
                                 let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"apd_machine_on"}});
                                 document.dispatchEvent(custom_event);
@@ -58,7 +57,8 @@ export default class Trolly{
                 childmesh.actionManager = null;
                 this.updateoutLine(childmesh,false);
             });
-            
+            const switchmesh = this.root.scene.getMeshByName("apdswitch_sphere");
+            switchmesh.actionManager = null;
         }
         initAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -67,6 +67,7 @@ export default class Trolly{
                 if(!childmesh.actionManager)
                     this.addAction(childmesh);
             });
+            this.addswitchAction();
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
@@ -75,7 +76,6 @@ export default class Trolly{
                     this.updateoutLine(mesh,false);
                 else
                     this.updateoutLine(mesh,true);                        
-
                 
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
@@ -95,7 +95,7 @@ export default class Trolly{
                                 new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                                 new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                                     this.root.gamestate.state = GameState.focus;
-                                    this.setApdDeviceBorder(.1);
+                                    
                                 }).start();
                                 new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                                 if(mesh.name.includes("trolly")){
@@ -111,37 +111,12 @@ export default class Trolly{
                 )
             )
         }
-        initMeshOutline(){
-            this.meshRoot.getChildTransformNodes().forEach(childnode=>{
-                if(childnode.name.includes("trollynode")){
-                    childnode.getChildMeshes().forEach(childmesh=>{
-                        this.root.loaderManager.setPickable(childmesh,.5); 
-                    });
-                }
-                if(childnode.name.includes("apdmachine")){
-                    childnode.getChildMeshes().forEach(childmesh=>{
-                        this.root.loaderManager.setPickable(childmesh,0); 
-                    });
-                }
-                
-            });
-        }
-        setApdDeviceBorder(value){
-            this.meshRoot.getChildTransformNodes().forEach(childnode=>{
-                if(childnode.name.includes("apdnode")){
-                    childnode.getChildMeshes().forEach(childmesh=>{
-                        if(childmesh.id.includes("DeviceDialysisReference_primitive1"))
-                            this.root.loaderManager.setPickable(childmesh,value); 
-                    });
-                }
-            });
-        }
         updateoutLine(mesh,value){
             if(mesh.parent.name ==="apdnode" &&  this.root.gamestate.state != GameState.focus){
                 mesh.renderOutline = false;
             }
             else{
-                console.log(mesh.parent.name);
+                // console.log(mesh.parent.name);
                 if(mesh.parent.name ==="apdnode"){
                     this.meshRoot.getChildMeshes().forEach(childmesh=>{
                         childmesh.outlineWidth  = .3;
