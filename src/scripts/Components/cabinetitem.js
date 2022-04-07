@@ -7,8 +7,7 @@ const diasolutionpos3 = new BABYLON.Vector3(-2,1.9,2.5);
 const diasolutionpos4 = new BABYLON.Vector3(-3.30,2.15,2.50);
 const sanitizerpos1   = new BABYLON.Vector3(-.8,1.90,2.7);
 const sanitizerpos2   = new BABYLON.Vector3(-1.795,1.78,2);
-let dialysis_tablepos=0,sanitiser_tablepos=0,dialysis_trollypos=0,dialysis_apdpos=0,sanitiser_trollypos=0;
-let checkdialysisValidation=0;
+let dialysis_tablepos=0,checkdialysisValidation=0;
 
 
 
@@ -28,7 +27,6 @@ export default class CabinetItem{
         this.initAction();
         this.meshRoot.name+="items";
         this.state =0;
-        this.isPlaced=false;
         this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
         this.label.isVisible=false;
         this.validationDone = false;
@@ -41,7 +39,7 @@ export default class CabinetItem{
             this.checkValidation=[];
             this.createValidation();
          }
-         dialysis_tablepos=0;sanitiser_tablepos=0;dialysis_trollypos=0;dialysis_apdpos=0;sanitiser_trollypos=0;checkdialysisValidation=0;
+         dialysis_tablepos=0;checkdialysisValidation=0;
       }
       setPos(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -83,8 +81,8 @@ export default class CabinetItem{
       addAction(mesh){
         mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-            this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) || (this.state!==100 && this.state!==20);
-            this.updateoutLine(true);
+            this.label.isVisible = ( this.root.gamestate.state === GameState.default || this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) || (this.state!==100 && this.state!==20);
+            this.updateoutLine(this.label.isVisible);
             if(this.root.gamestate.state === GameState.inspect){
                 this.updateoutLine(false);
                 this.label.isVisible = false;
@@ -114,8 +112,8 @@ export default class CabinetItem{
                 //   console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                     this.pickObject = true;
                     
-                    this.label.isVisible= (this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) || (this.state!==100 && this.state!==20);
-                    this.updateoutLine(true);
+                    this.label.isVisible = ( this.root.gamestate.state === GameState.default || this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) || (this.state!==100 && this.state!==20);
+                    this.updateoutLine(this.label.isVisible);
                     if(this.root.gamestate.state === GameState.inspect){
                         this.updateoutLine(false);
                         this.label.isVisible = false;
@@ -153,7 +151,7 @@ export default class CabinetItem{
                     this.root.gui2D.resetCamBtn.isVisible=!showMenu;
                     this.hideOutLine();
                     if(showMenu){
-                        if(this.root.gamemode === gamemode.training && this.root.level ===3){
+                        if((this.root.gamemode === gamemode.training && this.root.level ===3) || this.root.gamemode !== gamemode.training){
                             if(this.meshRoot.name.includes("diasolutionnode"))
                                 this.root.gui2D.useBtn.isVisible = false;
                         }
@@ -168,7 +166,7 @@ export default class CabinetItem{
                     this.root.gui2D.useBtn._onPointerUp = ()=>{
                         showMenu = false;
                         this.root.gui2D.drawRadialMenu(showMenu);  
-                        if(this.name.includes("Hand") && this.root.level>2){
+                        if(this.name.includes("Hand") && ((this.root.level===3 && this.root.gamemode === gamemode.training) || this.root.gamemode !== gamemode.training)){
                             this.root.gamestate.state = GameState.active;
                             this.root.setFocusOnObject(new BABYLON.Vector3(1.98,2.02-.3,-1.89-1.2));
                             new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(135).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
@@ -211,6 +209,8 @@ export default class CabinetItem{
               this.enableDrag(false);
               return;
           }
+          if(!this.isDraging && !this.interaction)
+            return;
         // this.meshRoot.position.z = this.startPosition.z;
         //   console.log(this.meshRoot.position);
         this.isDraging=this.pointerDragBehavior.dragging;
@@ -255,7 +255,7 @@ export default class CabinetItem{
             this.pickObject      = false;
             let placed=false;
             if(this.isDraging){
-                if(this.root.scene.getMeshByName("tablecollider").visibility>0){    
+              if(this.root.scene.getMeshByName("tablecollider").visibility>0){    
                     if(this.name.includes("Hand") && getsanitiserTablePosition(this.root)>-1){
                         placed = true;
                         this.placedPosition = sanitizerpos1;
@@ -269,30 +269,30 @@ export default class CabinetItem{
                             document.dispatchEvent(custom_event);
                         }).start();
                     }
-                    // else if(this.name.includes("Dialysis") && dialysis_tablepos<2){
-                else if(this.name.includes("Dialysis") && getdialysisTablePos(this.root)>-1){ 
-                    placed = true;
-                    console.log(getdialysisTablePos(this.root)); 
-                    if(this.root.itemCount>0)
-                        this.root.itemCount--;
-                    const index = getdialysisTablePos(this.root);   
-                    const final_diasolutionpos = [diasolutionpos1,diasolutionpos2];
-                    this.placedPosition = final_diasolutionpos[index];
-                    console.log("  !!!! count!!!! "+index);     
-                    this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(180).radians(),0);
-                    new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
-                    new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                        //    this.enableDrag(false);
-                        //    this.removeAction();
-                        this.root.dialysisItemCnt++;
-                        this.label.isVisible=false;
-                        let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.dialysisItemCnt}});
-                        document.dispatchEvent(custom_event);
-                    }).start();
+                // else if(this.name.includes("Dialysis") && dialysis_tablepos<2){
+                    else if(this.name.includes("Dialysis") && getdialysisTablePos(this.root)>-1){ 
+                        placed = true;
+                        console.log(getdialysisTablePos(this.root)); 
+                        if(this.root.itemCount>0)
+                            this.root.itemCount--;
+                        const index = getdialysisTablePos(this.root);   
+                        const final_diasolutionpos = [diasolutionpos1,diasolutionpos2];
+                        this.placedPosition = final_diasolutionpos[index];
+                        console.log("  !!!! count!!!! "+index);     
+                        this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(180).radians(),0);
+                        new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
+                        new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                            //    this.enableDrag(false);
+                            //    this.removeAction();
+                            this.root.dialysisItemCnt++;
+                            this.label.isVisible=false;
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.dialysisItemCnt}});
+                            document.dispatchEvent(custom_event);
+                        }).start();
+                    }
                 }
-            }
-            else if(this.root.scene.getMeshByName("trollycollider").visibility>0  || this.root.scene.getMeshByName("apdcollider").visibility>0){
-                if(this.name.includes("Dialysis")){
+                else if(this.root.scene.getMeshByName("trollycollider").visibility>0  || this.root.scene.getMeshByName("apdcollider").visibility>0){
+                    if(this.name.includes("Dialysis")){
                         placed = true;  
                         if(getdialysisTrollyPosition(this.root)<0 && this.root.scene.getMeshByName("trollycollider").visibility>0)
                             placed = false;
@@ -316,8 +316,8 @@ export default class CabinetItem{
                                 document.dispatchEvent(custom_event);
                             }).start();
                         }
-                }
-                if(this.name.includes("Hand") && getsanitiserTrollyPosition(this.root)>-1){
+                    }
+                    if(this.name.includes("Hand") && getsanitiserTrollyPosition(this.root)>-1){
                         placed = true;  
                         this.placedPosition = sanitizerpos2;
                         this.placedRotation = new BABYLON.Vector3(0,0,0);
@@ -328,18 +328,17 @@ export default class CabinetItem{
                             document.dispatchEvent(custom_event);
                         }).start();
                     }
-            }
-            if(!placed){
+                }
+                if(!placed){
                     const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
                     new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                        this.enableDrag(true);
                     }).start();
-            }
-            }
-           this.root.scene.getMeshByName("tablecollider").visibility=0;
-           this.root.scene.getMeshByName("trollycollider").visibility=0;
-           this.root.scene.getMeshByName("apdcollider").visibility=0;
-           IS_DRAG.value=false;
+                }
+             }
+            this.root.scene.getMeshByName("tablecollider").visibility=0;
+            this.root.scene.getMeshByName("trollycollider").visibility=0;
+            this.root.scene.getMeshByName("apdcollider").visibility=0;
+            IS_DRAG.value=false;
         });
     }
     placeItem(time){

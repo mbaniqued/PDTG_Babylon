@@ -1,4 +1,4 @@
-import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
+import { GameState,ANIM_TIME,event_objectivecomplete,gamemode } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 let showMenu=false;
 export default class SinkItem{
@@ -36,6 +36,8 @@ export default class SinkItem{
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                 this.label.isVisible =  this.state<100;
                 this.updateoutLine(mesh.name,this.label.isVisible);
+                if(mesh.name === "kitchen_sink")
+                    this.label.isVisible =false;
 
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
@@ -45,6 +47,8 @@ export default class SinkItem{
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                 this.label.isVisible =  this.state<100;
                 this.updateoutLine(mesh.name,this.label.isVisible);
+                if(mesh.name === "kitchen_sink")
+                    this.label.isVisible =false;
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                 console.log(this.root.gamestate.state+"!! OnPickTrigger!!! "+this.state);
@@ -52,9 +56,6 @@ export default class SinkItem{
                 if(this.root.camera.radius>2.9)
                     this.state=0;
                 if(this.state>=100){
-                    // if(this.name.includes("Mask")){
-                    //     this.useMask(300);
-                    // }
                     return;
                 }
                 if(this.root.gui2D.userExitBtn.isVisible)
@@ -77,6 +78,12 @@ export default class SinkItem{
                         this.root.gamestate.state = showMenu?GameState.radial:GameState.active;
                         this.root.gui2D.drawRadialMenu(showMenu);
                         this.root.gui2D.resetCamBtn.isVisible=!showMenu;
+                        if(showMenu){
+                            if(this.root.gamemode === gamemode.training)
+                                this.root.gui2D.useBtn.isVisible = this.root.level>2;
+                            else
+                                this.root.gui2D.useBtn.isVisible = true;
+                        }
                         this.root.gui2D.inspectBtn._onPointerUp = ()=>{
                             this.root.hideOutLine(this.meshRoot);
                             showMenu = false;

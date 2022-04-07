@@ -173,7 +173,7 @@ export default class GUI2D{
           });
           this.assesmentModeBtn.onPointerUpObservable.add(()=> {
             this.gameModeBtn.children[1].text="Assessment";
-            this.root.gamemode = gamemode.assessment;
+            this.root.gamemode = gamemode.practice;
             hidegamemode();
           });
           this.proceedBtn._onPointerUp=()=>{
@@ -214,13 +214,13 @@ export default class GUI2D{
             this.stage1btn.isVisible  =  false;
             this.drawLoadingPage(true);
             this.root.sceneCommon.setView();
-
+            console.log("!!! level!! "+this.root.level);
             switch(this.root.level){
                case 0:
                   this.root.enterScene(1000)
                  break;
                case 1:
-                  this.root.enterScene(3000);
+                  this.root.enterScene(2000);
                   this.root.gameTaskManager.completeRoomSetUp();
                  break;  
                case 2:
@@ -383,10 +383,8 @@ export default class GUI2D{
         this.inspectBtn.isVisible=isDraw;
 
         this.useBtn.topInPixels = 80;
-        if(this.root.gamemode === gamemode.training && this.root.level >1)
-            this.useBtn.isVisible=isDraw;
-        else
-            this.useBtn.isVisible=false;
+        this.useBtn.isVisible=false;
+        
         this.crossBtn.leftInPixels = 80;
         this.crossBtn.isVisible=isDraw;
       }

@@ -80,7 +80,10 @@ export default class GameTaskManager{
         this.root.acItem.initAction();
         this.root.windowObject.initAction();
 
+        this.root.trollyObject.initAction();
         this.root.tableObject.initAction();
+        this.root.cabinetObject.initAction();
+
         this.root.bpMachineItem.initAction();
         this.root.alcohalItem.initAction();
         this.root.maskItem.initAction();
@@ -97,7 +100,7 @@ export default class GameTaskManager{
         this.root.drainBagItem.enableDrag(true);
         this.root.ccpdRecordBook.enableDrag(true);
 
-        this.root.cabinetObject.initAction();
+        
         for(let i=0;i<this.root.dialysisSolutionObject.length;i++){
             this.root.dialysisSolutionObject[i].initAction();
             this.root.dialysisSolutionObject[i].enableDrag(true);
@@ -108,6 +111,6 @@ export default class GameTaskManager{
           }
           this.root.handSoapObject.initAction();
           this.root.paperTowelObject.initAction();
-          this.root.trollyObject.initAction();
+          
     }
 }

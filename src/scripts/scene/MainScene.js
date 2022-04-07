@@ -148,6 +148,8 @@ export default class MainScene {
         this.sceneCommon.removeMiniCam();
         this.handwashactivity.drawhandWash(false);
         this.gui2D.advancedTexture.renderAtIdealSize=false;
+        if(this.handSoapObject.state>=100)
+          this.handSoapObject.state=0;
       }) 
       resolve('resolved');
     });
@@ -222,8 +224,10 @@ export default class MainScene {
           }
       });
       this.objectiveListner = (e) => {
+
          switch(this.gamemode){
             case gamemode.training:
+              console.log("innnnnnnnnnnnnnnnnn")
               this.checkObjectives(e.detail);
               break;
             case gamemode.practice:
@@ -394,7 +398,7 @@ export default class MainScene {
     let ctx = this.apdmachineTexture.getContext();
     const font =  "bold 48px Orbitron";
     ctx.clearRect(0,0,size.width,size.height);
-    this.apdmachineTexture.drawText("LOAD THE SET",30,270,font,"#FFCD46","transparent",true);
+    this.apdmachineTexture.drawText("LOAD THE SET",30,270,font,"#00FF00","transparent",true);
     
   }
   createconnectionItemValidation(){
@@ -964,7 +968,7 @@ export default class MainScene {
       }, time);
    }
    startGame(){
-    this.gamemode =  gamemode.practice;
+    // this.gamemode =  gamemode.training;
     this.resetObjectiveBar();
     this.bpRecord="";
     this.removeAllActions();
@@ -1347,6 +1351,7 @@ export default class MainScene {
                               this.objectiveCount++;
                            gameObjectives[7].status = true;
                            this.drainBagItem.enableDrag(false);
+                           this.apdmachinePackage.enableDrag(true);
                            for(let i=0;i<this.dialysisSolutionObject.length;i++){
                               this.dialysisSolutionObject[i].initAction();
                               this.dialysisSolutionObject[i].enableDrag(true);
@@ -1380,12 +1385,13 @@ export default class MainScene {
              break;   
         }
       this.updateObjective();
-      if(this.objectiveCount>=this.totalobjective){
+      if( this.objectiveCount !==0 && this.objectiveCount>=this.totalobjective){
         this.gui2D.drawObjectiveMenu(false);
         this.gui2D.drawRadialMenu(false);
         this.gui2D.drawValidationMenu(false);
         // this.gui2D.resetCamBtn.isVisible=false;
         this.gui2D.userExitBtn.isVisible=false;
+        
         setTimeout(() => {
           this.gui2D.drawLevelComplete(true);  
         }, 1500);
@@ -1404,15 +1410,20 @@ export default class MainScene {
            this.level++;
            this.isResetScene = false;
            if(this.level>=4){
+             
               this.isResetScene = true;
               this.gui2D.resetCamBtn.isVisible=false;
               this.gamestate.state = GameState.menu;
               this.gui2D.drawMainMenu(true);
               this.sceneCommon.removeMiniCam();
               this.gui2D.drawObjectiveMenu(false);
+              this.level =0;
+              this.resetObjectiveBar();
            }
-           else
+           else{
+              this.gui2D.drawObjectiveMenu(true);
               this.setGame();
+           }
         }
         this.gui2D.endsessionBtn._onPointerUp=()=>{
           this.isResetScene = true;
@@ -1421,6 +1432,7 @@ export default class MainScene {
           this.gamestate.state = GameState.menu;
           this.gui2D.drawMainMenu(true);
           this.sceneCommon.removeMiniCam();
+          this.resetObjectiveBar();
         }
       }
    }
