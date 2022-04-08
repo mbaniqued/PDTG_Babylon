@@ -25,6 +25,7 @@ export default class Trolly{
         }
         addswitchAction(){
             const mesh = this.root.scene.getMeshByName("apdswitch_sphere");
+            mesh.isPickable = true;
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                         if(rotateState.value===1)
@@ -54,20 +55,23 @@ export default class Trolly{
         }
         removeAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-                childmesh.actionManager = null;
+                this.root.removeRegisterAction(childmesh);
                 this.updateoutLine(childmesh,false);
             });
             const switchmesh = this.root.scene.getMeshByName("apdswitch_sphere");
-            switchmesh.actionManager = null;
+            this.root.removeRegisterAction(switchmesh);
+            
         }
         initAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
+                childmesh.isPickable = true;
                 if(childmesh.name.includes("apdmachine0"))
                     this.apdMachine = childmesh.parent;
                 if(!childmesh.actionManager)
                     this.addAction(childmesh);
             });
             this.addswitchAction();
+            
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);

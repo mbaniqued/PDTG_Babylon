@@ -24,8 +24,7 @@ export default class FanSwitch{
         }
         removeAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-                childmesh.actionManager=null;
-                childmesh.isPickable = false;
+                this.root.removeRegisterAction(childmesh);
             });
         }
         addAction(mesh){

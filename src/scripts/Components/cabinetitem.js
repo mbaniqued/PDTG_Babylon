@@ -59,11 +59,10 @@ export default class CabinetItem{
       removeAction(){
         this.interaction = false;
         this.meshRoot.getChildMeshes().forEach(childmesh => {
-            childmesh.actionManager = null;
-            childmesh.isPickable=false;
-            childmesh.renderOutline = false;   
+            this.root.removeRegisterAction(childmesh);
           });
           this.updateoutLine(false);
+          this.enableDrag(false);
       }
       initAction(){
         this.interaction = true;
@@ -151,9 +150,17 @@ export default class CabinetItem{
                     this.root.gui2D.resetCamBtn.isVisible=!showMenu;
                     this.hideOutLine();
                     if(showMenu){
-                        if((this.root.gamemode === gamemode.training && this.root.level ===3) || this.root.gamemode !== gamemode.training){
+                        if(this.root.gamemode === gamemode.training){
+                            this.root.gui2D.useBtn.isVisible = false;
+                            console.log(this.root.level+"         "+this.name);
                             if(this.meshRoot.name.includes("diasolutionnode"))
                                 this.root.gui2D.useBtn.isVisible = false;
+                             if(this.root.level >1 && this.name.includes("Hand"))
+                                this.root.gui2D.useBtn.isVisible = true;
+                        }
+                        else{
+                            if(this.name.includes("Hand"))
+                                this.root.gui2D.useBtn.isVisible = true;
                         }
                     }
                     this.root.gui2D.inspectBtn._onPointerUp = ()=>{
@@ -262,7 +269,7 @@ export default class CabinetItem{
                         this.placedRotation = new BABYLON.Vector3(0,0,0);
                         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
                         new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                            this.enableDrag(false);
+                            // this.enableDrag(false);
                             this.root.handsanitiserCnt++;
                             this.label.isVisible=false;
                             let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.handsanitiserCnt}});
@@ -584,6 +591,7 @@ export default class CabinetItem{
                 this.checkValidation[name]=2;
                 this.updatedrainbagValidatetion();
                 this.root.gui2D.drawValidationMenu(false);
+                
             };
             this.root.gui2D.doneBtn._onPointerUp = ()=>{
                 if(this.checkValidation[name]<1){
@@ -617,6 +625,13 @@ export default class CabinetItem{
              childmesh.outlineWidth =1;
             //  console.log(childmesh.name);
         });
+    }
+    reset(){
+        // this.meshRoot.scaling   = new BABYLON.Vector3(1,1,1);
+        this.removeAction();
+        this.pointerDragBehavior.releaseDrag();
+        this.pointerDragBehavior.detach();
+        this.pointerDragBehavior = null;
     }
       
 }

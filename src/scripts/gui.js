@@ -215,6 +215,9 @@ export default class GUI2D{
             this.drawLoadingPage(true);
             this.root.sceneCommon.setView();
             console.log("!!! level!! "+this.root.level);
+            this.root.setGame().then((msg)=>{
+                console.log(msg);
+            });
             switch(this.root.level){
                case 0:
                   this.root.enterScene(1000)
@@ -241,14 +244,6 @@ export default class GUI2D{
                   }, 3200);
                  break; 
             }
-              // let tout = setTimeout(() => {
-                  // clearTimeout(tout);
-            // this.drawLoadingPage(false);
-            // this.root.gamestate.state = GameState.default;
-            // this.root.setCameraTarget();
-            // new TWEEN.Tween(this.root.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-            this.root.setGame();
-              // }, 10);
 
           }
           this.backBtn.topInPixels = 400;

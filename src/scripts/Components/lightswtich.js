@@ -20,8 +20,7 @@ export default class LightSwitch{
                 this.meshRoot.isPickable = true;
         }
         removeAction(){
-            this.meshRoot.actionManager=null;
-            this.meshRoot.isPickable = false;
+            this.root.removeRegisterAction(this.meshRoot);
             this.updateoutLine(this.meshRoot,false);
         }
         addAction(mesh){

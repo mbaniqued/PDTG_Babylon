@@ -78,7 +78,7 @@ export default class Common{
       updateCam(){
             if(IS_DRAG.value || this.root.scene.getMeshByName("ccpdplane").isVisible)
                 return;  
-            if(this.root.gui2D.resetCamBtn.isVisible ||  this.root.gui2D.radialCircle.isVisible)
+            if(this.root.gui2D.resetCamBtn.isVisible ||  this.root.gui2D.radialCircle.isVisible || this.root.gui2D.userExitBtn.isVisible)
                  return; 
             if(this.scene.pointerX>0 && this.scene.pointerX<=this.camDirection.margin){
                   this.camera.alpha += BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();

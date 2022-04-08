@@ -55,10 +55,13 @@ export default class WindowFrame{
                 this.addAction(this.glasssplan);
             if(!this.plan.actionManager)
                 this.addAction(this.plan);
+
+            this.glasssplan.isPickable=true;
+            this.plan.isPickable=true;
         }
         removeAction(){
-            this.glasssplan.actionManager=null;
-            this.plan.actionManager=null;
+            this.root.removeRegisterAction(this.glasssplan);
+            this.root.removeRegisterAction(this.plan);
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);

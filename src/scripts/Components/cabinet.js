@@ -25,14 +25,13 @@ export default class Cabinet{
     }
     removeAction(){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
-            childmesh.actionManager = null;
-            childmesh.renderOutline = false;   
+            this.root.removeRegisterAction(childmesh);
             this.updateoutLine(childmesh,false);
         });
-        
     }
     initAction(){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
+            childmesh.isPickable = true;
             if(!childmesh.actionManager)
                 this.addAction(childmesh);
         });

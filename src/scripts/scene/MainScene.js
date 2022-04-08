@@ -114,7 +114,8 @@ export default class MainScene {
     this.drainBagItem.setTrollyPosition({x:-265,y:1,z:138});
     this.createdrainBagValidation();
     this.ccpdRecordBook     = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
-    this.apdmachinePackage = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
+    this.apdmachinePackage  = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
+    console.log(this.apdmachinePackage.startPosition+"        "+this.apdmachinePackage.placedPosition);
     this.apdmachinePackage.setTrollyPosition({x:-231,y:-16,z:8});
     this.createApdPackageValidatiion();
     
@@ -151,6 +152,7 @@ export default class MainScene {
         if(this.handSoapObject.state>=100)
           this.handSoapObject.state=0;
       }) 
+      console.log(" !!!!!!!!! initscene!!! ");
       resolve('resolved');
     });
   }
@@ -227,7 +229,6 @@ export default class MainScene {
 
          switch(this.gamemode){
             case gamemode.training:
-              console.log("innnnnnnnnnnnnnnnnn")
               this.checkObjectives(e.detail);
               break;
             case gamemode.practice:
@@ -242,104 +243,124 @@ export default class MainScene {
     label.dispose();
     this.gui2D.advancedTexture.removeControl(label);
   }
-  resetScene(){
-    this.objectiveCount=0;
-    this.totalobjective=0;
-
-    this.trollyObject      = null;
-    delete this.trollyObject;
-
-    this.removeLabel(this.tableObject.label);
-    this.tableObject       = null;
-    delete this.tableObject;
-
-    this.removeLabel(this.cabinetObject.label);
-    this.cabinetObject     = null;
-    delete this.cabinetObject;
-
-    this.removeLabel(this.doorObject.label);
-    this.doorObject        = null;
-    delete this.doorObject;
-    
-    this.removeLabel(this.windowObject.label);
-    this.windowObject      = null;
-    delete this.windowObject;
-    this.removeLabel(this.acItem.label);
-    this.acItem            = null;
-    delete this.acItem;
-
-    this.removeLabel(this.lightswitchObject.label);
-    this.lightswitchObject = null;
-    delete this.lightswitchObject;
-    
-    this.removeLabel(this.fanswitchobject.label);
-    this.fanswitchobject   = null;
-    delete this.fanswitchobject;
-
-    this.removeValidation(this.bpMachineItem.meshRoot);
-    this.removeLabel(this.bpMachineItem.label);
-    this.bpMachineItem     = null;
-    delete this.bpMachineItem;
-
-    this.removeValidation(this.connectionItem.meshRoot);
-    this.removeLabel(this.connectionItem.label);
-    this.connectionItem    = null; 
-    delete this.connectionItem;
-
-    this.removeValidation(this.alcohalItem.meshRoot);
-    this.removeLabel(this.alcohalItem.label);
-    this.alcohalItem       = null;
-    delete this.alcohalItem;
-
-    this.removeLabel(this.maskItem.label);
-    this.maskItem          = null;
-    delete this.maskItem;
-
-    this.removeValidation(this.drainBagItem.meshRoot);
-    this.removeLabel(this.drainBagItem.label);
-    this.drainBagItem      = null;
-    delete this.drainBagItem;
-
-    this.removeLabel(this.ccpdRecordBook.label);
-    this.ccpdRecordBook    = null;
-    delete this.ccpdRecordBook;
-
-    this.removeLabel(this.apdmachinePackage.label);
-    this.removeValidation(this.apdmachinePackage.meshRoot);
-    this.apdmachinePackage = null;
-    delete this.apdmachinePackage;
-    
-    for(let i=0;i<this.dialysisSolutionObject.length;i++){
-      this.dialysisSolutionObject[i].removeValidation();
-      this.removeLabel(this.dialysisSolutionObject[i].label);
-      this.removeNode(this.dialysisSolutionObject[i].meshRoot);
-      this.dialysisSolutionObject[i] = null;
-      delete this.dialysisSolutionObject[i];
-    }
-   for(let i=0;i<this.sanitiserObject.length;i++){
-      if(i!==0)
-          this.removeNode(this.sanitiserObject[i].meshRoot);
-
-        this.removeLabel(this.sanitiserObject[i].label);
-        this.sanitiserObject[i]   = null;
-        delete this.sanitiserObject[i];
-    }
-    
-    // this.sanitiserObject[1]   = null;
-    // this.removeNode(this.scene.getTransformNodeByID("sanitizer3"));
-    // this.sanitiserObject[2]   = null;
-
-    this.removeLabel(this.paperTowelObject.label);
-    this.paperTowelObject  = null;
-    delete this.paperTowelObject;
-    this.removeLabel(this.handSoapObject.label);
-    this.handSoapObject    = null;
-    delete this.handSoapObject;
-    this.removeMesh(this.scene.getMeshByName("glassplane"));
-    this.removeMesh(this.scene.getMeshByName("windowframeplan"));
-
-    console.log("reset suceesss");
+  removeRegisterAction(mesh){
+      if(mesh.actionManager){
+        mesh.actionManager.actions=[];
+        mesh.actionManager.dispose();
+        mesh.actionManager = null;
+        mesh.isPickable=false;
+        mesh.renderOutline = false;   
+      }
   }
+  async resetScene(){
+    return  new Promise(resolve => {
+            this.objectiveCount=0;
+            this.totalobjective=0;
+
+            this.trollyObject      = null;
+            delete this.trollyObject;
+
+            this.removeLabel(this.tableObject.label);
+            this.tableObject       = null;
+            delete this.tableObject;
+
+            this.removeLabel(this.cabinetObject.label);
+            this.cabinetObject     = null;
+            delete this.cabinetObject;
+
+            this.removeLabel(this.doorObject.label);
+            this.doorObject        = null;
+            delete this.doorObject;
+            
+            this.removeLabel(this.windowObject.label);
+            this.windowObject      = null;
+            delete this.windowObject;
+            this.removeLabel(this.acItem.label);
+            this.acItem            = null;
+            // delete this.acItem;
+
+            this.removeLabel(this.lightswitchObject.label);
+            this.lightswitchObject = null;
+            // delete this.lightswitchObject;
+            
+            this.removeLabel(this.fanswitchobject.label);
+            this.fanswitchobject   = null;
+            // delete this.fanswitchobject;
+
+            this.removeValidation(this.bpMachineItem.meshRoot);
+            this.removeLabel(this.bpMachineItem.label);
+            this.bpMachineItem.reset();
+            this.bpMachineItem     = null;
+            // delete this.bpMachineItem;
+
+            this.removeValidation(this.connectionItem.meshRoot);
+            this.removeLabel(this.connectionItem.label);
+            this.connectionItem.reset();
+            this.connectionItem    = null; 
+            // delete this.connectionItem;
+
+            this.removeValidation(this.alcohalItem.meshRoot);
+            this.removeLabel(this.alcohalItem.label);
+            this.alcohalItem.reset();
+            this.alcohalItem       = null;
+            // delete this.alcohalItem;
+
+            this.removeLabel(this.maskItem.label);
+            this.maskItem.reset();
+            this.maskItem          = null;
+            // delete this.maskItem;
+
+            this.removeValidation(this.drainBagItem.meshRoot);
+            this.removeLabel(this.drainBagItem.label);
+            this.drainBagItem.reset();
+            this.drainBagItem      = null;
+            // delete this.drainBagItem;
+
+            this.removeLabel(this.ccpdRecordBook.label);
+            this.ccpdRecordBook.reset();
+            this.ccpdRecordBook    = null;
+            // delete this.ccpdRecordBook;
+
+            this.removeLabel(this.apdmachinePackage.label);
+            this.removeValidation(this.apdmachinePackage.meshRoot);
+            this.apdmachinePackage.reset();
+            this.apdmachinePackage = null;
+            // delete this.apdmachinePackage;
+            
+            for(let i=0;i<this.dialysisSolutionObject.length;i++){
+              this.dialysisSolutionObject[i].removeValidation();
+              this.removeLabel(this.dialysisSolutionObject[i].label);
+              this.removeNode(this.dialysisSolutionObject[i].meshRoot);
+              this.dialysisSolutionObject[i].reset();
+              this.dialysisSolutionObject[i] = null;
+              delete this.dialysisSolutionObject[i];
+            }
+          for(let i=0;i<this.sanitiserObject.length;i++){
+              if(i!==0)
+                  this.removeNode(this.sanitiserObject[i].meshRoot);
+
+                this.removeLabel(this.sanitiserObject[i].label);
+                this.sanitiserObject[i].reset();
+                this.sanitiserObject[i]   = null;
+                delete this.sanitiserObject[i];
+            }
+            
+            // this.sanitiserObject[1]   = null;
+            // this.removeNode(this.scene.getTransformNodeByID("sanitizer3"));
+            // this.sanitiserObject[2]   = null;
+
+            this.removeLabel(this.paperTowelObject.label);
+            this.paperTowelObject  = null;
+            delete this.paperTowelObject;
+            this.removeLabel(this.handSoapObject.label);
+            this.handSoapObject    = null;
+            delete this.handSoapObject;
+            this.removeMesh(this.scene.getMeshByName("glassplane"));
+            this.removeMesh(this.scene.getMeshByName("windowframeplan"));
+          console.log("reset suceesss");
+          resolve('resolved');
+      });
+   }
   removeValidation(node){
     if(node){
         node.getChildMeshes().forEach(childmesh => {
@@ -922,20 +943,23 @@ export default class MainScene {
     }).start();
     new TWEEN.Tween(this.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
    }
-   setGame(){
-    // this.level=1;
-    if(this.isResetScene){
-        this.resetScene();
-        this.initScene().then(()=>{
-          this.startGame();
-          console.log("inn setGame ifffffffff");
-        }); 
-    }
-    else{
-        console.log("inn setGame elseeeeeeee");
-        this.startGame(); 
-      }
-   }
+   async setGame(){
+    return  new Promise(resolve => {
+        if(this.isResetScene){
+            this.resetScene().then((msg)=>{
+                this.initScene().then(()=>{
+                  this.startGame();
+                  console.log("inn setGame ifffffffff");
+                }); 
+            });
+            resolve('resetGame');
+        }
+        else{
+            this.startGame(); 
+            resolve('setGame');
+        }
+     });
+  }
    enterScene(time){
       let tout = setTimeout(() => {
         clearTimeout(tout);
@@ -951,7 +975,6 @@ export default class MainScene {
          })
          const menuBtn = this.gui2D.backMenuContainer.getChildByName("menu_btn");
          menuBtn.onPointerUpObservable.add(()=>{
-            console.log(this.gui2D.backMenuContainer.getChildByName("menu_btn"));
             this.gui2D.drawbackMenu(false);
             this.isResetScene = true;
             this.gui2D.resetCamBtn.isVisible=false;
@@ -962,7 +985,6 @@ export default class MainScene {
           })
           const continueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
           continueBtn.onPointerUpObservable.add(()=>{
-             console.log(this.gui2D.backMenuContainer.getChildByName("continue_btn"));
              this.gui2D.drawbackMenu(false);
            })
       }, time);
@@ -1128,7 +1150,6 @@ export default class MainScene {
         for(let i=0;i<this.gui2D.objectiveBg.children.length;i++){
           if(i>1 && i<this.gui2D.objectiveBg.children.length-1){
               this.gui2D.objectiveBg.children[i].getChildByName("rightarrow").alpha = gameObjectives[i-2].status?1:.5;
-              // console.log(this.gui2D.objectiveBg.children[i].getChildByName("rightarrow").alpha);
               this.gui2D.objectiveBg.children[i].isVisible=false;    
               if(!gameObjectives[i-2].status && !isonce){
                   isonce =true;
@@ -1204,6 +1225,7 @@ export default class MainScene {
                         if(this.itemCount>=7){
                             this.itemCount =0;
                             this.objectiveCount++;
+                            detail.object_type.enableDrag(false);
                             gameObjectives[0].status = true;
                             this.tableObject.setDrawerAnim();
                             this.tableObject.removeAction();
@@ -1417,7 +1439,7 @@ export default class MainScene {
               this.gui2D.drawMainMenu(true);
               this.sceneCommon.removeMiniCam();
               this.gui2D.drawObjectiveMenu(false);
-              this.level =0;
+              this.level=0;
               this.resetObjectiveBar();
            }
            else{
@@ -1540,7 +1562,7 @@ export default class MainScene {
             }
         }
         this.scene.onPointerUp = (evt,pickResult)=>{
-            console.log("!! onPointerUp!!!");
+            // console.log("!! onPointerUp!!!");
             isTouch = false;
         }
         this.scene.onPointerMove = (evt,pickResult)=>{
@@ -1549,7 +1571,7 @@ export default class MainScene {
               if(isTouch){
                   const diffX = this.scene.pointerX - lastPointerX;
                   const diffY = this.scene.pointerY - lastPointerY;
-                  console.log(diffX+" "+diffY);
+                  // console.log(diffX+" "+diffY);
                   mesh.rotation.y -= diffX * 0.005;
                   mesh.rotation.x -= diffY * 0.005;
                   lastPointerX = this.scene.pointerX;

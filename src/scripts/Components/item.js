@@ -2,6 +2,7 @@
 import { GameState,gamemode,ANIM_TIME,event_objectivecomplete,IS_DRAG,rotateState } from "../scene/MainScene";
 import { randomNumber } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
+import { Control } from "babylonjs-gui";
 let showMenu = false;
 export default class Item{
         constructor(name,root,meshobject,pos,placedpos,rotation){
@@ -35,12 +36,11 @@ export default class Item{
             this.isDraging=false;
         }
         setPos(){
-            if(this.parent){
-                this.meshRoot.parent = null;
-                this.parent          = this.root.scene.getTransformNodeByID("tabledrawer");
-                this.meshRoot.parent = this.parent;
-                this.meshRoot.name   +="items";
-            }
+            
+            this.meshRoot.parent = null;
+            this.parent          = this.root.scene.getTransformNodeByID("tabledrawer");
+            this.meshRoot.parent = this.parent;
+            this.meshRoot.name   +="items";
             this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
             this.startRotation      = new BABYLON.Vector3(0,0,0);
             if(this.meshRoot.name.includes("apd_package_node"))
@@ -57,15 +57,15 @@ export default class Item{
             this.trollyPosition = position;
         }
         removeAction(){
+            // let mesh = new BABYLON.Mesh();
             this.interaction = false;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-                if(childmesh.parent.name.includes("items"))
-                    childmesh.actionManager = null;
-                childmesh.isPickable=false;
-                childmesh.renderOutline = false;   
+                if(childmesh.parent.name.includes("items")){
+                    this.root.removeRegisterAction(childmesh);
+                }
             });
             this.updateoutLine(false);
-            this.enableDrag(true);
+            this.enableDrag(false);
         }
         initAction(){
             this.interaction = true;
@@ -75,7 +75,6 @@ export default class Item{
                 // //     if(childmesh.name.includes("validation") || childmesh.name.includes("bptextplan"))    
                 // //         childmesh.isPickable=false;
                 // //     else  
-                
                 if(childmesh.isPickable)
                      this.addAction(childmesh);
             });
@@ -84,8 +83,9 @@ export default class Item{
                 mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
 
-                    // alert("itemssssssssssss");
-                    this.label.isVisible= (this.root.gamestate.state === GameState.default ||this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state<100;
+                    
+                    this.label.isVisible = (this.root.gamestate.state === GameState.default ||this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state<100;
+                    // console.log(this.pointerDragBehavior.enabled+"        "+this.meshRoot.name+"           "+mesh.isPickable+"     "+this.state+"      "+this.root.gamestate.state);
                     this.updateoutLine(this.label.isVisible);
                     
                     if(this.root.gamestate.state === GameState.inspect){
@@ -124,7 +124,7 @@ export default class Item{
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                         // console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
-                            this.pickObject = true;
+                            
                             this.label.isVisible= (this.root.gamestate.state === GameState.default ||this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state<100;
                             this.updateoutLine(this.label.isVisible);
                             
@@ -151,6 +151,7 @@ export default class Item{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                             this.label.isVisible=false;
                             this.isDraging = false;
+                            this.pickObject = true;
                             console.log("!! OnPickTrigger!! "+this.root.gamestate.state);
                             this.updateoutLine(false);
                             if(this.root.camera.radius>2.5 && this.state<100){
@@ -236,6 +237,7 @@ export default class Item{
                                         document.dispatchEvent(custom_event);
                                     });
                                 }
+                                this.root.gamestate.state = GameState.active;
                             };
                             this.root.gui2D.crossBtn._onPointerUp = ()=>{
                                 showMenu = false;
@@ -254,15 +256,17 @@ export default class Item{
             this.pointerDragBehavior.updateDragPlane = false;
             this.enableDrag(false);    
             this.pointerDragBehavior.onDragStartObservable.add((event)=>{
-                console.log("!!! gamestate!!! "+this.root.gamestate.state);
                 if( (!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect){
+                    console.log("!!! onDragStartObservable!!! "+this.root.gamestate.state);
                     this.state =0;
                     this.enableDrag(false);
                     console.log("onDragStartObservable");   
                     return;
                 }
-                if(!this.isDraging && !this.interaction)
+                if(!this.isDraging && !this.interaction){
+                    console.log("!!! 22222222onDragStartObservable!!! "+this.root.gamestate.state);
                     return;
+                }
                 
                 
             });
@@ -304,7 +308,7 @@ export default class Item{
                     else
                             this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;     
                  }
-                this.state++;
+                // this.state++;
                 // console.log(event);
             });
             this.pointerDragBehavior.onDragEndObservable.add((event)=>{
@@ -330,6 +334,7 @@ export default class Item{
                     if(this.trollyPosition && (this.meshRoot.name.includes("apd_package_node") && this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility>0)){
                         if(this.parent !== this.root.scene.getTransformNodeByID("tabledrawer")){
                             this.placedPosition = this.trollyPosition;
+                            
                             placed = true;
                             new TWEEN.Tween(this.meshRoot).to({position:this.placedPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                                 this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;
@@ -355,6 +360,7 @@ export default class Item{
                     }
 
                     if(!placed){
+                        console.log(this.placedPosition+"     "+this.startPosition);    
                         const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
                         new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                             
@@ -373,7 +379,7 @@ export default class Item{
                time=ANIM_TIME;
             this.state=0;
             this.isPlaced=true;
-            this.parent          = this.root.scene.getTransformNodeByID("tablenode");
+            this.parent           = this.root.scene.getTransformNodeByID("tablenode");
             this.meshRoot.parent  = null;
             this.meshRoot.parent  = this.parent;
             console.log("!!!! placeItem!! ");
@@ -417,8 +423,7 @@ export default class Item{
         }
         if(this.meshRoot.name.includes("apd_package_node")){
             upAng = BABYLON.Angle.FromDegrees(60).radians();
-            if(this.root.gamemode === gamemode.training && this.root.level ===3)
-                   zAng = -BABYLON.Angle.FromDegrees(180).radians();
+            zAng = -BABYLON.Angle.FromDegrees(180).radians();
         }
         rotateState.value=1;
         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x+upAng,y:this.startRotation.y,z:this.startRotation.z+BABYLON.Angle.FromDegrees(360).radians()+zAng},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
@@ -506,8 +511,8 @@ export default class Item{
                     this.label.isVisible = false;
                     this.enableDrag(false);
                     if(callevent){
-                        // const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"useccpd",level:2}});
-                        // document.dispatchEvent(custom_event);
+                        const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"useccpd",level:2}});
+                        document.dispatchEvent(custom_event);
                     }
                 }).start();
             }).start();
@@ -704,5 +709,20 @@ export default class Item{
                     }
              }
         });
+    }
+    reset(){
+        // console.log(this.name);
+        this.parent=null;
+        this.meshRoot.parent = null;
+        this.placedPosition = undefined;
+        this.placeRotation=undefined;
+        this.trollyPosition=undefined;
+        this.tablePosition=undefined;
+        this.startPosition=undefined;
+        this.meshRoot.scaling   = new BABYLON.Vector3(1,1,1);
+        this.removeAction();
+        this.pointerDragBehavior.releaseDrag();
+        this.pointerDragBehavior.detach();
+        this.pointerDragBehavior = null;
     }
 }

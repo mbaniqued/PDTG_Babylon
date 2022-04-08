@@ -26,14 +26,16 @@ export default class DoorObject{
         initAction(){
             this.interaction=true;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-               if(childmesh.name ==="mydoor" && !childmesh.actionManager)
-                  this.addAction(childmesh);
+               if(childmesh.name ==="mydoor" && !childmesh.actionManager){
+                    childmesh.isPickable=true;
+                    this.addAction(childmesh);
+               }
             });
         }
         removeAction(){
             this.interaction=false;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-                childmesh.actionManager = null;
+                this.root.removeRegisterAction(childmesh);
             });
         }
         addAction(mesh){

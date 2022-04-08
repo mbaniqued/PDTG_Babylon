@@ -26,12 +26,10 @@ export default class Table{
     }
     removeAction(){
         this.meshRoot.getChildMeshes().forEach(childmesh => {
-            if(childmesh.name.includes("table"))
-                childmesh.actionManager = null;
-            childmesh.isPickable = false;
+            if(childmesh.name.includes("table")){
+                this.root.removeRegisterAction(childmesh);
+            }
             this.updateoutLine(childmesh,false);
-            childmesh.renderOutline = false;       
-            
         });
         
     }
@@ -92,18 +90,10 @@ export default class Table{
                     if(this.root.gui2D.radialCircle.isVisible)
                         return;
                     if(this.root.camera.radius>2.5){
-                        // this.root.gamestate.state = GameState.focus;
-                        console.log("111111111111");
+                        this.root.gamestate.state = GameState.default;
                         if(this.isdrawerOpen)
                             this.state=10;
                         else    
-                            this.state=0;
-                    }
-                    if(this.state>0 && this.root.gamestate.state === GameState.default){
-                        console.log("222222222222");
-                        if(this.state>0 && this.isdrawerOpen)
-                            this.state=10;
-                         else   
                             this.state=0;
                     }
                     switch(this.state){
@@ -116,7 +106,6 @@ export default class Table{
                                 this.setDrawerAnim();
                             break;    
                         case 10:
-                                console.log("100000000000");
                                 this.setTableFocusAnim();
                                 this.meshRoot.getChildTransformNodes().forEach(childnode=>{
                                  if(childnode.name==="tabledrawer"){
@@ -124,6 +113,7 @@ export default class Table{
                                         this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z:this.meshRoot.position.z-.5));
                                     }
                                 });
+                                this.root.gamestate.state = GameState.active;
                             break;
                     }        
                     this.setLabel();    
@@ -142,9 +132,9 @@ export default class Table{
         new TWEEN.Tween(this.root.camera).to({radius:2.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
     }
     setDrawerAnim(){
+        this.root.gamestate.state = GameState.active;
         this.meshRoot.getChildTransformNodes().forEach(childnode=>{
             if(childnode.name==="tabledrawer"){
-                this.root.gamestate.state = GameState.active;
                 let drawerNode = childnode;  
                 if(!this.drawerAnim){
                     console.log("!!! in drawer!!!");

@@ -6,8 +6,6 @@ export default class GameTaskManager{
         this.root = root;
     }
     completeRoomSetUp(){
-
-
         setTimeout(() => {
             this.root.doorObject.closedoor=false;
             this.root.doorObject.openCloseDoor(false);
@@ -17,7 +15,7 @@ export default class GameTaskManager{
             this.root.lightswitchObject.isLightOff = false;
             this.root.lightswitchObject.setLight();    
             console.log(" 111completeRoomSetUp 2222");
-        }, action_time*4);
+        }, action_time*.4);
         setTimeout(() => {
             this.root.fanswitchobject.isFanOff = true;
             this.root.stopFan();

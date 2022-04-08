@@ -17,19 +17,20 @@ export default class SinkItem{
         }
         removeAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-                childmesh.actionManager = null;
-                childmesh.renderOutline=false;
+                this.root.removeRegisterAction(childmesh);
             });
-            if(this.meshRoot.name === "liquidhandsoap_node")
-                this.root.sinkArea.actionManager = null;
-
+            if(this.root.sinkArea)
+                this.root.removeRegisterAction(this.root.sinkArea);
             this.updateoutLine(this.root.sinkArea.name,false);
         }
         initAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 this.addAction(childmesh);
+                childmesh.isPickable = true;
             });
+            
             this.addAction(this.root.sinkArea);
+            this.root.sinkArea.isPickable = true;
         }
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
@@ -80,7 +81,7 @@ export default class SinkItem{
                         this.root.gui2D.resetCamBtn.isVisible=!showMenu;
                         if(showMenu){
                             if(this.root.gamemode === gamemode.training)
-                                this.root.gui2D.useBtn.isVisible = this.root.level>2;
+                                this.root.gui2D.useBtn.isVisible = this.root.level>1;
                             else
                                 this.root.gui2D.useBtn.isVisible = true;
                         }
@@ -89,6 +90,7 @@ export default class SinkItem{
                             showMenu = false;
                             this.root.gui2D.drawRadialMenu(false);  
                             this.showItem();
+                            this.root.gamestate.state = GameState.active;
                         };
                         this.root.gui2D.useBtn._onPointerUp = ()=>{
                             showMenu = false;
@@ -108,6 +110,7 @@ export default class SinkItem{
                                 document.dispatchEvent(custom_event);
                                 this.root.showResetViewButton(true);
                             }
+                            this.root.gamestate.state = GameState.active;
                             
                         };
                         this.root.gui2D.crossBtn._onPointerUp = ()=>{
