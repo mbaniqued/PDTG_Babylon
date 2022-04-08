@@ -22,7 +22,8 @@ import { FOV } from "../Common.js";
 import HandWash from "../Components/handwash.js";
 import AlcohalWipe from "../Components/alcohalwipe.js";
 import GameTaskManager from "../Components/GameTaskManager.js";
-export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7,inspect:8,validation:9,validation:10};
+import { Result } from "../Components/results.js";
+export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7,inspect:8,validation:9,validation:10,result:10};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
 export const ANIM_TIME=1000;
@@ -78,6 +79,7 @@ export default class MainScene {
     this.validationImage[1].src = '/ui/green.png';
     this.validationImage[2]     = new Image();
     this.validationImage[2].src = '/ui/cross2_png.png';
+    this.practiceResult = new Result(this);
   }
   initState(){
     this.gamestate  = {state:GameState.menu}; 
@@ -970,6 +972,13 @@ export default class MainScene {
          this.gui2D.drawLoadingPage(false);
          this.gui2D.drawObjectiveMenu(this.gamemode === gamemode.training);
          this.gui2D.userBackBtn.isVisible=true;
+         this.gui2D.submitBtn.isVisible = this.gamemode === gamemode.practice;
+
+         this.gui2D.submitBtn.onPointerUpObservable.add(()=>{
+            
+            this.gui2D.drawsubmitMenu(true);
+
+          })
          this.gui2D.userBackBtn.onPointerUpObservable.add(()=>{
             this.gui2D.drawbackMenu(true);
          })
@@ -1075,7 +1084,7 @@ export default class MainScene {
                   case 3:
                       this.gui2D.objectiveTitle.text = "Machine Prepration";
                       this.totalobjective=11; 
-                      const values = ["Use the alcohal wipes to clean the APD Machin& Rack","Place the hand disinfectant on the APD Rack","Inspect & Validate the APD Cassette Package",
+                      const values = ["Use the alcohal wipes to clean the APD Machin & Rack","Place the hand disinfectant on the APD Rack","Inspect & Validate the APD Cassette Package",
                                       "Inspect & validate the selected Dialysis Solutions","Inspect & Validate the connection shield","Inspect & validate the drain bag",
                                       "Open the drain bag packaging","Place the Drain bag on the bottom tray od APD Rack","Place the dislysis solution on the top of the APD Machine",
                                       "Place the following items on the top of the APD Rack:\n\u2022 Dialysis Solution \n\u2022 APD Cassette Package",

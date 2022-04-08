@@ -25,6 +25,7 @@ export default class GameTaskManager{
             this.root.windowObject.closeWindow();
         }, action_time*.8);
         setTimeout(() => {
+            this.root.isAcOff = false;
             this.root.setAc(false);
         }, action_time);
     }
