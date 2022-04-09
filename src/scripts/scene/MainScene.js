@@ -13,7 +13,7 @@ import ACRemote from "../Components/acremote.js";
 import Item from "../Components/item.js";
 import GUI2D from "../gui.js";
 import LightSwitch from "../Components/lightswtich.js";
-import CabinetItem from "../Components/cabinetitem.js"; 
+import CabinetItem, { diasolutionpos3, diasolutionpos4, sanitizerpos2 } from "../Components/cabinetitem.js"; 
 import FanSwitch from "../Components/fanswitch.js";
 import SinkItem from "../Components/sinkitem.js";
 import TWEEN from '@tweenjs/tween.js';
@@ -23,6 +23,7 @@ import HandWash from "../Components/handwash.js";
 import AlcohalWipe from "../Components/alcohalwipe.js";
 import GameTaskManager from "../Components/GameTaskManager.js";
 import { Result } from "../Components/results.js";
+import { diasolutionpos1,diasolutionpos2,sanitizerpos1} from "../Components/cabinetitem.js";
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7,inspect:8,validation:9,validation:10,result:10};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
@@ -959,8 +960,8 @@ export default class MainScene {
         else{
             this.startGame(); 
             resolve('setGame');
-        }
-     });
+         }
+      });
   }
    enterScene(time){
       let tout = setTimeout(() => {
@@ -975,15 +976,37 @@ export default class MainScene {
          this.gui2D.submitBtn.isVisible = this.gamemode === gamemode.practice;
 
          this.gui2D.submitBtn.onPointerUpObservable.add(()=>{
-            
             this.gui2D.drawsubmitMenu(true);
+            this.gui2D.submitBtn.isVisible=false;
+          });
+           const resultmenuBtn = this.gui2D.submitMenuContainer.getChildByName("result_btn");
+            resultmenuBtn.onPointerUpObservable.add(()=>{
+              this.gamestate.state = GameState.result;
+              this.gui2D.drawsubmitMenu(false);
+              this.isResetScene = true;
+              this.gui2D.resetCamBtn.isVisible=false;
+              this.sceneCommon.removeMiniCam();
+              this.gui2D.drawObjectiveMenu(false);
+              this.gui2D.drawResultShowMenu(true);
+              this.updateResult();
 
           })
+          const resultcontinueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
+          resultcontinueBtn.onPointerUpObservable.add(()=>{
+             this.gui2D.drawsubmitMenu(false);
+             this.gui2D.submitBtn.isVisible=true;
+           })
+          const resultdoneBtn = this.gui2D.resultContainer.getChildByName("doneresult");
+          resultdoneBtn.onPointerUpObservable.add(()=>{
+            this.gamestate.state = GameState.menu;
+            this.gui2D.drawResultShowMenu(false);
+            this.gui2D.drawMainMenu(true);
+         })
          this.gui2D.userBackBtn.onPointerUpObservable.add(()=>{
             this.gui2D.drawbackMenu(true);
          })
-         const menuBtn = this.gui2D.backMenuContainer.getChildByName("menu_btn");
-         menuBtn.onPointerUpObservable.add(()=>{
+         const levelmenuBtn = this.gui2D.backMenuContainer.getChildByName("menu_btn");
+         levelmenuBtn.onPointerUpObservable.add(()=>{
             this.gui2D.drawbackMenu(false);
             this.isResetScene = true;
             this.gui2D.resetCamBtn.isVisible=false;
@@ -992,8 +1015,8 @@ export default class MainScene {
             this.sceneCommon.removeMiniCam();
             this.gui2D.drawObjectiveMenu(false);
           })
-          const continueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
-          continueBtn.onPointerUpObservable.add(()=>{
+          const levelcontinueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
+          levelcontinueBtn.onPointerUpObservable.add(()=>{
              this.gui2D.drawbackMenu(false);
            })
       }, time);
@@ -1457,6 +1480,7 @@ export default class MainScene {
            }
         }
         this.gui2D.endsessionBtn._onPointerUp=()=>{
+          this.level=0;
           this.isResetScene = true;
           this.gui2D.resetCamBtn.isVisible=false;
           this.gui2D.drawLevelComplete(false);
@@ -1589,29 +1613,98 @@ export default class MainScene {
           }
       }
    }
-  //   this.scene.onPointerObservable.add((pointerInfo) => {    
-  //       switch (pointerInfo.type) {
-  //             case BABYLON.PointerEventTypes.POINTERDOWN:{
-  //                     const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-  //                   }
-  //               break;
-  //             case BABYLON.PointerEventTypes.POINTERUP:{
-  //                 }
-  //               break;
-  //             case BABYLON.PointerEventTypes.POINTERMOVE:{ 
-  //                     // const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-                      
-  //                     else{
-  //                       if(this.pickMesh)
-  //                         // this.pickMesh.renderOutline=false;
-  //                         // this.updateObjectOutLine(false);
-  //                         this.pickMesh = null;
-  //                     }
-  //                 }
-  //               break;
-  //           }
-  //       });
-  //  }
+   updateResult(){
+      this.practiceResult.roomPreparation.isVisible=false;
+      this.practiceResult.itemPreparation.isVisible=false;
+      this.practiceResult.selfPreparation.isVisible=false;
+      this.practiceResult.machinePreparation.isVisible=false;
+      switch(this.level){
+        case 0:{
+              const result =[];
+              result[0] = this.doorObject.closedoor;
+              result[1] = this.lightswitchObject.isLightOff;
+              result[2] = this.fanswitchobject.isFanOff;
+              result[3] = this.windowObject.windowClose;
+              result[4] = this.acItem.isAcOff;
+              this.practiceResult.updateRoomResult(result);
+              this.practiceResult.roomPreparation.isVisible=true;
+          }
+          break;
+        case 1:{
+              const result =[];
+              result[0] = this.apdmachinePackage.placedPosition == this.apdmachinePackage.tablePosition;
+              result[1] = this.ccpdRecordBook.placedPosition    == this.ccpdRecordBook.tablePosition;
+              result[2] = this.drainBagItem.placedPosition      == this.drainBagItem.tablePosition;
+              result[3] = this.alcohalItem.placedPosition      == this.alcohalItem.tablePosition;
+              result[4] = this.bpMachineItem.placedPosition    == this.bpMachineItem.tablePosition;
+              result[5] = this.connectionItem.placedPosition   == this.connectionItem.tablePosition;
+              result[6] = this.maskItem.placedPosition         == this.maskItem.tablePosition;
+
+              for(let i=0;i<this.dialysisSolutionObject.length;i++){
+                if(this.dialysisSolutionObject[i].placedPosition == diasolutionpos1 || this.dialysisSolutionObject[i].placedPosition == diasolutionpos2){
+                   result[7] = true;
+                }
+              }
+              for(let i=0;i<this.sanitiserObject.length;i++){
+                if(this.sanitiserObject[i].placedPosition == sanitizerpos1){
+                   result[8] = true;
+                }
+              }
+              this.practiceResult.updateItemResult(result);
+              this.practiceResult.itemPreparation.isVisible=true;
+          }
+         break;
+         case 2:{
+                const result=[];
+                result[0] = this.bpRecord.length>0;
+                result[1] = this.ccpdRecordBook.parent === this.scene.getCameraByName("maincamera");
+                result[2] = this.ccpdbpInputField.text.length>0;
+                result[3] = this.maskItem.parent === this.scene.getCameraByName("maincamera");
+                result[4] = this.handwashactivity.washhand;
+                result[5] = this.paperTowelObject.usepaperTowel;
+                this.practiceResult.updateselfResult(result);
+                this.practiceResult.selfPreparation.isVisible=true;
+            }
+           break;
+           case 3:{
+              const result=[]; 
+                result[0] = this.wipeAlcohal.accessAlcohal;
+                 for(let i=0;i<this.sanitiserObject.length;i++){
+                    if(this.sanitiserObject[i].placedPosition == sanitizerpos2){
+                       result[1] = true;
+                    }
+                  }
+                  result[2] = this.apdmachinePackage.valdiationCount>0;
+                  result[3] = this.apdmachinePackage.apdValidateType===0;
+                  result[4] = this.apdmachinePackage.apdValidateType===0;
+
+
+                  result[8] = this.connectionItem.valdiationCheck>0;
+                  result[9] = this.connectionItem.valdiationCheck>0;
+
+
+
+                  result[10] = this.drainBagItem.valdiationCheck>0;
+                  result[11] = this.drainBagItem.valdiationCheck>0;
+                  this.drainBagItem.meshRoot.getChildMeshes().forEach(childmesh => {
+                  if(childmesh.id.includes("DrainBagPlasticCover"))
+                        result[12] = !childmesh.isVisible;
+                  });
+                  result[13] = this.drainBagItem.placeRotation == this.drainBagItem.trollyPosition;
+                  for(let i=0;i<this.dialysisSolutionObject.length;i++){
+                      if(this.dialysisSolutionObject[i].placedPosition == diasolutionpos4){
+                        result[10] = true;
+                      }
+                      if(this.dialysisSolutionObject[i].placedPosition == diasolutionpos3){
+                       result[11] = true;
+                    }
+                  }
+                  result[12] = this.apdmachinePackage.placedPosition == this.apdmachinePackage.trollyPosition;
+                  result[13] = this.scene.getMeshByName("apd_machinetxt_plan").visibility;
+            }
+            break
+      }
+   }
 }
 
 

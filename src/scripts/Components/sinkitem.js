@@ -13,6 +13,7 @@ export default class SinkItem{
             this.label.isPointerBlocker=true;
             this.initAction();
             this.state=0;
+            this.usepaperTowel =false;
 
         }
         removeAction(){
@@ -106,6 +107,7 @@ export default class SinkItem{
 
                             }
                             else{
+                                this.usepaperTowel =true;
                                 let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:2,msg:"use_papertowel"}});
                                 document.dispatchEvent(custom_event);
                                 this.root.showResetViewButton(true);

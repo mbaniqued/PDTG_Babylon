@@ -3,7 +3,7 @@ import * as GUI from 'babylonjs-gui';
 export const ROOM_PREPRATION=["Close the Door","Switch on the Lights","Turn-off the Fan","Close the window","Turn off the AC using the remote"];
 export const ITEM_PREPRATION=["Place the APD Cassette Package on the table","Place the CCPD Record Book on the table","Place the Drain Bag Package on the table"
 ,"Place the Alcohal wipe on the table","Place the BP monitor on the table","Place the Connection Shiels on the table","Place the Face Mask on the table","Place the Dialysis Solution on the table"
-,"Place the Face Mask on the table","Place the Hand Disinfectant on the table"];
+,"Place the Hand Disinfectant on the table"];
 export const SELF_PREPRATION=["Measure your blood pressure using the BP Monitor","Access the CCPD Record Book","Record your BP in the CCPD Record Book","Use a Face Mask"
 ,"Navigate to the sink,and wash you hands","Dry your hands with the paper towel"]
 export const MACHINE_PREPRATION=["Use the alcohol wipes to clean the APD Machine and Rack","Place the hand disinfectant on the APD Rack","Inspect and Validate the APD Cassette Package"
@@ -12,7 +12,7 @@ export const MACHINE_PREPRATION=["Use the alcohol wipes to clean the APD Machine
 ,"Validate Field : Dialysis Solution Blue Twist Cap","Validate Field : Dialysis Solution Volume","Validate Field : Dialysis Solution Blue Twist Cap","Validate Field : Dialysis Solution Green Frangible Seal"
 ,"Validate Field : Dialysis Solution Concentration","Validate Field : Dialysis Solution Expiration Date","Inspect and validate the Connection Shield","Validate Field : Connection Shield Expiry Date"
 ,"Inspect and validate the Drain Bag","Validate Field : Drain Bag Expiry Date","Open the drain bag packaging","Place the Drain Bag on the bottom tray of the APD Rack"
-,"Place the Dialysis Solution on top of the APD Machine","Place the Dialysis Solution on top of the APD Rack","Place the Hand Disinfectant on top of the APD Rack"
+,"Place the Dialysis Solution on top of the APD Machine","Place the Dialysis Solution on top of the APD Rack"
 ,"Place the APD Cassette Package on top of the APD Rack","Navigate to the APD Machine, and click on the green button to turn-on the device"
 ,]
 
@@ -83,22 +83,16 @@ export class Result{
              resultbar.paddingTopInPixels = 10;
              contentpanel.addControl(resultbar);
          }
-         this.updateRoomResult();
      }
-     updateRoomResult(){
+     updateRoomResult(result){
         const containter =this.roomPreparation.getChildByName("room_content_container");
-        
         for(let i=0;i<ROOM_PREPRATION.length;i++){
-            const bar = containter.children[i];
-            console.log(bar);
-            if(i%2==0){
-                 const arrow = bar.getChildByName("resultarrow");
-                 arrow.isVisible = false;
-                 bar.color = DISABECOLOR;
-                 bar.background = DISABECOLOR;
-            }
+            const bar   = containter.children[i];
+            const arrow = bar.getChildByName("resultarrow");
+            arrow.isVisible = result[i];
+            bar.color = result[i]?FOCUSCOLOR:DISABECOLOR;
+            bar.background = result[i]?FOCUSCOLOR:DISABECOLOR;
         }
-        
      }
      createItemResult(){
         this.itemPreparation = new GUI.Container("item_container");   
@@ -143,7 +137,8 @@ export class Result{
         durationresult.leftInPixels=-60;
         this.itemPreparation.addControl(durationresult);
 
-        const contentscrollpanel = new GUI.ScrollViewer();
+        const contentscrollpanel = new GUI.ScrollViewer("item_scroll_container");
+        contentscrollpanel.name = "item_scroll_container";
         contentscrollpanel.widthInPixels = this.itemPreparation.widthInPixels;
         contentscrollpanel.heightInPixels = this.itemPreparation.heightInPixels-150;
         contentscrollpanel.paddingLeftInPixels=5;
@@ -151,6 +146,7 @@ export class Result{
         contentscrollpanel.color = "#FFFFFF00";
         contentscrollpanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
         const contentpanel = new GUI.StackPanel("item_content_container");   
+        contentpanel.name = "item_content_container";
         // contentpanel.widthInPixels = this.itemPreparation.widthInPixels;
         // contentpanel.heightInPixels = this.itemPreparation.heightInPixels-100;
         contentpanel.background = "#FFFFFF00";
@@ -165,6 +161,17 @@ export class Result{
              resultbar.background = FOCUSCOLOR;
              resultbar.color = FOCUSCOLOR;
          }
+     }
+     updateItemResult(result){
+        const containter  =this.itemPreparation.getChildByName("item_scroll_container");
+        const containter1 =containter.getChildByName("item_content_container");
+        for(let i=0;i<ITEM_PREPRATION.length;i++){
+            const bar   = containter1.children[i];
+            const arrow = bar.getChildByName("resultarrow");
+            arrow.isVisible = result[i];
+            bar.color = result[i]?FOCUSCOLOR:DISABECOLOR;
+            bar.background = result[i]?FOCUSCOLOR:DISABECOLOR;
+        }
      }
      createSelfResult(){
         this.selfPreparation = new GUI.Container("self_container");   
@@ -222,6 +229,16 @@ export class Result{
              resultbar.paddingTopInPixels = 10;
              contentpanel.addControl(resultbar);
          }
+     }
+     updateselfResult(result){
+        const containter =this.selfPreparation.getChildByName("self_content_container");
+        for(let i=0;i<SELF_PREPRATION.length;i++){
+            const bar   = containter.children[i];
+            const arrow = bar.getChildByName("resultarrow");
+            arrow.isVisible = result[i];
+            bar.color = result[i]?FOCUSCOLOR:DISABECOLOR;
+            bar.background = result[i]?FOCUSCOLOR:DISABECOLOR;
+        }
      }
      createMachineResult(){
         this.machinePreparation = new GUI.Container("machine_container");   

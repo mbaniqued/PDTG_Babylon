@@ -1,12 +1,12 @@
 import { GameState,gamemode,ANIM_TIME,event_objectivecomplete,IS_DRAG,rotateState } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
 let showMenu = false;
-const diasolutionpos1 = new BABYLON.Vector3(.25,2,2.7);
-const diasolutionpos2 = new BABYLON.Vector3(.7,2,2.7);
-const diasolutionpos3 = new BABYLON.Vector3(-2,1.9,2.5);
-const diasolutionpos4 = new BABYLON.Vector3(-3.30,2.15,2.50);
-const sanitizerpos1   = new BABYLON.Vector3(-.8,1.90,2.7);
-const sanitizerpos2   = new BABYLON.Vector3(-1.795,1.78,2);
+export const diasolutionpos1 = new BABYLON.Vector3(.25,2,2.7);
+export const diasolutionpos2 = new BABYLON.Vector3(.7,2,2.7);
+export const diasolutionpos3 = new BABYLON.Vector3(-2,1.9,2.5);
+export const diasolutionpos4 = new BABYLON.Vector3(-3.30,2.15,2.50);
+export const sanitizerpos1   = new BABYLON.Vector3(-.8,1.90,2.7);
+export const sanitizerpos2   = new BABYLON.Vector3(-1.795,1.78,2);
 let dialysis_tablepos=0,checkdialysisValidation=0;
 
 

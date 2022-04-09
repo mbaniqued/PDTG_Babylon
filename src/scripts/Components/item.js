@@ -29,7 +29,7 @@ export default class Item{
             this.tout=undefined;
             this.tween=undefined;
             this.valdiationCheck=0;
-            this.valdiationCount=0,this.isValidationDone=[];
+            this.valdiationCount=0,this.isValidationDone=[],this.apdValidateType=-1,this.isapdTubeValidate=false;
             this.inspectDone=false;
             this.trollyPosition=undefined;
             this.interaction=false;
@@ -659,14 +659,20 @@ export default class Item{
      checkValidation(mesh_name){
         let custom_event = undefined;
         if(this.name.includes("APD Cassette")){
-             if(!this.isValidationDone[this.valdiationCount]){
+             if(!this.isValidationDone[this.valdiationCount] && this.valdiationCheck>0){
                 this.isValidationDone[this.valdiationCount]=true;
                 this.valdiationCount++;
              }
-            if(mesh_name === "apd_highlight_plan")
+            if(mesh_name === "apd_highlight_plan"){
+                if(this.valdiationCheck>0)
+                    this.apdValidateType =0;
                 this.root.updateApdValidatetion(this.valdiationCheck,0);
-            else
+            }
+            else{
+                if(this.valdiationCheck>0)
+                    this.apdValidateType =1;
                 this.root.updateApdValidatetion(this.valdiationCheck,1);
+            }
             if(this.valdiationCount>=2)
                 custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"apd_validation",level:3}});
         }

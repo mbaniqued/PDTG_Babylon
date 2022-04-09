@@ -47,6 +47,8 @@ export default class AlcohalWipe{
                 this.drawalcohalwipe(false,i);
             }
             this.usealcohalwipe=false;
+            this.accessAlcohal=false;
+
             
         }
         createWipeCleanSopt(){
@@ -75,11 +77,11 @@ export default class AlcohalWipe{
             
             this.root.game.engine.runRenderLoop(() => {
                 if(this.usealcohalwipe){
-                const width  = this.root.game.engine.getRenderWidth();
-                const height = this.root.game.engine.getRenderHeight();
-                this.alocohalwipe.leftInPixels = this.root.scene.pointerX - (width / 2.0);
-                this.alocohalwipe.topInPixels  = this.root.scene.pointerY - (height / 2.0);
-                this.alocohalwipe.isPointerBlocker=false;
+                        const width  = this.root.game.engine.getRenderWidth();
+                        const height = this.root.game.engine.getRenderHeight();
+                        this.alocohalwipe.leftInPixels = this.root.scene.pointerX - (width / 2.0);
+                        this.alocohalwipe.topInPixels  = this.root.scene.pointerY - (height / 2.0);
+                        this.alocohalwipe.isPointerBlocker=false;
                 }
             });                
             this.touch=false;
@@ -138,6 +140,7 @@ export default class AlcohalWipe{
                 }
             }
             if(this.checkallClear()){
+                this.usealcohalwipe=true;
                 this.usealcohalwipe=false;
                 this.alocohalwipe.isVisible = false;
                 this.msg.isVisible = false;
@@ -171,6 +174,7 @@ export default class AlcohalWipe{
             return allclear;
         }
         reset(){
+            this.accessAlcohal=false;
             this.usealcohalwipe=true;
             this.alocohalwipe.isVisible=true;
             this.msg.isVisible=true;

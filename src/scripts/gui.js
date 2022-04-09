@@ -340,7 +340,7 @@ export default class GUI2D{
         const title   =  this.createText("title","Preparing the room...",60,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false); 
         this.setTextOutLine(title,"#000000",2);
         title.leftInPixels = -550;
-        title.topInPixels  =  300;
+        title.topInPixels  =  400;
         this.loaginBg.addControl(title);
         this.loaginBg.isVisible=false;
       }
@@ -587,14 +587,14 @@ export default class GUI2D{
           arrowTxt.topInPixels=10;
           arrowTxt.isPointerBlocker = false;
 
-          const menuBtn     = this.createRectBtn("menu_btn",132,36,2,"#F55656",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"YES END SESSION"
+          const resultBtn     = this.createRectBtn("result_btn",132,36,2,"#F55656",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"YES END SESSION"
           ,"#FFFFFF",14,false);  
-          menuBtn.topInPixels = 75;
+          resultBtn.topInPixels = 75;
           
           this.submitMenuContainer.addControl(popupRect);
           this.submitMenuContainer.addControl(title);
           this.submitMenuContainer.addControl(continueBtn);
-          this.submitMenuContainer.addControl(menuBtn);
+          this.submitMenuContainer.addControl(resultBtn);
           this.advancedTexture.addControl(this.submitMenuContainer);
           this.drawsubmitMenu(false);
       }

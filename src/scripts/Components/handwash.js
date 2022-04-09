@@ -25,6 +25,7 @@ export default class HandWash{
         this.iconStartPos=null;
         this.iconNo=0;
         this.iconStack=[];
+        this.washhand=false;
         shuffleArray(iconPos);
         for (let i=0;i<iconPos.length;i++){
             this.handwashIcon[i]      =  this.createhandIcon("step"+(i+1),"ui/handwash/Step"+(i+1)+".png","ui/handwash/Step"+(i+1)+"_incorrect.png",iconTxt[i],iconPos[i][0],iconPos[i][1]);
@@ -189,7 +190,7 @@ export default class HandWash{
          for(let i=0;i<this.iconStack.length;i++){
             this.iconStack[i].leftInPixels =  endX+i*135;  
             this.iconStack[i].topInPixels  =  endY;
-            console.log(this.iconStack[i].name);
+            // console.log(this.iconStack[i].name);
          }
          if(this.iconStack.length>=this.handwashIcon.length){
             let allcorrect=false;
@@ -199,8 +200,10 @@ export default class HandWash{
                else   
                   allcorrect = false;
             }
-            if(this.root.gamemode !== gamemode.training)
+            if(this.root.gamemode !== gamemode.training){
                allcorrect = true;
+               this.washhand = true;
+            }
             if(allcorrect ){
                this.doneBtn.isVisible=true;
                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:2,msg:"handwash_complete"}});
@@ -209,6 +212,7 @@ export default class HandWash{
          }
      }
      reset(){
+         this.washhand=false;
          this.doneBtn.isVisible=false;
          this.iconStack=[];
          this.iconStartPos=null;
