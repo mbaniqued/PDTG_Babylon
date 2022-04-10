@@ -29,6 +29,7 @@ export class Result{
      }
      createRoomResult(){
         this.roomPreparation = new GUI.Container("room_container");   
+        this.roomPreparation.isPointerBlocker=true;
         this.roomPreparation.widthInPixels  = 500;
         this.roomPreparation.heightInPixels = 600;
         this.roomPreparation.background = "#BCE6EC";
@@ -96,6 +97,7 @@ export class Result{
      }
      createItemResult(){
         this.itemPreparation = new GUI.Container("item_container");   
+        this.itemPreparation.isPointerBlocker=true;
         this.itemPreparation.widthInPixels  = 500;
         this.itemPreparation.heightInPixels = 600;
         this.itemPreparation.background = "#BCE6EC";
@@ -175,6 +177,7 @@ export class Result{
      }
      createSelfResult(){
         this.selfPreparation = new GUI.Container("self_container");   
+        this.selfPreparation.isPointerBlocker=true;
         this.selfPreparation.widthInPixels  = 500;
         this.selfPreparation.heightInPixels = 600;
         this.selfPreparation.background = "#BCE6EC";
@@ -242,6 +245,7 @@ export class Result{
      }
      createMachineResult(){
         this.machinePreparation = new GUI.Container("machine_container");   
+        this.machinePreparation.isPointerBlocker=true;
         this.machinePreparation.widthInPixels  = 500;
         this.machinePreparation.heightInPixels = 600;
         this.machinePreparation.background = "#BCE6EC";
