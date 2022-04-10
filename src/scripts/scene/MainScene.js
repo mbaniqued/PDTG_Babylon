@@ -117,6 +117,7 @@ export default class MainScene {
     this.drainBagItem.setTrollyPosition({x:-265,y:1,z:138});
     this.createdrainBagValidation();
     this.ccpdRecordBook     = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
+    // this.ccpdRecordBook2    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook").clone(),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage  = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
     console.log(this.apdmachinePackage.startPosition+"        "+this.apdmachinePackage.placedPosition);
     this.apdmachinePackage.setTrollyPosition({x:-231,y:-16,z:8});
@@ -162,7 +163,7 @@ export default class MainScene {
   addevents(){
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
-      const val=1;
+      const val=.001;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -185,11 +186,15 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-        // this.apdmachinePackage.meshRoot.position = new BABYLON.Vector3(0,-125,-100); 
-        // this.apdmachinePackage.meshRoot.scaling  = new BABYLON.Vector3(2,2,2); 
-        // this.apdmachinePackage.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
-        // this.scene.getMeshByName("validation_tube_plan").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());  
-        console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
+      // this.ccpdRecordBook.meshRoot.parent = this.scene.getCameraByName("maincamera");
+      // this.ccpdRecordBook.meshRoot.scaling.set(.003,.013,.013);
+      // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(SX,SY,1.01);
+
+      // this.ccpdRecordBook2.meshRoot.parent = this.scene.getCameraByName("maincamera");
+      // this.ccpdRecordBook2.meshRoot.scaling.set(.003,.003,.003);
+      // this.scene.getMeshByName("ccpdplane").position = new BABYLON.Vector3(SX,SY,SZ);
+      
+      console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
     // if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
@@ -1503,7 +1508,8 @@ export default class MainScene {
       mat.diffuseColor    = new BABYLON.Color3(1,0,0);
       ccpdPlan.material = mat;
       ccpdPlan.scaling.set(.35,.53,1);
-      ccpdPlan.position = new BABYLON.Vector3(0.71,0,1.05); 
+      // 0.3940000000000003 !!sy!!  -0.002!! sz !! 1.0489999999999953
+      ccpdPlan.position = new BABYLON.Vector3(0.394,-.002,1.0489); 
       ccpdPlan.isPickable=true;
       ccpdPlan.outlineWidth=0;
       ccpdPlan.isVisible=false;

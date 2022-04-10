@@ -499,14 +499,14 @@ export default class Item{
       }
       useccpdRecordBook(anim_time,callevent){
           if(this.name.includes("CCPD")){
-            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(255).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                new TWEEN.Tween(this.meshRoot.position).to({x:143,y:-136,z:1.01},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(0).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                new TWEEN.Tween(this.meshRoot.position).to({x:130,y:-100,z:1.01},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                     this.meshRoot.parent = null;
                     this.parent = this.root.scene.getCameraByName("maincamera");
                     this.meshRoot.parent = this.parent;
                     this.meshRoot.scaling.set(.003,.003,.003);
                     // this.meshRoot.position = new BABYLON.Vector3(.55,-0.23,1.1);
-                    this.meshRoot.position = new BABYLON.Vector3(.78,-0.34,1.01);
+                    this.meshRoot.position = new BABYLON.Vector3(.67,-0.24,1.01);
                     this.meshRoot.rotation = new BABYLON.Vector3(0,0,0);
                     this.label.isVisible = false;
                     this.enableDrag(false);
@@ -532,7 +532,7 @@ export default class Item{
                 this.root.scene.getMeshByName("ccpdplane").isVisible=true;
                 this.root.scene.getMeshByName("ccpdplane").isPickable=true;
             }).start();
-            new TWEEN.Tween(this.meshRoot.position).to({x:.73,y:.0,z:1.1},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.position).to({x:.4,y:.0,z:1.1},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                 this.removeAction();
             }).start();
         }
@@ -548,7 +548,7 @@ export default class Item{
         new TWEEN.Tween(frontpage.rotation).to({y:0},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.scaling).to({x:.003,y:.003,z:.003},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
         }).start();
-        new TWEEN.Tween(this.meshRoot.position).to({x:.78,y:-.34,z:1.01},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+        new TWEEN.Tween(this.meshRoot.position).to({x:.67,y:-.24,z:1.1},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
         }).start();
      }
      useMask(anim_time){
