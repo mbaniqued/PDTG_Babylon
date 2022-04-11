@@ -24,6 +24,7 @@ import AlcohalWipe from "../Components/alcohalwipe.js";
 import GameTaskManager from "../Components/GameTaskManager.js";
 import { Result } from "../Components/results.js";
 import { diasolutionpos1,diasolutionpos2,sanitizerpos1} from "../Components/cabinetitem.js";
+import { MACHINE_PREPRATION } from "../Components/results.js";
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7,inspect:8,validation:9,validation:10,result:10};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
@@ -978,6 +979,7 @@ export default class MainScene {
          this.gui2D.drawLoadingPage(false);
          this.gui2D.drawObjectiveMenu(this.gamemode === gamemode.training);
          this.gui2D.userBackBtn.isVisible=true;
+         this.gui2D.resetCamBtn.isVisible=false;
          this.gui2D.submitBtn.isVisible = this.gamemode === gamemode.practice;
 
          this.gui2D.submitBtn.onPointerUpObservable.add(()=>{
@@ -996,7 +998,7 @@ export default class MainScene {
               this.updateResult();
 
           })
-          const resultcontinueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
+          const resultcontinueBtn = this.gui2D.submitMenuContainer.getChildByName("continue_btn");
           resultcontinueBtn.onPointerUpObservable.add(()=>{
              this.gui2D.drawsubmitMenu(false);
              this.gui2D.submitBtn.isVisible=true;
@@ -1673,40 +1675,84 @@ export default class MainScene {
             }
            break;
            case 3:{
-              const result=[]; 
-                result[0] = this.wipeAlcohal.accessAlcohal;
+                const result=[]; 
+                console.log("############ "+MACHINE_PREPRATION.length);
+                for(let i=0;i<MACHINE_PREPRATION.length;i++){
+                  const value={value:""};
+                  result.push(value);
+                }
+                result[0].value = this.wipeAlcohal.accessAlcohal;
                  for(let i=0;i<this.sanitiserObject.length;i++){
                     if(this.sanitiserObject[i].placedPosition == sanitizerpos2){
-                       result[1] = true;
+                       result[1].value = true;
+                       result[24].value = true;
                     }
                   }
-                  result[2] = this.apdmachinePackage.valdiationCount>0;
-                  result[3] = this.apdmachinePackage.apdValidateType===0;
-                  result[4] = this.apdmachinePackage.apdValidateType===0;
+                  result[2].value = this.apdmachinePackage.valdiationCount>1;
+                  result[3].value = this.apdmachinePackage.apdValidateType[0];
+                  result[4].value = this.apdmachinePackage.apdValidateType[1];
 
+                  let check=false,checkCnt=0,validateDialysis=[];
+                  
+                  for(let i=0;i<this.dialysisSolutionObject.length;i++){
+                        check = this.dialysisSolutionObject[i].checkAllValidationDone();
+                        if(check)
+                            checkCnt++;
+                          result[5].value = checkCnt>1;
+                        if(this.dialysisSolutionObject[i].pickforValidation)
+                            validateDialysis.push(i);
+                  }
 
-                  result[8] = this.connectionItem.valdiationCheck>0;
-                  result[9] = this.connectionItem.valdiationCheck>0;
+                  for(let i=0;i<validateDialysis.length;i++){
+                     let index = validateDialysis[i];
+                     if(i===0){
+                          let value = this.dialysisSolutionObject[index].checkValidation["concentration_highlight_plan"];
+                          result[6].value = value;
+                          value = this.dialysisSolutionObject[index].checkValidation["expiry_highlight_plan"];
+                          result[7].value = value;
+                          value = this.dialysisSolutionObject[index].checkValidation["volume_highlight_plan"];
+                          result[8].value = value;
+                          value = this.dialysisSolutionObject[index].checkValidation["greencap_highlight_plan"];
+                          result[9].value = value;
+                          value = this.dialysisSolutionObject[index].checkValidation["cap_highlight_plan"];
+                          result[10].value = value;
+                     }
+                     if(i===1){
+                            let value = this.dialysisSolutionObject[index].checkValidation["volume_highlight_plan"];
+                            result[11].value = value;
+                            value = this.dialysisSolutionObject[index].checkValidation["cap_highlight_plan"];
+                            result[12].value = value;
+                            value = this.dialysisSolutionObject[index].checkValidation["greencap_highlight_plan"];
+                            result[13].value = value;
+                            value = this.dialysisSolutionObject[index].checkValidation["concentration_highlight_plan"];
+                            result[14].value = value;
+                            value = this.dialysisSolutionObject[index].checkValidation["expiry_highlight_plan"];
+                            result[15].value = value;
+                      }
+                  }
+                  result[16].value = this.connectionItem.valdiationCheck>0;
+                  result[17].value = this.connectionItem.valdiationCheck>0;
 
-
-
-                  result[10] = this.drainBagItem.valdiationCheck>0;
-                  result[11] = this.drainBagItem.valdiationCheck>0;
+                  result[18].value = this.drainBagItem.valdiationCheck>0;
+                  result[19].value = this.drainBagItem.valdiationCheck>0;
                   this.drainBagItem.meshRoot.getChildMeshes().forEach(childmesh => {
                   if(childmesh.id.includes("DrainBagPlasticCover"))
-                        result[12] = !childmesh.isVisible;
+                        result[20].value = !childmesh.isVisible;
                   });
-                  result[13] = this.drainBagItem.placeRotation == this.drainBagItem.trollyPosition;
+                  result[21].value = this.drainBagItem.placedPosition == this.drainBagItem.trollyPosition;
                   for(let i=0;i<this.dialysisSolutionObject.length;i++){
                       if(this.dialysisSolutionObject[i].placedPosition == diasolutionpos4){
-                        result[10] = true;
+                        result[22].value = true;
                       }
                       if(this.dialysisSolutionObject[i].placedPosition == diasolutionpos3){
-                       result[11] = true;
+                       result[23].value = true;
                     }
                   }
-                  result[12] = this.apdmachinePackage.placedPosition == this.apdmachinePackage.trollyPosition;
-                  result[13] = this.scene.getMeshByName("apd_machinetxt_plan").visibility;
+                  result[25].value = this.apdmachinePackage.placedPosition == this.apdmachinePackage.trollyPosition;
+                  result[26].value = this.scene.getMeshByName("apd_machinetxt_plan").visibility;
+
+                  this.practiceResult.updateMachineResult(result);
+                  this.practiceResult.machinePreparation.isVisible=true;
             }
             break
       }

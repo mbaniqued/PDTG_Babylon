@@ -140,7 +140,7 @@ export default class AlcohalWipe{
                 }
             }
             if(this.checkallClear()){
-                this.usealcohalwipe=true;
+                this.accessAlcohal=true;
                 this.usealcohalwipe=false;
                 this.alocohalwipe.isVisible = false;
                 this.msg.isVisible = false;

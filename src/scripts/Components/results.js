@@ -12,12 +12,13 @@ export const MACHINE_PREPRATION=["Use the alcohol wipes to clean the APD Machine
 ,"Validate Field : Dialysis Solution Blue Twist Cap","Validate Field : Dialysis Solution Volume","Validate Field : Dialysis Solution Blue Twist Cap","Validate Field : Dialysis Solution Green Frangible Seal"
 ,"Validate Field : Dialysis Solution Concentration","Validate Field : Dialysis Solution Expiration Date","Inspect and validate the Connection Shield","Validate Field : Connection Shield Expiry Date"
 ,"Inspect and validate the Drain Bag","Validate Field : Drain Bag Expiry Date","Open the drain bag packaging","Place the Drain Bag on the bottom tray of the APD Rack"
-,"Place the Dialysis Solution on top of the APD Machine","Place the Dialysis Solution on top of the APD Rack"
+,"Place the Dialysis Solution on top of the APD Machine","Place the Dialysis Solution on top of the APD Rack","Place the hand disinfectant on the APD Rack"
 ,"Place the APD Cassette Package on top of the APD Rack","Navigate to the APD Machine, and click on the green button to turn-on the device"
 ,]
 
-const FOCUSCOLOR = "#50F10042";
+const FOCUSCOLOR  = "#50F10042";
 const DISABECOLOR = "#D6D6D642";
+const GREYCOLOR   = "#84848442";
 export class Result{
      constructor(root){
         this.root = root;
@@ -29,6 +30,7 @@ export class Result{
      }
      createRoomResult(){
         this.roomPreparation = new GUI.Container("room_container");   
+        this.roomPreparation.isVisible =false;
         this.roomPreparation.isPointerBlocker=true;
         this.roomPreparation.widthInPixels  = 500;
         this.roomPreparation.heightInPixels = 600;
@@ -97,6 +99,7 @@ export class Result{
      }
      createItemResult(){
         this.itemPreparation = new GUI.Container("item_container");   
+        this.itemPreparation.isVisible = false;
         this.itemPreparation.isPointerBlocker=true;
         this.itemPreparation.widthInPixels  = 500;
         this.itemPreparation.heightInPixels = 600;
@@ -177,6 +180,7 @@ export class Result{
      }
      createSelfResult(){
         this.selfPreparation = new GUI.Container("self_container");   
+        this.selfPreparation.isVisible=false;
         this.selfPreparation.isPointerBlocker=true;
         this.selfPreparation.widthInPixels  = 500;
         this.selfPreparation.heightInPixels = 600;
@@ -287,7 +291,7 @@ export class Result{
         durationresult.leftInPixels=-60;
         this.machinePreparation.addControl(durationresult);
 
-        const contentscrollpanel = new GUI.ScrollViewer();
+        const contentscrollpanel = new GUI.ScrollViewer("machine_scroll_container");
         contentscrollpanel.widthInPixels = this.machinePreparation.widthInPixels;
         contentscrollpanel.heightInPixels = this.machinePreparation.heightInPixels-150;
         contentscrollpanel.paddingLeftInPixels=5;
@@ -309,6 +313,38 @@ export class Result{
              resultbar.background = FOCUSCOLOR;
              resultbar.color = FOCUSCOLOR;
          }
+     }
+     updateMachineResult(result){
+        const containter  = this.machinePreparation.getChildByName("machine_scroll_container");
+        const containter1 = containter.getChildByName("machine_content_container");
+        for(let i=0;i<MACHINE_PREPRATION.length;i++){
+            const bar   = containter1.children[i];
+            const arrow = bar.getChildByName("resultarrow");
+            const cross = bar.getChildByName("cross");
+            arrow.isVisible=false;
+            cross.isVisible=false;
+            bar.color = DISABECOLOR;
+            bar.background = DISABECOLOR;
+            if(result[i].value  === true){
+                arrow.isVisible = true;
+                bar.color       = FOCUSCOLOR;
+                bar.background  = FOCUSCOLOR;
+            }
+
+            if(result[i].value==1){
+                arrow.isVisible = true;
+                bar.color       = FOCUSCOLOR;
+                bar.background = FOCUSCOLOR;
+            }
+            else if(result[i].value==2){
+                    cross.isVisible = true;
+                    bar.color = GREYCOLOR;
+                    bar.background = GREYCOLOR;
+            }
+
+            
+            
+        }
      }
      
 

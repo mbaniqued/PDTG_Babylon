@@ -27,7 +27,12 @@ export default class GUI2D{
         this.userExitBtn.addControl(userImg);
         this.userExitBtn.isVisible=false;
 
-        this.submitBtn    = this.createRectBtn("submitBtn",122,42,1,"#74FF45",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,"V","#FFFFFF",24,true);
+        this.submitBtn       = this.createRectBtn("submitBtn",92,42,1,"#74FF45",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,"","#FFFFFF",0,true);
+        const downArrow      =  this.createImage("arrow","ui/arrow.png",24,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        downArrow.rotation   = BABYLON.Angle.FromDegrees(270).radians(); 
+        downArrow.isVisible  = true;
+        this.submitBtn.addControl(downArrow);
+        downArrow.isPointerBlocker=false;
         this.submitBtn.isVisible=false;
         
         this.initMainMenu();
@@ -176,7 +181,7 @@ export default class GUI2D{
           });
           this.assesmentModeBtn.onPointerUpObservable.add(()=> {
             this.gameModeBtn.children[1].text="Assessment";
-            this.root.gamemode = gamemode.practice;
+            this.root.gamemode = gamemode.assessment;
             hidegamemode();
           });
           this.proceedBtn._onPointerUp=()=>{
@@ -193,11 +198,15 @@ export default class GUI2D{
         this.stage1btn      = this.createButon("prepration1btn","ui/button2.png","#ffffff00","Stage1:Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.stagebtn       = this.createButon("stagemodbtn","ui/button.png","#ffffff00","Stage1:Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         
-        this.roompreBtn     = this.createButon("roomprebtn","ui/button2.png","#ffffff00","Room Prepration",22,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.itempreBtn     = this.createButon("itemprebtn","ui/button2.png","#ffffff00","Item Prepration",22,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.selfpreBtn     = this.createButon("selfprebtn","ui/button2.png","#ffffff00","Self Prepration",22,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.machinepreBtn  = this.createButon("machineprebtn","ui/button2.png","#ffffff00","Machine Prepration",22,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.phasebtn       = this.createButon("phasebtn","ui/button.png","#ffffff00","Room Prepration",22,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.roompreBtn     = this.createButon("roomprebtn","ui/button2.png","#ffffff00","Room Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.itempreBtn     = this.createButon("itemprebtn","ui/button2.png","#ffffff00","Item Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.selfpreBtn     = this.createButon("selfprebtn","ui/button2.png","#ffffff00","Self Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.machinepreBtn  = this.createButon("machineprebtn","ui/button2.png","#ffffff00","Machine Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.phasebtn       = this.createButon("phasebtn","ui/button.png","#ffffff00","Room Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.phasebtnDisable = this.createRect("disable_rect",256,48,4,"#A2A2A280",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.phasebtnDisable.isVisible=false;
+        this.phasebtnDisable.isPointerBlocker=false;
+        
         
       }
       drawStageMenu(isDraw){
@@ -215,50 +224,52 @@ export default class GUI2D{
             this.root.gamestate.state = GameState.loading;
             this.advancedTexture.renderAtIdealSize = false;
             this.stage1btn.isVisible  =  false;
+            this.phasebtnDisable.isVisible = false;
             this.drawLoadingPage(true);
             this.root.sceneCommon.setView();
             console.log("!!! level!! "+this.root.level);
             this.root.setGame().then((msg)=>{
                 console.log(msg);
+                switch(this.root.level){
+                  case 0:
+                     this.root.enterScene(1500)
+                    break;
+                  case 1:
+                     this.root.enterScene(2000);
+                     this.root.gameTaskManager.completeRoomSetUp();
+                    break;  
+                  case 2:
+                     this.root.enterScene(3000);
+                     this.root.gameTaskManager.completeRoomSetUp();
+                     setTimeout(() => {
+                       this.root.gameTaskManager.completeItemSetUp();  
+                     }, 1500);
+                   break;  
+                  case 3:
+                     this.root.enterScene(3000);
+                     this.root.gameTaskManager.completeRoomSetUp();
+                     setTimeout(() => {
+                       this.root.gameTaskManager.completeItemSetUp();  
+                     }, 1500);
+                     setTimeout(() => {
+                       this.root.gameTaskManager.completeSelfSetUp();  
+                     }, 3000);
+                    break; 
+                }
             });
-            switch(this.root.level){
-               case 0:
-                  this.root.enterScene(1000)
-                 break;
-               case 1:
-                  this.root.enterScene(2000);
-                  this.root.gameTaskManager.completeRoomSetUp();
-                 break;  
-               case 2:
-                  this.root.enterScene(3000);
-                  this.root.gameTaskManager.completeRoomSetUp();
-                  setTimeout(() => {
-                    this.root.gameTaskManager.completeItemSetUp();  
-                  }, 1500);
-                break;  
-               case 3:
-                  this.root.enterScene(3000);
-                  this.root.gameTaskManager.completeRoomSetUp();
-                  setTimeout(() => {
-                    this.root.gameTaskManager.completeItemSetUp();  
-                  }, 1500);
-                  setTimeout(() => {
-                    this.root.gameTaskManager.completeSelfSetUp();  
-                  }, 3200);
-                 break; 
-            }
-
           }
           this.backBtn.topInPixels = 400;
           this.backBtn.isVisible   = isDraw;
           this.backBtn._onPointerUp=()=>{
             this.drawStageMenu(false);
             this.stage1btn.isVisible=false;
+            this.phasebtnDisable.isVisible = false;
             hidephasebtn();
             this.drawMainMenu(true);
+            this.root.gamestate.state = GameState.menu; 
           }
           this.stagebtn.isVisible  = isDraw;
-          this.stagebtn.children[1].leftInPixels =-20;
+          this.stagebtn.children[1].leftInPixels =-10;
           const y  = -40;
           const dy = this.stagebtn.heightInPixels+2;
           this.stagebtn.topInPixels  = y;
@@ -277,8 +288,11 @@ export default class GUI2D{
             this.stage1btn.isVisible       =  false;
           })
           const y2 = 120;  
+          this.phasebtn.isEnabled  = this.root.gamemode !== gamemode.assessment;
+          this.phasebtnDisable.isVisible = this.root.gamemode === gamemode.assessment;
+          this.phasebtnDisable.topInPixels= y2;
           this.phasebtn.isVisible = isDraw;
-          this.phasebtn.children[1].leftInPixels =-20;
+          this.phasebtn.children[1].leftInPixels =-10;
           this.phasebtn.topInPixels= y2;
           this.roompreBtn.topInPixels= y2;
           this.itempreBtn.topInPixels= y2;
@@ -642,9 +656,13 @@ export default class GUI2D{
     }
     createResultBar(msg,width,height){
       const  objectivebar     =  this.createRect("resultbar",width,height,5,"#50F10042",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
-      const  rightArrowImage  =  this.createImage("resultarrow","ui/white.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+      const  rightArrowImage  =  this.createImage("resultarrow","ui/green.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
       rightArrowImage.isVisible=true;
       objectivebar.addControl(rightArrowImage);
+
+      const  wrongArrowImage  =  this.createImage("cross","ui/cross2_png.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+      wrongArrowImage.isVisible=true;
+      objectivebar.addControl(wrongArrowImage);
       const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
       bartitle.widthInPixels  =  parseInt(width*.9);
       bartitle.heightInPixels =  height;

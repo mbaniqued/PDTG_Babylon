@@ -29,7 +29,7 @@ export default class Item{
             this.tout=undefined;
             this.tween=undefined;
             this.valdiationCheck=0;
-            this.valdiationCount=0,this.isValidationDone=[],this.apdValidateType=-1,this.isapdTubeValidate=false;
+            this.valdiationCount=0,this.isValidationDone=[],this.apdValidateType=[],this.isapdTubeValidate=false;
             this.inspectDone=false;
             this.trollyPosition=undefined;
             this.interaction=false;
@@ -664,13 +664,11 @@ export default class Item{
                 this.valdiationCount++;
              }
             if(mesh_name === "apd_highlight_plan"){
-                if(this.valdiationCheck>0)
-                    this.apdValidateType =0;
+                this.apdValidateType[0]=this.valdiationCheck;
                 this.root.updateApdValidatetion(this.valdiationCheck,0);
             }
             else{
-                if(this.valdiationCheck>0)
-                    this.apdValidateType =1;
+                 this.apdValidateType[1]=this.valdiationCheck;
                 this.root.updateApdValidatetion(this.valdiationCheck,1);
             }
             if(this.valdiationCount>=2)

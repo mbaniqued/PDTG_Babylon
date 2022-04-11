@@ -65,12 +65,12 @@ export default class Common{
             this.hemiLight.intensity         = .1;
             this.directionalLight.intensity  = .1;
             this.camera.fov   = start_fov;
-            this.camera.setTarget(new BABYLON.Vector3(-3,3,0));
+            this.camera.setTarget(new BABYLON.Vector3(-4,3,-.5));
             this.camera.position.set(0,0,0);
             this.camera.lowerRadiusLimit = 0;
             this.camera.upperRadiusLimit = 100;
             this.camera.radius          = 3;
-            this.camera.alpha           = BABYLON.Angle.FromDegrees(220).radians();
+            this.camera.alpha           = BABYLON.Angle.FromDegrees(230).radians();
             this.camera.beta            = BABYLON.Angle.FromDegrees(90).radians();
             this.camera.lowerBetaLimit  = BABYLON.Angle.FromDegrees(0).radians();
             this.camera.upperBetaLimit  = BABYLON.Angle.FromDegrees(180).radians();

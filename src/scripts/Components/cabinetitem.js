@@ -29,9 +29,10 @@ export default class CabinetItem{
         this.state =0;
         this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-50);
         this.label.isVisible=false;
-        this.validationDone = false;
-        this.interaction    = false;
-        this.isDraging    = false;
+        this.validationDone    = false;
+        this.pickforValidation = false;
+        this.interaction       = false;
+        this.isDraging         = false;
         if(this.meshRoot.name.includes("diasolutionnode")){
             this.validationNode = new BABYLON.TransformNode("validation_node");
             this.validationTxt=[];
@@ -429,11 +430,12 @@ export default class CabinetItem{
          const size=1024;
          this.dynamicTexture   =  new BABYLON.DynamicTexture("validation_plan_texture",size,this.root.scene);
          this.dynamicTexture.hasAlpha=true;
-         const planmat          = new BABYLON.StandardMaterial("drainbag_plan_mat",this.root.scene);
+         const planmat          = new BABYLON.StandardMaterial("validation_plan_mat",this.root.scene);
          planmat.diffuseColor   = new BABYLON.Color3.FromInts(255,255,255);
          planmat.emissiveColor  = new BABYLON.Color3.FromInts(255,255,255);
          planmat.diffuseTexture = this.dynamicTexture;
          plan.material          = planmat;
+
          this.validationTxt["cap_highlight_plan"] = "is the blue cap present?";
          this.validationPos["cap_highlight_plan"] = [445,10];
          this.checkValidation["cap_highlight_plan"] = -1;
@@ -547,7 +549,7 @@ export default class CabinetItem{
                }    
            }
         }
-        this.updatedrainbagValidatetion = ()=>{
+        this.updateValidation = ()=>{
             let ctx = this.dynamicTexture.getContext();
             const font =  "bold 18px Arial";
             ctx.clearRect(0,0,size,size);
@@ -575,28 +577,30 @@ export default class CabinetItem{
             });
             this.checkValidationComplete();
           }
-          this.updatedrainbagValidatetion();
+          this.updateValidation();
           this.setValidation = (name)=>{
             const msg  =  this.validationTxt[name];
             this.root.gui2D.drawValidationMenu(true);
             this.root.gui2D.validationText.text =  msg;
             this.checkValidation[name]=0;
-            this.updatedrainbagValidatetion()
+            this.updateValidation()
             this.root.gui2D.rightBtn._onPointerUp = ()=>{
                 this.checkValidation[name]=1;
-                this.updatedrainbagValidatetion();
+                this.pickforValidation =true
+                this.updateValidation();
                 this.root.gui2D.drawValidationMenu(false);
             };
             this.root.gui2D.wrongBtn._onPointerUp = ()=>{
                 this.checkValidation[name]=2;
-                this.updatedrainbagValidatetion();
+                this.pickforValidation =true;
+                this.updateValidation();
                 this.root.gui2D.drawValidationMenu(false);
                 
             };
             this.root.gui2D.doneBtn._onPointerUp = ()=>{
                 if(this.checkValidation[name]<1){
                     this.checkValidation[name] =-1;
-                    this.updatedrainbagValidatetion();
+                    this.updateValidation();
                 }
                 this.root.gui2D.drawValidationMenu(false);
              };
@@ -625,6 +629,15 @@ export default class CabinetItem{
              childmesh.outlineWidth =1;
             //  console.log(childmesh.name);
         });
+    }
+    checkAllValidationDone(){
+        let isCheck=false;
+        if(this.checkValidation["cap_highlight_plan"]>0 && this.checkValidation["greencap_highlight_plan"]>0 && this.checkValidation["expiry_highlight_plan"]>0 &&
+           this.checkValidation["volume_highlight_plan"]>0 && this.checkValidation["serial_highlight_plan"]>0 &&  this.checkValidation["solution_highlight_plan"]>0 &&
+           this.checkValidation["concentration_highlight_plan"]>0){
+            isCheck = true;
+        }   
+        return isCheck;
     }
     reset(){
         // this.meshRoot.scaling   = new BABYLON.Vector3(1,1,1);
