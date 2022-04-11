@@ -93,6 +93,8 @@ export class Result{
             const bar   = containter.children[i];
             const arrow = bar.getChildByName("resultarrow");
             arrow.isVisible = result[i];
+            const cross = bar.getChildByName("cross");
+            cross.isVisible = false;
             bar.color = result[i]?FOCUSCOLOR:DISABECOLOR;
             bar.background = result[i]?FOCUSCOLOR:DISABECOLOR;
         }
@@ -172,6 +174,9 @@ export class Result{
         const containter1 =containter.getChildByName("item_content_container");
         for(let i=0;i<ITEM_PREPRATION.length;i++){
             const bar   = containter1.children[i];
+            
+            const cross = bar.getChildByName("cross");
+            cross.isVisible = false;
             const arrow = bar.getChildByName("resultarrow");
             arrow.isVisible = result[i];
             bar.color = result[i]?FOCUSCOLOR:DISABECOLOR;
@@ -243,6 +248,9 @@ export class Result{
             const bar   = containter.children[i];
             const arrow = bar.getChildByName("resultarrow");
             arrow.isVisible = result[i];
+            const cross = bar.getChildByName("cross");
+            cross.isVisible = false;
+            
             bar.color = result[i]?FOCUSCOLOR:DISABECOLOR;
             bar.background = result[i]?FOCUSCOLOR:DISABECOLOR;
         }
@@ -320,8 +328,8 @@ export class Result{
         for(let i=0;i<MACHINE_PREPRATION.length;i++){
             const bar   = containter1.children[i];
             const arrow = bar.getChildByName("resultarrow");
-            const cross = bar.getChildByName("cross");
             arrow.isVisible=false;
+            const cross = bar.getChildByName("cross");
             cross.isVisible=false;
             bar.color = DISABECOLOR;
             bar.background = DISABECOLOR;
