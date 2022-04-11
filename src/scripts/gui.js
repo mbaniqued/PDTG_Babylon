@@ -227,6 +227,8 @@ export default class GUI2D{
             this.phasebtnDisable.isVisible = false;
             this.drawLoadingPage(true);
             this.root.sceneCommon.setView();
+            if(this.root.gamemode === gamemode.assessment)
+              this.root.level =0;
             console.log("!!! level!! "+this.root.level);
             this.root.setGame().then((msg)=>{
                 console.log(msg);
