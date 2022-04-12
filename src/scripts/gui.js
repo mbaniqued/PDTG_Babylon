@@ -45,8 +45,8 @@ export default class GUI2D{
         this.initLevelComplete();
         this.initValidationMenu();
         this.initbackMenu();
-        this.initResultShowMenu();
         this.initsubmitMenu();
+        this.initResultShowMenu();
       }
       initMainMenu(){
         
@@ -627,7 +627,7 @@ export default class GUI2D{
         this.resultContainer.background = "#000000CC";
         
         const resultpopup = this.createRect("resultpopup",1850,900,5,"#9EF6FFE6",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        resultpopup.isPointerBlocker=false;
+        resultpopup.isPointerBlocker=true;
         this.resultContainer.addControl(resultpopup);
 
         const title     = this.createText("title_txt","Results",48,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
@@ -639,24 +639,84 @@ export default class GUI2D{
         contentpopup.isPointerBlocker=false;
         this.resultContainer.addControl(contentpopup);
 
+
+        const modescrollpanel = new GUI.ScrollViewer("allmode_scroll_viewer");
+        modescrollpanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        modescrollpanel.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        this.resultContainer.addControl(modescrollpanel);
+
         const scrollpopup  =  new GUI.StackPanel();    
         scrollpopup.name ="scrollpopup";
-        scrollpopup.widthInPixels = 1565;
+        scrollpopup.widthInPixels = 2200;
         scrollpopup.heightInPixels = 680;
+        modescrollpanel.widthInPixels = scrollpopup.widthInPixels-600;
+        modescrollpanel.heightInPixels = scrollpopup.heightInPixels+30;
+        modescrollpanel.forceVerticalBar = false;
+        modescrollpanel.background = "#ffffff00";
+        modescrollpanel.color= "#ffffff00";
+        
         scrollpopup.background = "#00000052";
+        scrollpopup.topInPixels=250;
         scrollpopup.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
         scrollpopup.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-        scrollpopup.isVertical = false
+        scrollpopup.isVertical = false;
         // const scrollpopup = this.createRect("scrollpopup",1565,680,5,"#00000052",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         scrollpopup.isPointerBlocker=false;
-        this.resultContainer.addControl(scrollpopup);
+        scrollpopup.isVisible=true;
+        // this.resultContainer.addControl(scrollpopup);
+        modescrollpanel.addControl(scrollpopup);
         
+        //assesment result
+        const assesmentContainer =  new GUI.Container("assesmentcontainer");
+        assesmentContainer.isPointerBlocker=true;
+        this.resultContainer.addControl(assesmentContainer);
+        const titlestage1  = this.createText("titlestage1","STAGE 1 : Prepration",42,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+        titlestage1.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        titlestage1.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        titlestage1.topInPixels=150;
+        assesmentContainer.addControl(titlestage1);
+        assesmentContainer.isVisible=false;
+        
+        const value=["Duration:","Overall:","Accuracy:","Sequence Accuracy:"];
+        for(let i=0;i<value.length;i++){
+          const valuetext  = this.createText(value[i],value[i],36,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          valuetext.topInPixels = -150+i*100;
+          valuetext.leftInPixels = 400;
+          valuetext.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+          valuetext.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+          assesmentContainer.addControl(valuetext);
+        }
+        const value2=["0s","0%","0%","0%"];
+        for(let i=0;i<value2.length;i++){
+          const valuetext  = this.createText(value[i]+"values",value2[i],36,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          valuetext.topInPixels = -150+i*100;
+          valuetext.leftInPixels = -400;
+          valuetext.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+          valuetext.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+          assesmentContainer.addControl(valuetext);
+        }
+
+        const leftRect = this.createRectBtn("leftRectBtn",64,500,5,"#6E6E6E40",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"","",0,false);
+        this.resultContainer.addControl(leftRect);
+        const leftArrow      =  this.createImage("leftArrow","ui/arrow.png",36,36*3,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        leftArrow.isVisible=true;
+        leftRect.addControl(leftArrow);
+        leftRect.leftInPixels =90;
+        
+        const rightRect = this.createRectBtn("rightRectBtn",64,500,5,"#6E6E6E40",GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"","",0,false);
+        this.resultContainer.addControl(rightRect);
+        const rightArrow      =  this.createImage("leftArrow","ui/arrow.png",36,36*3,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        rightArrow.isVisible=true;
+        rightArrow.rotation = BABYLON.Angle.FromDegrees(180).radians();
+        rightRect.addControl(rightArrow);
+        rightRect.leftInPixels =-90;
+
         const doneResultBtn =  this.createRectBtn("doneresult",192,72,2,"#66FF73",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"Done","#FFFFFF"
         ,35,false);
         doneResultBtn.topInPixels = 400;
         this.resultContainer.addControl(doneResultBtn);
         this.advancedTexture.addControl(this.resultContainer);
-        this.drawResultShowMenu(false);
+        this.drawResultShowMenu(true);
     }
     createResultBar(msg,width,height){
       const  objectivebar     =  this.createRect("resultbar",width,height,5,"#50F10042",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
@@ -680,12 +740,13 @@ export default class GUI2D{
       return objectivebar;
     }
     drawResultShowMenu(isdraw){
-      
-      this.resultContainer.isPointerBlocker=true;
-      this.resultContainer.isVisible = isdraw;
-      
+       this.resultContainer.isPointerBlocker=true;
+       this.resultContainer.isVisible = isdraw;
+      //  const assesmentcontainer = this.resultContainer.getChildByName("assesmentcontainer");
+      //  assesmentcontainer.isVisible = this.root.gamemode === gamemode.assessment;
+      // if(this.root.gamemode === gamemode.assessment)
     }
-      createImage(name,src,width,height,horizontal,verticle,isadd){
+     createImage(name,src,width,height,horizontal,verticle,isadd){
         const image  =  new GUI.Image(name,src);
         image.widthInPixels  = width;
         image.heightInPixels = height;
@@ -699,10 +760,8 @@ export default class GUI2D{
         if(isadd)
             this.advancedTexture.addControl(image);   
         return image;
-        
       } 
-      
-      createButon(name,src,bgcolor,txt,fontSize,fontcolor,width,height,horizontal,verticle,isadd){
+     createButon(name,src,bgcolor,txt,fontSize,fontcolor,width,height,horizontal,verticle,isadd){
         const button = GUI.Button.CreateImageOnlyButton(name, src);
         button.widthInPixels = width;
         button.heightInPixels = height;

@@ -30,7 +30,7 @@ export class Result{
      }
      createRoomResult(){
         this.roomPreparation = new GUI.Container("room_container");   
-        this.roomPreparation.isVisible =false;
+        this.roomPreparation.isVisible =true;
         this.roomTime=undefined;
         this.roomPreparation.isPointerBlocker=true;
         this.roomPreparation.widthInPixels  = 500;
@@ -38,8 +38,9 @@ export class Result{
         this.roomPreparation.background = "#BCE6EC";
         this.roomPreparation.paddingLeftInPixels=10;
         
-        const container =  this.root.gui2D.resultContainer.getChildByName("scrollpopup");
-        container.addControl(this.roomPreparation);
+        const container =  this.root.gui2D.resultContainer.getChildByName("allmode_scroll_viewer");
+        const container2 = container.getChildByName("scrollpopup");
+        container2.addControl(this.roomPreparation);
 
         const title = this.root.gui2D.createText("roomtitle","Room Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -125,15 +126,16 @@ export class Result{
      createItemResult(){
         this.itemPreparation = new GUI.Container("item_container");   
         this.itemTime=undefined;
-        this.itemPreparation.isVisible = false;
+        this.itemPreparation.isVisible = true;
         this.itemPreparation.isPointerBlocker=true;
         this.itemPreparation.widthInPixels  = 500;
         this.itemPreparation.heightInPixels = 600;
         this.itemPreparation.background = "#BCE6EC";
         this.itemPreparation.paddingLeftInPixels=10;
         
-        const container =  this.root.gui2D.resultContainer.getChildByName("scrollpopup");
-        container.addControl(this.itemPreparation);
+        const container =  this.root.gui2D.resultContainer.getChildByName("allmode_scroll_viewer");
+        const container2 = container.getChildByName("scrollpopup");
+        container2.addControl(this.itemPreparation);
 
         const title = this.root.gui2D.createText("roomtitle","Item Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -231,15 +233,16 @@ export class Result{
      createSelfResult(){
         this.selfPreparation = new GUI.Container("self_container");   
         this.selfTime = undefined;
-        this.selfPreparation.isVisible=false;
+        this.selfPreparation.isVisible=true;
         this.selfPreparation.isPointerBlocker=true;
         this.selfPreparation.widthInPixels  = 500;
         this.selfPreparation.heightInPixels = 600;
         this.selfPreparation.background = "#BCE6EC";
         this.selfPreparation.paddingLeftInPixels=10;
         
-        const container =  this.root.gui2D.resultContainer.getChildByName("scrollpopup");
-        container.addControl(this.selfPreparation);
+        const container =  this.root.gui2D.resultContainer.getChildByName("allmode_scroll_viewer");
+        const container2 = container.getChildByName("scrollpopup");
+        container2.addControl(this.selfPreparation);
 
         const title = this.root.gui2D.createText("selftitle","Self Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -325,6 +328,7 @@ export class Result{
      }
      createMachineResult(){
         this.machinePreparation = new GUI.Container("machine_container");   
+        this.machinePreparation.isVisible = true;
         this.machineTime = undefined;
         this.machinePreparation.isPointerBlocker=true;
         this.machinePreparation.widthInPixels  = 500;
@@ -332,8 +336,9 @@ export class Result{
         this.machinePreparation.background = "#BCE6EC";
         this.machinePreparation.paddingLeftInPixels=10;
         
-        const container =  this.root.gui2D.resultContainer.getChildByName("scrollpopup");
-        container.addControl(this.machinePreparation);
+        const container =  this.root.gui2D.resultContainer.getChildByName("allmode_scroll_viewer");
+        const container2 = container.getChildByName("scrollpopup");
+        container2.addControl(this.machinePreparation);
 
         const title = this.root.gui2D.createText("roomtitle","Machine Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
