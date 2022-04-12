@@ -41,7 +41,8 @@ export default class MainScene {
     this.sceneCommon = new Common(this);
     this.scene      = this.sceneCommon.createScene("basic");
     this.camera     = this.sceneCommon.createCamera(this.scene);
-    this.gui2D      = new GUI2D(this);
+    this.initState();
+    this.gui2D           = new GUI2D(this);
     this.gameTaskManager = new GameTaskManager(this);
     
     this.trollyRoot       = new BABYLON.TransformNode("TROLLY"),
@@ -56,12 +57,12 @@ export default class MainScene {
     this.game.engine.hideLoadingUI();
     
     this.windowbox=undefined,this.lightswtich=undefined;
-    this.pickMesh=null,this.focusMesh=null;
+    this.pickMesh=null;
     this.trollyObject=undefined,this.tableObject=undefined,this.cabinetObject=undefined,this.doorObject=undefined,this.windowObject=undefined;
     this.acItem = undefined,this.bpMachineItem= undefined,this.connectionItem= undefined,this.alcohalItem= undefined,this.maskItem= undefined,this.drainBagItem= undefined;
     this.ccpdRecordBook=undefined,this.apdmachinePackage=undefined,this.lightswitchObject=undefined,this.dialysisSolutionObject=[],this.sanitiserObject=[];
     this.fanAnim = null,this.paperTowelObject=undefined,this.handSoapObject=undefined;
-    this.handwashactivity,this.wipeAlcohal,this.validationImage=[],this.sinkArea=undefined;
+    this.handwashactivity,this.wipeAlcohal,this.sinkArea=undefined;
 
     const size= 512;
     this.dynamicTexture   = new BABYLON.DynamicTexture("dynamictexture",size,this.scene);
@@ -69,19 +70,16 @@ export default class MainScene {
     // this.sceneOptimiser.startOptimiser();
     this.level=0,this.isUp=false,this.objectiveCount=0,this.totalobjective=0,this.itemCount=0,this.dialysisItemCnt=0,this.handsanitiserCnt=0;
     this.bpRecord="",this.ccpdbpInputField;
-    this.initState();
+    
     this.initacParticle();
     this.handwashactivity = new HandWash(this);
     this.handwashactivity.drawhandWash(false);
     this.wipeAlcohal = new AlcohalWipe(this);
-    this.addevents();
-    this.validationImage[0]     = new Image();
-    this.validationImage[0].src =  '/ui/questionmark.png';
-    this.validationImage[1]     = new Image();
-    this.validationImage[1].src = '/ui/green.png';
-    this.validationImage[2]     = new Image();
-    this.validationImage[2].src = '/ui/cross2_png.png';
     this.practiceResult = new Result(this);
+    this.gameTime=undefined;
+    this.addevents();
+    this.handleUI();
+  
   }
   initState(){
     this.gamestate  = {state:GameState.menu}; 
@@ -149,14 +147,7 @@ export default class MainScene {
 
     this.createccpdCanvas();
     this.startFan();
-    this.gui2D.resetCamBtn.onPointerUpObservable.add(()=>{
-        this.setCameraTarget(); 
-        this.sceneCommon.removeMiniCam();
-        this.handwashactivity.drawhandWash(false);
-        this.gui2D.advancedTexture.renderAtIdealSize=false;
-        if(this.handSoapObject.state>=100)
-          this.handSoapObject.state=0;
-      }) 
+    
       console.log(" !!!!!!!!! initscene!!! ");
       resolve('resolved');
     });
@@ -204,31 +195,17 @@ export default class MainScene {
             case BABYLON.PointerEventTypes.POINTERDOWN:{
                     const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
                       if(pickinfo.pickedMesh){
-                        // console.log(pickinfo.pickedMesh.name);  	
-                        this.onpickMesh(pickinfo.pickedMesh);
+                         this.onpickMesh(pickinfo.pickedMesh);
                       }
                   }
               break;
             case BABYLON.PointerEventTypes.POINTERUP:{
-                    if(this.pickMesh){
-                      // this.updateObjectOutLine(false);
-                        // this.pickMesh.renderOutline=false;
-                        this.pickMesh = null;
-                    }
                 }
               break;
             case BABYLON.PointerEventTypes.POINTERMOVE:{ 
                     const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-
                     if(pickinfo.pickedMesh) {
-                      // console.log(pickinfo.pickedMesh.name);
                       this.onpickMesh(pickinfo.pickedMesh);
-                    }
-                    else{
-                      if(this.pickMesh)
-                        // this.pickMesh.renderOutline=false;
-                        // this.updateObjectOutLine(false);
-                        this.pickMesh = null;
                     }
                 }
               break;
@@ -238,9 +215,24 @@ export default class MainScene {
 
          switch(this.gamemode){
             case gamemode.training:
-              this.checkObjectives(e.detail);
+              this.checkObjectiveTraining(e.detail);
               break;
             case gamemode.practice:
+                const timeDiff = Math.floor((+new Date()-this.gameTime));
+                 switch(this.level){
+                    case 0:
+                         this.updateTime(timeDiff,"Room");
+                      break;
+                    case 1:
+                         this.updateTime(timeDiff,"Item");
+                      break;
+                    case 2:
+                         this.updateTime(timeDiff,"Self");
+                      break;
+                    case 3:
+                         this.updateTime(timeDiff,"Machine");
+                      break;
+                 }
               break;
             case gamemode.assessment:
              break;
@@ -682,8 +674,8 @@ export default class MainScene {
     this.bpnumberTexture.scale(.5);
     this.bpnumberTexture.hasAlpha=true;
     const planmat         = new BABYLON.StandardMaterial("bptextmat", this.scene);
-    planmat.diffuseColor  = new BABYLON.Color3.FromInts(128,135,148);
-    planmat.emissiveColor = new BABYLON.Color3.FromInts(128,135,148);
+    planmat.diffuseColor  = new BABYLON.Color3.FromInts(30,30,30);
+    planmat.emissiveColor = new BABYLON.Color3.FromInts(30,30,30);
     planmat.diffuseTexture = this.bpnumberTexture;
     bpPlan.material  = planmat;
     bpPlan.scaling   = new BABYLON.Vector3(1.4,3.2,1);
@@ -705,8 +697,8 @@ export default class MainScene {
       if(isupdate){
         v2 = randomNumber(70,90);
         v3 = randomNumber(60,80);
-        this.bpnumberTexture.drawText(parseInt(v2)+"",90, 150, font, "#808794", "transparent", true);
-        this.bpnumberTexture.drawText(parseInt(v3)+"",90, 230, font, "#808794", "transparent", true);
+        this.bpnumberTexture.drawText(parseInt(v2)+"",90, 150, font, "#000000", "transparent", true);
+        this.bpnumberTexture.drawText(parseInt(v3)+"",90, 230, font, "#000000", "transparent", true);
         this.bpRecord = parseInt(v1)+"/"+parseInt(v2)+"("+parseInt(v3)+")";
         console.log(this.bpRecord);
       }
@@ -716,26 +708,9 @@ export default class MainScene {
       }
   }
   onpickMesh(pickedMesh){
-    // if(this.pickMesh && pickedMesh.name !== this.pickMesh.name){
-    //   // this.updateObjectOutLine(false);
-    //   // this.pickMesh.renderOutline=false;
-    // }
-    // if(pickedMesh.name ==="glassplane")
-    //     this.pickMesh = this.windowbox;
-    // else if(pickedMesh.name ==="windowframeplan"){
-    //     this.windowFrameRoot.getChildMeshes().forEach(childmesh => {
-    //       if(childmesh.name==="windowframe")
-    //         this.pickMesh = childmesh;
-    //   });
-    // }
-    // else
-    {
-        if(this.focusMesh)
-            this.checkObjectChange(this.focusMesh,pickedMesh);
-        this.focusMesh = pickedMesh;
-        this.pickMesh = pickedMesh;
-    }
-    // this.updateObjectOutLine(true);
+     if(this.pickMesh)
+         this.checkObjectChange(this.pickMesh,pickedMesh);
+      this.pickMesh = pickedMesh;
   }
   checkObjectChange(root1,root2){
     if(this.gamestate.state === GameState.default || this.gamestate.state === GameState.active){
@@ -753,7 +728,6 @@ export default class MainScene {
      }
   }
   hideOutLine(meshroot){
-    // console.log(meshroot.parent);
     if(meshroot.parent){
         meshroot.parent.getChildMeshes().forEach(childmesh=>{
           childmesh.renderOutline=false;
@@ -764,111 +738,6 @@ export default class MainScene {
           childmesh.renderOutline=false;
       });
     }
-  }
-  updateObjectOutLine(value){
-    if(!this.pickMesh){
-      return;
-    }
-    console.log(this.pickMesh.name + "    "+this.pickMesh.outlineWidth);
-    if(this.pickMesh.outlineWidth<.01)
-      return;
-
-     
-    if(!this.pickMesh.isPickable || this.pickMesh.actionManager === null){
-        value = false;
-        this.pickMesh.outlineWidth=0;
-        this.pickMesh.renderOutline=value;
-        return;
-    }
-    if(this.pickMesh.parent.parent && (this.pickMesh.parent.parent.name.includes("cabinet"))){
-      let leftnode = this.scene.getTransformNodeByID("cabinetleftDoor").getChildMeshes()[0];
-      leftnode.renderOutline=value;
-      let rightnode = this.scene.getTransformNodeByID("cabinetrightDoor").getChildMeshes()[0];
-      rightnode.renderOutline=value;
-   } 
-   else if(this.pickMesh.parent.name.includes("trollynode")){
-        // alert(this.pickMesh.parent.name);
-        this.pickMesh.parent.parent.getChildMeshes().forEach(childmesh=>{
-            childmesh.renderOutline=value;
-        });
-    }
-    else if(this.pickMesh.parent.name.includes("apdnode")){
-      // alert(this.pickMesh.parent.name);
-      this.pickMesh.parent.parent.getChildMeshes().forEach(childmesh=>{
-          if(childmesh.id.includes("DeviceDialysisReference_primitive1"))
-            childmesh.renderOutline=value;
-      });
-    }
-    else if(this.pickMesh.parent.name.includes("bpmachinenodeitems")){
-      // console.log(this.pickMesh.parent.name);
-      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
-            childmesh.renderOutline=value;
-      });
-    }
-    else if(this.pickMesh.parent.name.includes("Connection")){
-      // console.log(this.pickMesh.parent.name);
-      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
-            childmesh.renderOutline=value;
-            childmesh.outlineWidth=1;
-      });
-    }
-    else if(this.pickMesh.parent.name.includes("ccpdrecordbook")){
-      // console.log(this.pickMesh.parent.name);
-      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
-            if(this.pickMesh.parent.parent === this.scene.getCameraByName("maincamera")){
-                childmesh.outlineWidth=0;
-                childmesh.renderOutline=value;
-            }
-            else{
-                childmesh.outlineWidth=.1;
-                childmesh.renderOutline=value;
-            }
-      });
-    }
-    else if(this.pickMesh.parent.name.includes("diasolutionnode")){
-      // console.log(this.pickMesh.parent.name);
-      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
-            childmesh.outlineWidth=2;
-            childmesh.renderOutline=value;
-      });
-    }
-    else if(this.pickMesh.parent.name.includes("fanswitchnode")){
-      // console.log(this.pickMesh.parent.name);
-      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
-            childmesh.outlineWidth=0;
-            if(childmesh.id ==="OnSwitch2"){
-              childmesh.renderOutline=value;
-              childmesh.outlineWidth=.5;
-            }
-            else  
-              childmesh.renderOutline=false;
-            
-      });
-    }
-    else if(this.pickMesh.parent.name.includes("apd_package_node")){
-      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
-        if(childmesh.id ==="APDCassetteRevisedWithPackaging2.001_primitive42"){
-          childmesh.renderOutline=value;
-          childmesh.outlineWidth=5;
-          // console.log(this.pickMesh.isPickable+"  11111111   "+this.pickMesh.name) ;
-        }
-        else{
-            childmesh.renderOutline=false;
-            childmesh.outlineWidth=0;
-            // console.log(this.pickMesh.isPickable+"  222222   "+this.pickMesh.name) ;
-          }
-      });
-    } 
-    else if(this.pickMesh.parent.name.includes("papertowel_node")){
-      this.pickMesh.parent.getChildMeshes().forEach(childmesh=>{
-         if(childmesh.name === "PaperTowel_primitive1")
-            childmesh.renderOutline=value;
-          else
-            childmesh.renderOutline=false;            
-          // childmesh.outlineWidth=.01;
-      });
-    } 
-    
   }
   setCameraTarget(){
     this.showResetViewButton(false);
@@ -884,11 +753,9 @@ export default class MainScene {
     new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
     new TWEEN.Tween(this.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
     new TWEEN.Tween(this.camera).to({fov:FOV},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-    
   }
   setFocusOnObject(pos){
-    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-      // if(this.gamestate.state === GameState.focus || this.gamestate.state === GameState.active)
+    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
         this.showResetViewButton(true);
     }).start();
   }
@@ -898,7 +765,7 @@ export default class MainScene {
   startFan(){
       const fanNode =  this.scene.getNodeByName("fannode");
       if(this.fanAnim == null){
-        this.fanAnim = new TWEEN.Tween(fanNode.rotation).to({y:BABYLON.Angle.FromDegrees(359).radians()},500).repeat(Infinity).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+        this.fanAnim = new TWEEN.Tween(fanNode.rotation).to({y:BABYLON.Angle.FromDegrees(359).radians()},ANIM_TIME).repeat(Infinity).easing(TWEEN.Easing.Linear.None).onComplete(() => {
         }).start();
       }
       else{
@@ -941,16 +808,15 @@ export default class MainScene {
       else
         this.acparticle.stop();  
    }
-   
    focusTrolly(){
     this.setFocusOnObject(new BABYLON.Vector3(this.trollyObject.meshRoot.position.x,this.trollyObject.meshRoot.position.y,this.trollyObject.meshRoot.position.z));
-    new TWEEN.Tween(this.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(45).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+    new TWEEN.Tween(this.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(45).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
       this.wipeAlcohal.usealcohalwipe=true;
       this.wipeAlcohal.alocohalwipe.isVisible = true;
       this.wipeAlcohal.reset();
     }).start();
-    new TWEEN.Tween(this.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
    }
    async setGame(){
     return  new Promise(resolve => {
@@ -969,6 +835,60 @@ export default class MainScene {
          }
       });
   }
+  handleUI(){
+        this.gui2D.resetCamBtn.onPointerUpObservable.add(()=>{
+          this.setCameraTarget(); 
+          this.sceneCommon.removeMiniCam();
+          this.handwashactivity.drawhandWash(false);
+          this.gui2D.advancedTexture.renderAtIdealSize=false;
+          if(this.handSoapObject.state>=100)
+            this.handSoapObject.state=0;
+        }) 
+        this.gui2D.submitBtn.onPointerUpObservable.add(()=>{
+          this.gui2D.drawsubmitMenu(true);
+          this.gui2D.submitBtn.isVisible=false;
+        });
+        const resultmenuBtn = this.gui2D.submitMenuContainer.getChildByName("result_btn");
+        resultmenuBtn.onPointerUpObservable.add(()=>{
+            this.gamestate.state = GameState.result;
+            this.gui2D.drawsubmitMenu(false);
+            this.isResetScene = true;
+            this.gui2D.resetCamBtn.isVisible=false;
+            this.sceneCommon.removeMiniCam();
+            this.gui2D.drawObjectiveMenu(false);
+            this.gui2D.drawResultShowMenu(true);
+            this.updateResult();
+
+      })
+      const resultcontinueBtn = this.gui2D.submitMenuContainer.getChildByName("continue_btn");
+      resultcontinueBtn.onPointerUpObservable.add(()=>{
+          this.gui2D.drawsubmitMenu(false);
+          this.gui2D.submitBtn.isVisible=true;
+      })
+      const resultdoneBtn = this.gui2D.resultContainer.getChildByName("doneresult");
+       resultdoneBtn.onPointerUpObservable.add(()=>{
+          this.gamestate.state = GameState.menu;
+          this.gui2D.drawResultShowMenu(false);
+          this.gui2D.drawMainMenu(true);
+      })
+      this.gui2D.userBackBtn.onPointerUpObservable.add(()=>{
+          this.gui2D.drawbackMenu(true);
+      })
+      const levelmenuBtn = this.gui2D.backMenuContainer.getChildByName("menu_btn");
+      levelmenuBtn.onPointerUpObservable.add(()=>{
+          this.gui2D.drawbackMenu(false);
+          this.isResetScene = true;
+          this.gui2D.resetCamBtn.isVisible=false;
+          this.gamestate.state = GameState.menu;
+          this.gui2D.drawMainMenu(true);
+          this.sceneCommon.removeMiniCam();
+          this.gui2D.drawObjectiveMenu(false);
+      })
+      const levelcontinueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
+        levelcontinueBtn.onPointerUpObservable.add(()=>{
+          this.gui2D.drawbackMenu(false);
+      })
+  }
    enterScene(time){
       let tout = setTimeout(() => {
         clearTimeout(tout);
@@ -980,52 +900,8 @@ export default class MainScene {
          this.gui2D.drawObjectiveMenu(this.gamemode === gamemode.training);
          this.gui2D.userBackBtn.isVisible=true;
          this.gui2D.resetCamBtn.isVisible=false;
-         this.gui2D.submitBtn.isVisible = this.gamemode === gamemode.practice;
-
-         this.gui2D.submitBtn.onPointerUpObservable.add(()=>{
-            this.gui2D.drawsubmitMenu(true);
-            this.gui2D.submitBtn.isVisible=false;
-          });
-           const resultmenuBtn = this.gui2D.submitMenuContainer.getChildByName("result_btn");
-            resultmenuBtn.onPointerUpObservable.add(()=>{
-              this.gamestate.state = GameState.result;
-              this.gui2D.drawsubmitMenu(false);
-              this.isResetScene = true;
-              this.gui2D.resetCamBtn.isVisible=false;
-              this.sceneCommon.removeMiniCam();
-              this.gui2D.drawObjectiveMenu(false);
-              this.gui2D.drawResultShowMenu(true);
-              this.updateResult();
-
-          })
-          const resultcontinueBtn = this.gui2D.submitMenuContainer.getChildByName("continue_btn");
-          resultcontinueBtn.onPointerUpObservable.add(()=>{
-             this.gui2D.drawsubmitMenu(false);
-             this.gui2D.submitBtn.isVisible=true;
-           })
-          const resultdoneBtn = this.gui2D.resultContainer.getChildByName("doneresult");
-          resultdoneBtn.onPointerUpObservable.add(()=>{
-            this.gamestate.state = GameState.menu;
-            this.gui2D.drawResultShowMenu(false);
-            this.gui2D.drawMainMenu(true);
-         })
-         this.gui2D.userBackBtn.onPointerUpObservable.add(()=>{
-            this.gui2D.drawbackMenu(true);
-         })
-         const levelmenuBtn = this.gui2D.backMenuContainer.getChildByName("menu_btn");
-         levelmenuBtn.onPointerUpObservable.add(()=>{
-            this.gui2D.drawbackMenu(false);
-            this.isResetScene = true;
-            this.gui2D.resetCamBtn.isVisible=false;
-            this.gamestate.state = GameState.menu;
-            this.gui2D.drawMainMenu(true);
-            this.sceneCommon.removeMiniCam();
-            this.gui2D.drawObjectiveMenu(false);
-          })
-          const levelcontinueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
-          levelcontinueBtn.onPointerUpObservable.add(()=>{
-             this.gui2D.drawbackMenu(false);
-           })
+         this.gui2D.submitBtn.isVisible = this.gamemode !== gamemode.training;
+         this.gameTime = + new Date();
       }, time);
    }
    startGame(){
@@ -1229,7 +1105,7 @@ export default class MainScene {
        this.handSoapObject.removeAction();
        this.paperTowelObject.removeAction();
    }
-   checkObjectives(detail){
+   checkObjectiveTraining(detail){
         switch(this.level){
             case 0:
                   if(detail.object_type ===  this.doorObject){
@@ -1620,6 +1496,22 @@ export default class MainScene {
               }
           }
       }
+   }
+   updateTime(time,type){
+        switch(type){
+            case "Room":
+               this.practiceResult.roomTime=time;
+              break;
+            case "Item":
+                this.practiceResult.itemTime=time;
+               break;
+            case "Self":
+                this.practiceResult.selfTime=time;
+               break;
+            case "Machine":
+               this.practiceResult.machineTime=time;
+               break;
+        }
    }
    updateResult(){
       this.practiceResult.roomPreparation.isVisible=false;

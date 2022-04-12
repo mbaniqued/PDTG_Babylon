@@ -9,7 +9,7 @@ export default class FanSwitch{
             this.meshRoot   = meshobject;
             this.state      = 0;
             this.initAction();
-            this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,0,-50);
+            this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,0,-150);
             this.label._children[0].text = "Switches";
             this.label.isVisible=false;
             this.isFanOff=false;
@@ -30,8 +30,14 @@ export default class FanSwitch{
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-                if(this.state>0 && this.root.gamestate.state === GameState.default)
+                if(this.root.camera.radius<3){
+                    this.state =1;
+                    this.root.gamestate.state  =  GameState.active;
+                }
+                else{
                     this.state =0;
+                    this.root.gamestate.state  =  GameState.default;
+                }
                 this.setLabel();
                 this.updateoutLine(true);
             }))
@@ -40,8 +46,14 @@ export default class FanSwitch{
                     this.updateoutLine(false);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
-                    if(this.state>0 && this.root.gamestate.state === GameState.default)
+                    if(this.root.camera.radius<3){
+                        this.state =1;
+                        this.root.gamestate.state  =  GameState.active;
+                    }
+                    else{
                         this.state =0;
+                        this.root.gamestate.state  =  GameState.default;
+                    }
                     this.setLabel();
                     this.updateoutLine(true);
                     this.root.scene.onPointerUp=()=>{
@@ -50,10 +62,14 @@ export default class FanSwitch{
                     }
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                        if(this.state>0 && this.root.gamestate.state === GameState.default)
-                            this.state =0;
-                        if(this.root.camera.radius<3)
+                        if(this.root.camera.radius<3){
                             this.state =1;
+                            this.root.gamestate.state  =  GameState.active;
+                        }
+                        else{
+                            this.state =0;
+                            this.root.gamestate.state  =  GameState.default;
+                        }
                         this.root.sceneCommon.setminiCamTarget(0);
                         this.setLabel();
                         if(this.root.gamestate.state === GameState.default){
@@ -87,7 +103,6 @@ export default class FanSwitch{
                 this.label._children[0].text = this.isFanOff?"Turn On Fan":"Turn Off Fan"; 
             }
             this.label.isVisible=true;
-            this.label.isPointerBlocker=true;
         }
         updateoutLine(value){
             this.meshRoot.getChildMeshes().forEach(childmesh => {

@@ -62,8 +62,8 @@ export default class DoorObject{
                         switch(this.state){
                             case 0:
                                 this.root.gamestate.state  =  GameState.default;
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(190).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({radius:6},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(190).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+                                new TWEEN.Tween(this.root.camera).to({radius:6},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                                     this.root.gamestate.state  =  GameState.focus;
                                     this.state =1;
                                 }).start();
@@ -84,7 +84,7 @@ export default class DoorObject{
                 val=360;
            if(!this.anim){     
                 this.anim=true;
-                new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                     this.closedoor = !this.closedoor;
                     this.anim=false;
                     if(this.closedoor){

@@ -18,10 +18,7 @@ export default class Trolly{
             //     this.addAction(childmesh);
             // });
             this.initAction();
-            
             this.apdMachine.position = new BABYLON.Vector3(-50,0,0);
-
-            
         }
         addswitchAction(){
             const mesh = this.root.scene.getMeshByName("apdswitch_sphere");
@@ -31,7 +28,7 @@ export default class Trolly{
                         if(rotateState.value===1)
                             return;
                         // console.log(" !!! switch!! "+mesh.name);
-                        if(this.root.camera.alpha!=BABYLON.Angle.FromDegrees(270).radians()){
+                        if(this.root.camera.target.z!=this.apdMachine.absolutePosition.z+1){
                             new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                             new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                             new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
@@ -99,15 +96,14 @@ export default class Trolly{
                                 new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                                 new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
                                     this.root.gamestate.state = GameState.focus;
-                                    
                                 }).start();
                                 new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                                 if(mesh.name.includes("trolly")){
                                     this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z-1));
-                                    }
-                                    if(mesh.name.includes("apdmachine")){
+                                }
+                                if(mesh.name.includes("apdmachine")){
                                     this.root.setFocusOnObject(new BABYLON.Vector3(this.apdMachine.absolutePosition.x,this.apdMachine.absolutePosition.y-.5,this.apdMachine.absolutePosition.z+1));    
-                                    console.log(" !!! focus apd!!!");
+                                    // console.log(" !!! focus apd!!!");
                                 }
                                 break;
                         }

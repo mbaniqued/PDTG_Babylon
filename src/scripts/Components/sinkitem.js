@@ -64,12 +64,12 @@ export default class SinkItem{
                     return;
                 switch(this.state){
                         case 0:
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(135).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(135).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                                 this.root.gamestate.state  =  GameState.focus;
                                 this.state=1;
                             }).start();
-                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:2.9},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({radius:2.9},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
                             // 1.98,y:2.02,z:-1.89
                             this.root.setFocusOnObject(new BABYLON.Vector3(1.98,2.02-.3,-1.89-1.2));
                             
@@ -100,7 +100,7 @@ export default class SinkItem{
                             if( this.meshRoot.name  === "liquidhandsoap_node"){
                                 this.state=100;
                                 this.root.showResetViewButton(true);
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(40).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete( () => {
+                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(40).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete( () => {
                                     this.root.handwashactivity.reset();
                                     this.root.handwashactivity.drawhandWash(true);
                                 }).start();
@@ -129,13 +129,13 @@ export default class SinkItem{
     }
      showItem(){ 
         showMenu = false;
-        // new TWEEN.Tween(this.root.camera).to({radius:2},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+        // new TWEEN.Tween(this.root.camera).to({radius:2},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
          if( this.meshRoot.name  === "liquidhandsoap_node")
-            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(90).radians(),y:BABYLON.Angle.FromDegrees(0).radians(),z:BABYLON.Angle.FromDegrees(360).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(90).radians(),y:BABYLON.Angle.FromDegrees(0).radians(),z:BABYLON.Angle.FromDegrees(360).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();        
          else
-          new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(0).radians(),y:BABYLON.Angle.FromDegrees(135).radians(),z:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
-          new TWEEN.Tween(this.meshRoot.scaling).to({x:1.3,y:1.3,z:1.3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
-          new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x-.5,y:this.root.camera.target.y+.5,z:this.root.camera.target.z+.5},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+          new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(0).radians(),y:BABYLON.Angle.FromDegrees(135).radians(),z:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();        
+          new TWEEN.Tween(this.meshRoot.scaling).to({x:1.3,y:1.3,z:1.3},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();        
+          new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x-.5,y:this.root.camera.target.y+.5,z:this.root.camera.target.z+.5},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
            this.root.showResetViewButton(false);
           this.root.gui2D.userExitBtn.isVisible = true;
           
@@ -149,11 +149,11 @@ export default class SinkItem{
       resetItem(){
           this.root.gui2D.userExitBtn.isVisible = false;
           if( this.meshRoot.name  === "liquidhandsoap_node")
-            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(90).radians(),y:BABYLON.Angle.FromDegrees(0).radians(),z:BABYLON.Angle.FromDegrees(0).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(90).radians(),y:BABYLON.Angle.FromDegrees(0).radians(),z:BABYLON.Angle.FromDegrees(0).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();        
           else
-             new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(90).radians(),y:BABYLON.Angle.FromDegrees(45).radians(),z:BABYLON.Angle.FromDegrees(0).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
-          new TWEEN.Tween(this.meshRoot.scaling).to({x:1,y:1,z:1},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();        
-          new TWEEN.Tween(this.meshRoot.position).to({x:this.position.x,y:this.position.y,z:this.position.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+             new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(90).radians(),y:BABYLON.Angle.FromDegrees(45).radians(),z:BABYLON.Angle.FromDegrees(0).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();        
+          new TWEEN.Tween(this.meshRoot.scaling).to({x:1,y:1,z:1},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();        
+          new TWEEN.Tween(this.meshRoot.position).to({x:this.position.x,y:this.position.y,z:this.position.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
             this.root.showResetViewButton(true);
           }).start();
       }

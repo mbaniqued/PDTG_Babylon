@@ -15,25 +15,27 @@ export default class GUI2D{
         // this.advancedTexture.useSmallestIdeal = true
         this.advancedTexture.renderAtIdealSize = true;
         this.resetCamBtn   =  this.createButon("resetcambtn","ui/move.png","#ffffffff","",0,0,72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
-        // this.resetCamBtn.zIndex =100;
-        this.userExitBtn   =  this.createCircle("userexitbtn",72,72,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
-        const userImg      =  this.createImage("userexitbtn","ui/Users-Exit-icon.png",48,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        userImg.isVisible  = true;
-
         
         this.userBackBtn   =  this.createButon("userbackbtn","ui/exit_icon.png","#ffffff00","",0,"",48,48,GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT,GUI.Control.VERTICAL_ALIGNMENT_TOP,true);
         this.userBackBtn.leftInPixels =-20;
-        this.userBackBtn.topInPixels  =20;
+        this.userBackBtn.topInPixels  = 20;
+
+        this.userExitBtn   =  this.createCircle("userexitbtn",72,72,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
+        const userImg      =  this.createImage("userexitbtn","ui/Users-Exit-icon.png",48,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        userImg.isPointerBlocker=false;
+        userImg.isVisible  = true;
         this.userExitBtn.addControl(userImg);
         this.userExitBtn.isVisible=false;
+        this.userExitBtn.isPointerBlocker=true;
 
         this.submitBtn       = this.createRectBtn("submitBtn",92,42,1,"#74FF45",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,"","#FFFFFF",0,true);
         const downArrow      =  this.createImage("arrow","ui/arrow.png",24,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         downArrow.rotation   = BABYLON.Angle.FromDegrees(270).radians(); 
         downArrow.isVisible  = true;
-        this.submitBtn.addControl(downArrow);
         downArrow.isPointerBlocker=false;
+        this.submitBtn.addControl(downArrow);
         this.submitBtn.isVisible=false;
+
         
         this.initMainMenu();
         this.initStageMenu();
@@ -100,7 +102,7 @@ export default class GUI2D{
         this.userModeBtn.children[1].leftInPixels =-20;
         this.userModeBtn.isVisible = isDraw;
         this.proceedBtn.isVisible = isDraw;
-        this.proceedBtn.topInPixels = 300;
+        this.proceedBtn.topInPixels = 250;
         this.userModeBtn.topInPixels = y;
         this.caregiverModeBtn.topInPixels = y;
         this.patientModeBtn.topInPixels   = y;
@@ -217,7 +219,7 @@ export default class GUI2D{
           this.menuContainer.getChildByName("gamemodetxt").text = "Select Phase";
           
           this.playBtn.isVisible = isDraw;
-          this.playBtn.topInPixels =300; 
+          this.playBtn.topInPixels =250; 
           this.playBtn._onPointerUp=()=>{
             this.drawStageMenu(false);
             hidephasebtn();
@@ -234,33 +236,33 @@ export default class GUI2D{
                 console.log(msg);
                 switch(this.root.level){
                   case 0:
-                     this.root.enterScene(1500)
+                      this.root.enterScene(1500);
                     break;
                   case 1:
-                     this.root.enterScene(2000);
                      this.root.gameTaskManager.completeRoomSetUp();
+                     this.root.enterScene(2000);
                     break;  
                   case 2:
-                     this.root.enterScene(3000);
                      this.root.gameTaskManager.completeRoomSetUp();
                      setTimeout(() => {
                        this.root.gameTaskManager.completeItemSetUp();  
                      }, 1500);
+                     this.root.enterScene(3000);
                    break;  
                   case 3:
-                     this.root.enterScene(3000);
                      this.root.gameTaskManager.completeRoomSetUp();
                      setTimeout(() => {
                        this.root.gameTaskManager.completeItemSetUp();  
                      }, 1500);
                      setTimeout(() => {
                        this.root.gameTaskManager.completeSelfSetUp();  
-                     }, 3000);
+                     }, 2900);
+                     this.root.enterScene(3000);
                     break; 
                 }
             });
           }
-          this.backBtn.topInPixels = 400;
+          this.backBtn.topInPixels = 350;
           this.backBtn.isVisible   = isDraw;
           this.backBtn._onPointerUp=()=>{
             this.drawStageMenu(false);

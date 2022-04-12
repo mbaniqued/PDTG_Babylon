@@ -31,6 +31,7 @@ export class Result{
      createRoomResult(){
         this.roomPreparation = new GUI.Container("room_container");   
         this.roomPreparation.isVisible =false;
+        this.roomTime=undefined;
         this.roomPreparation.isPointerBlocker=true;
         this.roomPreparation.widthInPixels  = 500;
         this.roomPreparation.heightInPixels = 600;
@@ -89,18 +90,41 @@ export class Result{
      }
      updateRoomResult(result){
         const containter =this.roomPreparation.getChildByName("room_content_container");
+        let taskdone=0;
         for(let i=0;i<ROOM_PREPRATION.length;i++){
             const bar   = containter.children[i];
             const arrow = bar.getChildByName("resultarrow");
             arrow.isVisible = result[i];
+            if(result[i])
+              taskdone++;
             const cross = bar.getChildByName("cross");
             cross.isVisible = false;
             bar.color = result[i]?FOCUSCOLOR:DISABECOLOR;
             bar.background = result[i]?FOCUSCOLOR:DISABECOLOR;
         }
+        const accuracyResult = this.roomPreparation.getChildByName("accuracyresult");
+        const accuracy       =  parseInt((taskdone/ROOM_PREPRATION.length)*100);
+        accuracyResult.text  = accuracy+"%";
+        const durationResult = this.roomPreparation.getChildByName("durationresult");
+        let time="";
+        if(this.roomTime){
+            const finaltime = getTime(this.roomTime);
+            const hours     = finaltime[0];
+            const minutes   = finaltime[1];
+            const seconds   = finaltime[2];
+            if(hours>0)
+                time = hours+":"+minutes+":"+seconds;
+            else if(minutes>0)
+                time = minutes+":"+seconds;
+             else   
+                time = seconds;
+        }
+        durationResult.text  = this.roomTime=== undefined?"N/A":time+"s";
+        this.roomTime = undefined;
      }
      createItemResult(){
         this.itemPreparation = new GUI.Container("item_container");   
+        this.itemTime=undefined;
         this.itemPreparation.isVisible = false;
         this.itemPreparation.isPointerBlocker=true;
         this.itemPreparation.widthInPixels  = 500;
@@ -172,19 +196,41 @@ export class Result{
      updateItemResult(result){
         const containter  =this.itemPreparation.getChildByName("item_scroll_container");
         const containter1 =containter.getChildByName("item_content_container");
+        let taskdone=0;
         for(let i=0;i<ITEM_PREPRATION.length;i++){
             const bar   = containter1.children[i];
-            
             const cross = bar.getChildByName("cross");
             cross.isVisible = false;
             const arrow = bar.getChildByName("resultarrow");
             arrow.isVisible = result[i];
+            if(result[i])
+               taskdone++;
             bar.color = result[i]?FOCUSCOLOR:DISABECOLOR;
             bar.background = result[i]?FOCUSCOLOR:DISABECOLOR;
         }
+        const accuracyResult = this.itemPreparation.getChildByName("accuracyresult");
+        const accuracy       =  parseInt((taskdone/ITEM_PREPRATION.length)*100);
+        accuracyResult.text  = accuracy+"%";
+        const durationResult = this.itemPreparation.getChildByName("durationresult");
+        let time="";
+        if(this.itemTime){
+            const finaltime = getTime(this.itemTime);
+            const hours   = finaltime[0];
+            const minutes = finaltime[1];
+            const seconds = finaltime[2];
+            if(hours>0)
+                time = hours+":"+minutes+":"+seconds;
+            else if(minutes>0)
+                time = minutes+":"+seconds;
+             else   
+                time = seconds;
+        }
+        durationResult.text  = this.itemTime=== undefined?"N/A":time+"s";
+        this.itemTime = undefined;
      }
      createSelfResult(){
         this.selfPreparation = new GUI.Container("self_container");   
+        this.selfTime = undefined;
         this.selfPreparation.isVisible=false;
         this.selfPreparation.isPointerBlocker=true;
         this.selfPreparation.widthInPixels  = 500;
@@ -244,19 +290,42 @@ export class Result{
      }
      updateselfResult(result){
         const containter =this.selfPreparation.getChildByName("self_content_container");
+        let taskdone=0;
         for(let i=0;i<SELF_PREPRATION.length;i++){
             const bar   = containter.children[i];
             const arrow = bar.getChildByName("resultarrow");
             arrow.isVisible = result[i];
+            if(result[i])
+                taskdone++;
             const cross = bar.getChildByName("cross");
             cross.isVisible = false;
             
             bar.color = result[i]?FOCUSCOLOR:DISABECOLOR;
             bar.background = result[i]?FOCUSCOLOR:DISABECOLOR;
         }
+        const accuracyResult = this.selfPreparation.getChildByName("accuracyresult");
+        const accuracy       =  parseInt((taskdone/SELF_PREPRATION.length)*100);
+        accuracyResult.text  = accuracy+"%";
+        const durationResult = this.selfPreparation.getChildByName("durationresult");
+        let time="";
+        if(this.selfTime){
+            const finaltime = getTime(this.selfTime);
+            const hours   = finaltime[0];
+            const minutes = finaltime[1];
+            const seconds = finaltime[2];
+            if(hours>0)
+                time = hours+":"+minutes+":"+seconds;
+            else if(minutes>0)
+                time = minutes+":"+seconds;
+             else   
+                time = seconds;
+        }
+        durationResult.text  = this.selfTime=== undefined?"N/A":time+"s";
+        this.selfTime = undefined;
      }
      createMachineResult(){
         this.machinePreparation = new GUI.Container("machine_container");   
+        this.machineTime = undefined;
         this.machinePreparation.isPointerBlocker=true;
         this.machinePreparation.widthInPixels  = 500;
         this.machinePreparation.heightInPixels = 600;
@@ -325,6 +394,8 @@ export class Result{
      updateMachineResult(result){
         const containter  = this.machinePreparation.getChildByName("machine_scroll_container");
         const containter1 = containter.getChildByName("machine_content_container");
+        let taskdone=0;
+        console.table(result);
         for(let i=0;i<MACHINE_PREPRATION.length;i++){
             const bar   = containter1.children[i];
             const arrow = bar.getChildByName("resultarrow");
@@ -333,27 +404,57 @@ export class Result{
             cross.isVisible=false;
             bar.color = DISABECOLOR;
             bar.background = DISABECOLOR;
+            
             if(result[i].value  === true){
                 arrow.isVisible = true;
                 bar.color       = FOCUSCOLOR;
                 bar.background  = FOCUSCOLOR;
+                taskdone++;
+                console.log("trueeeeeeeeeeee");
             }
-
-            if(result[i].value==1){
+            if(result[i].value===1){
                 arrow.isVisible = true;
                 bar.color       = FOCUSCOLOR;
                 bar.background = FOCUSCOLOR;
+                taskdone++;
+                console.log("11111111111111111111");
             }
-            else if(result[i].value==2){
-                    cross.isVisible = true;
-                    bar.color = GREYCOLOR;
-                    bar.background = GREYCOLOR;
+            else if(result[i].value===2){
+                cross.isVisible = true;
+                bar.color = GREYCOLOR;
+                bar.background = GREYCOLOR;
+                taskdone++;
+                console.log("222222222222");
             }
-
-            
-            
         }
+        console.log("!! task sone!! "+taskdone+"   "+MACHINE_PREPRATION.length);
+        const accuracyResult = this.machinePreparation.getChildByName("accuracyresult");
+        const accuracy       =  parseInt((taskdone/MACHINE_PREPRATION.length)*100);
+        accuracyResult.text  = accuracy+"%";
+        const durationResult = this.machinePreparation.getChildByName("durationresult");
+        let time="";
+        if(this.machineTime){
+            const finaltime = getTime(this.machineTime);
+            const hours   = finaltime[0];
+            const minutes = finaltime[1];
+            const seconds = finaltime[2];
+            if(hours>0)
+                time = hours+":"+minutes+":"+seconds;
+            else if(minutes>0)
+                time = minutes+":"+seconds;
+             else   
+                time = seconds;
+        }
+        durationResult.text  = this.machineTime=== undefined?"N/A":time+"s";
+        this.machineTime     = undefined;
      }
      
-
+}
+function getTime(miliseconds){
+    const time = Math.floor(miliseconds/1000);
+    const sec_num = parseInt(time,10);
+    const hours   = Math.floor(sec_num/3600);
+    const minutes = Math.floor(sec_num/60)%60;
+    const seconds = sec_num%60;
+    return [hours,minutes,seconds];
 }

@@ -8,7 +8,7 @@ export default class LightSwitch{
             this.camera     = root.camera;
             this.meshRoot   = meshobject;
             this.state      = 0;
-            this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,-20,-80);
+            this.label = this.root.gui2D.createRectLabel(this.name,170,36,10,"#FFFFFF",this.meshRoot,-20,-120);
             this.label._children[0].text = "Switches";
             this.label.isVisible=false;
             this.isLightOff=false;
@@ -26,8 +26,14 @@ export default class LightSwitch{
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-                if(this.state>0 && this.root.gamestate.state === GameState.default)
-                    this.state =0;
+                    if(this.root.camera.radius<3){
+                        this.state =1;
+                        this.root.gamestate.state  =  GameState.active;
+                    }
+                    else{
+                        this.state =0;
+                        this.root.gamestate.state  =  GameState.default;
+                    }
                     this.setLabel();
                     this.updateoutLine(mesh,true);
             }))
@@ -36,8 +42,14 @@ export default class LightSwitch{
                     this.updateoutLine(mesh,false);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
-                    if(this.state>0 && this.root.gamestate.state === GameState.default)
-                        this.state=0;
+                    if(this.root.camera.radius<3){
+                        this.state =1;
+                        this.root.gamestate.state  =  GameState.active;
+                    }
+                    else{
+                        this.state =0;
+                        this.root.gamestate.state  =  GameState.default;
+                    }
                     this.setLabel();
                     this.updateoutLine(mesh,true);
                     this.root.scene.onPointerUp=()=>{
@@ -46,13 +58,17 @@ export default class LightSwitch{
                     }
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                      if(this.root.camera.radius<3){
+                        if(this.root.camera.radius<3){
                             this.state =1;
-                            this.root.gamestate.state  =  GameState.active
+                            this.root.gamestate.state  =  GameState.active;
+                        }
+                        else{
+                            this.state =0;
+                            this.root.gamestate.state  =  GameState.default;
                         }
                         this.setLabel();
                         this.root.sceneCommon.setminiCamTarget(0);
-                        console.log(" ------- OnPickTrigger-------- "+this.state )
+                        // console.log(" ------- OnPickTrigger-------- "+this.state )
                         if(this.root.gamestate.state === GameState.default){
                             this.root.gamestate.state  =  GameState.active;
                             this.state=1;

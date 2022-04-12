@@ -717,9 +717,7 @@ export default class LoaderManager {
     const apdSwitchmat = new BABYLON.StandardMaterial("apdswitch_sphere_mat")
     apdSwitchmat.diffuseColor = new BABYLON.Color3.FromInts(0,255,0);
     apdSwitch.material =  apdSwitchmat;
-    apdSwitch.isPickable = true;
-    apdSwitch.renderOutline = false;
-  
+    this.setPickable(apdSwitch,1);
   // console.log("meshes", meshes)
    this.assetsManager.onProgress = (
       remainingCount,

@@ -140,6 +140,12 @@ export default class AlcohalWipe{
                 }
             }
             if(this.checkallClear()){
+                let tout = setTimeout(() => {
+                    this.root.tableObject.setTableFocusAnim();
+                    this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
+                    clearTimeout(tout)
+                }, 500);
+                
                 this.accessAlcohal=true;
                 this.usealcohalwipe=false;
                 this.alocohalwipe.isVisible = false;

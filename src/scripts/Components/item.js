@@ -152,7 +152,7 @@ export default class Item{
                             this.label.isVisible=false;
                             this.isDraging = false;
                             this.pickObject = true;
-                            console.log("!! OnPickTrigger!! "+this.root.gamestate.state);
+                            // console.log("!! OnPickTrigger!! "+this.root.gamestate.state);
                             this.updateoutLine(false);
                             if(this.root.camera.radius>2.5 && this.state<100){
                                 this.root.gamestate.state = GameState.focus;
@@ -166,11 +166,11 @@ export default class Item{
                                 this.root.tableObject.state=0;
                                 return;
                             }
-                            console.log("!! onpick!! "+this.root.gamestate.state);
+                            // console.log("!! onpick!! "+this.root.gamestate.state);
                             if(this.root.gamestate.state === GameState.inspect){
-                                console.log(mesh.name);
+                                // console.log(mesh.name);
                                 if(mesh.name.includes("highlight_plan") || mesh.name.includes("validation")){
-                                    console.log("!!! validation!!! ");
+                                    // console.log("!!! validation!!! ");
                                     this.onValidationPick(mesh.name);
                                     return
                                 }
@@ -294,10 +294,16 @@ export default class Item{
 
                  if(this.trollyPosition && ((this.root.level >2 && this.root.gamemode === gamemode.training) || this.root.gamemode !== gamemode.training)){   
                     if(this.meshRoot.position.x<-100)
-                        new TWEEN.Tween(this.root.camera.target).to({x:-2,y:2,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(()=>{}).start();
-                    else
-                        new TWEEN.Tween(this.root.camera.target).to({x:0,y:2,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(()=>{}).start();
-                        
+                        new TWEEN.Tween(this.root.camera.target).to({x:-2,y:2,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(()=>{}).start();
+                    // else{
+                    //         this.root.tableObject.meshRoot.getChildTransformNodes().forEach(childnode=>{
+                    //             if(childnode.name==="tabledrawer"){
+                    //                 let drawerNode = childnode;  
+                    //                 this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.root.tableObject.meshRoot.position.z-.5));
+                    //             }
+                    //         });
+                    // }
+                        // new TWEEN.Tween(this.root.camera.target).to({x:-.5,y:2,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(()=>{}).start();
                     if(this.meshRoot.name.includes("DrainBag") && this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<130))
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=1;
                     else  
@@ -322,21 +328,23 @@ export default class Item{
                         if(this.parent !== this.root.scene.getTransformNodeByID("tabledrawer")){
                             placed = true;
                             this.placedPosition = this.trollyPosition;
-                            new TWEEN.Tween(this.meshRoot).to({position:this.placedPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                            new TWEEN.Tween(this.meshRoot).to({position:this.placedPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+                                this.focusTable();
                                 this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
                                 if(this.root.level ===3){
                                     const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"drain_bag_trolly",level:3}});
                                     document.dispatchEvent(custom_event);
                                 }
+                                
                             }).start();
                         }
                     }
                     if(this.trollyPosition && (this.meshRoot.name.includes("apd_package_node") && this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility>0)){
                         if(this.parent !== this.root.scene.getTransformNodeByID("tabledrawer")){
                             this.placedPosition = this.trollyPosition;
-                            
                             placed = true;
-                            new TWEEN.Tween(this.meshRoot).to({position:this.placedPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                            new TWEEN.Tween(this.meshRoot).to({position:this.placedPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+                                this.focusTable();
                                 this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;
                                 if(this.root.level ===3){
                                     this.root.itemCount++;
@@ -349,7 +357,7 @@ export default class Item{
                     if((this.root.scene.getMeshByName("tablecollider").visibility>0)){ 
                         placed = true;
                         this.placedPosition = this.tablePosition;
-                        if(this.root.level ===1 && this.root.gamemode === gamemode.training){
+                        if(this.root.level ===1){
                             if(!this.isPlaced){
                                 this.root.itemCount++;
                                 const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.itemCount,level:1}});
@@ -362,7 +370,7 @@ export default class Item{
                     if(!placed){
                         console.log(this.placedPosition+"     "+this.startPosition);    
                         const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
-                        new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                        new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                             
                         }).start();
                     }
@@ -374,6 +382,13 @@ export default class Item{
                 // console.log(event);
             });
         }
+        focusTable(){
+            let tout = setTimeout(() => {
+                this.root.tableObject.setTableFocusAnim();
+                this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
+                clearTimeout(tout)
+            }, 500);
+        }
         placeItem(time){
             if(!time)
                time=ANIM_TIME;
@@ -382,19 +397,19 @@ export default class Item{
             this.parent           = this.root.scene.getTransformNodeByID("tablenode");
             this.meshRoot.parent  = null;
             this.meshRoot.parent  = this.parent;
-            console.log("!!!! placeItem!! ");
+            // console.log("!!!! placeItem!! ");
             this.label.isVisible=false;
             this.placedPosition = this.tablePosition;
-            new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                 this.root.scene.getMeshByName("tablecollider").visibility=0;
             }).start();
             if(this.placeRotation){
-                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
             }
         }
        showItem(){
             let getdrag = this.pointerDragBehavior.enabled;
-            console.log("!!! showItem!! "+getdrag);
+            // console.log("!!! showItem!! "+getdrag);
             this.enableDrag(false);
             showMenu = false;
             this.root.gui2D.drawRadialMenu(false);  
@@ -426,9 +441,9 @@ export default class Item{
             zAng = -BABYLON.Angle.FromDegrees(180).radians();
         }
         rotateState.value=1;
-        new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x+upAng,y:this.startRotation.y,z:this.startRotation.z+BABYLON.Angle.FromDegrees(360).radians()+zAng},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-        new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x,y:this.root.camera.target.y+newPos.y,z:this.root.camera.target.z+newPos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-        new TWEEN.Tween(this.meshRoot.scaling).to({x:scalAnim,y:scalAnim,z:scalAnim},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+        new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x+upAng,y:this.startRotation.y,z:this.startRotation.z+BABYLON.Angle.FromDegrees(360).radians()+zAng},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x,y:this.root.camera.target.y+newPos.y,z:this.root.camera.target.z+newPos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        new TWEEN.Tween(this.meshRoot.scaling).to({x:scalAnim,y:scalAnim,z:scalAnim},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
             this.root.rotateMesh(this.meshRoot);
             this.root.gui2D.userExitBtn.isVisible = true;
             this.root.gui2D.userExitBtn._onPointerUp = ()=>{
@@ -443,26 +458,26 @@ export default class Item{
 
         this.root.gui2D.userExitBtn.isVisible = false;
         this.root.gui2D.resetCamBtn.isVisible = true;
-        // new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(50).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-        // new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+        // new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(50).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        // new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
         // this.root.gamestate.state = GameState.active;
         // if(this.isPlaced){
             if(this.placeRotation && (this.parent !== this.root.scene.getTransformNodeByID("tabledrawer")))
-                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
             else
-                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x,y:this.startRotation.y,z:this.startRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();    
-            // new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-            new TWEEN.Tween(this.meshRoot.scaling).to({x:this.startScaling.x,y:this.startScaling.y,z:this.startScaling.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x,y:this.startRotation.y,z:this.startRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();    
+            // new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+            new TWEEN.Tween(this.meshRoot.scaling).to({x:this.startScaling.x,y:this.startScaling.y,z:this.startScaling.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
             const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
-            new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                  this.enableDrag(setdrag);
                  this.root.gamestate.state = GameState.active;
             }).start();
         // }
         // else{
-        //     new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x,y:this.startRotation.y,z:this.startRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-        //     new TWEEN.Tween(this.meshRoot.position).to({x:this.startPosition.x,y:this.startPosition.y,z:this.startPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-        //     new TWEEN.Tween(this.meshRoot.scaling).to({x:this.startScaling.x,y:this.startScaling.y,z:this.startScaling.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+        //     new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x,y:this.startRotation.y,z:this.startRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        //     new TWEEN.Tween(this.meshRoot.position).to({x:this.startPosition.x,y:this.startPosition.y,z:this.startPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        //     new TWEEN.Tween(this.meshRoot.scaling).to({x:this.startScaling.x,y:this.startScaling.y,z:this.startScaling.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
         //     }).start();
         // }
         
@@ -499,8 +514,8 @@ export default class Item{
       }
       useccpdRecordBook(anim_time,callevent){
           if(this.name.includes("CCPD")){
-            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(0).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                new TWEEN.Tween(this.meshRoot.position).to({x:130,y:-100,z:1.01},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(0).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+                new TWEEN.Tween(this.meshRoot.position).to({x:130,y:-100,z:1.01},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
                     this.meshRoot.parent = null;
                     this.parent = this.root.scene.getCameraByName("maincamera");
                     this.meshRoot.parent = this.parent;
@@ -527,12 +542,12 @@ export default class Item{
                 frontpage =childmesh;
         });
         if(this.state===100){  
-            new TWEEN.Tween(frontpage.rotation).to({y:BABYLON.Angle.FromDegrees(185).radians()},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-            new TWEEN.Tween(this.meshRoot.scaling).to({x:.013,y:.013,z:.013},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+            new TWEEN.Tween(frontpage.rotation).to({y:BABYLON.Angle.FromDegrees(185).radians()},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+            new TWEEN.Tween(this.meshRoot.scaling).to({x:.013,y:.013,z:.013},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                 this.root.scene.getMeshByName("ccpdplane").isVisible=true;
                 this.root.scene.getMeshByName("ccpdplane").isPickable=true;
             }).start();
-            new TWEEN.Tween(this.meshRoot.position).to({x:.4,y:.0,z:1.1},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.position).to({x:.4,y:.0,z:1.1},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                 this.removeAction();
             }).start();
         }
@@ -545,10 +560,10 @@ export default class Item{
             if(childmesh.id ==="ccpdfront")
                 frontpage =childmesh;
         });
-        new TWEEN.Tween(frontpage.rotation).to({y:0},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-        new TWEEN.Tween(this.meshRoot.scaling).to({x:.003,y:.003,z:.003},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+        new TWEEN.Tween(frontpage.rotation).to({y:0},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        new TWEEN.Tween(this.meshRoot.scaling).to({x:.003,y:.003,z:.003},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
         }).start();
-        new TWEEN.Tween(this.meshRoot.position).to({x:.67,y:-.24,z:1.1},anim_time).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+        new TWEEN.Tween(this.meshRoot.position).to({x:.67,y:-.24,z:1.1},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
         }).start();
      }
      useMask(anim_time){

@@ -90,13 +90,13 @@ export default class Cabinet{
             )
     }
     cabinetFocusAnim(){
-        new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-        new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+        new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
             this.root.gamestate.state = GameState.focus;
             this.state =1;
             // this.setCabinetDoorBorder(1);
         }).start();
-        new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+        new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
     }
     openCloseDoor(){
         this.meshRoot.getChildTransformNodes().forEach(childnode => {
@@ -114,7 +114,7 @@ export default class Cabinet{
         let val=0;
         if(mesh.rotation.z === BABYLON.Angle.FromDegrees(0).radians())
             val = BABYLON.Angle.FromDegrees(angle).radians();
-        new TWEEN.Tween(mesh.rotation).to({z:isleft?-val:val},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onUpdate(()=>{
+        new TWEEN.Tween(mesh.rotation).to({z:isleft?-val:val},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onUpdate(()=>{
             this.doorAnim = true;
         }).onComplete(() => {
             if(isleft){

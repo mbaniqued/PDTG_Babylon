@@ -10,24 +10,24 @@ export default class GameTaskManager{
             this.root.doorObject.closedoor=false;
             this.root.doorObject.openCloseDoor(false);
             console.log(" 111completeRoomSetUp 1111");    
-        }, action_time*.2);
+        }, action_time);
         setTimeout(() => {
             this.root.lightswitchObject.isLightOff = false;
             this.root.lightswitchObject.setLight();    
             console.log(" 111completeRoomSetUp 2222");
-        }, action_time*.4);
+        }, action_time*2);
         setTimeout(() => {
             this.root.fanswitchobject.isFanOff = true;
             this.root.stopFan();
-        }, action_time*.6);
+        }, action_time*3);
         setTimeout(() => {
             this.root.windowObject.windowClose=false;
             this.root.windowObject.closeWindow();
-        }, action_time*.8);
+        }, action_time*4);
         setTimeout(() => {
             this.root.isAcOff = false;
             this.root.setAc(false);
-        }, action_time);
+        }, action_time*5);
     }
     completeItemSetUp(){
         setTimeout(() => {
