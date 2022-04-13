@@ -882,8 +882,8 @@ export default class MainScene {
             this.gui2D.drawsubmitMenu(false);
             this.sceneCommon.removeMiniCam();
             this.gui2D.drawObjectiveMenu(false);
-            this.updateResult();
             this.gui2D.drawResultShowMenu(true);
+            this.updateResult();
       })
       const resultcontinueBtn = this.gui2D.submitMenuContainer.getChildByName("continue_btn");
       resultcontinueBtn.onPointerUpObservable.add(()=>{
@@ -1576,7 +1576,8 @@ export default class MainScene {
             }
             this.gui2D.resultContainer.getChildByName("allmode_scroll_viewer").isVisible=true;
             this.gui2D.resultContainer.getChildByName("allmode_scroll_viewer").isEnabled =true;
-        }
+            this.gui2D.resultContainer.getChildByName("allmode_scroll_viewer").isVisible =true;
+       }
       if(this.gamemode === gamemode.assessment){
           this.practiceResult.roomPreparation.isVisible=true;
           this.practiceResult.itemPreparation.isVisible=true;
