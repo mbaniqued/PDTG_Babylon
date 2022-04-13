@@ -90,7 +90,7 @@ export default class DoorObject{
                     if(this.closedoor){
                         this.label.isVisible=false;
                         if(eventcall){
-                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"door_event"}});
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"door_event",level:0}});
                             document.dispatchEvent(custom_event);
                         }
                     }

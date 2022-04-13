@@ -636,35 +636,33 @@ export default class GUI2D{
         resultpopup.addControl(title);
 
         const contentpopup = this.createRect("contentpopup",1757,697,5,"#6C6C6C40",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        contentpopup.isPointerBlocker=false;
+        contentpopup.isPointerBlocker=true;
         this.resultContainer.addControl(contentpopup);
 
 
         const modescrollpanel = new GUI.ScrollViewer("allmode_scroll_viewer");
-        modescrollpanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        modescrollpanel.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        modescrollpanel.isPointerBlocker=true;
         this.resultContainer.addControl(modescrollpanel);
 
-        const scrollpopup  =  new GUI.StackPanel();    
-        scrollpopup.name ="scrollpopup";
-        scrollpopup.widthInPixels = 2200;
+        const scrollpopup  =  new GUI.StackPanel("scrollcontainer");    
+        scrollpopup.isPointerBlocker=true;
+        scrollpopup.widthInPixels  = 2200;
         scrollpopup.heightInPixels = 680;
-        modescrollpanel.widthInPixels = scrollpopup.widthInPixels-600;
-        modescrollpanel.heightInPixels = scrollpopup.heightInPixels+30;
-        modescrollpanel.forceVerticalBar = false;
-        modescrollpanel.background = "#ffffff00";
-        modescrollpanel.color= "#ffffff00";
-        
         scrollpopup.background = "#00000052";
         scrollpopup.topInPixels=250;
-        scrollpopup.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        scrollpopup.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
         scrollpopup.isVertical = false;
-        // const scrollpopup = this.createRect("scrollpopup",1565,680,5,"#00000052",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        scrollpopup.isPointerBlocker=false;
-        scrollpopup.isVisible=true;
-        // this.resultContainer.addControl(scrollpopup);
+
+        modescrollpanel.widthInPixels  = scrollpopup.widthInPixels-600;
+        modescrollpanel.heightInPixels = scrollpopup.heightInPixels;
+        modescrollpanel.horizontalBar.isPointerBlocker=true;
+        modescrollpanel.verticalBar.alpha=0;
+        modescrollpanel.verticalBar.isEnabled=false;
+        
+        modescrollpanel.background = "#ffffff00";
+        modescrollpanel.color = "#ffffff00";
+        
         modescrollpanel.addControl(scrollpopup);
+        
         
         //assesment result
         const assesmentContainer =  new GUI.Container("assesmentcontainer");
@@ -677,7 +675,7 @@ export default class GUI2D{
         assesmentContainer.addControl(titlestage1);
         assesmentContainer.isVisible=false;
         
-        const value=["Duration:","Overall:","Accuracy:","Sequence Accuracy:"];
+        const value=["Duration:","Overall Accuracy:","Steps Accuracy:","Sequence Accuracy:"];
         for(let i=0;i<value.length;i++){
           const valuetext  = this.createText(value[i],value[i],36,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
           valuetext.topInPixels = -150+i*100;
@@ -686,9 +684,9 @@ export default class GUI2D{
           valuetext.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
           assesmentContainer.addControl(valuetext);
         }
-        const value2=["0s","0%","0%","0%"];
+        const value2=["duration_value","overall_value","steps_value","swquence_value"];
         for(let i=0;i<value2.length;i++){
-          const valuetext  = this.createText(value[i]+"values",value2[i],36,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          const valuetext  = this.createText(value2[i],i==0?"0s":"0%",36,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
           valuetext.topInPixels = -150+i*100;
           valuetext.leftInPixels = -400;
           valuetext.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
@@ -716,7 +714,21 @@ export default class GUI2D{
         doneResultBtn.topInPixels = 400;
         this.resultContainer.addControl(doneResultBtn);
         this.advancedTexture.addControl(this.resultContainer);
-        this.drawResultShowMenu(true);
+        this.drawResultShowMenu(false);
+        leftRect.onPointerUpObservable.add(()=>{
+            if(this.root.resultPage===1){
+              this.root.resultPage--;
+              assesmentContainer.isVisible=true;
+              modescrollpanel.isVisible=false;
+            }
+        });
+        rightRect.onPointerUpObservable.add(()=>{
+          if(this.root.resultPage===0){
+             this.root.resultPage++;
+             assesmentContainer.isVisible=false;
+             modescrollpanel.isVisible=true;
+           }
+        });
     }
     createResultBar(msg,width,height){
       const  objectivebar     =  this.createRect("resultbar",width,height,5,"#50F10042",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
@@ -742,10 +754,20 @@ export default class GUI2D{
     drawResultShowMenu(isdraw){
        this.resultContainer.isPointerBlocker=true;
        this.resultContainer.isVisible = isdraw;
-      //  const assesmentcontainer = this.resultContainer.getChildByName("assesmentcontainer");
-      //  assesmentcontainer.isVisible = this.root.gamemode === gamemode.assessment;
-      // if(this.root.gamemode === gamemode.assessment)
-    }
+       const assesmentcontainer = this.resultContainer.getChildByName("assesmentcontainer");
+       assesmentcontainer.isVisible = this.root.gamemode === gamemode.assessment;
+       const rightRectBtn = this.resultContainer.getChildByName("rightRectBtn");
+       rightRectBtn.isVisible = this.root.gamemode === gamemode.assessment;
+       const leftRectBtn = this.resultContainer.getChildByName("leftRectBtn");
+       leftRectBtn.isVisible = this.root.gamemode === gamemode.assessment;
+
+       const allmode_scroll_viewer = this.resultContainer.getChildByName("allmode_scroll_viewer");
+       allmode_scroll_viewer.horizontalBar.alpha     = this.root.gamemode === gamemode.practice?0:1;
+       allmode_scroll_viewer.horizontalBar.isEnabled = this.root.gamemode === gamemode.assessment;
+       
+       
+       
+      }
      createImage(name,src,width,height,horizontal,verticle,isadd){
         const image  =  new GUI.Image(name,src);
         image.widthInPixels  = width;

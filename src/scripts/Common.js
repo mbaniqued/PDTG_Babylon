@@ -21,8 +21,8 @@ export default class Common{
         this.scene.clearColor = BABYLON.Color3.FromHexString("#000000");
         
         // this.env=this.scene.createDefaultEnvironment()
-      //   this.scene.environmentTexture = new BABYLON.CubeTexture.CreateFromPrefilteredData("models/environment/autoshop_01_4k.env",this.scene);
-      //   this.scene.environmentTexture.level =.1;
+        this.scene.environmentTexture = new BABYLON.CubeTexture.CreateFromPrefilteredData("models/environment/autoshop_01_4k.env",this.scene);
+        this.scene.environmentTexture.level=0;
       //   this.scene.enablePrePassRenderer();
         this.setLight();
         

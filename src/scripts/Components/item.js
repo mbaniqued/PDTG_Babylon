@@ -346,7 +346,8 @@ export default class Item{
                             new TWEEN.Tween(this.meshRoot).to({position:this.placedPosition},ANIM_TIME*.3).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                                 this.focusTable();
                                 this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;
-                                if(this.root.level ===3){
+                                // if(this.root.level ===3)
+                                {
                                     this.root.itemCount++;
                                     const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"placed_2item_apdreck",level:3}});
                                     document.dispatchEvent(custom_event);
@@ -357,7 +358,8 @@ export default class Item{
                     if((this.root.scene.getMeshByName("tablecollider").visibility>0)){ 
                         placed = true;
                         this.placedPosition = this.tablePosition;
-                        if(this.root.level ===1){
+                        // if(this.root.level ===1)
+                        {
                             if(!this.isPlaced){
                                 this.root.itemCount++;
                                 const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.itemCount,level:1}});

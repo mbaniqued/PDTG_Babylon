@@ -58,7 +58,7 @@ export default class Table{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                     if(rotateState.value ===1)
                         return;
-                    this.label.isVisible=this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
+                    this.label.isVisible=this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
                     this.setLabel();
                     if(this.root.gamestate.state === GameState.inspect)
                         this.updateoutLine(mesh,false);
@@ -74,7 +74,7 @@ export default class Table{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                     if(rotateState.value ===1)
                         return;
-                    this.label.isVisible=this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
+                    this.label.isVisible=this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
                     this.updateoutLine(mesh,true);
                     this.setLabel();
                     this.root.scene.onPointerUp=()=>{
@@ -85,7 +85,7 @@ export default class Table{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
                     if(rotateState.value ===1)
                         return;
-                    this.label.isVisible= this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
+                    this.label.isVisible= this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
                     this.updateoutLine(mesh,false);
                     if(this.root.gui2D.radialCircle.isVisible)
                         return;

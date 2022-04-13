@@ -23,8 +23,8 @@ import HandWash from "../Components/handwash.js";
 import AlcohalWipe from "../Components/alcohalwipe.js";
 import GameTaskManager from "../Components/GameTaskManager.js";
 import { Result } from "../Components/results.js";
-import { diasolutionpos1,diasolutionpos2,sanitizerpos1} from "../Components/cabinetitem.js";
-import { MACHINE_PREPRATION } from "../Components/results.js";
+import { TOTAL_POINTS,TOTAL_TASK,TOTAL_SEQUENCE_POINTS } from "../Components/GameTaskManager.js";
+import { getTime } from "../Components/results.js"; 
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7,inspect:8,validation:9,validation:10,result:10};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
@@ -69,6 +69,7 @@ export default class MainScene {
     // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
     // this.sceneOptimiser.startOptimiser();
     this.level=0,this.isUp=false,this.objectiveCount=0,this.totalobjective=0,this.itemCount=0,this.dialysisItemCnt=0,this.handsanitiserCnt=0;
+    this.resultPage=0;
     this.bpRecord="",this.ccpdbpInputField;
     
     this.initacParticle();
@@ -147,8 +148,7 @@ export default class MainScene {
 
     this.createccpdCanvas();
     this.startFan();
-    
-      console.log(" !!!!!!!!! initscene!!! ");
+    console.log(" !!!!!!!!! initscene!!! ");
       resolve('resolved');
     });
   }
@@ -235,6 +235,31 @@ export default class MainScene {
                  }
               break;
             case gamemode.assessment:
+                 switch(e.detail.level){
+                    case 0:{
+                        const timeDiff = Math.floor((+new Date()-this.gameTime));
+                        this.updateTime(timeDiff,"Room");
+                       }
+                      break;
+                    case 1:{
+                      const timeDiff = Math.floor((+new Date()-this.gameTime));
+                      this.updateTime(timeDiff,"Item");
+                      }
+                    break;
+                    case 2:{
+                      const timeDiff = Math.floor((+new Date()-this.gameTime));
+                      this.updateTime(timeDiff,"Self");
+                     }
+                    break;
+                    case 3:{
+                      const timeDiff = Math.floor((+new Date()-this.gameTime));
+                      this.updateTime(timeDiff,"Machine");
+                     }
+                    break;
+                 }
+                
+                 
+
              break;
          }
       }
@@ -843,27 +868,27 @@ export default class MainScene {
           this.gui2D.advancedTexture.renderAtIdealSize=false;
           if(this.handSoapObject.state>=100)
             this.handSoapObject.state=0;
-        }) 
+        });
         this.gui2D.submitBtn.onPointerUpObservable.add(()=>{
           this.gui2D.drawsubmitMenu(true);
           this.gui2D.submitBtn.isVisible=false;
         });
         const resultmenuBtn = this.gui2D.submitMenuContainer.getChildByName("result_btn");
         resultmenuBtn.onPointerUpObservable.add(()=>{
+            this.resultPage=0;
             this.gamestate.state = GameState.result;
-            this.gui2D.drawsubmitMenu(false);
             this.isResetScene = true;
             this.gui2D.resetCamBtn.isVisible=false;
+            this.gui2D.drawsubmitMenu(false);
             this.sceneCommon.removeMiniCam();
             this.gui2D.drawObjectiveMenu(false);
-            this.gui2D.drawResultShowMenu(true);
             this.updateResult();
-
+            this.gui2D.drawResultShowMenu(true);
       })
       const resultcontinueBtn = this.gui2D.submitMenuContainer.getChildByName("continue_btn");
       resultcontinueBtn.onPointerUpObservable.add(()=>{
-          this.gui2D.drawsubmitMenu(false);
           this.gui2D.submitBtn.isVisible=true;
+          this.gui2D.drawsubmitMenu(false);
       })
       const resultdoneBtn = this.gui2D.resultContainer.getChildByName("doneresult");
        resultdoneBtn.onPointerUpObservable.add(()=>{
@@ -874,18 +899,18 @@ export default class MainScene {
       this.gui2D.userBackBtn.onPointerUpObservable.add(()=>{
           this.gui2D.drawbackMenu(true);
       })
-      const levelmenuBtn = this.gui2D.backMenuContainer.getChildByName("menu_btn");
-      levelmenuBtn.onPointerUpObservable.add(()=>{
-          this.gui2D.drawbackMenu(false);
+      const backmenuBtn = this.gui2D.backMenuContainer.getChildByName("menu_btn");
+      backmenuBtn.onPointerUpObservable.add(()=>{
           this.isResetScene = true;
           this.gui2D.resetCamBtn.isVisible=false;
           this.gamestate.state = GameState.menu;
           this.gui2D.drawMainMenu(true);
+          this.gui2D.drawbackMenu(false);
           this.sceneCommon.removeMiniCam();
           this.gui2D.drawObjectiveMenu(false);
       })
-      const levelcontinueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
-        levelcontinueBtn.onPointerUpObservable.add(()=>{
+      const backcontinueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
+        backcontinueBtn.onPointerUpObservable.add(()=>{
           this.gui2D.drawbackMenu(false);
       })
   }
@@ -1326,9 +1351,7 @@ export default class MainScene {
         this.gui2D.drawObjectiveMenu(false);
         this.gui2D.drawRadialMenu(false);
         this.gui2D.drawValidationMenu(false);
-        // this.gui2D.resetCamBtn.isVisible=false;
         this.gui2D.userExitBtn.isVisible=false;
-        
         setTimeout(() => {
           this.gui2D.drawLevelComplete(true);  
         }, 1500);
@@ -1341,20 +1364,25 @@ export default class MainScene {
                 this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Item PrepRation\n Complete!";
                 this.cabinetObject.openCloseDoor();
               break;
+            case 2:
+                this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Self PrepRation\n Complete!";
+              break;
+            case 3:
+                this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Machine PrepRation\n Complete!";
+              break;
         }
         this.gui2D.nextBtn._onPointerUp=()=>{
            this.gui2D.drawLevelComplete(false);
            this.level++;
            this.isResetScene = false;
            if(this.level>=4){
-             
+              this.level=0;
               this.isResetScene = true;
               this.gui2D.resetCamBtn.isVisible=false;
               this.gamestate.state = GameState.menu;
               this.gui2D.drawMainMenu(true);
               this.sceneCommon.removeMiniCam();
               this.gui2D.drawObjectiveMenu(false);
-              this.level=0;
               this.resetObjectiveBar();
            }
            else{
@@ -1366,15 +1394,16 @@ export default class MainScene {
           this.level=0;
           this.isResetScene = true;
           this.gui2D.resetCamBtn.isVisible=false;
-          this.gui2D.drawLevelComplete(false);
+          this.gui2D.userExitBtn.isVisible=false;
           this.gamestate.state = GameState.menu;
+          this.gui2D.drawLevelComplete(false);
           this.gui2D.drawMainMenu(true);
           this.sceneCommon.removeMiniCam();
           this.resetObjectiveBar();
         }
       }
    }
-    createccpdCanvas(){
+   createccpdCanvas(){
        if(this.recordbookCanvas){
             this.ccpdbpInputField.text="";
             this.bpRecord="";
@@ -1518,137 +1547,79 @@ export default class MainScene {
       this.practiceResult.itemPreparation.isVisible=false;
       this.practiceResult.selfPreparation.isVisible=false;
       this.practiceResult.machinePreparation.isVisible=false;
-      switch(this.level){
-        case 0:{
-              const result =[];
-              result[0] = this.doorObject.closedoor;
-              result[1] = this.lightswitchObject.isLightOff;
-              result[2] = this.fanswitchobject.isFanOff;
-              result[3] = this.windowObject.windowClose;
-              result[4] = this.acItem.isAcOff;
-              this.practiceResult.updateRoomResult(result);
-              this.practiceResult.roomPreparation.isVisible=true;
-          }
-          break;
-        case 1:{
-              const result =[];
-              result[0] = this.apdmachinePackage.placedPosition == this.apdmachinePackage.tablePosition;
-              result[1] = this.ccpdRecordBook.placedPosition    == this.ccpdRecordBook.tablePosition;
-              result[2] = this.drainBagItem.placedPosition      == this.drainBagItem.tablePosition;
-              result[3] = this.alcohalItem.placedPosition      == this.alcohalItem.tablePosition;
-              result[4] = this.bpMachineItem.placedPosition    == this.bpMachineItem.tablePosition;
-              result[5] = this.connectionItem.placedPosition   == this.connectionItem.tablePosition;
-              result[6] = this.maskItem.placedPosition         == this.maskItem.tablePosition;
-
-              for(let i=0;i<this.dialysisSolutionObject.length;i++){
-                if(this.dialysisSolutionObject[i].placedPosition == diasolutionpos1 || this.dialysisSolutionObject[i].placedPosition == diasolutionpos2){
-                   result[7] = true;
+        if(this.gamemode === gamemode.practice){
+            switch(this.level){
+              case 0:{
+                    const result = this.gameTaskManager.level1Result();
+                    this.practiceResult.updateRoomResult(result);
+                    this.practiceResult.roomPreparation.isVisible=true;
                 }
-              }
-              for(let i=0;i<this.sanitiserObject.length;i++){
-                if(this.sanitiserObject[i].placedPosition == sanitizerpos1){
-                   result[8] = true;
+                break;
+              case 1:{
+                    const result =this.gameTaskManager.level2Result();
+                    this.practiceResult.updateItemResult(result);
+                    this.practiceResult.itemPreparation.isVisible=true;
                 }
-              }
-              this.practiceResult.updateItemResult(result);
-              this.practiceResult.itemPreparation.isVisible=true;
-          }
-         break;
-         case 2:{
-                const result=[];
-                result[0] = this.bpRecord.length>0;
-                result[1] = this.ccpdRecordBook.parent === this.scene.getCameraByName("maincamera");
-                result[2] = this.ccpdbpInputField.text.length>0;
-                result[3] = this.maskItem.parent === this.scene.getCameraByName("maincamera");
-                result[4] = this.handwashactivity.washhand;
-                result[5] = this.paperTowelObject.usepaperTowel;
-                this.practiceResult.updateselfResult(result);
-                this.practiceResult.selfPreparation.isVisible=true;
+              break;
+              case 2:{
+                      const result=this.gameTaskManager.level3Result();
+                      this.practiceResult.updateselfResult(result);
+                      this.practiceResult.selfPreparation.isVisible=true;
+                  }
+                break;
+              case 3:{
+                      const result=this.gameTaskManager.level4Result(); 
+                      this.practiceResult.updateMachineResult(result);
+                      this.practiceResult.machinePreparation.isVisible=true;
+                  }
+                  break;
             }
-           break;
-           case 3:{
-                const result=[]; 
-                console.log("############ "+MACHINE_PREPRATION.length);
-                for(let i=0;i<MACHINE_PREPRATION.length;i++){
-                  const value={value:""};
-                  result.push(value);
-                }
-                result[0].value = this.wipeAlcohal.accessAlcohal;
-                 for(let i=0;i<this.sanitiserObject.length;i++){
-                    if(this.sanitiserObject[i].placedPosition == sanitizerpos2){
-                       result[1].value = true;
-                       result[24].value = true;
-                    }
-                  }
-                  result[2].value = this.apdmachinePackage.valdiationCount>1;
-                  result[3].value = this.apdmachinePackage.apdValidateType[0];
-                  result[4].value = this.apdmachinePackage.apdValidateType[1];
+            this.gui2D.resultContainer.getChildByName("allmode_scroll_viewer").isVisible=true;
+            this.gui2D.resultContainer.getChildByName("allmode_scroll_viewer").isEnabled =true;
+        }
+      if(this.gamemode === gamemode.assessment){
+          this.practiceResult.roomPreparation.isVisible=true;
+          this.practiceResult.itemPreparation.isVisible=true;
+          this.practiceResult.selfPreparation.isVisible=true;
+          this.practiceResult.machinePreparation.isVisible=true;
+          const result1 = this.gameTaskManager.level1Result();
+          this.practiceResult.updateRoomResult(result1);
 
-                  let check=false,checkCnt=0,validateDialysis=[];
-                  
-                  for(let i=0;i<this.dialysisSolutionObject.length;i++){
-                        check = this.dialysisSolutionObject[i].checkAllValidationDone();
-                        if(check)
-                            checkCnt++;
-                          result[5].value = checkCnt>1;
-                        if(this.dialysisSolutionObject[i].pickforValidation)
-                            validateDialysis.push(i);
-                  }
+          const result2 = this.gameTaskManager.level2Result();
+          this.practiceResult.updateItemResult(result2);
 
-                  for(let i=0;i<validateDialysis.length;i++){
-                     let index = validateDialysis[i];
-                     if(i===0){
-                          let value = this.dialysisSolutionObject[index].checkValidation["concentration_highlight_plan"];
-                          result[6].value = value;
-                          value = this.dialysisSolutionObject[index].checkValidation["expiry_highlight_plan"];
-                          result[7].value = value;
-                          value = this.dialysisSolutionObject[index].checkValidation["volume_highlight_plan"];
-                          result[8].value = value;
-                          value = this.dialysisSolutionObject[index].checkValidation["greencap_highlight_plan"];
-                          result[9].value = value;
-                          value = this.dialysisSolutionObject[index].checkValidation["cap_highlight_plan"];
-                          result[10].value = value;
-                     }
-                     if(i===1){
-                            let value = this.dialysisSolutionObject[index].checkValidation["volume_highlight_plan"];
-                            result[11].value = value;
-                            value = this.dialysisSolutionObject[index].checkValidation["cap_highlight_plan"];
-                            result[12].value = value;
-                            value = this.dialysisSolutionObject[index].checkValidation["greencap_highlight_plan"];
-                            result[13].value = value;
-                            value = this.dialysisSolutionObject[index].checkValidation["concentration_highlight_plan"];
-                            result[14].value = value;
-                            value = this.dialysisSolutionObject[index].checkValidation["expiry_highlight_plan"];
-                            result[15].value = value;
-                      }
-                  }
-                  result[16].value = this.connectionItem.valdiationCheck>0;
-                  result[17].value = this.connectionItem.valdiationCheck>0;
+          const result3 = this.gameTaskManager.level3Result();
+          this.practiceResult.updateselfResult(result3);
 
-                  result[18].value = this.drainBagItem.valdiationCheck>0;
-                  result[19].value = this.drainBagItem.valdiationCheck>0;
-                  this.drainBagItem.meshRoot.getChildMeshes().forEach(childmesh => {
-                  if(childmesh.id.includes("DrainBagPlasticCover"))
-                        result[20].value = !childmesh.isVisible;
-                  });
-                  result[21].value = this.drainBagItem.placedPosition == this.drainBagItem.trollyPosition;
-                  for(let i=0;i<this.dialysisSolutionObject.length;i++){
-                      if(this.dialysisSolutionObject[i].placedPosition == diasolutionpos4){
-                        result[22].value = true;
-                      }
-                      if(this.dialysisSolutionObject[i].placedPosition == diasolutionpos3){
-                       result[23].value = true;
-                    }
-                  }
-                  result[25].value = this.apdmachinePackage.placedPosition == this.apdmachinePackage.trollyPosition;
-                  result[26].value = this.scene.getMeshByName("apd_machinetxt_plan").visibility;
+          const result4 = this.gameTaskManager.level4Result();
+          this.practiceResult.updateMachineResult(result4);
 
-                  this.practiceResult.updateMachineResult(result);
-                  this.practiceResult.machinePreparation.isVisible=true;
-            }
-            break
-      }
+          this.gameTaskManager.countTaskStep();
+          console.log(this.gameTaskManager.taskStep);
+          this.gui2D.resultContainer.getChildByName("allmode_scroll_viewer").isVisible=false;
+          const assestmentContainer = this.gui2D.resultContainer.getChildByName("assesmentcontainer");
+          let time="";
+          const timeDiff = Math.floor((+new Date()-this.gameTime));
+          const totalTime = getTime(timeDiff);
+          const hours   = totalTime[0];
+          const minutes = totalTime[1];
+          const seconds = totalTime[2];
+          if(hours>0)
+              time = hours+":"+minutes+":"+seconds;
+          else if(minutes>0)
+              time = minutes+":"+seconds;
+           else   
+              time = seconds;
+          
+          const overallAccuracy = Math.floor((this.gameTaskManager.taskStep/TOTAL_POINTS)*100);
+          const stepAccuracy = Math.floor((this.gameTaskManager.taskStep/TOTAL_TASK)*100);
+          // console.log("!!! overallAccuracy!!! "+overallAccuracy+"      ");
+          assestmentContainer.getChildByName("duration_value").text = time+"s";
+          assestmentContainer.getChildByName("overall_value").text  = overallAccuracy+"%";
+          assestmentContainer.getChildByName("steps_value").text    = stepAccuracy+"%";
+       }
    }
+   
 }
 
 

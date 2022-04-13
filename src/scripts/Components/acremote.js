@@ -81,7 +81,7 @@ export default class ACRemote{
                                 this.isAcOff = !this.isAcOff;
                                 this.root.setAc(!this.isAcOff);
                                 if(this.isAcOff){
-                                    let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
+                                    let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"acoff",level:0}});
                                     document.dispatchEvent(custom_event);
                                 }
                             }

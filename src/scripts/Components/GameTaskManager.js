@@ -1,9 +1,14 @@
 const action_time=500;
 import { ANIM_TIME,randomNumber } from "../scene/MainScene";
+import { diasolutionpos1,diasolutionpos2,diasolutionpos3,diasolutionpos4,sanitizerpos1,sanitizerpos2 } from "./cabinetitem";
+import { MACHINE_PREPRATION } from "./results";
+export const TOTAL_POINTS = 41,TOTAL_SEQUENCE_POINTS =9,TOTAL_TASK=43;
+const TASKPOINT=1,BOMUSPOINT=1;
+// overall             // 
 export default class GameTaskManager{
     constructor(root){
-
-        this.root = root;
+        this.root     = root;
+        this.taskStep = 0;
     }
     completeRoomSetUp(){
         setTimeout(() => {
@@ -111,5 +116,158 @@ export default class GameTaskManager{
           this.root.handSoapObject.initAction();
           this.root.paperTowelObject.initAction();
           
+    }
+    level1Result(){
+        const result =[];
+        result[0] = this.root.doorObject.closedoor;
+        result[1] = this.root.lightswitchObject.isLightOff;
+        result[2] = this.root.fanswitchobject.isFanOff;
+        result[3] = this.root.windowObject.windowClose;
+        result[4] = this.root.acItem.isAcOff;
+        return result;
+    }
+    level2Result(){
+        const result =[];
+        result[0] = this.root.apdmachinePackage.placedPosition ==this.root.apdmachinePackage.tablePosition;
+        result[1] = this.root.ccpdRecordBook.placedPosition    ==this.root.ccpdRecordBook.tablePosition;
+        result[2] = this.root.drainBagItem.placedPosition      ==this.root.drainBagItem.tablePosition;
+        result[3] = this.root.alcohalItem.placedPosition       ==this.root.alcohalItem.tablePosition;
+        result[4] = this.root.bpMachineItem.placedPosition     ==this.root.bpMachineItem.tablePosition;
+        result[5] = this.root.connectionItem.placedPosition    ==this.root.connectionItem.tablePosition;
+        result[6] = this.root.maskItem.placedPosition          ==this.root.maskItem.tablePosition;
+
+        let cnt=0;
+        for(let i=0;i<this.root.dialysisSolutionObject.length;i++){
+            if(this.root.dialysisSolutionObject[i].placedPosition == diasolutionpos1 || this.root.dialysisSolutionObject[i].placedPosition == diasolutionpos2){
+                cnt++;
+            }
+            if(cnt>1)
+             result[7] = true;
+            
+        }
+        for(let i=0;i<this.root.sanitiserObject.length;i++){
+            if(this.root.sanitiserObject[i].placedPosition == sanitizerpos1){
+                result[8] = true;
+            }
+        }
+        return result;
+    }
+    level3Result(){
+        const result=[];
+        result[0] = this.root.bpRecord.length>0;
+        result[1] = this.root.ccpdRecordBook.parent === this.root.scene.getCameraByName("maincamera");
+        result[2] = this.root.ccpdbpInputField.text.length>0;
+        result[3] = this.root.maskItem.parent === this.root.scene.getCameraByName("maincamera");
+        result[4] = this.root.handwashactivity.washhand;
+        result[5] = this.root.paperTowelObject.usepaperTowel;
+        return result;
+    }
+    level4Result(){
+        const result=[]; 
+        for(let i=0;i<MACHINE_PREPRATION.length;i++){
+          const value={value:""};
+          result.push(value);
+        }
+        result[0].value = this.root.wipeAlcohal.accessAlcohal;
+         for(let i=0;i<this.root.sanitiserObject.length;i++){
+            if(this.root.sanitiserObject[i].placedPosition == sanitizerpos2){
+               result[1].value = true;
+               result[24].value = true;
+            }
+          }
+          result[2].value = this.root.apdmachinePackage.valdiationCount>1;
+          result[3].value = this.root.apdmachinePackage.apdValidateType[0];
+          result[4].value = this.root.apdmachinePackage.apdValidateType[1];
+          let check=false,checkCnt=0,validateDialysis=[];
+          for(let i=0;i<this.root.dialysisSolutionObject.length;i++){
+                check = this.root.dialysisSolutionObject[i].checkAllValidationDone();
+                if(check)
+                    checkCnt++;
+                  result[5].value = checkCnt>1;
+                if(this.root.dialysisSolutionObject[i].pickforValidation)
+                    validateDialysis.push(i);
+          }
+          for(let i=0;i<validateDialysis.length;i++){
+             let index = validateDialysis[i];
+             if(i===0){
+                  let value = this.root.dialysisSolutionObject[index].checkValidation["concentration_highlight_plan"];
+                  result[6].value = value;
+                  value = this.root.dialysisSolutionObject[index].checkValidation["expiry_highlight_plan"];
+                  result[7].value = value;
+                  value = this.root.dialysisSolutionObject[index].checkValidation["volume_highlight_plan"];
+                  result[8].value = value;
+                  value = this.root.dialysisSolutionObject[index].checkValidation["greencap_highlight_plan"];
+                  result[9].value = value;
+                  value = this.root.dialysisSolutionObject[index].checkValidation["cap_highlight_plan"];
+                  result[10].value = value;
+             }
+             if(i===1){
+                    let value = this.root.dialysisSolutionObject[index].checkValidation["volume_highlight_plan"];
+                    result[11].value = value;
+                    value = this.root.dialysisSolutionObject[index].checkValidation["cap_highlight_plan"];
+                    result[12].value = value;
+                    value = this.root.dialysisSolutionObject[index].checkValidation["greencap_highlight_plan"];
+                    result[13].value = value;
+                    value = this.root.dialysisSolutionObject[index].checkValidation["concentration_highlight_plan"];
+                    result[14].value = value;
+                    value = this.root.dialysisSolutionObject[index].checkValidation["expiry_highlight_plan"];
+                    result[15].value = value;
+              }
+          }
+          result[16].value = this.root.connectionItem.valdiationCheck>0;
+          result[17].value = this.root.connectionItem.valdiationCheck>0;
+
+          result[18].value = this.root.drainBagItem.valdiationCheck>0;
+          result[19].value = this.root.drainBagItem.valdiationCheck>0;
+          this.root.drainBagItem.meshRoot.getChildMeshes().forEach(childmesh => {
+          if(childmesh.id.includes("DrainBagPlasticCover"))
+                result[20].value = !childmesh.isVisible;
+          });
+          result[21].value = this.root.drainBagItem.placedPosition == this.root.drainBagItem.trollyPosition;
+          for(let i=0;i<this.root.dialysisSolutionObject.length;i++){
+              if(this.root.dialysisSolutionObject[i].placedPosition == diasolutionpos4){
+                result[22].value = true;
+              }
+              if(this.root.dialysisSolutionObject[i].placedPosition == diasolutionpos3){
+               result[23].value = true;
+            }
+          }
+          result[25].value = this.root.apdmachinePackage.placedPosition == this.root.apdmachinePackage.trollyPosition;
+          result[26].value = this.root.scene.getMeshByName("apd_machinetxt_plan").visibility;
+          return result;
+    }
+    countTaskStep(){
+        const r1 = this.level1Result();
+        for(let i=0;i<r1.length;i++){
+            if(r1[i])
+              this.taskStep +=TASKPOINT;  
+        }
+        const r2 = this.level2Result();
+        for(let i=0;i<r2.length;i++){
+            if(r2[i] )
+                this.taskStep +=TASKPOINT;  
+        }
+        const r3 = this.level3Result();
+        for(let i=0;i<r3.length;i++){
+            if(r3[i] && i!==1)
+              this.taskStep++;  
+        }
+        const r4 = this.level4Result();
+        for(let i=0;i<r4.length;i++){
+           if(i !==9 && i !==10 && i!==12 && i !==13 && i !==24){
+               console.log("level4Result  "+i);
+                if(r4[i].value===true)
+                    this.taskStep +=TASKPOINT;  
+                if(r4[i].value===1)
+                    this.taskStep +=TASKPOINT;  
+                if(r4[i].value===2)
+                    this.taskStep +=TASKPOINT;  
+           }
+        }
+        if(r4[9].value>0 &&  r4[10].value>0)   
+            this.taskStep +=TASKPOINT;  
+        if(r4[12].value>0 &&  r4[13].value>0)   
+            this.taskStep +=TASKPOINT;  
+       console.log(r1.length+r2.length+r3.length+r4.length);     
     }
 }

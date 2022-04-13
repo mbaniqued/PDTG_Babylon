@@ -41,6 +41,7 @@ export default class Cabinet{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
             if(rotateState.value===1)
                 return;
+            this.label.isVisible=this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
             this.setLabel();
             this.updateoutLine(mesh,true);
         }))
@@ -51,6 +52,7 @@ export default class Cabinet{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
             if(rotateState.value===1)
                 return;
+                this.label.isVisible=this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
                 this.setLabel();
                 this.updateoutLine(mesh,true);
                 this.root.scene.onPointerUp=()=>{
@@ -61,6 +63,7 @@ export default class Cabinet{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                 if(rotateState.value===1)
                     return;
+                    this.label.isVisible= this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
                     this.updateoutLine(mesh,false);
                     if(this.state>0 && this.root.gamestate.state === GameState.default){
                         if(this.state>0 && this.isdoorOpen)
@@ -137,7 +140,6 @@ export default class Cabinet{
             this.label._children[0].text = "Cabinet";
         else
             this.label._children[0].text = this.isdoorOpen?"Close Cabinet":"Open Cabinet";
-            this.label.isVisible=this.root.gamestate.state !== GameState.radial && this.root.gamestate.state !== GameState.menu && this.root.gamestate.state !== GameState.levelstage;
     }
     initMeshOutline(){
         this.meshRoot.getChildTransformNodes().forEach(childnode=>{

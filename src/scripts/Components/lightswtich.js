@@ -82,7 +82,7 @@ export default class LightSwitch{
                         else if(this.state>0){
                             
                             this.setLight();
-                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"light_off",level:0}});
                             document.dispatchEvent(custom_event);
                         }
                         this.setLabel();
@@ -102,8 +102,9 @@ export default class LightSwitch{
         setLight(){
             console.log(" !!! light state!! " +this.state+"      "+this.isLightOff)
             this.isLightOff =!this.isLightOff;
-            this.root.sceneCommon.hemiLight.intensity        = this.isLightOff?.5:.1;
-            this.root.sceneCommon.directionalLight.intensity = this.isLightOff?.5:.1;
+            this.root.sceneCommon.hemiLight.intensity        = this.isLightOff?.3:.1;
+            this.root.sceneCommon.directionalLight.intensity = this.isLightOff?1:.1;
+            this.root.scene.environmentTexture.level         = this.isLightOff?.1:0;
         }
         updateoutLine(mesh,value){
             if(mesh.outlineWidth>0)

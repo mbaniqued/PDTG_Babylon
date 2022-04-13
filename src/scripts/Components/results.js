@@ -30,7 +30,7 @@ export class Result{
      }
      createRoomResult(){
         this.roomPreparation = new GUI.Container("room_container");   
-        this.roomPreparation.isVisible =true;
+        this.roomPreparation.isVisible =false;
         this.roomTime=undefined;
         this.roomPreparation.isPointerBlocker=true;
         this.roomPreparation.widthInPixels  = 500;
@@ -39,7 +39,7 @@ export class Result{
         this.roomPreparation.paddingLeftInPixels=10;
         
         const container =  this.root.gui2D.resultContainer.getChildByName("allmode_scroll_viewer");
-        const container2 = container.getChildByName("scrollpopup");
+        const container2 = container.getChildByName("scrollcontainer");
         container2.addControl(this.roomPreparation);
 
         const title = this.root.gui2D.createText("roomtitle","Room Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
@@ -126,7 +126,7 @@ export class Result{
      createItemResult(){
         this.itemPreparation = new GUI.Container("item_container");   
         this.itemTime=undefined;
-        this.itemPreparation.isVisible = true;
+        this.itemPreparation.isVisible = false;
         this.itemPreparation.isPointerBlocker=true;
         this.itemPreparation.widthInPixels  = 500;
         this.itemPreparation.heightInPixels = 600;
@@ -134,7 +134,7 @@ export class Result{
         this.itemPreparation.paddingLeftInPixels=10;
         
         const container =  this.root.gui2D.resultContainer.getChildByName("allmode_scroll_viewer");
-        const container2 = container.getChildByName("scrollpopup");
+        const container2 = container.getChildByName("scrollcontainer");
         container2.addControl(this.itemPreparation);
 
         const title = this.root.gui2D.createText("roomtitle","Item Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
@@ -233,7 +233,7 @@ export class Result{
      createSelfResult(){
         this.selfPreparation = new GUI.Container("self_container");   
         this.selfTime = undefined;
-        this.selfPreparation.isVisible=true;
+        this.selfPreparation.isVisible=false;
         this.selfPreparation.isPointerBlocker=true;
         this.selfPreparation.widthInPixels  = 500;
         this.selfPreparation.heightInPixels = 600;
@@ -241,7 +241,7 @@ export class Result{
         this.selfPreparation.paddingLeftInPixels=10;
         
         const container =  this.root.gui2D.resultContainer.getChildByName("allmode_scroll_viewer");
-        const container2 = container.getChildByName("scrollpopup");
+        const container2 = container.getChildByName("scrollcontainer");
         container2.addControl(this.selfPreparation);
 
         const title = this.root.gui2D.createText("selftitle","Self Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
@@ -328,7 +328,7 @@ export class Result{
      }
      createMachineResult(){
         this.machinePreparation = new GUI.Container("machine_container");   
-        this.machinePreparation.isVisible = true;
+        this.machinePreparation.isVisible = false;
         this.machineTime = undefined;
         this.machinePreparation.isPointerBlocker=true;
         this.machinePreparation.widthInPixels  = 500;
@@ -337,7 +337,7 @@ export class Result{
         this.machinePreparation.paddingLeftInPixels=10;
         
         const container =  this.root.gui2D.resultContainer.getChildByName("allmode_scroll_viewer");
-        const container2 = container.getChildByName("scrollpopup");
+        const container2 = container.getChildByName("scrollcontainer");
         container2.addControl(this.machinePreparation);
 
         const title = this.root.gui2D.createText("roomtitle","Machine Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
@@ -415,24 +415,24 @@ export class Result{
                 bar.color       = FOCUSCOLOR;
                 bar.background  = FOCUSCOLOR;
                 taskdone++;
-                console.log("trueeeeeeeeeeee");
+                // console.log("trueeeeeeeeeeee");
             }
             if(result[i].value===1){
                 arrow.isVisible = true;
                 bar.color       = FOCUSCOLOR;
                 bar.background = FOCUSCOLOR;
                 taskdone++;
-                console.log("11111111111111111111");
+                // console.log("11111111111111111111");
             }
             else if(result[i].value===2){
                 cross.isVisible = true;
                 bar.color = GREYCOLOR;
                 bar.background = GREYCOLOR;
                 taskdone++;
-                console.log("222222222222");
+                // console.log("222222222222");
             }
         }
-        console.log("!! task sone!! "+taskdone+"   "+MACHINE_PREPRATION.length);
+        // console.log("!! task sone!! "+taskdone+"   "+MACHINE_PREPRATION.length);
         const accuracyResult = this.machinePreparation.getChildByName("accuracyresult");
         const accuracy       =  parseInt((taskdone/MACHINE_PREPRATION.length)*100);
         accuracyResult.text  = accuracy+"%";
@@ -455,7 +455,7 @@ export class Result{
      }
      
 }
-function getTime(miliseconds){
+export function getTime(miliseconds){
     const time = Math.floor(miliseconds/1000);
     const sec_num = parseInt(time,10);
     const hours   = Math.floor(sec_num/3600);

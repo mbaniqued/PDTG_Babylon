@@ -87,7 +87,7 @@ export default class WindowFrame{
                                     this.root.gamestate.state = GameState.active;
                                     this.closeWindow();
                                     if(this.windowClose){
-                                        let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
+                                        let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"window_close",level:0}});
                                         document.dispatchEvent(custom_event);
                                     }
                                 break;

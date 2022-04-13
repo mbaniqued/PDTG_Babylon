@@ -84,7 +84,7 @@ export default class FanSwitch{
                             this.isFanOff =!this.isFanOff;
                             if(this.isFanOff){
                                 this.root.stopFan();
-                                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this}});
+                                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"fan_off",level:0}});
                                 document.dispatchEvent(custom_event);
                             }
                             else    

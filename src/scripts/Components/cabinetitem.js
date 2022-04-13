@@ -273,7 +273,7 @@ export default class CabinetItem{
                             // this.enableDrag(false);
                             this.root.handsanitiserCnt++;
                             this.label.isVisible=false;
-                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.handsanitiserCnt}});
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.handsanitiserCnt,level:1}});
                             document.dispatchEvent(custom_event);
                         }).start();
                     }
@@ -294,7 +294,7 @@ export default class CabinetItem{
                             //    this.removeAction();
                             this.root.dialysisItemCnt++;
                             this.label.isVisible=false;
-                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.dialysisItemCnt}});
+                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.dialysisItemCnt,level:1}});
                             document.dispatchEvent(custom_event);
                         }).start();
                     }
