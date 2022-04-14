@@ -57,6 +57,8 @@ export default class SinkItem{
                 this.updateoutLine(mesh.name,false);
                 if(this.root.camera.radius>2.9)
                     this.state=0;
+                 else   
+                    this.state=1;
                 if(this.state>=100){
                     return;
                 }

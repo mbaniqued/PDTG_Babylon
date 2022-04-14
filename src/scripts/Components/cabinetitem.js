@@ -33,6 +33,7 @@ export default class CabinetItem{
         this.pickforValidation = false;
         this.interaction       = false;
         this.isDraging         = false;
+        this.placeOnTable      = false;
         if(this.meshRoot.name.includes("diasolutionnode")){
             this.validationNode = new BABYLON.TransformNode("validation_node");
             this.validationTxt=[];
@@ -266,6 +267,7 @@ export default class CabinetItem{
               if(this.root.scene.getMeshByName("tablecollider").visibility>0){    
                     if(this.name.includes("Hand") && getsanitiserTablePosition(this.root)>-1){
                         placed = true;
+                        this.placeOnTable      = true;
                         this.placedPosition = sanitizerpos1;
                         this.placedRotation = new BABYLON.Vector3(0,0,0);
                         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();        
@@ -280,6 +282,7 @@ export default class CabinetItem{
                 // else if(this.name.includes("Dialysis") && dialysis_tablepos<2){
                     else if(this.name.includes("Dialysis") && getdialysisTablePos(this.root)>-1){ 
                         placed = true;
+                        this.placeOnTable      = true;
                         console.log(getdialysisTablePos(this.root)); 
                         if(this.root.itemCount>0)
                             this.root.itemCount--;

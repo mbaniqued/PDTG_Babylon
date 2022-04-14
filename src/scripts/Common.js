@@ -21,8 +21,8 @@ export default class Common{
         this.scene.clearColor = BABYLON.Color3.FromHexString("#000000");
         
         // this.env=this.scene.createDefaultEnvironment()
-        this.scene.environmentTexture = new BABYLON.CubeTexture.CreateFromPrefilteredData("models/environment/autoshop_01_4k.env",this.scene);
-        this.scene.environmentTexture.level=0;
+      //   this.scene.environmentTexture = new BABYLON.CubeTexture.CreateFromPrefilteredData("models/environment/autoshop_01_4k.env",this.scene);
+      //   this.scene.environmentTexture.level=0;
       //   this.scene.enablePrePassRenderer();
         this.setLight();
         
@@ -49,14 +49,14 @@ export default class Common{
         return this.camera;
       }
       setLight() {
-        this.hemiLight = new BABYLON.HemisphericLight("HemiLight",new BABYLON.Vector3(0,10,0),this.scene);
+        this.hemiLight = new BABYLON.HemisphericLight("HemiLight",new BABYLON.Vector3(0,-10,0),this.scene);
         this.hemiLight.intensity    = .1;
         this.hemiLight.diffuse      = new BABYLON.Color3(1, 1, 1);
         this.hemiLight.specular     = new BABYLON.Color3(0, 0, 0);
         this.hemiLight.groundColor  = new BABYLON.Color3(1,1,1);
 
 
-        this.directionalLight             = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0,-5,0), this.scene);
+        this.directionalLight             = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0,-10,0), this.scene);
         this.directionalLight.intensity   =.1;
         this.directionalLight.diffuse     = new BABYLON.Color3(1, 1, 1);
         this.directionalLight.specular    = new BABYLON.Color3(0, 0, 0);

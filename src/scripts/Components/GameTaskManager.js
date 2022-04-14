@@ -2,13 +2,38 @@ const action_time=500;
 import { ANIM_TIME,randomNumber } from "../scene/MainScene";
 import { diasolutionpos1,diasolutionpos2,diasolutionpos3,diasolutionpos4,sanitizerpos1,sanitizerpos2 } from "./cabinetitem";
 import { MACHINE_PREPRATION } from "./results";
-export const TOTAL_POINTS = 41,TOTAL_SEQUENCE_POINTS =9,TOTAL_TASK=43;
-const TASKPOINT=1,BOMUSPOINT=1;
+export const TOTAL_POINTS = 41,TOTAL_SEQUENCE_POINTS =9,TOTAL_TASK=45;
+const TASKPOINT=1;
 // overall             // 
 export default class GameTaskManager{
     constructor(root){
         this.root     = root;
-        this.taskStep = 0;
+        this.taskPoint = 0;
+        this.taskDone  = 0;
+        this.isBonus  = [];
+        this.isPhase1Comp  = false;
+        this.isPhase2Comp  = false;
+        this.isPhase3Comp  = false;
+        this.isPhase4Comp  = false;
+
+        this.isPhase1Start  = false;
+        this.isPhase2Start  = false;
+        this.isPhase3Start  = false;
+        this.isPhase4Start  = false;
+    }
+    reset(){
+        this.isBonus   = [];
+        this.taskPoint = 0;
+        this.taskDone  = 0;
+        this.isPhase1Comp  = false;
+        this.isPhase2Comp  = false;
+        this.isPhase3Comp  = false;
+        this.isPhase4Comp  = false;
+
+        this.isPhase1Start  = false;
+        this.isPhase2Start  = false;
+        this.isPhase3Start  = false;
+        this.isPhase4Start  = false;
     }
     completeRoomSetUp(){
         setTimeout(() => {
@@ -128,9 +153,9 @@ export default class GameTaskManager{
     }
     level2Result(){
         const result =[];
-        result[0] = this.root.apdmachinePackage.placedPosition ==this.root.apdmachinePackage.tablePosition;
+        result[0] = this.root.apdmachinePackage.placedPosition ==this.root.apdmachinePackage.tablePosition || this.root.apdmachinePackage.isPlaced;
         result[1] = this.root.ccpdRecordBook.placedPosition    ==this.root.ccpdRecordBook.tablePosition;
-        result[2] = this.root.drainBagItem.placedPosition      ==this.root.drainBagItem.tablePosition;
+        result[2] = this.root.drainBagItem.placedPosition      ==this.root.drainBagItem.tablePosition || this.root.drainBagItem.isPlaced;;
         result[3] = this.root.alcohalItem.placedPosition       ==this.root.alcohalItem.tablePosition;
         result[4] = this.root.bpMachineItem.placedPosition     ==this.root.bpMachineItem.tablePosition;
         result[5] = this.root.connectionItem.placedPosition    ==this.root.connectionItem.tablePosition;
@@ -138,7 +163,7 @@ export default class GameTaskManager{
 
         let cnt=0;
         for(let i=0;i<this.root.dialysisSolutionObject.length;i++){
-            if(this.root.dialysisSolutionObject[i].placedPosition == diasolutionpos1 || this.root.dialysisSolutionObject[i].placedPosition == diasolutionpos2){
+            if(this.root.dialysisSolutionObject[i].placeOnTable){
                 cnt++;
             }
             if(cnt>1)
@@ -146,7 +171,7 @@ export default class GameTaskManager{
             
         }
         for(let i=0;i<this.root.sanitiserObject.length;i++){
-            if(this.root.sanitiserObject[i].placedPosition == sanitizerpos1){
+            if(this.root.sanitiserObject[i].placeOnTable){
                 result[8] = true;
             }
         }
@@ -236,38 +261,76 @@ export default class GameTaskManager{
           result[26].value = this.root.scene.getMeshByName("apd_machinetxt_plan").visibility;
           return result;
     }
-    countTaskStep(){
+    countTaskPoints(){
         const r1 = this.level1Result();
         for(let i=0;i<r1.length;i++){
-            if(r1[i])
-              this.taskStep +=TASKPOINT;  
+            if(r1[i]){
+              this.taskPoint +=TASKPOINT;  
+              this.taskDone++;
+            }
         }
         const r2 = this.level2Result();
         for(let i=0;i<r2.length;i++){
-            if(r2[i] )
-                this.taskStep +=TASKPOINT;  
+            if(r2[i]){
+                this.taskPoint +=TASKPOINT;  
+                this.taskDone++;
+            }
         }
         const r3 = this.level3Result();
         for(let i=0;i<r3.length;i++){
+            if(r3[i])
+                this.taskDone++;
             if(r3[i] && i!==1)
-              this.taskStep++;  
+              this.taskPoint++;  
         }
         const r4 = this.level4Result();
         for(let i=0;i<r4.length;i++){
+            if(r4[i].value===true)
+                this.taskDone++;
+            if(r4[i].value===1)
+                this.taskDone++;
+            if(r4[i].value===2)
+                this.taskDone++;
+            
            if(i !==9 && i !==10 && i!==12 && i !==13 && i !==24){
-               console.log("level4Result  "+i);
+            //    console.log("level4Result  "+i);
                 if(r4[i].value===true)
-                    this.taskStep +=TASKPOINT;  
+                    this.taskPoint +=TASKPOINT;  
                 if(r4[i].value===1)
-                    this.taskStep +=TASKPOINT;  
+                    this.taskPoint +=TASKPOINT;  
                 if(r4[i].value===2)
-                    this.taskStep +=TASKPOINT;  
+                    this.taskPoint +=TASKPOINT;  
            }
         }
         if(r4[9].value>0 &&  r4[10].value>0)   
-            this.taskStep +=TASKPOINT;  
+            this.taskPoint +=TASKPOINT;  
         if(r4[12].value>0 &&  r4[13].value>0)   
-            this.taskStep +=TASKPOINT;  
+            this.taskPoint +=TASKPOINT;  
+
        console.log(r1.length+r2.length+r3.length+r4.length);     
+       if(this.taskPoint>TOTAL_POINTS)
+             this.taskPoint =TOTAL_POINTS;
+        if(this.taskDone>TOTAL_TASK)
+            this.taskDone = TOTAL_TASK;
+       console.log("!! total points !!"+this.taskPoint+" 222222  "+this.taskDone);     
+    }
+    checkPhaseComplete(result){
+        let isComp = 0;
+        for(let i=0;i<result.length;i++){
+            if(result[i].value!==undefined){
+                if(result[i].value===true)
+                   isComp++;
+                if(result[i].value>0)
+                    isComp++;
+            }
+            else{
+                if(result[i])
+                    isComp++;
+            }
+        }
+         if(isComp>=result.length)
+            return true;    
+         else   
+            return false;    
     }
 }

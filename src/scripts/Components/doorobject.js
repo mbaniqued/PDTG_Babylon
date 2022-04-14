@@ -57,6 +57,7 @@ export default class DoorObject{
                     }
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+                        this.root.sceneCommon.removeMiniCam();
                         if(this.state>0 && this.root.gamestate.state === GameState.default)
                             this.state =0;
                         switch(this.state){

@@ -1,5 +1,5 @@
 import * as GUI from 'babylonjs-gui';
-import { event_objectivecomplete,gamemode } from '../scene/MainScene';
+import { event_objectivecomplete,gamemode,randomNumber } from '../scene/MainScene';
 const msg = "Drag the bubbles HERE in the correct 7 - Step Handwashing Sequence";
 // https://www.babylonjs-playground.com/#XCPP9Y#134
 // https://playground.babylonjs.com/#XCPP9Y#4718
@@ -15,8 +15,11 @@ export default class HandWash{
         this.iconContainer = new GUI.Container("icon_container");
         this.iconContainer.isPointerBlocker=true;
         this.handwashIcon=[];
+        this.vx=[];
+        this.vy=[];
         this.handwashIconWrong=[];
         this.isplaced=[];
+        this.ispicked=[];
         this.createHeader();
         this.containter.addControl(this.iconContainer);
         this.startingPoint = null;
@@ -26,6 +29,7 @@ export default class HandWash{
         this.iconNo=0;
         this.iconStack=[];
         this.washhand=false;
+        this.starthandWash=false;
         shuffleArray(iconPos);
         for (let i=0;i<iconPos.length;i++){
             this.handwashIcon[i]      =  this.createhandIcon("step"+(i+1),"ui/handwash/Step"+(i+1)+".png","ui/handwash/Step"+(i+1)+"_incorrect.png",iconTxt[i],iconPos[i][0],iconPos[i][1]);
@@ -108,11 +112,14 @@ export default class HandWash{
      drawhandWash(isdraw){
         this.containter.isVisible=isdraw;
         if(isdraw){
-         this.root.gui2D.resetCamBtn.isVisible = true;
-         this.root.gui2D.resetCamBtn.zIndex =100;
+            this.root.gui2D.resetCamBtn.isVisible = true;
+            this.root.gui2D.resetCamBtn.zIndex =100;
+            this.starthandWash = true;
         }
-        else
+        else{
             this.root.gui2D.resetCamBtn.zIndex =0;
+            this.starthandWash = false;
+        }
      }
      initEvents(i){
          this.handwashIcon[i].onPointerDownObservable.add((coordinates)=> {
@@ -127,6 +134,7 @@ export default class HandWash{
             this.drag = false;
             this.drop = true; 
             this.startingPoint = null;
+            this.ispicked[this.iconNo] = false;
             // console.log(this.iconNo+"  22222  "+this.handwashIcon[i].leftInPixels+"     222222 "+this.handwashIcon[i].topInPixels);
             if(this.handwashIcon[this.iconNo].leftInPixels>-485 && this.handwashIcon[this.iconNo].topInPixels<-282 && this.handwashIcon[this.iconNo].leftInPixels<485){
                if(!this.isplaced[this.iconNo]){
@@ -162,6 +170,7 @@ export default class HandWash{
                   let diff = this.startingPoint.subtract(new BABYLON.Vector2(coordinates.x, coordinates.y));
                   this.handwashIcon[this.iconNo].leftInPixels =   this.iconStartPos.x-diff.x;
                   this.handwashIcon[this.iconNo].topInPixels  =   this.iconStartPos.y-diff.y;
+                  this.ispicked[this.iconNo] = true;
                }
          }
          this.handwashIcon[i].onPointerMoveObservable.add(onMove); 
@@ -201,8 +210,8 @@ export default class HandWash{
                   allcorrect = false;
             }
             if(this.root.gamemode !== gamemode.training){
-               allcorrect = true;
                this.washhand = true;
+               this.doneBtn.isVisible=true;
             }
             if(allcorrect ){
                this.doneBtn.isVisible=true;
@@ -212,20 +221,52 @@ export default class HandWash{
          }
      }
      reset(){
+         
          this.washhand=false;
          this.doneBtn.isVisible=false;
          this.iconStack=[];
+         this.ispicked=[];
+         this.vx =[];
+         this.vy =[];
          this.iconStartPos=null;
          this.iconNo=0;
          shuffleArray(iconPos);
          for (let i=0;i<iconPos.length;i++){
                this.handwashIcon[i].leftInPixels = iconPos[i][0];
-               this.handwashIcon[i].topInPixels   =iconPos[i][1];
+               this.handwashIcon[i].topInPixels  = iconPos[i][1];
                this.handwashIcon[i].getChildByName("handicon_incorrect").isVisible=false;
                match[i] = "step"+(i+1);
                this.isplaced[i] = false;
+               this.ispicked[i] = false;
+               this.vx[i]= randomNumber(-.1,1);
+               this.vy[i]= randomNumber(-1,1);
          }
          this.root.gui2D.advancedTexture.renderAtIdealSize = true;
+         this.root.game.engine.runRenderLoop(() => {
+            if(this.root.gamemode !== gamemode.training){
+               if(this.starthandWash){
+                  for(let i=0;i<this.handwashIcon.length;i++){
+                     if(!this.ispicked[i] && !this.isplaced[i]){
+                        this.handwashIcon[i].leftInPixels +=this.vx[i];
+                        this.handwashIcon[i].topInPixels  +=this.vy[i];
+                     }
+                     if(this.handwashIcon[i].leftInPixels<-400 || this.handwashIcon[i].leftInPixels>400)   
+                           this.vx[i] *=-1;
+                     if(this.handwashIcon[i].topInPixels<-240 || this.handwashIcon[i].topInPixels>280)   
+                           this.vy[i] *=-1;
+                     for(let j=i+1;j<this.handwashIcon.length;j++){
+                        if(GetDistance(this.handwashIcon[i].leftInPixels,this.handwashIcon[i].topInPixels,this.handwashIcon[j].leftInPixels,this.handwashIcon[j].topInPixels)<100){
+                              this.vx[i] *=-1;
+                              this.vy[i] *=-1;
+
+                              this.vx[j] *=-1;
+                              this.vy[j] *=-1;
+                        }
+                     }
+                  }
+               }
+            }
+        });          
      }
 }
 function shuffleArray(arr) {
@@ -233,6 +274,11 @@ function shuffleArray(arr) {
      const j = Math.floor(Math.random() * (i + 1));
      [arr[i], arr[j]] = [arr[j], arr[i]];
    }
+ }
+ function GetDistance(xA, yA, xB, yB) {
+   var xDiff = xA - xB;
+   var yDiff = yA - yB;
+   return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
  }
 function CircRectsOverlap(CRX, CRY, CRDX, CRDY, centerX, centerY, radius) {
 	if ((Math.abs(centerX - CRX) <= (CRDX + radius)) && (Math.abs(centerY - CRY) <= (CRDY + radius)))

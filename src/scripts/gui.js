@@ -684,7 +684,7 @@ export default class GUI2D{
           valuetext.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
           assesmentContainer.addControl(valuetext);
         }
-        const value2=["duration_value","overall_value","steps_value","swquence_value"];
+        const value2=["duration_value","overall_value","steps_value","sequence_value"];
         for(let i=0;i<value2.length;i++){
           const valuetext  = this.createText(value2[i],i==0?"0s":"0%",36,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
           valuetext.topInPixels = -150+i*100;

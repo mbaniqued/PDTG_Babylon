@@ -148,6 +148,7 @@ export default class MainScene {
 
     this.createccpdCanvas();
     this.startFan();
+    
     console.log(" !!!!!!!!! initscene!!! ");
       resolve('resolved');
     });
@@ -235,31 +236,94 @@ export default class MainScene {
                  }
               break;
             case gamemode.assessment:
+                  
                  switch(e.detail.level){
                     case 0:{
-                        const timeDiff = Math.floor((+new Date()-this.gameTime));
-                        this.updateTime(timeDiff,"Room");
-                       }
+                            this.gameTaskManager.isPhase1Start = true;
+                            if(!this.gameTaskManager.isPhase1Comp){
+                              const timeDiff = Math.floor((+new Date()-this.gameTime));
+                              this.updateTime(timeDiff,"Room");
+                            }
+                            const isComp = this.gameTaskManager.checkPhaseComplete(this.gameTaskManager.level1Result());
+                            this.gameTaskManager.isPhase1Comp = isComp;
+                            
+                        }
                       break;
                     case 1:{
-                      const timeDiff = Math.floor((+new Date()-this.gameTime));
-                      this.updateTime(timeDiff,"Item");
-                      }
+                            if(this.gameTaskManager.isPhase1Comp && !this.gameTaskManager.isPhase2Start){
+                                if(!this.gameTaskManager.isBonus[0]){
+                                    this.gameTaskManager.isBonus[0] = true;
+                                }
+                            }
+                            this.gameTaskManager.isPhase2Start = true;
+                            if(!this.gameTaskManager.isPhase2Comp){
+                                const timeDiff = Math.floor((+new Date()-this.gameTime));
+                                this.updateTime(timeDiff,"Item");
+                            }
+                            const isComp = this.gameTaskManager.checkPhaseComplete(this.gameTaskManager.level2Result());
+                            this.gameTaskManager.isPhase2Comp = isComp;
+                          }
                     break;
                     case 2:{
-                      const timeDiff = Math.floor((+new Date()-this.gameTime));
-                      this.updateTime(timeDiff,"Self");
+                          if(this.gameTaskManager.isPhase2Comp && !this.gameTaskManager.isPhase3Start){
+                              if(!this.gameTaskManager.isBonus[1]){
+                                  this.gameTaskManager.isBonus[1] = true;
+                              }
+                          }
+                          this.gameTaskManager.isPhase3Start = true;
+                          if(!this.gameTaskManager.isPhase3Comp){
+                              const timeDiff = Math.floor((+new Date()-this.gameTime));
+                              this.updateTime(timeDiff,"Self");
+                          }
+                          const isComp = this.gameTaskManager.checkPhaseComplete(this.gameTaskManager.level3Result());
+                          this.gameTaskManager.isPhase3Comp = isComp;
+                          
+                          if(this.bpRecord.length>0 && this.ccpdbpInputField.text === this.bpRecord){
+                              if(!this.gameTaskManager.isBonus[2]){
+                                  this.gameTaskManager.isBonus[2] = true;
+                              }
+                          }
+                          if(this.gameTaskManager.isBonus[2] && this.maskItem.parent == this.scene.getCameraByName("maincamera")){
+                            if(!this.gameTaskManager.isBonus[3]){
+                              this.gameTaskManager.isBonus[3] = true;
+                            }
+                        }
+                        if(this.gameTaskManager.isBonus[3] && e.detail.msg ==="handwash_complete"){
+                              if(!this.gameTaskManager.isBonus[4]){
+                                  this.gameTaskManager.isBonus[4] = true;
+                              }
+                        }
+                        if(this.gameTaskManager.isBonus[4] && this.paperTowelObject.usepaperTowel){
+                              if(!this.gameTaskManager.isBonus[5]){
+                                  this.gameTaskManager.isBonus[5] = true;
+                              }
+                        }
                      }
                     break;
                     case 3:{
-                      const timeDiff = Math.floor((+new Date()-this.gameTime));
-                      this.updateTime(timeDiff,"Machine");
+                            if(this.gameTaskManager.isPhase3Comp && !this.gameTaskManager.isPhase4Start){
+                                if(!this.gameTaskManager.isBonus[6]){
+                                    this.gameTaskManager.isBonus[6] = true;
+                                }
+                            }
+                          this.gameTaskManager.isPhase4Start = true;
+                          if(!this.gameTaskManager.isPhase4Comp){
+                              const timeDiff = Math.floor((+new Date()-this.gameTime));
+                              this.updateTime(timeDiff,"Machine");
+                          }
+                          const isComp = this.gameTaskManager.checkPhaseComplete(this.gameTaskManager.level4Result());
+                          this.gameTaskManager.isPhase4Comp = isComp;
+                          if(this.gameTaskManager.isPhase4Comp){
+                              if(!this.gameTaskManager.isBonus[7]){
+                                this.gameTaskManager.isBonus[7] = true;
+                              }
+                              if(!this.gameTaskManager.isBonus[8]){
+                                this.gameTaskManager.isBonus[8] = true;
+                              }
+                          }
                      }
                     break;
                  }
-                
-                 
-
              break;
          }
       }
@@ -383,6 +447,9 @@ export default class MainScene {
             delete this.handSoapObject;
             this.removeMesh(this.scene.getMeshByName("glassplane"));
             this.removeMesh(this.scene.getMeshByName("windowframeplan"));
+            this.gameTaskManager.reset();
+            this.handwashactivity.washhand = false;
+            this.wipeAlcohal.accessAlcohal = false;
           console.log("reset suceesss");
           resolve('resolved');
       });
@@ -1455,7 +1522,7 @@ export default class MainScene {
               inputfield.placeholderText = "SYS/DIA(PH)";
               this.ccpdbpInputField = inputfield;
               inputfield.onTextChangedObservable.add(()=>{
-                //if(this.bpRecord ===inputfield.text)
+                if(this.bpRecord ===inputfield.text)
                  {
                     let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this.ccpdRecordBook,msg:"ccprd_record_fill",level:2}});
                     document.dispatchEvent(custom_event);                                                
@@ -1595,8 +1662,9 @@ export default class MainScene {
           const result4 = this.gameTaskManager.level4Result();
           this.practiceResult.updateMachineResult(result4);
 
-          this.gameTaskManager.countTaskStep();
-          console.log(this.gameTaskManager.taskStep);
+          this.gameTaskManager.countTaskPoints();
+          console.log(" 111111111111111   "+this.gameTaskManager.taskPoint);
+          
           this.gui2D.resultContainer.getChildByName("allmode_scroll_viewer").isVisible=false;
           const assestmentContainer = this.gui2D.resultContainer.getChildByName("assesmentcontainer");
           let time="";
@@ -1611,19 +1679,28 @@ export default class MainScene {
               time = minutes+":"+seconds;
            else   
               time = seconds;
+          assestmentContainer.getChildByName("duration_value").text    = time+"s";
           
-          const overallAccuracy = Math.floor((this.gameTaskManager.taskStep/TOTAL_POINTS)*100);
-          const stepAccuracy = Math.floor((this.gameTaskManager.taskStep/TOTAL_TASK)*100);
-          // console.log("!!! overallAccuracy!!! "+overallAccuracy+"      ");
-          assestmentContainer.getChildByName("duration_value").text = time+"s";
-          assestmentContainer.getChildByName("overall_value").text  = overallAccuracy+"%";
-          assestmentContainer.getChildByName("steps_value").text    = stepAccuracy+"%";
+          const stepAccuracy = Math.floor( Math.round((this.gameTaskManager.taskPoint/TOTAL_POINTS)*100));
+          assestmentContainer.getChildByName("steps_value").text       = stepAccuracy+"%";
+
+          for(let i=0;i<this.gameTaskManager.isBonus.length;i++){
+            if(this.gameTaskManager.isBonus[i])
+              this.gameTaskManager.taskPoint+=1;
+          }
+          console.log(" 222222222222222  "+this.gameTaskManager.taskPoint);
+          const overallAccuracy = Math.floor(Math.round((this.gameTaskManager.taskDone/TOTAL_TASK)*100));
+          assestmentContainer.getChildByName("overall_value").text     = overallAccuracy+"%";
+          let bonus=0;
+          for(let i=0;i<this.gameTaskManager.isBonus.length;i++){
+            if(this.gameTaskManager.isBonus[i])
+                bonus++;
+          }
+          const sequenceAccuracy    = Math.floor(Math.round((bonus/TOTAL_SEQUENCE_POINTS)*100));
+          assestmentContainer.getChildByName("sequence_value").text = sequenceAccuracy+"%";
        }
    }
-   
 }
-
-
 export function randomNumber(min, max) { 
   return Math.random() * (max - min) + min;
 } 
