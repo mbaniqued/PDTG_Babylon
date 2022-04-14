@@ -238,6 +238,8 @@ export default class HandWash{
                match[i] = "step"+(i+1);
                this.isplaced[i] = false;
                this.ispicked[i] = false;
+               this.vx[i] =0;
+               this.vy[i] =0;
                this.vx[i]= randomNumber(-.1,1);
                this.vy[i]= randomNumber(-1,1);
          }
