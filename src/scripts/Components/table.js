@@ -103,7 +103,9 @@ export default class Table{
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z-.5));
                             break;
                         case 1:
-                                this.setDrawerAnim();
+                                if(mesh.parent.name.includes("tabledrawer")){
+                                    this.setDrawerAnim();
+                                }
                             break;    
                         case 10:
                                 this.setTableFocusAnim();
@@ -137,9 +139,11 @@ export default class Table{
             if(childnode.name==="tabledrawer"){
                 let drawerNode = childnode;  
                 if(!this.drawerAnim){
-                    console.log("!!! in drawer!!!");
+                    // console.log("!!! in drawer!!!");
                     if(this.state===1)
                         this.isdrawerOpen =!this.isdrawerOpen;
+
+                    this.root.audioManager.playSound(this.root.audioManager.drawerSound);
                     let val = this.isdrawerOpen?-120:120; 
                     this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.meshRoot.position.z-.5));
                     // this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z+(this.isdrawerOpen?-2:0)));
@@ -164,7 +168,7 @@ export default class Table{
         });
     }
     setLabel(){
-        if(this.root.gamestate.state == GameState.default)
+        if(this.root.camera.radius>2.5)
             this.label._children[0].text = "Table";
          else   
             this.label._children[0].text = this.isdrawerOpen?"Close Drawer":"Open Drawer";

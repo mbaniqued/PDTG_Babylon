@@ -22,9 +22,10 @@ import { FOV } from "../Common.js";
 import HandWash from "../Components/handwash.js";
 import AlcohalWipe from "../Components/alcohalwipe.js";
 import GameTaskManager from "../Components/GameTaskManager.js";
-import { Result } from "../Components/results.js";
+import { AudioManager } from "../audioManager.js";
+import { BP_Monitior } from "../Components/BpMonitor.js";
+import { Result,getTime } from "../Components/results.js";
 import { TOTAL_POINTS,TOTAL_TASK,TOTAL_SEQUENCE_POINTS } from "../Components/GameTaskManager.js";
-import { getTime } from "../Components/results.js"; 
 export const GameState={default:0,focus:1,active:2,radial:3,menu:4,levelstage:5,useitem:6,loading:7,inspect:8,validation:9,validation:10,result:10};
 export const usermode={patient:0,caregiver:1};
 export const gamemode={training:0,practice:1,assessment:2};
@@ -42,9 +43,9 @@ export default class MainScene {
     this.scene      = this.sceneCommon.createScene("basic");
     this.camera     = this.sceneCommon.createCamera(this.scene);
     this.initState();
-    this.gui2D           = new GUI2D(this);
-    this.gameTaskManager = new GameTaskManager(this);
-    
+    this.gui2D            = new GUI2D(this);
+    this.gameTaskManager  = new GameTaskManager(this);
+    this.bpMonitor        = new BP_Monitior();
     this.trollyRoot       = new BABYLON.TransformNode("TROLLY"),
     this.tableRoot        = new BABYLON.TransformNode("TABLE");
     this.cabinetRoot      = new BABYLON.TransformNode("CABINET");
@@ -54,6 +55,7 @@ export default class MainScene {
     this.windowFrameRoot  = new BABYLON.TransformNode("WINDOW");
     
     this.loaderManager    = new LoaderManager(this);
+    this.audioManager     = new AudioManager(this);
     this.game.engine.hideLoadingUI();
     
     this.windowbox=undefined,this.lightswtich=undefined;
@@ -156,7 +158,7 @@ export default class MainScene {
   addevents(){
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
-      const val=.001;
+      const val=.01;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -179,13 +181,14 @@ export default class MainScene {
             SZ-=val;
           break;
       }
+      // this.scene.getMeshByName("apdswitch_sphere").position = new BABYLON.Vector3(SX,SY,SZ);
       // this.ccpdRecordBook.meshRoot.parent = this.scene.getCameraByName("maincamera");
       // this.ccpdRecordBook.meshRoot.scaling.set(.003,.013,.013);
-      // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(SX,SY,1.01);
+      // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(SX,SY,SZ);
 
       // this.ccpdRecordBook2.meshRoot.parent = this.scene.getCameraByName("maincamera");
       // this.ccpdRecordBook2.meshRoot.scaling.set(.003,.003,.003);
-      // this.scene.getMeshByName("ccpdplane").position = new BABYLON.Vector3(SX,SY,SZ);
+      // this.ccpdRecordBook2.meshRoot.position = new BABYLON.Vector3(.67,-0.24,1.01);
       
       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
@@ -496,7 +499,7 @@ export default class MainScene {
        this.removeMesh(this.scene.getMeshByName("apd_machinetxt_plan"));
     }
     const plan = BABYLON.MeshBuilder.CreatePlane("apd_machinetxt_plan",{width:.3,height:.3,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);  
-    plan.position.set(-3.589,2.02,2.13);
+    plan.position.set(-3.569,2.02,2.119);
     plan.isPickable=false;
     plan.renderOutline=false;
     plan.visibility=0;
@@ -787,8 +790,8 @@ export default class MainScene {
     else
       this.bpnumberTexture.drawText("",90, 70, font,  "#808794", "transparent", true);
       if(isupdate){
-        v2 = randomNumber(70,90);
-        v3 = randomNumber(60,80);
+        v2 = this.bpMonitor.diastolicRange;
+        v3 = this.bpMonitor.pulse;
         this.bpnumberTexture.drawText(parseInt(v2)+"",90, 150, font, "#000000", "transparent", true);
         this.bpnumberTexture.drawText(parseInt(v3)+"",90, 230, font, "#000000", "transparent", true);
         this.bpRecord = parseInt(v1)+"/"+parseInt(v2)+"("+parseInt(v3)+")";

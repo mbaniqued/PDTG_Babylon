@@ -492,9 +492,10 @@ export default class Item{
                 this.state =101;
                 this.tout = setTimeout(() => {
                     clearTimeout(this.tout)
-                    let bpvalue =   randomNumber(85,110);
+                    let bpvalue    =   this.root.bpMonitor.getBpRecord(2)[0]; //randomNumber(85,110);
                     let startvalue = {value:0};
-                    this.tween = new TWEEN.Tween(startvalue).to({value:bpvalue},2000).easing(TWEEN.Easing.Linear.None).onUpdate(()=>{
+                    let durarion   =  bpvalue*50;
+                    this.tween     = new TWEEN.Tween(startvalue).to({value:bpvalue},durarion).easing(TWEEN.Easing.Linear.None).onUpdate(()=>{
                         this.root.setbpRecord(startvalue.value,false);
                     }).onComplete(() => {
                         this.root.setbpRecord(startvalue.value,true);
@@ -517,7 +518,7 @@ export default class Item{
       useccpdRecordBook(anim_time,callevent){
           if(this.name.includes("CCPD")){
             new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(0).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-                new TWEEN.Tween(this.meshRoot.position).to({x:130,y:-100,z:1.01},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+                new TWEEN.Tween(this.meshRoot.position).to({x:this.meshRoot.position.x+120,y:this.meshRoot.position.y-100,z:this.meshRoot.position.z-20},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
                     this.meshRoot.parent = null;
                     this.parent = this.root.scene.getCameraByName("maincamera");
                     this.meshRoot.parent = this.parent;
@@ -543,6 +544,7 @@ export default class Item{
             if(childmesh.id ==="ccpdfront")
                 frontpage =childmesh;
         });
+        this.root.audioManager.playSound(this.root.audioManager.pageFlipSound);
         if(this.state===100){  
             new TWEEN.Tween(frontpage.rotation).to({y:BABYLON.Angle.FromDegrees(185).radians()},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
             new TWEEN.Tween(this.meshRoot.scaling).to({x:.013,y:.013,z:.013},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {

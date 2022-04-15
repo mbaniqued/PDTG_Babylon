@@ -49,17 +49,18 @@ export default class Common{
         return this.camera;
       }
       setLight() {
-        this.hemiLight = new BABYLON.HemisphericLight("HemiLight",new BABYLON.Vector3(0,-10,0),this.scene);
+        this.hemiLight = new BABYLON.HemisphericLight("HemiLight",new BABYLON.Vector3(0,10,0),this.scene);
         this.hemiLight.intensity    = .1;
-        this.hemiLight.diffuse      = new BABYLON.Color3(1, 1, 1);
-        this.hemiLight.specular     = new BABYLON.Color3(0, 0, 0);
-        this.hemiLight.groundColor  = new BABYLON.Color3(1,1,1);
+        this.hemiLight.diffuse      = new BABYLON.Color3.FromInts (255,253,227);
+        this.hemiLight.specular     = new BABYLON.Color3.FromInts (0,0,0);
+        this.hemiLight.groundColor  = new BABYLON.Color3.FromInts (255,255,255);
 
 
-        this.directionalLight             = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0,-10,0), this.scene);
-        this.directionalLight.intensity   =.1;
-        this.directionalLight.diffuse     = new BABYLON.Color3(1, 1, 1);
-        this.directionalLight.specular    = new BABYLON.Color3(0, 0, 0);
+        this.directionalLight             = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0,-1,0), this.scene);
+        this.directionalLight.intensity   = .1;
+        this.directionalLight.diffuse     = new BABYLON.Color3.FromInts (255,253,227);
+        this.directionalLight.specular    = new BABYLON.Color3.FromInts (0,0,0);
+        
 
       }
       setView(){

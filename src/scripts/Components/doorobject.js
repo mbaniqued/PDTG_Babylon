@@ -85,8 +85,13 @@ export default class DoorObject{
                 val=360;
            if(!this.anim){     
                 this.anim=true;
+                this.closedoor = !this.closedoor;
+                if(this.closedoor)
+                    this.root.audioManager.playSound(this.root.audioManager.doorCloseSound);
+                else
+                    this.root.audioManager.playSound(this.root.audioManager.doorOpenSound);
                 new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-                    this.closedoor = !this.closedoor;
+                    
                     this.anim=false;
                     if(this.closedoor){
                         this.label.isVisible=false;

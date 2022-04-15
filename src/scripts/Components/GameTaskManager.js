@@ -56,6 +56,7 @@ export default class GameTaskManager{
         }, action_time*4);
         setTimeout(() => {
             this.root.isAcOff = false;
+            this.root.audioManager.playSound(this.root.audioManager.acSound);
             this.root.setAc(false);
         }, action_time*5);
     }

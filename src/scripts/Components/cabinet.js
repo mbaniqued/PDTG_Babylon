@@ -106,6 +106,10 @@ export default class Cabinet{
             if(!this.doorAnim){
                 if(childnode.name==="cabinetleftDoor"){
                     this.isdoorOpen = !this.isdoorOpen;
+                    if(this.isdoorOpen)
+                    this.root.audioManager.playSound(this.root.audioManager.cabinetOpen);
+                    else
+                        this.root.audioManager.playSound(this.root.audioManager.cabinetClose);
                     this.doorAnimation(childnode,90,true);
                 }
                 if(childnode.name==="cabinetrightDoor")

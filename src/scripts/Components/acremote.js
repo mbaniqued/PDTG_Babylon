@@ -79,7 +79,9 @@ export default class ACRemote{
                         }    
                         else if(this.state>0) {
                                 this.isAcOff = !this.isAcOff;
+                                this.root.scene.getMeshByName("acindicator").material.diffuseColor  = this.isAcOff?new BABYLON.Color3.FromInts(255,0,0):new BABYLON.Color3.FromInts(0,255,0);
                                 this.root.setAc(!this.isAcOff);
+                                this.root.audioManager.playSound(this.root.audioManager.acSound);
                                 if(this.isAcOff){
                                     let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"acoff",level:0}});
                                     document.dispatchEvent(custom_event);

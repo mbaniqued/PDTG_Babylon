@@ -48,6 +48,31 @@ export default class HandWash{
             let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this.root.handSoapObject,level:2,msg:"wash_hands"}});
             document.dispatchEvent(custom_event);
         });
+         this.root.scene.registerBeforeRender(()=> {
+            if(this.root.gamemode !== gamemode.training){
+               if(this.starthandWash){
+                  for(let i=0;i<this.handwashIcon.length;i++){
+                     if(!this.ispicked[i] && !this.isplaced[i]){
+                        this.handwashIcon[i].leftInPixels +=this.vx[i];
+                        this.handwashIcon[i].topInPixels  +=this.vy[i];
+                     }
+                     if(this.handwashIcon[i].leftInPixels<-400 || this.handwashIcon[i].leftInPixels>400)   
+                           this.vx[i] *=-1;
+                     if(this.handwashIcon[i].topInPixels<-240 || this.handwashIcon[i].topInPixels>280)   
+                           this.vy[i] *=-1;
+                     for(let j=i+1;j<this.handwashIcon.length;j++){
+                        if(GetDistance(this.handwashIcon[i].leftInPixels,this.handwashIcon[i].topInPixels,this.handwashIcon[j].leftInPixels,this.handwashIcon[j].topInPixels)<100){
+                              this.vx[i] *=-1;
+                              this.vy[i] *=-1;
+
+                              this.vx[j] *=-1;
+                              this.vy[j] *=-1;
+                        }
+                     }
+                  }
+               }
+            }
+         })
       }
      createHeader(){
         
@@ -230,6 +255,7 @@ export default class HandWash{
          this.vy =[];
          this.iconStartPos=null;
          this.iconNo=0;
+         this.count=0;
          shuffleArray(iconPos);
          for (let i=0;i<iconPos.length;i++){
                this.handwashIcon[i].leftInPixels = iconPos[i][0];
@@ -240,35 +266,14 @@ export default class HandWash{
                this.ispicked[i] = false;
                this.vx[i] =0;
                this.vy[i] =0;
-               this.vx[i]= randomNumber(-.1,1);
-               this.vy[i]= randomNumber(-1,1);
+               this.vx[i]= randomNumber(-.5,.5);
+               this.vy[i]= randomNumber(-.5,.5);
          }
          this.root.gui2D.advancedTexture.renderAtIdealSize = true;
-         this.root.game.engine.runRenderLoop(() => {
-            if(this.root.gamemode !== gamemode.training){
-               if(this.starthandWash){
-                  for(let i=0;i<this.handwashIcon.length;i++){
-                     if(!this.ispicked[i] && !this.isplaced[i]){
-                        this.handwashIcon[i].leftInPixels +=this.vx[i];
-                        this.handwashIcon[i].topInPixels  +=this.vy[i];
-                     }
-                     if(this.handwashIcon[i].leftInPixels<-400 || this.handwashIcon[i].leftInPixels>400)   
-                           this.vx[i] *=-1;
-                     if(this.handwashIcon[i].topInPixels<-240 || this.handwashIcon[i].topInPixels>280)   
-                           this.vy[i] *=-1;
-                     for(let j=i+1;j<this.handwashIcon.length;j++){
-                        if(GetDistance(this.handwashIcon[i].leftInPixels,this.handwashIcon[i].topInPixels,this.handwashIcon[j].leftInPixels,this.handwashIcon[j].topInPixels)<100){
-                              this.vx[i] *=-1;
-                              this.vy[i] *=-1;
-
-                              this.vx[j] *=-1;
-                              this.vy[j] *=-1;
-                        }
-                     }
-                  }
-               }
-            }
-        });          
+        
+   //       this.root.game.engine.runRenderLoop(() => {
+           
+   //      });          
      }
 }
 function shuffleArray(arr) {

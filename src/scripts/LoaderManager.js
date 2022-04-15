@@ -1,4 +1,5 @@
 import * as BABYLON from "babylonjs";
+import { Color3, StandardMaterial } from "babylonjs";
 import "babylonjs-loaders";
 
 export default class LoaderManager {
@@ -90,16 +91,16 @@ export default class LoaderManager {
             for(let i=0;i<task.loadedMeshes.length;i++){ //fanswitch
               task.loadedMeshes[i].parent = node;
               if(task.loadedMeshes[i].id === "OnSwitch2"){
-                  const mat           = standerdMat.clone("fanswitch");
-                  mat.diffuseColor    = new BABYLON.Color3.FromInts(192,192,192);
-                  mat.emissiveColor   = new BABYLON.Color3.FromInts(50,50,50);
+                  const mat          = physicMat.clone("fanswitch");
+                  mat.albedoColor    = new BABYLON.Color3.FromInts(226,226,226);
+                  // mat.emissiveColor   = new BABYLON.Color3.FromInts(50,50,50);
                   mat.metallic  = 0;  
                   mat.roughness = .2;  
                   task.loadedMeshes[i].material = mat;
                   this.setPickable(task.loadedMeshes[i],1);
               }else{
                   const mat           = physicMat.clone("fanswitch_2");
-                  mat.albedoColor     = new BABYLON.Color3.FromInts(10,10,10);
+                  mat.albedoColor     = new BABYLON.Color3.FromInts(66,66,66);
                   mat.metallic  = 1;  
                   mat.roughness = .2;  
                   task.loadedMeshes[i].material = mat;
@@ -409,17 +410,17 @@ export default class LoaderManager {
                       mat.emissiveColor   = new BABYLON.Color3.FromInts(126,135,143);
                       if(task.loadedMeshes[i].name ==="pPlane5"){
                           mat.diffuseColor   = new BABYLON.Color3.FromInts(101,105,110);
-                          mat.emissiveColor   = new BABYLON.Color3.FromInts(101,105,110);
+                          mat.emissiveColor  = new BABYLON.Color3.FromInts(101,105,110);
                       }
                       mat.roughness       = .524;
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "pPlane6"){
                     // const mat = kitchenpCube3Mat.clone();
-                      const mat           = standerdMat.clone("pPlane6");
-                      mat.diffuseTexture  = new BABYLON.Texture("models/texture/FloorShape.jpg",this.scene);
-                      mat.bumpTexture     = new BABYLON.Texture("models/texture/FloorShape normal.jpg",this.scene);
-                      mat.diffuseColor    = new BABYLON.Color3.FromInts(120,120,120); 
+                      const mat         = physicMat.clone("pPlane6");
+                      mat.albedoTexture   = new BABYLON.Texture("models/texture/FloorShape.jpg",this.scene);
+                      mat.bumpTexture   = new BABYLON.Texture("models/texture/FloorShape normal.jpg",this.scene);
+                      mat.albedoColor   = new BABYLON.Color3.FromInts(156,156,156); 
                       mat.metallic=0;
                       mat.roughness=1;
                       task.loadedMeshes[i].material = mat;
@@ -427,7 +428,7 @@ export default class LoaderManager {
                 else if(task.loadedMeshes[i].name === "Sink"){
                       const sinkMat = physicMat.clone("SinkMat");
                       sinkMat.albedoColor = new BABYLON.Color3.FromInts(255,255,255);
-                      sinkMat.metallic   = .7;
+                      sinkMat.metallic   = 0;
                       sinkMat.roughness  = .22;
                       task.loadedMeshes[i].material = sinkMat;
                 }
@@ -445,48 +446,48 @@ export default class LoaderManager {
                       const mat         = standerdMat.clone("StoveExhaustMat");
                       mat.diffuseColor  = new BABYLON.Color3.FromInts(51,51,51);
                       mat.emissiveColor = new BABYLON.Color3.FromInts(0,0,0);
-                      mat.metallic   = .67;
-                      mat.roughness  = .33;
+                      mat.metallic   = .1;
+                      mat.roughness  = .38;
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "Exhaust"){
-                      const mat         = physicMat.clone("ExhaustMat");
-                      mat.baseColor  = new BABYLON.Color3.FromInts(202,202,202);
-                      mat.metallic   = .833;
-                      mat.roughness  = .15;
+                      const mat      = physicMat.clone("ExhaustMat");
+                      mat.albedoColor  = new BABYLON.Color3.FromInts(202,202,202);
+                      mat.metallic   = .4;
+                      mat.roughness  = .12;
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "Fridge1"){
                       const mat         = physicMat.clone("Fridge1Mat");
-                      mat.albedoColor   = new BABYLON.Color3.FromInts(257,255,253);
+                      mat.albedoColor   = new BABYLON.Color3.FromInts(255,255,255);
                       // mat.emissiveColor  = new BABYLON.Color3.FromInts(157,155,153);
-                      mat.metallic   = .81;
-                      mat.roughness  = .19;
+                      mat.metallic   =  0;
+                      mat.roughness  = .81;
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "Cabinet" || task.loadedMeshes[i].name === "Cabinet4" || task.loadedMeshes[i].name === "Cabinet6"){
-                      const mat            = standerdMat.clone("Fridge1Mat");
-                      mat.diffuseColor     = new BABYLON.Color3.FromInts(255,255,255);
-                      mat.emissiveColor    = new BABYLON.Color3.FromInts(128,128,128);
-                      mat.diffuseTexture   = new BABYLON.Texture("models/texture/picturemessage_rajvwxq1.qr2.png",this.scene);
-                      mat.diffuseTexture.uScale = 8.55;
+                      const mat            = physicMat.clone("Fridge1Mat");
+                      mat.albedoColor     = new BABYLON.Color3.FromInts(255,255,255);
+                      // mat.emissiveColor   = new BABYLON.Color3.FromInts(128,128,128);
+                      mat.albedoTexture   = new BABYLON.Texture("models/texture/picturemessage_rajvwxq1.qr2.png",this.scene);
+                      mat.albedoTexture.uScale = 8.55;
                       mat.metallic      = .878;
                       mat.roughness     = 1;
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "BedFoam"){
-                      const mat           = standerdMat.clone("BedFoamMat");
-                      mat.diffuseColor    = new BABYLON.Color3.FromInts(154,154,154);
-                      mat.diffuseTexture  = new BABYLON.Texture("models/texture/Fabric040_2K_Color.jpg",this.scene);
+                      const mat           = physicMat.clone("BedFoamMat");
+                      mat.albedoColor    = new BABYLON.Color3.FromInts(154,154,154);
+                      mat.albedoTexture  = new BABYLON.Texture("models/texture/Fabric040_2K_Color.jpg",this.scene);
                       mat.metallic        = 0;
                       mat.roughness       = 1;
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "Bed1"){
                         const mat       = physicMat.clone("Bed1");
-                        mat.albedoColor = new BABYLON.Color3.FromInts(132,158,200);
-                        mat.ambientColor = new BABYLON.Color3.FromInts(120,120,120);
-                        mat.metallic  = 1;
+                        mat.albedoColor = new BABYLON.Color3.FromInts(185,185,185);
+                        // mat.ambientColor = new BABYLON.Color3.FromInts(120,120,120);
+                        mat.metallic  = .58;
                         mat.roughness = 1;  
                         task.loadedMeshes[i].material = mat;
                   }
@@ -549,9 +550,9 @@ export default class LoaderManager {
                 }
                 else if(task.loadedMeshes[i].name ===  "AirconClose1"){
                   const mat       = physicMat.clone("acMat");
-                  mat.albedoColor  = new BABYLON.Color3.FromInts(73,73,73);
+                  mat.albedoColor  = new BABYLON.Color3.FromInts(255,255,255);
                   mat.emissiveColor = new BABYLON.Color3.FromInts(0,0,0);
-                  mat.metallic  = 0;
+                  mat.metallic  =  0;
                   mat.roughness = .1;  
                   task.loadedMeshes[i].material = mat;
                 }
@@ -628,9 +629,9 @@ export default class LoaderManager {
                     }
                 }
                 else if(task.loadedMeshes[i].name ===  "OnSwitch2"){
-                  const mat           = standerdMat.clone("bathdoorMat");
-                  mat.diffuseColor    = new BABYLON.Color3.FromInts(192,192,192);
-                  mat.emissiveColor   = new BABYLON.Color3.FromInts(50,50,50);
+                  const mat           = physicMat.clone("bathdoorMat");
+                  mat.albedoColor    = new BABYLON.Color3.FromInts(226,226,226);
+                  // mat.emissiveColor   = new BABYLON.Color3.FromInts(50,50,50);
                   mat.metallic  = 0;  
                   mat.roughness = .2;  
                   task.loadedMeshes[i].material = mat;
@@ -711,13 +712,21 @@ export default class LoaderManager {
     apdCollider.visibility=0;
 
 
-    const apdSwitch = BABYLON.MeshBuilder.CreateSphere("apdswitch_sphere", {diameter:.05});
-    apdSwitch.position.set(-3.689,1.89,2.139);
-    apdSwitch.visibility=0;
+    const apdSwitch = BABYLON.MeshBuilder.CreateSphere("apdswitch_sphere", {diameterX:.04,diameterY:.04,diameterZ:.02});
+    apdSwitch.position.set(-3.688,1.890, 2.12);
+    apdSwitch.visibility=1;
     const apdSwitchmat = new BABYLON.StandardMaterial("apdswitch_sphere_mat")
     apdSwitchmat.diffuseColor = new BABYLON.Color3.FromInts(0,255,0);
     apdSwitch.material =  apdSwitchmat;
-    this.setPickable(apdSwitch,1);
+    this.setPickable(apdSwitch,.01);
+
+    const acIndicator = BABYLON.MeshBuilder.CreateSphere("acindicator", {diameter:.05},this.scene);
+    const acIndicatorMat = new StandardMaterial("acindicatormat",this.scene);
+    acIndicator.position = new BABYLON.Vector3(-5.17,4.72,2.71);
+    acIndicatorMat.diffuseColor  = new BABYLON.Color3.FromInts(0,255,0);
+    // acIndicatorMat.emissiveColor = new Color3.FromInts(0,255,0);
+    acIndicator.material         = acIndicatorMat;
+    
   // console.log("meshes", meshes)
    this.assetsManager.onProgress = (
       remainingCount,

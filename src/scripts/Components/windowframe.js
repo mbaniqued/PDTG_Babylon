@@ -67,28 +67,34 @@ export default class WindowFrame{
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=>{
                         console.log(this.root.gamestate.state+"   "+mesh.name+"   "+this.state);
-                        if(this.state>0 && this.root.gamestate.state === GameState.default){
+                        if(this.root.camera.radius>2.5){
                             this.state =0;
+                            this.root.gamestate.state =GameState.default;
                         }
+                        // if(this.state>0 && this.root.gamestate.state === GameState.default){
+                        //     this.state =0;
+                        // }
                         this.setLabel();
                         switch(this.state){
                             case 0:
-                                this.root.gamestate.state = GameState.default;
-                                new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                                let val = BABYLON.Angle.FromRadians(this.root.camera.alpha).degrees()>300?359:0; 
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
-                                    this.state=1;
-                                    this.root.gamestate.state = GameState.focus;
-                                }).start();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y+.1,1));
+                                    this.root.gamestate.state = GameState.default;
+                                    new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                    new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                                    let val = BABYLON.Angle.FromRadians(this.root.camera.alpha).degrees()>300?359:0; 
+                                    new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                                        this.state=1;
+                                        this.root.gamestate.state = GameState.focus;
+                                    }).start();
+                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y+.1,1));
                                 break;
                             case 1:
-                                    this.root.gamestate.state = GameState.active;
-                                    this.closeWindow();
-                                    if(this.windowClose){
-                                        let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"window_close",level:0}});
-                                        document.dispatchEvent(custom_event);
+                                    if(mesh.name.includes("windowframeplan")){
+                                        this.root.gamestate.state = GameState.active;
+                                        this.closeWindow();
+                                        if(this.windowClose){
+                                            let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"window_close",level:0}});
+                                            document.dispatchEvent(custom_event);
+                                        }
                                     }
                                 break;
                         }
@@ -115,6 +121,7 @@ export default class WindowFrame{
         }
         closeWindow(){
             this.windowClose =!this.windowClose;
+            this.root.audioManager.playSound(this.root.audioManager.windowSlideSound);
             new TWEEN.Tween(this.meshRoot.position).to({z:this.meshRoot.position.z>0?0:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
         }
         initMeshOutline(){
@@ -127,7 +134,7 @@ export default class WindowFrame{
             });
         }
         setLabel(){
-             if(this.root.gamestate.state === GameState.default){
+            if(this.root.camera.radius>2.5){
                 this.label._children[0].text = "Window";
              }
              else{

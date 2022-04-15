@@ -73,17 +73,15 @@ export default class AlcohalWipe{
             this.msg.isPointerBlocker=false;
             this.msg.leftInPixels=300;
             this.msg.topInPixels=30;
-            
-            
-            this.root.game.engine.runRenderLoop(() => {
+            this.root.scene.registerBeforeRender(()=> {
                 if(this.usealcohalwipe){
-                        const width  = this.root.game.engine.getRenderWidth();
-                        const height = this.root.game.engine.getRenderHeight();
-                        this.alocohalwipe.leftInPixels = this.root.scene.pointerX - (width / 2.0);
-                        this.alocohalwipe.topInPixels  = this.root.scene.pointerY - (height / 2.0);
-                        this.alocohalwipe.isPointerBlocker=false;
+                    const width  = this.root.game.engine.getRenderWidth();
+                    const height = this.root.game.engine.getRenderHeight();
+                    this.alocohalwipe.leftInPixels = this.root.scene.pointerX - (width / 2.0);
+                    this.alocohalwipe.topInPixels  = this.root.scene.pointerY - (height / 2.0);
+                    this.alocohalwipe.isPointerBlocker=false;
                 }
-            });                
+            });       
             this.touch=false;
             this.root.scene.onPointerObservable.add((pointerInfo) => {      	
             switch (pointerInfo.type) {
@@ -127,7 +125,7 @@ export default class AlcohalWipe{
                     let val =.2-this.cleanCnt[i]*.01;
                     if(val<0)
                         val=0;
-                    this.changeAlpa(this.wipespotplanenode[i].getChildMeshes()[0],val);
+                    this.changeAlpha(this.wipespotplanenode[i].getChildMeshes()[0],val);
 
                     if(this.cleanCnt[i]<fillMode.length-1){
                         if(colorCounter%2==0)
@@ -162,7 +160,7 @@ export default class AlcohalWipe{
             mesh.material.diffuseColor   = new BABYLON.Color3.FromHexString(color);
             mesh.material.emissiveColor  = new BABYLON.Color3.FromHexString(color);
         }
-        changeAlpa(mesh,value){
+        changeAlpha(mesh,value){
             mesh.material.alpha   = value;
         }
         checkallClear(){

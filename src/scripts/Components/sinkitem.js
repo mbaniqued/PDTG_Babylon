@@ -10,7 +10,6 @@ export default class SinkItem{
             this.meshRoot.position = new BABYLON.Vector3(this.position.x,this.position.y,this.position.z);
             this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,0,-50);
             this.label.isVisible=false;
-            this.label.isPointerBlocker=true;
             this.initAction();
             this.state=0;
             this.usepaperTowel =false;
@@ -36,7 +35,7 @@ export default class SinkItem{
         addAction(mesh){
             mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-                this.label.isVisible =  this.state<100;
+                this.label.isVisible =  this.state<100 && this.root.gamestate.state !==GameState.radial;
                 this.updateoutLine(mesh.name,this.label.isVisible);
                 if(mesh.name === "kitchen_sink")
                     this.label.isVisible =false;
@@ -47,7 +46,7 @@ export default class SinkItem{
                 this.updateoutLine(mesh.name,this.label.isVisible);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
-                this.label.isVisible =  this.state<100;
+                this.label.isVisible =  this.state<100 && this.root.gamestate.state !==GameState.radial;
                 this.updateoutLine(mesh.name,this.label.isVisible);
                 if(mesh.name === "kitchen_sink")
                     this.label.isVisible =false;
@@ -100,15 +99,15 @@ export default class SinkItem{
                             this.root.gui2D.drawRadialMenu(false);  
                             this.root.hideOutLine(this.meshRoot);
                             if( this.meshRoot.name  === "liquidhandsoap_node"){
-                                this.state=100;
+                                
                                 this.root.showResetViewButton(true);
                                 new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(40).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete( () => {
                                     this.root.handwashactivity.reset();
                                     this.root.handwashactivity.drawhandWash(true);
                                 }).start();
-
+                                this.state=100;
                             }
-                            else{
+                            if( this.meshRoot.name  === "papertowel_node"){
                                 this.usepaperTowel =true;
                                 let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:2,msg:"use_papertowel"}});
                                 document.dispatchEvent(custom_event);
@@ -119,9 +118,11 @@ export default class SinkItem{
                         };
                         this.root.gui2D.crossBtn._onPointerUp = ()=>{
                             showMenu = false;
+                            this.state=0;
                             this.root.gui2D.drawRadialMenu(false);  
                             this.root.gamestate.state = GameState.active;
                             this.root.hideOutLine(this.meshRoot);
+                            this.root.showResetViewButton(true);
                         };
                         break;
                     }
