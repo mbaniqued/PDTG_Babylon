@@ -35,11 +35,11 @@ export class GameManger {
                 this.mainScene.scene = undefined;
                 this.mainScene.scene = null;
                 this.mainScene = null;
-                this.mainScene = new Basic(this);
+                this.mainScene = new MainScene(this);
                 this.startRenderLoop();    
             });
             this.engine.stopRenderLoop();
-            this.mainScene.releaseScene();
+            // this.mainScene.releaseScene();
         }
     }
     startRenderLoop(){

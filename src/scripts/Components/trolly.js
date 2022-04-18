@@ -80,8 +80,12 @@ export default class Trolly{
                             case 0:
                                 this.root.gamestate.state = GameState.default;
                                 new TWEEN.Tween(this.root.camera).to({radius:2.5},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+                                let isPositive =true;
+                                if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(90).radians())
+                                    isPositive = false;
+                                new TWEEN.Tween(this.root.camera).to({alpha:isPositive?BABYLON.Angle.FromDegrees(270).radians():-BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                                     this.root.gamestate.state = GameState.focus;
+                                    this.root.camera.alpha = BABYLON.Angle.FromDegrees(270).radians();
                                 }).start();
                                 new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
                                 if(mesh.name.includes("trolly")){
@@ -99,7 +103,12 @@ export default class Trolly{
         }
         focusApd(){
             new TWEEN.Tween(this.root.camera).to({radius:2.5},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+            let isPositive =true;
+            if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(90).radians())
+                isPositive = false;
+            new TWEEN.Tween(this.root.camera).to({alpha:isPositive?BABYLON.Angle.FromDegrees(270).radians():-BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+                this.root.camera.alpha = BABYLON.Angle.FromDegrees(270).radians();
+            }).start();
             new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
             this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.5,this.meshRoot.position.y-.1,this.meshRoot.position.z+1));    
             

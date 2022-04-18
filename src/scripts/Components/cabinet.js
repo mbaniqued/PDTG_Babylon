@@ -94,9 +94,14 @@ export default class Cabinet{
     }
     cabinetFocusAnim(){
         new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-        new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+        let isPositive =true;
+        if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(45).radians())
+            isPositive = false;
+            console.log("!! setTableFocusAnim!!! "+isPositive);
+        new TWEEN.Tween(this.root.camera).to({alpha:isPositive?BABYLON.Angle.FromDegrees(270).radians():-BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
             this.root.gamestate.state = GameState.focus;
             this.state =1;
+            this.root.camera.alpha = BABYLON.Angle.FromDegrees(270).radians();
             // this.setCabinetDoorBorder(1);
         }).start();
         new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();

@@ -78,19 +78,24 @@ export default class Common{
             this.camera.upperBetaLimit  = BABYLON.Angle.FromDegrees(180).radians();
       }
       updateCam(){
+            // console.log("!!! updateCam!!! "+BABYLON.Angle.FromRadians(this.camera.alpha).degrees());
             if(IS_DRAG.value || this.root.scene.getMeshByName("ccpdplane").isVisible)
                 return;  
             if(this.root.gui2D.resetCamBtn.isVisible ||  this.root.gui2D.radialCircle.isVisible || this.root.gui2D.userExitBtn.isVisible)
                  return; 
             if(this.scene.pointerX>0 && this.scene.pointerX<=this.camDirection.margin){
                   this.camera.alpha += BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
-                  if(this.camera.alpha>=BABYLON.Angle.FromDegrees(359).radians())
+                  if(this.camera.alpha>BABYLON.Angle.FromDegrees(359).radians()){
                         this.camera.alpha = BABYLON.Angle.FromDegrees(0).radians();
+                        console.log("!! innnnnnnnn set!!1");
+
+                  }
             }
             else if( this.scene.pointerX>window.innerWidth-this.camDirection.margin &&  this.scene.pointerX<window.innerWidth){
                   this.camera.alpha -= BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
-                  if(this.camera.alpha<=0)
+                  if(this.camera.alpha<0)
                         this.camera.alpha = BABYLON.Angle.FromDegrees(359).radians();
+                        
             }
             else if(this.scene.pointerY>0 && this.scene.pointerY<=this.camDirection.margin){
                   if(this.camera.beta<1.7)

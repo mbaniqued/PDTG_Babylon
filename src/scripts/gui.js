@@ -187,6 +187,7 @@ export default class GUI2D{
             hidegamemode();
           });
           this.proceedBtn._onPointerUp=()=>{
+              BABYLON.Engine.audioEngine.unlock();
               hideusermode();
               hidegamemode();
               this.drawMainMenu(false);
@@ -582,7 +583,7 @@ export default class GUI2D{
           this.drawbackMenu(false);
       }
       drawbackMenu(isdraw){
-        
+        this.backMenuContainer.zIndex=101;
         this.backMenuContainer.isPointerBlocker=true;
         this.backMenuContainer.isVisible = isdraw;
         

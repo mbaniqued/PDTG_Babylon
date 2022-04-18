@@ -190,7 +190,7 @@ export default class MainScene {
       // this.ccpdRecordBook2.meshRoot.scaling.set(.003,.003,.003);
       // this.ccpdRecordBook2.meshRoot.position = new BABYLON.Vector3(.67,-0.24,1.01);
       
-      console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
+      // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
     // if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)

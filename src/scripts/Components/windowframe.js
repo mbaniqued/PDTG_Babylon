@@ -78,11 +78,15 @@ export default class WindowFrame{
                         switch(this.state){
                             case 0:
                                     this.root.gamestate.state = GameState.default;
-                                    new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                                    new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                                    let val = BABYLON.Angle.FromRadians(this.root.camera.alpha).degrees()>300?359:0; 
-                                    new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {
+                                    new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+                                    new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+                                    let isPositive=true;
+                                if(this.root.camera.alpha>BABYLON.Angle.FromDegrees(180).radians())
+                                    isPositive = false;
+                                    console.log("!! setTableFocusAnim!!! "+isPositive);
+                                    new TWEEN.Tween(this.root.camera).to({alpha:isPositive?BABYLON.Angle.FromDegrees(0).radians():BABYLON.Angle.FromDegrees(359).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                                         this.state=1;
+                                        this.root.camera.alpha = BABYLON.Angle.FromDegrees(0).radians();
                                         this.root.gamestate.state = GameState.focus;
                                     }).start();
                                     this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y+.1,1));
@@ -104,6 +108,7 @@ export default class WindowFrame{
             )
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                 this.setLabel();
+                
                 this.updateoutLine(mesh,true);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
@@ -122,7 +127,7 @@ export default class WindowFrame{
         closeWindow(){
             this.windowClose =!this.windowClose;
             this.root.audioManager.playSound(this.root.audioManager.windowSlideSound);
-            new TWEEN.Tween(this.meshRoot.position).to({z:this.meshRoot.position.z>0?0:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+            new TWEEN.Tween(this.meshRoot.position).to({z:this.meshRoot.position.z>0?0:2},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
         }
         initMeshOutline(){
             this.meshRoot.getChildTransformNodes().forEach(childnode=>{
@@ -140,9 +145,9 @@ export default class WindowFrame{
              else{
                 this.label._children[0].text = this.windowClose?"Open Window":"Close Window"; 
              }   
-            this.label.isVisible=true;
-            this.label.isPointerBlocker=true;
-            this.label._children[0].isPointerBlocker=true;
+            this.label.isVisible= this.root.gamestate.state ===  GameState.active || this.root.gamestate.state ===  GameState.default;
+            this.label.isPointerBlocker=false;
+            this.label._children[0].isPointerBlocker=false;
         }
         updateoutLine(mesh,value){
             if(mesh.outlineWidth>0){

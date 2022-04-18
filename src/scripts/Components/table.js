@@ -125,10 +125,15 @@ export default class Table{
          )
     }
     setTableFocusAnim(){
-        new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+        let isPositive =true;
+        if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(45).radians())
+            isPositive = false;
+            console.log("!! setTableFocusAnim!!! "+isPositive);
+        new TWEEN.Tween(this.root.camera).to({alpha: isPositive?BABYLON.Angle.FromDegrees(270).radians():-BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
             this.root.gamestate.state  =  GameState.focus;
             this.state=1;
             this.setDrawerBorder(1);
+            this.root.camera.alpha = BABYLON.Angle.FromDegrees(270).radians();
         }).start();
         new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(45).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.root.camera).to({radius:2.5},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
