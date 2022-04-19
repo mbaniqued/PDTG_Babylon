@@ -11,6 +11,7 @@ export default class LoaderManager {
     this.assetsManager.useDefaultLoadingScreen = true;
     this.Counter=0;
     this.isLoad=false;
+    this.root.scene.shadowsEnabled =true;
     this.loadSceneAssets();
   }
    
@@ -100,9 +101,9 @@ export default class LoaderManager {
                   this.setPickable(task.loadedMeshes[i],1);
               }else{
                   const mat           = physicMat.clone("fanswitch_2");
-                  mat.albedoColor     = new BABYLON.Color3.FromInts(66,66,66);
-                  mat.metallic  = 1;  
-                  mat.roughness = .2;  
+                  mat.albedoColor     = new BABYLON.Color3.FromInts(128,128,128);
+                  mat.metallic  = .5;  
+                  mat.roughness = .1;  
                   task.loadedMeshes[i].material = mat;
                   this.setPickable(task.loadedMeshes[i],0);
               }
@@ -395,11 +396,14 @@ export default class LoaderManager {
 
               for(let i=0;i<task.loadedMeshes.length;i++){
                   task.loadedMeshes[i].isPickable=false;
+                  task.loadedMeshes[i].receiveShadows = true;
                   if(task.loadedMeshes[i].name === "OutWall pCube31"){
                         const mat = new BABYLON.StandardMaterial("outwallmat",this.scene);
                         mat.diffuseColor = new BABYLON.Color3.FromInts(147,147,147);
                         mat.specularColor = new BABYLON.Color3.FromInts(0,0,0);
                         task.loadedMeshes[i].material = mat;
+                        this.createShadowGenerator(task.loadedMeshes[i]);
+                        
                   }
                   else if(task.loadedMeshes[i].name === "pCube31 InteriorWall" || task.loadedMeshes[i].name === "Divider" || task.loadedMeshes[i].name ==="pPlane5"){
                       task.loadedMeshes[i].isPickable=false;
@@ -414,6 +418,7 @@ export default class LoaderManager {
                       }
                       mat.roughness       = .524;
                       task.loadedMeshes[i].material = mat;
+                      this.createShadowGenerator(task.loadedMeshes[i]);
                   }
                   else if(task.loadedMeshes[i].name === "pPlane6"){
                     // const mat = kitchenpCube3Mat.clone();
@@ -424,6 +429,7 @@ export default class LoaderManager {
                       mat.metallic=0;
                       mat.roughness=1;
                       task.loadedMeshes[i].material = mat;
+                      this.createShadowGenerator(task.loadedMeshes[i]);
                 }
                 else if(task.loadedMeshes[i].name === "Sink"){
                       const sinkMat = physicMat.clone("SinkMat");
@@ -431,6 +437,7 @@ export default class LoaderManager {
                       sinkMat.metallic   = 0;
                       sinkMat.roughness  = .22;
                       task.loadedMeshes[i].material = sinkMat;
+                      this.createShadowGenerator(task.loadedMeshes[i]);
                 }
                 else if(task.loadedMeshes[i].name === "Kitchen pCube3"){
                       const mat =  standerdMat.clone("Kitchen pCube3Mat");
@@ -758,8 +765,13 @@ export default class LoaderManager {
     mesh.renderOutline = false;
     mesh.outlineWidth  = width;
     mesh.outlineColor  = BABYLON.Color3.Yellow();
-
-    
+   
+  }
+  createShadowGenerator(mesh){
+    this.shadowGenerator = new BABYLON.ShadowGenerator(512, this.root.sceneCommon.directionalLight);
+    this.shadowGenerator.getShadowMap().renderList.push(mesh);
+    this.shadowGenerator.useContactHardeningShadow = true;
+    this.shadowGenerator.contactHardeningLightSizeUVRatio = 0.007;
   }
   
 }

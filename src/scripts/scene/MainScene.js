@@ -13,7 +13,7 @@ import ACRemote from "../Components/acremote.js";
 import Item from "../Components/item.js";
 import GUI2D from "../gui.js";
 import LightSwitch from "../Components/lightswtich.js";
-import CabinetItem, { diasolutionpos3, diasolutionpos4, sanitizerpos2 } from "../Components/cabinetitem.js"; 
+import CabinetItem from "../Components/cabinetitem.js"; 
 import FanSwitch from "../Components/fanswitch.js";
 import SinkItem from "../Components/sinkitem.js";
 import TWEEN from '@tweenjs/tween.js';
@@ -150,7 +150,13 @@ export default class MainScene {
 
     this.createccpdCanvas();
     this.startFan();
-    
+            
+            
+    this.camBorder =  this.gui2D.createRect("previewborder",400,300,0,"#000000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+    this.camBorder.leftInPixels = 576;
+    this.camBorder.topInPixels = -139;
+    this.camBorder.isPointerBlocker=false;
+    this.camBorder.isVisible=false;
     console.log(" !!!!!!!!! initscene!!! ");
       resolve('resolved');
     });
@@ -158,7 +164,7 @@ export default class MainScene {
   addevents(){
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
-      const val=.01;
+      const val=1;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -181,6 +187,7 @@ export default class MainScene {
             SZ-=val;
           break;
       }
+      // this.sceneCommon.hemiLight.direction = new BABYLON.Vector3(SX,SY,SZ);
       // this.scene.getMeshByName("apdswitch_sphere").position = new BABYLON.Vector3(SX,SY,SZ);
       // this.ccpdRecordBook.meshRoot.parent = this.scene.getCameraByName("maincamera");
       // this.ccpdRecordBook.meshRoot.scaling.set(.003,.013,.013);
@@ -189,8 +196,9 @@ export default class MainScene {
       // this.ccpdRecordBook2.meshRoot.parent = this.scene.getCameraByName("maincamera");
       // this.ccpdRecordBook2.meshRoot.scaling.set(.003,.003,.003);
       // this.ccpdRecordBook2.meshRoot.position = new BABYLON.Vector3(.67,-0.24,1.01);
-      
-      // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
+      // this.camBorder.leftInPixels   = SX;
+      // this.camBorder.topInPixels  = SY;
+       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
     // if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
@@ -1703,6 +1711,12 @@ export default class MainScene {
           assestmentContainer.getChildByName("sequence_value").text = sequenceAccuracy+"%";
        }
    }
+}
+function getScreenPos(){
+  // var posInView = BABYLON.Vector3.TransformCoordinates(sprite.pos, scene.getViewMatrix());
+  //           var posInViewProj = BABYLON.Vector3.TransformCoordinates(sprite.pos, scene.getTransformMatrix());
+  //           var screenCoords = posInViewProj.multiplyByFloats(0.5, -0.5, 1.0).add(new BABYLON.Vector3(0.5, 0.5, 0.0)).
+  //                                   multiplyByFloats(engine.getRenderWidth(), engine.getRenderHeight(), 1);
 }
 export function randomNumber(min, max) { 
   return Math.random() * (max - min) + min;

@@ -1,5 +1,6 @@
 import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
+import { LIGHTON,LIGHTOFF } from "../Common";
 export default class LightSwitch{
 
         constructor(root,meshobject){
@@ -74,10 +75,10 @@ export default class LightSwitch{
                             this.state=1;
                             new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(185).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                             new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                             // this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+2,this.meshRoot.position.y+3.5,this.meshRoot.position.z-.5));
                             let node = this.root.scene.getNodeByName("fanswitchnode");
-                            this.root.setFocusOnObject(new BABYLON.Vector3(node.position.x,node.position.y,node.position.z+.5));
+                            this.root.setFocusOnObject(new BABYLON.Vector3(node.position.x,node.position.y,node.position.z+.25));
                         }
                         else if(this.state>0){
                             
@@ -102,8 +103,8 @@ export default class LightSwitch{
         setLight(){
             console.log(" !!! light state!! " +this.state+"      "+this.isLightOff)
             this.isLightOff =!this.isLightOff;
-            this.root.sceneCommon.hemiLight.intensity        = this.isLightOff?.5:.1;
-            this.root.sceneCommon.directionalLight.intensity = this.isLightOff?.7:.1;
+            this.root.sceneCommon.hemiLight.intensity        = this.isLightOff?LIGHTON-.1:0;
+            this.root.sceneCommon.directionalLight.intensity = this.isLightOff?LIGHTON:LIGHTOFF;
             // this.root.scene.environmentTexture.level         = this.isLightOff?1:0;
         }
         updateoutLine(mesh,value){

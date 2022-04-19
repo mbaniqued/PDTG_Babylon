@@ -1,5 +1,6 @@
 export const FOV=.78;
-const start_fov=1.2
+const start_fov=1.2;
+export const LIGHTOFF=.05,LIGHTON=.5;
 import { GameState,IS_DRAG } from "./scene/MainScene";
 export default class Common{
      constructor(root){
@@ -10,21 +11,19 @@ export default class Common{
         this.animFrameRate = 60;
         this.camDirection  = {deltaVal:1,margin:50}; 
         this.camVector     = new BABYLON.Vector3(0,3.2,0);
-        
-      //   this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI");
-        
-        
      }
      createScene(name) {
         this.scene = new BABYLON.Scene(this.game.engine);
         this.scene.name = name;
         this.scene.clearColor = BABYLON.Color3.FromHexString("#000000");
         
-        // this.env=this.scene.createDefaultEnvironment()
+      //   this.env = this.scene.createDefaultEnvironment();
+      //   this.env.setMainColor(new BABYLON.Color3.FromInts(255,253,227));
       //   this.scene.environmentTexture = new BABYLON.CubeTexture.CreateFromPrefilteredData("models/environment/autoshop_01_4k.env",this.scene);
       //   this.scene.environmentTexture.level=0;
-      //   this.scene.enablePrePassRenderer();
-        this.setLight();
+      //     this.scene.enablePrePassRenderer();
+      //     this.scene.enableSubSurfaceForPrePass();
+          this.setLight();
         
         return this.scene;
      }
@@ -49,23 +48,19 @@ export default class Common{
         return this.camera;
       }
       setLight() {
-        this.hemiLight = new BABYLON.HemisphericLight("HemiLight",new BABYLON.Vector3(0,10,0),this.scene);
-        this.hemiLight.intensity    = .1;
+        this.hemiLight              = new BABYLON.HemisphericLight("HemiLight",new BABYLON.Vector3(-100,100,-100),this.scene);
+      //   this.hemiLight.groundColor  = new BABYLON.Color3.FromInts (255,255,255);
         this.hemiLight.diffuse      = new BABYLON.Color3.FromInts (255,253,227);
         this.hemiLight.specular     = new BABYLON.Color3.FromInts (0,0,0);
-        this.hemiLight.groundColor  = new BABYLON.Color3.FromInts (255,255,255);
-
-
-        this.directionalLight             = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0,-1,0), this.scene);
-        this.directionalLight.intensity   = .1;
+        
+        this.directionalLight             = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(100,-100,-40), this.scene);
         this.directionalLight.diffuse     = new BABYLON.Color3.FromInts (255,253,227);
         this.directionalLight.specular    = new BABYLON.Color3.FromInts (0,0,0);
-        
 
       }
       setView(){
-            this.hemiLight.intensity         = .1;
-            this.directionalLight.intensity  = .1;
+            this.hemiLight.intensity         = 0;
+            this.directionalLight.intensity  = LIGHTOFF;
             this.camera.fov   = start_fov;
             this.camera.setTarget(new BABYLON.Vector3(-4,3,-.5));
             this.camera.position.set(0,0,0);
@@ -108,8 +103,8 @@ export default class Common{
         } 
         createminiMapCamera(){
             this.miniMapCam = new BABYLON.ArcRotateCamera("minimapcamera",0,0,10,this.minimapTarget,this.scene);
-            this.miniMapCam.viewport = new BABYLON.Viewport(0.7,0.5,0.2,.3);
-            this.miniMapCam.viewport.height =  this.miniMapCam.viewport.width*1.4;
+            this.miniMapCam.viewport = new BABYLON.Viewport(0.7,0.5,0.2,.2);
+            this.miniMapCam.viewport.height =  this.miniMapCam.viewport.width*1.1;
             this.miniMapCam.target = new BABYLON.Vector3(0,0,0);
             this.miniMapCam.position.set(0,0,0);
             this.miniMapCam.detachControl(this.game.canvas,false);  
@@ -124,10 +119,23 @@ export default class Common{
             this.miniMapCam.upperBetaLimit=this.miniMapCam.beta;
             this.miniMapCam.layerMask=2;
             this.miniMapCam.inputs.clear();
+
+            // this.camBorder = BABYLON.MeshBuilder.CreatePlane("camBorder",{width:.38,height:.28,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+            // let borderMat = new BABYLON.StandardMaterial("camBorderMat", this.scene);
+            // borderMat.diffuseColor  = new BABYLON.Color3.FromInts(0,0,0);
+            // borderMat.emissiveColor = new BABYLON.Color3.FromInts(0,0,0);
+            // // this.camBorder.renderOutline=true;
+            // this.camBorder.isPickable=false;
+            // this.camBorder.material = borderMat;
+            // // this.camBorder.outlineColor = new BABYLON.Color3.FromInts(240,240,240);
+            // this.camBorder.parent = this.camera;
+            // this.camBorder.position.set(.53,.13,1.05);
+            // this.camBorder.visibility=0;
             
         }
         setminiCamTarget(objecttype){
             this.addMiniCam();  
+            
             switch(objecttype){
                   case 0:
                         this.miniMapCam.target.set(-3.8,4.89,.10);//for fan
@@ -150,8 +158,11 @@ export default class Common{
         addMiniCam(){
             if(this.scene.activeCameras.length<2)  
             this.scene.activeCameras.push(this.miniMapCam);
+
+            this.root.camBorder.isVisible=true;
         }
         removeMiniCam(){
             this.scene.activeCameras.splice(1,1);
+            this.root.camBorder.isVisible=false;
         }
 }

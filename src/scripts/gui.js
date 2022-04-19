@@ -198,8 +198,8 @@ export default class GUI2D{
       initStageMenu(){
         this.backBtn        = this.createButon("backbtn","ui/backbtn.png","#ffffff00","",24,"#808080",119,67,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.playBtn        = this.createButon("playbtn","ui/play.png","#ffffff00","",24,"#808080",193,78,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.stage1btn      = this.createButon("prepration1btn","ui/button2.png","#ffffff00","Stage1:Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.stagebtn       = this.createButon("stagemodbtn","ui/button.png","#ffffff00","Stage1:Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.stage1btn      = this.createButon("prepration1btn","ui/button2.png","#ffffff00","Stage1:Preparation",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.stagebtn       = this.createButon("stagemodbtn","ui/button.png","#ffffff00","Stage1:Preparation",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         
         this.roompreBtn     = this.createButon("roomprebtn","ui/button2.png","#ffffff00","Room Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.itempreBtn     = this.createButon("itemprebtn","ui/button2.png","#ffffff00","Item Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);

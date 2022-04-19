@@ -77,8 +77,8 @@ export default class FanSwitch{
                             this.state=1;
                             new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(185).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
                             new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z));
+                            new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z+.25));
                         }
                         else if(this.state>0){
                             this.isFanOff =!this.isFanOff;
@@ -106,7 +106,7 @@ export default class FanSwitch{
         }
         updateoutLine(value){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-                if(childmesh.outlineWidth>0)
+                if(childmesh.name === "fanswitch1")
                     childmesh.renderOutline = value;
                 else                    
                     childmesh.renderOutline = false;
