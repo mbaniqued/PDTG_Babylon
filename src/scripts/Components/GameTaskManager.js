@@ -63,38 +63,39 @@ export default class GameTaskManager{
     }
     completeItemSetUp(){
         setTimeout(() => {
-            this.root.bpMachineItem.placeItem(ANIM_TIME*.1);    
+            this.root.bpMachineItem.placeItem(ANIM_TIME*.1,true);    
         }, action_time*.2);
         setTimeout(() => {
-            this.root.ccpdRecordBook.placeItem(ANIM_TIME*.2);    
+            this.root.ccpdRecordBook.placeItem(ANIM_TIME*.2,true);    
         }, action_time*.4);
         setTimeout(() => {
-            this.root.alcohalItem.placeItem(ANIM_TIME*.3);
+            this.root.alcohalItem.placeItem(ANIM_TIME*.3,true);    
         }, action_time*.6);
         setTimeout(() => {
-            this.root.connectionItem.placeItem(ANIM_TIME*.4);    
+            this.root.connectionItem.placeItem(ANIM_TIME*.4,true);    
         }, action_time*.8);
         setTimeout(() => {
-            this.root.maskItem.placeItem(ANIM_TIME*.5);    
+            this.root.maskItem.placeItem(ANIM_TIME*.5,true);    
         }, action_time);
         setTimeout(() => {
-            this.root.apdmachinePackage.placeItem(ANIM_TIME*.6);    
+            this.root.apdmachinePackage.placeItem(ANIM_TIME*.6,true);    
         }, action_time*1.2);
         setTimeout(() => {
-            this.root.drainBagItem.placeItem(ANIM_TIME*.7);
+            this.root.drainBagItem.placeItem(ANIM_TIME*.7,true);    
         }, action_time*1.4);
         setTimeout(() => {
-            this.root.sanitiserObject[0].placeItem(ANIM_TIME*.8);
+            this.root.sanitiserObject[0].placeItem(ANIM_TIME*.8,true);    
         }, action_time*1.6);
         setTimeout(() => {
-            this.root.dialysisSolutionObject[0].placeItem(ANIM_TIME*.8);
+            this.root.dialysisSolutionObject[0].placeItem(ANIM_TIME*.8,true);    
         }, action_time*1.8);
         setTimeout(() => {
-            this.root.dialysisSolutionObject[1].placeItem(ANIM_TIME*.9);
+            this.root.dialysisSolutionObject[1].placeItem(ANIM_TIME*.9,true);    
         }, action_time*2);
     }
     completeSelfSetUp(){
-        let bpvalue =   randomNumber(85,110);
+        // let bpvalue =   randomNumber(85,110);
+        let bpvalue = this.root.bpMonitor.getBpRecord(2)[0];
         this.root.setbpRecord(bpvalue,true);   
         this.root.ccpdRecordBook.state=100;
         this.root.ccpdRecordBook.initAction();

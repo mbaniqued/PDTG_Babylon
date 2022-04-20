@@ -150,13 +150,6 @@ export default class MainScene {
 
     this.createccpdCanvas();
     this.startFan();
-            
-            
-    this.camBorder =  this.gui2D.createRect("previewborder",400,300,0,"#000000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-    this.camBorder.leftInPixels = 576;
-    this.camBorder.topInPixels = -139;
-    this.camBorder.isPointerBlocker=false;
-    this.camBorder.isVisible=false;
     console.log(" !!!!!!!!! initscene!!! ");
       resolve('resolved');
     });
@@ -187,18 +180,19 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // this.sceneCommon.hemiLight.direction = new BABYLON.Vector3(SX,SY,SZ);
-      // this.scene.getMeshByName("apdswitch_sphere").position = new BABYLON.Vector3(SX,SY,SZ);
+      
+      
       // this.ccpdRecordBook.meshRoot.parent = this.scene.getCameraByName("maincamera");
       // this.ccpdRecordBook.meshRoot.scaling.set(.003,.013,.013);
-      // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(SX,SY,SZ);
+      // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(SX,this.ccpdRecordBook.meshRoot.position.y,SZ);
+     
 
-      // this.ccpdRecordBook2.meshRoot.parent = this.scene.getCameraByName("maincamera");
-      // this.ccpdRecordBook2.meshRoot.scaling.set(.003,.003,.003);
-      // this.ccpdRecordBook2.meshRoot.position = new BABYLON.Vector3(.67,-0.24,1.01);
-      // this.camBorder.leftInPixels   = SX;
-      // this.camBorder.topInPixels  = SY;
-       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
+      // this.scene.getTransformNodeByName("apdnode").getChildMeshes().forEach(childmesh => {
+      //     if(childmesh.id === "DeviceDialysisReference_primitive6")
+      //         childmesh.position = new BABYLON.Vector3(SX,SY,SZ);
+      //         // childmesh.rotation.x = BABYLON.Angle.FromDegrees(SX).radians();  
+      //     });
+      //  console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
     // if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
@@ -791,23 +785,24 @@ export default class MainScene {
     const font_size = 64;
     const font_type = "Orbitron";
     const font = font_size + "px " + font_type;
+    const fontcolor = "#404040" ;
     ctx.clearRect(0,0,this.bpnumberTexture.getSize().width,this.bpnumberTexture.getSize().height);
     let v2=0,v3=0;
     if(v1>0)
-      this.bpnumberTexture.drawText(parseInt(v1)+"",90, 70, font,  "#808794", "transparent", true);
+      this.bpnumberTexture.drawText(parseInt(v1)+"",90, 70, font,fontcolor, "transparent", true);
     else
-      this.bpnumberTexture.drawText("",90, 70, font,  "#808794", "transparent", true);
+      this.bpnumberTexture.drawText("",90, 70, font,fontcolor, "transparent", true);
       if(isupdate){
         v2 = this.bpMonitor.diastolicRange;
         v3 = this.bpMonitor.pulse;
-        this.bpnumberTexture.drawText(parseInt(v2)+"",90, 150, font, "#000000", "transparent", true);
-        this.bpnumberTexture.drawText(parseInt(v3)+"",90, 230, font, "#000000", "transparent", true);
+        this.bpnumberTexture.drawText(parseInt(v2)+"",90, 150, font,fontcolor, "transparent", true);
+        this.bpnumberTexture.drawText(parseInt(v3)+"",90, 230, font,fontcolor, "transparent", true);
         this.bpRecord = parseInt(v1)+"/"+parseInt(v2)+"("+parseInt(v3)+")";
         console.log(this.bpRecord);
       }
       else{
-        this.bpnumberTexture.drawText("",90, 150, font, "#808794", "transparent", true);
-        this.bpnumberTexture.drawText("",90, 230, font, "#808794", "transparent", true);
+        this.bpnumberTexture.drawText("",90, 150, font,fontcolor, "transparent", true);
+        this.bpnumberTexture.drawText("",90, 230, font,fontcolor, "transparent", true);
       }
   }
   onpickMesh(pickedMesh){
@@ -986,6 +981,7 @@ export default class MainScene {
           this.gui2D.drawbackMenu(false);
           this.sceneCommon.removeMiniCam();
           this.gui2D.drawObjectiveMenu(false);
+          this.handwashactivity.drawhandWash(false);
       })
       const backcontinueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
         backcontinueBtn.onPointerUpObservable.add(()=>{
@@ -1492,40 +1488,46 @@ export default class MainScene {
       const mat           = new BABYLON.StandardMaterial("ccpdplanemat",this.scene);
       mat.diffuseColor    = new BABYLON.Color3(1,0,0);
       ccpdPlan.material = mat;
-      ccpdPlan.scaling.set(.35,.53,1);
+      ccpdPlan.scaling.set(.46,.72,1);
       // 0.3940000000000003 !!sy!!  -0.002!! sz !! 1.0489999999999953
-      ccpdPlan.position = new BABYLON.Vector3(0.394,-.002,1.0489); 
-      ccpdPlan.isPickable=true;
+      ccpdPlan.position = new BABYLON.Vector3(0.335,0,1.0489); 
+      ccpdPlan.isPickable=false;
       ccpdPlan.outlineWidth=0;
       ccpdPlan.isVisible=false;
 
-      this.recordbookCanvas = GUI.AdvancedDynamicTexture.CreateForMesh(ccpdPlan,512,512);
-      const titlepanel  = this.gui2D.createStackPanel("titlepanel",170,500,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP);    
-      titlepanel.leftInPixels =22;
-      titlepanel.topInPixels =26;
+      this.recordbookCanvas = GUI.AdvancedDynamicTexture.CreateForMesh(ccpdPlan,1024,1024);
+      
+      
+      const titlepanel  = this.gui2D.createStackPanel("titlepanel",340,1024,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP);    
+      titlepanel.isPointerBlocker=true;
+      titlepanel.leftInPixels = 27.4;
+      titlepanel.topInPixels  = 22.2;
+      titlepanel.ignoreLayoutWarnings = true
       this.recordbookCanvas.addControl(titlepanel);
-      this. inputpanel  = this.gui2D.createStackPanel("titlepanel",95,500,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP);    
-      this.inputpanel.leftInPixels =186;
-      this.inputpanel.topInPixels =25.5;
-      this.recordbookCanvas.addControl(this.inputpanel);
-
+      
+      
+      const inputpanel  = this.gui2D.createStackPanel("inputpanel",200,1024,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP);    
+      inputpanel.leftInPixels = 396;
+      inputpanel.topInPixels  = 14;
+      inputpanel.ignoreLayoutWarnings = true
+      this.recordbookCanvas.addControl(inputpanel);
       
       const title=["Date","B/P","Time On","Time Off","Heater Bag","1.5 Dext. (Amount)","Supply Bag","1.5 Dext. (Amount)","Last Bag","1.5 Dext. (Amount)","Type of Therapy",
                   "Therapy Volume","Therapy Time","Fill Volume","Last Fill Volume","Concentration","Number of Cycle","Intial Drain","Average Dwell Time","Total UF","Lost Dwell Time",
                   "Added Dwell Time","Colour of Drainage"]; 
 
       for(let i=0;i<title.length;i++){
-          const titletxt =  this.gui2D.createText("ccpdtitle"+i,title[i],12,"#000000",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+          const titletxt =  this.gui2D.createText("ccpdtitle"+i,title[i],24,"#000000",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
           titletxt.widthInPixels  = titlepanel.widthInPixels
           titletxt.fontFamily="Arial"
-          titletxt.heightInPixels = 20
+          titletxt.heightInPixels = 43;
           titletxt.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-          titletxt.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+          titletxt.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
           titlepanel.addControl(titletxt);
           titletxt.isPointerBlocker=true;
 
-          const inputfield = this.gui2D.createInputField("ccpdinput"+i,"","DD/MM/Year",this.inputpanel.widthInPixels,20,"#FFFF0000","#000000",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP) ;
-          inputfield.fontSizeInPixels=12;
+          const inputfield = this.gui2D.createInputField("ccpdinput"+i,"","DD/MM/Year",inputpanel.widthInPixels,43,"#FFFF0000","#000000",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP) ;
+          inputfield.fontSizeInPixels=24;
           inputfield.thickness=0;
           if(i===0)
             inputfield.placeholderText = "DD/MM/Year";
@@ -1533,8 +1535,7 @@ export default class MainScene {
               inputfield.placeholderText = "SYS/DIA(PH)";
               this.ccpdbpInputField = inputfield;
               inputfield.onTextChangedObservable.add(()=>{
-                if(this.bpRecord ===inputfield.text)
-                 {
+                if(this.bpRecord ===inputfield.text){
                     let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this.ccpdRecordBook,msg:"ccprd_record_fill",level:2}});
                     document.dispatchEvent(custom_event);                                                
                  }
@@ -1544,22 +1545,24 @@ export default class MainScene {
               inputfield.placeholderText = "";
               inputfield.isVisible=false;
           }
-           this.inputpanel.addControl(inputfield);
+           inputpanel.addControl(inputfield);
         }  
-        const pageCloseBtn  =   this.gui2D.createCircle("pageclose",56,36,"#FF000073",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const pageCloseBtn  =   this.gui2D.createCircle("pageclose",112,72,"#FF000073",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         pageCloseBtn.isPointerBlocker=true;
         this.recordbookCanvas.addControl(pageCloseBtn);
-        const crossimg      =  this.gui2D.createImage("crossimg","ui/pngaaa.com-28984.png",24,20,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const crossimg      =  this.gui2D.createImage("crossimg","ui/pngaaa.com-28984.png",48,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         crossimg.isPointerBlocker=false;
         crossimg.isVisible  = true;
         pageCloseBtn.addControl(crossimg);
-        pageCloseBtn.leftInPixels=190;
+        pageCloseBtn.leftInPixels=400;
         pageCloseBtn.isVisible  = true;
         pageCloseBtn._onPointerUp=()=>{
             ccpdPlan.isVisible=false;
             ccpdPlan.isPickable=false;
             this.ccpdRecordBook.closeccpdRecordBook(300);
        }
+       const c = this.recordbookCanvas.getChildren()[0];
+       console.log(c.children[0]);
    }
    setbpValueCCPD(){
       this.ccpdbpInputField.text = this.bpRecord; 

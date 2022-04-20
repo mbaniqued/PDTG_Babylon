@@ -22,7 +22,7 @@ export class GameManger {
         }
         // divFps = document.getElementById("fps");
         window.addEventListener("resize",  ()=> {
-            this.engine.resize();
+            this.resizeBabylonEngine();
         },false);
         this.startRenderLoop();
     }

@@ -150,13 +150,12 @@ export default class Trolly{
                 else{
                     if( mesh.parent && mesh.parent.name ==="apdnode"){
                         this.meshRoot.getChildMeshes().forEach(childmesh=>{
-                            childmesh.outlineWidth  = .3;
+                            childmesh.outlineWidth  = .15;
                             if(childmesh.id.includes("DeviceDialysisReference_primitive1"))
                                 childmesh.renderOutline = value;
                              else   
                                 childmesh.renderOutline = false;
-
-                                this.root.scene.getMeshByName("apdswitch_sphere").renderOutline = false;
+                             this.root.scene.getMeshByName("apdswitch_sphere").renderOutline = false;
                          });
                       }
                      else{   

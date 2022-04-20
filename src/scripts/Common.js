@@ -103,13 +103,14 @@ export default class Common{
         } 
         createminiMapCamera(){
             this.miniMapCam = new BABYLON.ArcRotateCamera("minimapcamera",0,0,10,this.minimapTarget,this.scene);
-            this.miniMapCam.viewport = new BABYLON.Viewport(0.7,0.5,0.2,.2);
-            this.miniMapCam.viewport.height =  this.miniMapCam.viewport.width*1.1;
+            this.miniMapCam.viewport = new BABYLON.Viewport(0.75,0.6,0.16,.2);
+            // this.miniMapCam.viewport.height =  this.miniMapCam.viewport.width*1.12;
             this.miniMapCam.target = new BABYLON.Vector3(0,0,0);
             this.miniMapCam.position.set(0,0,0);
             this.miniMapCam.detachControl(this.game.canvas,false);  
             this.miniMapCam.alpha=BABYLON.Angle.FromDegrees(0).radians();
             this.miniMapCam.beta=BABYLON.Angle.FromDegrees(100).radians();
+            this.miniMapCam.useFramingBehavior = true;
             this.miniMapCam.radius=2;     
             this.miniMapCam.lowerRadiusLimit=2;
             this.miniMapCam.upperRadiusLimit=2;
@@ -119,19 +120,7 @@ export default class Common{
             this.miniMapCam.upperBetaLimit=this.miniMapCam.beta;
             this.miniMapCam.layerMask=2;
             this.miniMapCam.inputs.clear();
-
-            // this.camBorder = BABYLON.MeshBuilder.CreatePlane("camBorder",{width:.38,height:.28,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
-            // let borderMat = new BABYLON.StandardMaterial("camBorderMat", this.scene);
-            // borderMat.diffuseColor  = new BABYLON.Color3.FromInts(0,0,0);
-            // borderMat.emissiveColor = new BABYLON.Color3.FromInts(0,0,0);
-            // // this.camBorder.renderOutline=true;
-            // this.camBorder.isPickable=false;
-            // this.camBorder.material = borderMat;
-            // // this.camBorder.outlineColor = new BABYLON.Color3.FromInts(240,240,240);
-            // this.camBorder.parent = this.camera;
-            // this.camBorder.position.set(.53,.13,1.05);
-            // this.camBorder.visibility=0;
-            
+           
         }
         setminiCamTarget(objecttype){
             this.addMiniCam();  
@@ -158,11 +147,10 @@ export default class Common{
         addMiniCam(){
             if(this.scene.activeCameras.length<2)  
             this.scene.activeCameras.push(this.miniMapCam);
-
-            this.root.camBorder.isVisible=true;
+            document.getElementById("borderRect").style.display = "block";
         }
         removeMiniCam(){
             this.scene.activeCameras.splice(1,1);
-            this.root.camBorder.isVisible=false;
+            document.getElementById("borderRect").style.display = "none";
         }
 }

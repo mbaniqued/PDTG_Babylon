@@ -4,7 +4,7 @@ const msg = "Drag the bubbles HERE in the correct 7 - Step Handwashing Sequence"
 // https://www.babylonjs-playground.com/#XCPP9Y#134
 // https://playground.babylonjs.com/#XCPP9Y#4718
 const iconPos =[[0,-150],[-260,-110],[230,-80],[-109,30],[119,100],[377,60],[-240,165]];
-const iconTxt =["Palm to Palm","Between Fingers","Between Fingers","Back of Hands","Back of Fingers","Base of Thumbs","Fingernails","Wrists"];
+const iconTxt =["Palm to Palm","Between Fingers","Back of Hands","Back of Fingers","Base of Thumbs","Fingernails","Wrists"];
 const endX=-400;
 const endY=-392;
 const match=["step1","step2","step3","step4","step5","step6","step7"];
@@ -243,6 +243,8 @@ export default class HandWash{
                let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:2,msg:"handwash_complete"}});
                document.dispatchEvent(custom_event);
             }
+         }else{
+            this.doneBtn.isVisible=false;  
          }
      }
      reset(){

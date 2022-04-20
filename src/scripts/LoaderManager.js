@@ -189,8 +189,9 @@ export default class LoaderManager {
           for(let i=0;i<task.loadedMeshes.length;i++){ //DrainBag
               // console.log(task.loadedMeshes[i].id);
               task.loadedMeshes[i].parent = node;
+              task.loadedMeshes[i].position = new BABYLON.Vector3(0,0,0);
               if(task.loadedMeshes[i].id === "DrainBagPlasticCover" || task.loadedMeshes[i].id === "DrainBagA_2")
-                this.setPickable(task.loadedMeshes[i],10);
+                this.setPickable(task.loadedMeshes[i],1);
                else 
                 this.setPickable(task.loadedMeshes[i],0);
 
@@ -231,26 +232,29 @@ export default class LoaderManager {
         if(task.name === "SurgicalMask"){
           const node       = new BABYLON.TransformNode("SurgicalMask");
           for(let i=0;i<task.loadedMeshes.length;i++){ //SurgicalMask
-              
               task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="SurgicalMask"+i;
               this.setPickable(task.loadedMeshes[i],1);
               task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(270).radians());
-            
             }
             // node.scaling.set(1,1,1);
             // node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(270).radians());
-            
-            
         }
         if(task.name === "APD_Machine_v2"){
           const apdnode       = new BABYLON.TransformNode("apdnode");
           for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
             task.loadedMeshes[i].parent  = apdnode;
-            ;
+            task.loadedMeshes[i].position = new BABYLON.Vector3(0,0,0);
             task.loadedMeshes[i].name="apdmachine"+i;
             this.setPickable(task.loadedMeshes[i],.3);
-            // task.loadedMeshes[i]..setPivotMatrix(BABYLON.Matrix.Translation(0, 0, 0), false);
+            if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive3"){
+                 task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
+                 task.loadedMeshes[i].position = new BABYLON.Vector3(0,-7,6);
+            }
+            if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive6" || task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive5"){
+              task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
+              task.loadedMeshes[i].position = new BABYLON.Vector3(0,-7,6);
+            }
           }
           apdnode.scaling.set(-5,5,5);
           apdnode.parent = this.root.trollyRoot;

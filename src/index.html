@@ -43,12 +43,22 @@
           body{
               font-family: "Shrikhand";
           }
+          .borderRect{
+            position: absolute;
+            width: 16vw;
+            height: 19vh;
+            left: 74.6%;
+            top: 20%;
+            background-color: transparent;
+            border-radius: 1vw;
+            border-color: black;
+            border-style: solid;
+            border-width: .4vw;
+            display: none;
+          }
   </style>
      <!-- <div id="fps">0</div>  -->
-      <div>
-       <!-- <button id="start_game"  class="btn btn-primary">Start Game </button> --> 
-    </div>
-      <h4 id="debugtext" style="position: absolute; background-color: antiquewhite; display: none;"></h4>
+    <div id="borderRect" class="borderRect"> </div>
     <div  id="loader_spiner" class="loader"></div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <canvas id="game"></canvas>

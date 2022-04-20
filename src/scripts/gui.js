@@ -201,11 +201,11 @@ export default class GUI2D{
         this.stage1btn      = this.createButon("prepration1btn","ui/button2.png","#ffffff00","Stage1:Preparation",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.stagebtn       = this.createButon("stagemodbtn","ui/button.png","#ffffff00","Stage1:Preparation",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         
-        this.roompreBtn     = this.createButon("roomprebtn","ui/button2.png","#ffffff00","Room Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.itempreBtn     = this.createButon("itemprebtn","ui/button2.png","#ffffff00","Item Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.selfpreBtn     = this.createButon("selfprebtn","ui/button2.png","#ffffff00","Self Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.machinepreBtn  = this.createButon("machineprebtn","ui/button2.png","#ffffff00","Machine Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.phasebtn       = this.createButon("phasebtn","ui/button.png","#ffffff00","Room Prepration",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.roompreBtn     = this.createButon("roomprebtn","ui/button2.png","#ffffff00","Room Preparation",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.itempreBtn     = this.createButon("itemprebtn","ui/button2.png","#ffffff00","Item Preparation",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.selfpreBtn     = this.createButon("selfprebtn","ui/button2.png","#ffffff00","Self Preparation",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.machinepreBtn  = this.createButon("machineprebtn","ui/button2.png","#ffffff00","Machine Preparation",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.phasebtn       = this.createButon("phasebtn","ui/button.png","#ffffff00","Room Preparation",20,"#808080",256,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.phasebtnDisable = this.createRect("disable_rect",256,48,4,"#A2A2A280",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.phasebtnDisable.isVisible=false;
         this.phasebtnDisable.isPointerBlocker=false;

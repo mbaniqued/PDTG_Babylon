@@ -366,7 +366,7 @@ export default class Item{
                                 document.dispatchEvent(custom_event);
                             }
                         }
-                        this.placeItem(ANIM_TIME*.3);
+                        this.placeItem(ANIM_TIME*.3,false);
                     }
 
                     if(!placed){
@@ -391,24 +391,49 @@ export default class Item{
                 clearTimeout(tout)
             }, 500);
         }
-        placeItem(time){
+        placeItem(time,autoplace){
             if(!time)
                time=ANIM_TIME;
             this.state=0;
             this.isPlaced=true;
+            this.label.isVisible=false;
+            if(this.parent !== this.root.scene.getTransformNodeByID("tablenode"))
+                this.placedPosition = {x:this.meshRoot.position.x,y:this.meshRoot.position.y-(autoplace?0:130),z:this.meshRoot.position.z};
+            else    
+                this.placedPosition = this.tablePosition;
+
             this.parent           = this.root.scene.getTransformNodeByID("tablenode");
             this.meshRoot.parent  = null;
             this.meshRoot.parent  = this.parent;
-            // console.log("!!!! placeItem!! ");
-            this.label.isVisible=false;
-            this.placedPosition = this.tablePosition;
-            new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+            new TWEEN.Tween(this.placedPosition).to({x:this.tablePosition.x,y:this.tablePosition.y,z:this.tablePosition.z},time).easing(TWEEN.Easing.Quartic.In).onUpdate(()=>{
+                this.meshRoot.position = new BABYLON.Vector3(this.placedPosition.x,this.placedPosition.y,this.placedPosition.z);
+            }).onComplete(() => {
                 this.root.scene.getMeshByName("tablecollider").visibility=0;
+                this.placedPosition = this.tablePosition;
+                this.meshRoot.position = new BABYLON.Vector3(this.placedPosition.x,this.placedPosition.y,this.placedPosition.z);
             }).start();
             if(this.placeRotation){
-                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},time*2).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
             }
         }
+        // placeItem(time){
+        //     if(!time)
+        //        time=ANIM_TIME;
+        //     this.state=0;
+        //     this.isPlaced=true;
+        //     this.parent           = this.root.scene.getTransformNodeByID("tablenode");
+        //     this.meshRoot.parent  = null;
+        //     this.meshRoot.parent  = this.parent;
+        //     // console.log("!!!! placeItem!! ");
+        //     this.label.isVisible=false;
+        //     this.placedPosition = this.tablePosition;
+        //     new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+        //         this.root.scene.getMeshByName("tablecollider").visibility=0;
+        //     }).start();
+        //     if(this.placeRotation){
+        //         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        //     }
+        // }
        showItem(){
             let getdrag = this.pointerDragBehavior.enabled;
             // console.log("!!! showItem!! "+getdrag);
@@ -518,13 +543,13 @@ export default class Item{
       useccpdRecordBook(anim_time,callevent){
           if(this.name.includes("CCPD")){
             new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(0).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-                new TWEEN.Tween(this.meshRoot.position).to({x:this.meshRoot.position.x+120,y:this.meshRoot.position.y-100,z:this.meshRoot.position.z-20},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+                new TWEEN.Tween(this.meshRoot.position).to({x:this.meshRoot.position.x+150,y:this.meshRoot.position.y-100,z:this.meshRoot.position.z},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
                     this.meshRoot.parent = null;
                     this.parent = this.root.scene.getCameraByName("maincamera");
                     this.meshRoot.parent = this.parent;
                     this.meshRoot.scaling.set(.003,.003,.003);
                     // this.meshRoot.position = new BABYLON.Vector3(.55,-0.23,1.1);
-                    this.meshRoot.position = new BABYLON.Vector3(.67,-0.24,1.01);
+                    this.meshRoot.position = new BABYLON.Vector3(.75,-0.3,1.1);
                     this.meshRoot.rotation = new BABYLON.Vector3(0,0,0);
                     this.label.isVisible = false;
                     this.enableDrag(false);
@@ -547,11 +572,11 @@ export default class Item{
         this.root.audioManager.playSound(this.root.audioManager.pageFlipSound);
         if(this.state===100){  
             new TWEEN.Tween(frontpage.rotation).to({y:BABYLON.Angle.FromDegrees(185).radians()},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-            new TWEEN.Tween(this.meshRoot.scaling).to({x:.013,y:.013,z:.013},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.scaling).to({x:.019,y:.019,z:.019},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                 this.root.scene.getMeshByName("ccpdplane").isVisible=true;
                 this.root.scene.getMeshByName("ccpdplane").isPickable=true;
             }).start();
-            new TWEEN.Tween(this.meshRoot.position).to({x:.4,y:.0,z:1.1},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.position).to({x:.35,y:.0,z:1.1},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                 this.removeAction();
             }).start();
         }
@@ -567,7 +592,7 @@ export default class Item{
         new TWEEN.Tween(frontpage.rotation).to({y:0},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.scaling).to({x:.003,y:.003,z:.003},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
         }).start();
-        new TWEEN.Tween(this.meshRoot.position).to({x:.67,y:-.24,z:1.1},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+        new TWEEN.Tween(this.meshRoot.position).to({x:.75,y:-.3,z:1.1},anim_time).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
         }).start();
      }
      useMask(anim_time){

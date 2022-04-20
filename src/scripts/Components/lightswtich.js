@@ -103,7 +103,7 @@ export default class LightSwitch{
         setLight(){
             console.log(" !!! light state!! " +this.state+"      "+this.isLightOff)
             this.isLightOff =!this.isLightOff;
-            this.root.sceneCommon.hemiLight.intensity        = this.isLightOff?LIGHTON-.1:0;
+            this.root.sceneCommon.hemiLight.intensity        = this.isLightOff?LIGHTON:0;
             this.root.sceneCommon.directionalLight.intensity = this.isLightOff?LIGHTON:LIGHTOFF;
             // this.root.scene.environmentTexture.level         = this.isLightOff?1:0;
         }
