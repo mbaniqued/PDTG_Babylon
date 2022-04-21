@@ -41,7 +41,7 @@ export default class LoaderManager {
       this.assetsManager.addMeshTask("HandSanitizer","","models/Items/","HandSanitizer.glb");
       this.assetsManager.addMeshTask("ceiling_fan","","models/","ceiling_fan.glb");
       
-      this.assetsManager.addMeshTask("fanswitch","","models/","scene.glb");
+      this.assetsManager.addMeshTask("fanswitch","","models/","fanswitch.glb");
       this.assetsManager.addMeshTask("APD_Package_v2","","models/Items/","APD_Package_v2.glb");
       this.assetsManager.addMeshTask("PaperTowel","","models/Items/","PaperTowel.glb");
       this.assetsManager.addMeshTask("LiquidHandsoap","","models/Items/","LiquidHandsoap.glb");
