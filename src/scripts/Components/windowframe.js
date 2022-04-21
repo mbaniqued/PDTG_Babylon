@@ -71,25 +71,18 @@ export default class WindowFrame{
                             this.state =0;
                             this.root.gamestate.state =GameState.default;
                         }
-                        // if(this.state>0 && this.root.gamestate.state === GameState.default){
-                        //     this.state =0;
-                        // }
                         this.setLabel();
                         switch(this.state){
                             case 0:
                                     this.root.gamestate.state = GameState.default;
-                                    new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-                                    new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
                                     let isPositive=true;
-                                if(this.root.camera.alpha>BABYLON.Angle.FromDegrees(180).radians())
-                                    isPositive = false;
-                                    console.log("!! setTableFocusAnim!!! "+isPositive);
-                                    new TWEEN.Tween(this.root.camera).to({alpha:isPositive?BABYLON.Angle.FromDegrees(0).radians():BABYLON.Angle.FromDegrees(359).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-                                        this.state=1;
-                                        this.root.camera.alpha = BABYLON.Angle.FromDegrees(0).radians();
-                                        this.root.gamestate.state = GameState.focus;
-                                    }).start();
+                                    if(this.root.camera.alpha>BABYLON.Angle.FromDegrees(180).radians())
+                                        isPositive = false;
+                                    console.log("!! setTableFocusAnim!!! "+isPositive+"         "+BABYLON.Angle.FromRadians(this.root.camera.alpha).degrees());
                                     this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y+.1,1));
+                                    this.root.setCameraAnim(isPositive?.1:359,.1,90,1.5);
+                                    this.state=1;
+                                    this.root.gamestate.state = GameState.focus;
                                 break;
                             case 1:
                                     if(mesh.name.includes("windowframeplan")){
@@ -102,13 +95,11 @@ export default class WindowFrame{
                                     }
                                 break;
                         }
-                        
                     }
                 )
             )
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                 this.setLabel();
-                
                 this.updateoutLine(mesh,true);
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {

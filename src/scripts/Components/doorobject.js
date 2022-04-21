@@ -18,7 +18,6 @@ export default class DoorObject{
             this.initAction();
             this.setDoor();
             this.interaction=false;
-            // let mesh = new BABYLON.TransformNode();
         }
         setPos(){
             this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
@@ -62,12 +61,9 @@ export default class DoorObject{
                             this.state =0;
                         switch(this.state){
                             case 0:
-                                this.root.gamestate.state  =  GameState.default;
-                                new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(190).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({radius:6},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-                                    this.root.gamestate.state  =  GameState.focus;
-                                    this.state =1;
-                                }).start();
+                                this.root.gamestate.state  =  GameState.focus;
+                                this.state =1;
+                                this.root.setCameraAnim(190,190,undefined,6);
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z));
                                 break;
                             case 1:
@@ -86,12 +82,8 @@ export default class DoorObject{
            if(!this.anim){     
                 this.anim=true;
                 this.closedoor = !this.closedoor;
-                if(this.closedoor)
-                    this.root.audioManager.playSound(this.root.audioManager.doorCloseSound);
-                else
-                    this.root.audioManager.playSound(this.root.audioManager.doorOpenSound);
+                this.root.audioManager.playSound(this.closedoor?this.root.audioManager.doorCloseSound:this.root.audioManager.doorOpenSound);
                 new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-                    
                     this.anim=false;
                     if(this.closedoor){
                         this.label.isVisible=false;

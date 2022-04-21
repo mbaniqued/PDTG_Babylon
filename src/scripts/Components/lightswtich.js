@@ -69,14 +69,10 @@ export default class LightSwitch{
                         }
                         this.setLabel();
                         this.root.sceneCommon.setminiCamTarget(0);
-                        // console.log(" ------- OnPickTrigger-------- "+this.state )
                         if(this.root.gamestate.state === GameState.default){
                             this.root.gamestate.state  =  GameState.active;
                             this.state=1;
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(185).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            // this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+2,this.meshRoot.position.y+3.5,this.meshRoot.position.z-.5));
+                            this.root.setCameraAnim(185,185,90,1.5);
                             let node = this.root.scene.getNodeByName("fanswitchnode");
                             this.root.setFocusOnObject(new BABYLON.Vector3(node.position.x,node.position.y,node.position.z+.25));
                         }

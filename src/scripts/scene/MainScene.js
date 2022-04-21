@@ -82,7 +82,27 @@ export default class MainScene {
     this.gameTime=undefined;
     this.addevents();
     this.handleUI();
-  
+    const parameters = {
+      edge_blur: 1.0,
+      chromatic_aberration: 1.0,
+      distortion: 1.0,
+      // etc.
+    };
+    // this.lensEffect = new BABYLON.LensRenderingPipeline('lensEffects', parameters, this.scene, 1.0,this.camera);
+    // this.disableBlur();
+  }
+  disableBlur(){
+    this.lensEffect.setEdgeBlur(0);
+    this.lensEffect.disableGrain();
+    this.lensEffect.disableChromaticAberration();
+    this.lensEffect.disableEdgeDistortion();
+    this.lensEffect.disableDepthOfField();
+    this.lensEffect.disablePentagonBokeh();
+    this.lensEffect.disableNoiseBlur();
+  }
+  enableBlur(){
+    this.lensEffect.setEdgeBlur(1);
+    this.lensEffect.setFocusDistance(10000);
   }
   initState(){
     this.gamestate  = {state:GameState.menu}; 
@@ -150,6 +170,8 @@ export default class MainScene {
 
     this.createccpdCanvas();
     this.startFan();
+    // this.scene.getMeshByName("fanbtn").isVisible = false;
+    
     console.log(" !!!!!!!!! initscene!!! ");
       resolve('resolved');
     });
@@ -185,13 +207,8 @@ export default class MainScene {
       // this.ccpdRecordBook.meshRoot.parent = this.scene.getCameraByName("maincamera");
       // this.ccpdRecordBook.meshRoot.scaling.set(.003,.013,.013);
       // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(SX,this.ccpdRecordBook.meshRoot.position.y,SZ);
-     
-
-      // this.scene.getTransformNodeByName("apdnode").getChildMeshes().forEach(childmesh => {
-      //     if(childmesh.id === "DeviceDialysisReference_primitive6")
-      //         childmesh.position = new BABYLON.Vector3(SX,SY,SZ);
-      //         // childmesh.rotation.x = BABYLON.Angle.FromDegrees(SX).radians();  
-      //     });
+      // this.scene.getMeshByName("fanbtn").position.set(SX,SY,SZ);
+      // this.scene.getNodeByName("fanswitchnode").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());
       //  console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
@@ -847,13 +864,24 @@ export default class MainScene {
     this.camera.upperAlphaLimit =  null;
     this.camera.lowerBetaLimit  =  null;
     this.camera.upperBetaLimit  =  null;
-    new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(()=>{}).start();
-    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-    new TWEEN.Tween(this.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-    new TWEEN.Tween(this.camera).to({fov:FOV},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(()=>{}).start();
+    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({radius:3},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({fov:FOV},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+  }
+  setCameraAnim(alphaAng,finalAlpha,betaAng,radius){
+    if(alphaAng){
+      new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?BABYLON.Angle.FromDegrees(alphaAng).radians():-BABYLON.Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+        this.camera.alpha = BABYLON.Angle.FromDegrees(finalAlpha).radians();
+      }).start();
+    }
+    if(betaAng)
+      new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(betaAng).radians()},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+    if(radius)  
+      new TWEEN.Tween(this.camera).to({radius:radius},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
   }
   setFocusOnObject(pos){
-    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
         this.showResetViewButton(true);
     }).start();
   }
@@ -906,17 +934,7 @@ export default class MainScene {
       else
         this.acparticle.stop();  
    }
-   focusTrolly(){
-    this.setFocusOnObject(new BABYLON.Vector3(this.trollyObject.meshRoot.position.x,this.trollyObject.meshRoot.position.y,this.trollyObject.meshRoot.position.z));
-    new TWEEN.Tween(this.camera).to({alpha:BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(45).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-      this.wipeAlcohal.usealcohalwipe=true;
-      this.wipeAlcohal.alocohalwipe.isVisible = true;
-      this.wipeAlcohal.reset();
-    }).start();
-    new TWEEN.Tween(this.camera).to({radius:2},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-   }
-   async setGame(){
+  async setGame(){
     return  new Promise(resolve => {
         if(this.isResetScene){
             this.resetScene().then((msg)=>{
@@ -994,7 +1012,7 @@ export default class MainScene {
         this.gamestate.state = GameState.default;
         this.setCameraTarget();
         if(this.gui2D.loaginBg.isVisible)
-            new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},1000).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+            new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
          this.gui2D.drawLoadingPage(false);
          this.gui2D.drawObjectiveMenu(this.gamemode === gamemode.training);
          this.gui2D.userBackBtn.isVisible=true;

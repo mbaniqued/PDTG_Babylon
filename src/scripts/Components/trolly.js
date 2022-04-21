@@ -78,21 +78,13 @@ export default class Trolly{
                     console.log(this.root.gamestate.state+" "+mesh.name);
                     switch(this.state){
                             case 0:
-                                this.root.gamestate.state = GameState.default;
-                                new TWEEN.Tween(this.root.camera).to({radius:2.5},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-                                let isPositive =true;
-                                if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(90).radians())
-                                    isPositive = false;
-                                new TWEEN.Tween(this.root.camera).to({alpha:isPositive?BABYLON.Angle.FromDegrees(270).radians():-BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-                                    this.root.gamestate.state = GameState.focus;
-                                    this.root.camera.alpha = BABYLON.Angle.FromDegrees(270).radians();
-                                }).start();
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+                                this.root.gamestate.state = GameState.focus;
+                                this.focusApd();
                                 if(mesh.name.includes("trolly")){
                                     this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z));
                                 }
                                 if(mesh.name.includes("apdmachine")){
-                                    this.focusApd();
+                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.5,this.meshRoot.position.y-.1,this.meshRoot.position.z+1));    
                                     // console.log(" !!! focus apd!!!");
                                 }
                                 break;
@@ -102,16 +94,10 @@ export default class Trolly{
             )
         }
         focusApd(){
-            new TWEEN.Tween(this.root.camera).to({radius:2.5},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
             let isPositive =true;
             if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(90).radians())
                 isPositive = false;
-            new TWEEN.Tween(this.root.camera).to({alpha:isPositive?BABYLON.Angle.FromDegrees(270).radians():-BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-                this.root.camera.alpha = BABYLON.Angle.FromDegrees(270).radians();
-            }).start();
-            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(70).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-            this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.5,this.meshRoot.position.y-.1,this.meshRoot.position.z+1));    
-            
+            this.root.setCameraAnim(isPositive?270:-90,270,70,2.5)
         }
         setPos(){
             this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
@@ -123,7 +109,6 @@ export default class Trolly{
             });
             const switchmesh = this.root.scene.getMeshByName("apdswitch_sphere");
             this.root.removeRegisterAction(switchmesh);
-            
         }
         initAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -134,9 +119,7 @@ export default class Trolly{
                     this.addAction(childmesh);
             });
             this.addswitchAction();
-            
         }
-        
         updateoutLine(mesh,value){
             if( mesh.name !=="apdswitch_sphere" && mesh.parent.name ==="apdnode" &&  this.root.gamestate.state != GameState.focus){
                 mesh.renderOutline = false;

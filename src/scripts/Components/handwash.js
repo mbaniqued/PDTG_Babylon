@@ -15,9 +15,9 @@ export default class HandWash{
         this.iconContainer = new GUI.Container("icon_container");
         this.iconContainer.isPointerBlocker=true;
         this.handwashIcon=[];
+        this.handwashIconWrong=[];
         this.vx=[];
         this.vy=[];
-        this.handwashIconWrong=[];
         this.isplaced=[];
         this.ispicked=[];
         this.createHeader();
@@ -248,7 +248,6 @@ export default class HandWash{
          }
      }
      reset(){
-         
          this.washhand=false;
          this.doneBtn.isVisible=false;
          this.iconStack=[];
@@ -259,7 +258,7 @@ export default class HandWash{
          this.iconNo=0;
          this.count=0;
          shuffleArray(iconPos);
-         for (let i=0;i<iconPos.length;i++){
+         for(let i=0;i<iconPos.length;i++){
                this.handwashIcon[i].leftInPixels = iconPos[i][0];
                this.handwashIcon[i].topInPixels  = iconPos[i][1];
                this.handwashIcon[i].getChildByName("handicon_incorrect").isVisible=false;
@@ -272,10 +271,6 @@ export default class HandWash{
                this.vy[i]= randomNumber(-.5,.5);
          }
          this.root.gui2D.advancedTexture.renderAtIdealSize = true;
-        
-   //       this.root.game.engine.runRenderLoop(() => {
-           
-   //      });          
      }
 }
 function shuffleArray(arr) {

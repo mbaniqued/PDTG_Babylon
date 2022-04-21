@@ -82,7 +82,7 @@ export default class CabinetItem{
       addAction(mesh){
         mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-            this.label.isVisible = ( this.root.gamestate.state === GameState.default || this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) || (this.state!==100 && this.state!==20);
+            this.label.isVisible = ( this.root.gamestate.state === GameState.default || this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && (this.state!==100 || this.state!==20);
             this.updateoutLine(this.label.isVisible);
             if(this.root.gamestate.state === GameState.inspect){
                 this.updateoutLine(false);
@@ -112,8 +112,7 @@ export default class CabinetItem{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                 //   console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                     this.pickObject = true;
-                    
-                    this.label.isVisible = ( this.root.gamestate.state === GameState.default || this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) || (this.state!==100 && this.state!==20);
+                    this.label.isVisible = ( this.root.gamestate.state === GameState.default || this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && (this.state!==100 || this.state!==20);
                     this.updateoutLine(this.label.isVisible);
                     if(this.root.gamestate.state === GameState.inspect){
                         this.updateoutLine(false);
@@ -178,15 +177,13 @@ export default class CabinetItem{
                         if(this.name.includes("Hand") && ((this.root.level===3 && this.root.gamemode === gamemode.training) || this.root.gamemode !== gamemode.training)){
                             this.root.gamestate.state = GameState.active;
                             this.root.setFocusOnObject(new BABYLON.Vector3(1.98,2.02-.3,-1.89-1.2));
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(135).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+                            this.root.setCameraAnim(135,135,60,2.9);
+                            const tout = setTimeout(() => {
+                                clearTimeout(tout);
                                 this.root.handwashactivity.reset();
                                 this.root.handwashactivity.drawhandWash(true);
-                                this.root.gui2D.resetCamBtn.isVisible=true;
-                                this.root.gui2D.resetCamBtn.zIndex =100;
                                 this.state =100;
-                            }).start();
-                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:2.9},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+                            }, ANIM_TIME);
                         }
                     };
                     this.root.gui2D.crossBtn._onPointerUp = ()=>{

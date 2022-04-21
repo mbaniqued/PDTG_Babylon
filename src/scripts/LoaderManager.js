@@ -1,5 +1,5 @@
 import * as BABYLON from "babylonjs";
-import { Color3, StandardMaterial } from "babylonjs";
+import { Color3, PBRMaterial, StandardMaterial } from "babylonjs";
 import "babylonjs-loaders";
 
 export default class LoaderManager {
@@ -12,6 +12,7 @@ export default class LoaderManager {
     this.Counter=0;
     this.isLoad=false;
     this.root.scene.shadowsEnabled =true;
+    
     this.loadSceneAssets();
   }
    
@@ -40,7 +41,7 @@ export default class LoaderManager {
       this.assetsManager.addMeshTask("HandSanitizer","","models/Items/","HandSanitizer.glb");
       this.assetsManager.addMeshTask("ceiling_fan","","models/","ceiling_fan.glb");
       
-      this.assetsManager.addMeshTask("fanswitch","","models/","scene (3).glb");
+      this.assetsManager.addMeshTask("fanswitch","","models/","scene.glb");
       this.assetsManager.addMeshTask("APD_Package_v2","","models/Items/","APD_Package_v2.glb");
       this.assetsManager.addMeshTask("PaperTowel","","models/Items/","PaperTowel.glb");
       this.assetsManager.addMeshTask("LiquidHandsoap","","models/Items/","LiquidHandsoap.glb");
@@ -98,6 +99,15 @@ export default class LoaderManager {
                   mat.metallic  = 0;  
                   mat.roughness = .2;  
                   task.loadedMeshes[i].material = mat;
+                  task.loadedMeshes[i].customOutline = task.loadedMeshes[i].clone( task.loadedMeshes[i].name+"outline");
+                  task.loadedMeshes[i].customOutline.isVisible = false;
+                  task.loadedMeshes[i].customOutline.parent    = node;
+                  const outlinemat = new BABYLON.StandardMaterial("outlinemat",this.scene);
+                  outlinemat.diffuseColor  = BABYLON.Color3.Yellow();
+                  outlinemat.emissiveColor = BABYLON.Color3.Yellow();
+                  task.loadedMeshes[i].customOutline.material = outlinemat;
+                  task.loadedMeshes[i].customOutline.scaling  = new BABYLON.Vector3(task.loadedMeshes[i].scaling.x*1.07,task.loadedMeshes[i].scaling.y*1.07,task.loadedMeshes[i].scaling.z*1.07);  
+                  task.loadedMeshes[i].customOutline.position = new BABYLON.Vector3(task.loadedMeshes[i].position.x-.005,task.loadedMeshes[i].position.y,task.loadedMeshes[i].position.z); 
                   this.setPickable(task.loadedMeshes[i],1);
               }else{
                   const mat           = physicMat.clone("fanswitch_2");
@@ -109,9 +119,8 @@ export default class LoaderManager {
               }
               task.loadedMeshes[i].name="fanswitch"+i;
             }
-          // node.scaling.set(.01,.01,.01);
-          node.rotation.set(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
-          node.position.set(3.039,3.209,-0.6);
+            node.rotation.set(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+            node.position.set(3.049,3.209,-0.61);
         }
 
         if(task.name === "ceiling_fan"){
@@ -308,7 +317,7 @@ export default class LoaderManager {
               }
               else if(task.loadedMeshes[i].id=== "Table_primitive1"){
                   task.loadedMeshes[i].parent  = tabledrawer;  
-                  this.setPickable(task.loadedMeshes[i],0);
+                  this.setPickable(task.loadedMeshes[i],1);
               }
               else{
                   this.setPickable(task.loadedMeshes[i],1);
@@ -775,7 +784,7 @@ export default class LoaderManager {
     this.shadowGenerator = new BABYLON.ShadowGenerator(512, this.root.sceneCommon.directionalLight);
     this.shadowGenerator.getShadowMap().renderList.push(mesh);
     this.shadowGenerator.useContactHardeningShadow = true;
-    this.shadowGenerator.contactHardeningLightSizeUVRatio = 0.007;
+    this.shadowGenerator.contactHardeningLightSizeUVRatio = 0.07;
   }
   
 }

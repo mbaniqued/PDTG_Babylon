@@ -65,15 +65,10 @@ export default class SinkItem{
                     return;
                 switch(this.state){
                         case 0:
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(135).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-                                this.root.gamestate.state  =  GameState.focus;
-                                this.state=1;
-                            }).start();
-                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:2.9},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-                            // 1.98,y:2.02,z:-1.89
+                            this.root.gamestate.state  =  GameState.focus;
+                            this.state=1;
+                            this.root.setCameraAnim(135,135,60,2.9);
                             this.root.setFocusOnObject(new BABYLON.Vector3(1.98,2.02-.3,-1.89-1.2));
-                            
                         break;
                     case 1:
                         this.label.isVisible=false;
@@ -99,7 +94,6 @@ export default class SinkItem{
                             this.root.gui2D.drawRadialMenu(false);  
                             this.root.hideOutLine(this.meshRoot);
                             if( this.meshRoot.name  === "liquidhandsoap_node"){
-                                
                                 this.root.showResetViewButton(true);
                                 new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(40).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete( () => {
                                     this.root.handwashactivity.reset();

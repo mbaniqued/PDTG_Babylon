@@ -14,7 +14,7 @@ export default class Table{
         this.setPos();
         this.setDrawer();
         // this.mesh = new BABYLON.TransformNode();
-        this.initMeshOutline();
+        
         this.initAction();
         this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-20);
         this.label._children[0].text = "Drawer";
@@ -58,7 +58,6 @@ export default class Table{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
                     if(rotateState.value ===1)
                         return;
-                    this.label.isVisible=this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
                     this.setLabel();
                     if(this.root.gamestate.state === GameState.inspect)
                         this.updateoutLine(mesh,false);
@@ -74,9 +73,8 @@ export default class Table{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
                     if(rotateState.value ===1)
                         return;
-                    this.label.isVisible=this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
-                    this.updateoutLine(mesh,true);
                     this.setLabel();
+                    this.updateoutLine(mesh,true);
                     this.root.scene.onPointerUp=()=>{
                         this.label.isVisible=false;
                         this.updateoutLine(mesh,false);
@@ -85,11 +83,10 @@ export default class Table{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
                     if(rotateState.value ===1)
                         return;
-                    this.label.isVisible= this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
                     this.updateoutLine(mesh,false);
                     if(this.root.gui2D.radialCircle.isVisible)
                         return;
-                    if(this.root.camera.radius>2.5){
+                    if(this.root.camera.radius>2.5 || (this.root.camera.target.x != this.meshRoot.position.x && this.root.camera.target.y != this.meshRoot.position.y)){
                         this.root.gamestate.state = GameState.default;
                         if(this.isdrawerOpen)
                             this.state=10;
@@ -128,15 +125,10 @@ export default class Table{
         let isPositive =true;
         if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(45).radians())
             isPositive = false;
-            console.log("!! setTableFocusAnim!!! "+isPositive);
-        new TWEEN.Tween(this.root.camera).to({alpha: isPositive?BABYLON.Angle.FromDegrees(270).radians():-BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-            this.root.gamestate.state  =  GameState.focus;
-            this.state=1;
-            this.setDrawerBorder(1);
-            this.root.camera.alpha = BABYLON.Angle.FromDegrees(270).radians();
-        }).start();
-        new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(45).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-        new TWEEN.Tween(this.root.camera).to({radius:2.5},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        // console.log("!! setTableFocusAnim!!! "+isPositive);
+        this.root.gamestate.state  =  GameState.focus;
+        this.state=1;
+        this.root.setCameraAnim(isPositive?270:-90,270,45,2.5);
     }
     setDrawerAnim(){
         this.root.gamestate.state = GameState.active;
@@ -180,27 +172,6 @@ export default class Table{
         this.label.isVisible=this.root.gamestate.state == GameState.active && this.root.gamestate.state === GameState.default;
         if(this.root.level===3)
             this.label.isVisible=false;  
-    }
-    initMeshOutline(){
-        this.meshRoot.getChildTransformNodes().forEach(childnode=>{
-                if(childnode.name.includes("tablenode")){
-                    childnode.getChildMeshes().forEach(childmesh=>{
-                        this.root.loaderManager.setPickable(childmesh,1); 
-                    });
-                }
-                else{
-                    this.setDrawerBorder(-1);
-                }
-        });
-    }
-    setDrawerBorder(value){
-        this.meshRoot.getChildTransformNodes().forEach(childnode=>{
-            if(childnode.name.includes("tabledrawer")){
-                childnode.getChildMeshes().forEach(childmesh=>{
-                    this.root.loaderManager.setPickable(childmesh,value); 
-                });
-            }
-        });
     }
     updateoutLine(mesh,value){
             if((mesh.parent.name ==="tableknob"|| mesh.parent.name ==="tabledrawer") && this.root.camera.radius>=3){

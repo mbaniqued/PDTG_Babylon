@@ -157,12 +157,7 @@ export default class Item{
                             if(this.root.camera.radius>2.5 && this.state<100){
                                 this.root.gamestate.state = GameState.focus;
                                 this.root.tableObject.setTableFocusAnim();
-                                this.root.tableObject.meshRoot.getChildTransformNodes().forEach(childnode=>{
-                                    if(childnode.name==="tabledrawer"){
-                                        let drawerNode = childnode;  
-                                        this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.root.tableObject.meshRoot.position.z-.5));
-                                    }
-                                });
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
                                 this.root.tableObject.state=0;
                                 return;
                             }
@@ -225,7 +220,15 @@ export default class Item{
                                 }
                                 else if(this.name.includes("Alchohal Wipe")){
                                     this.state=100;
-                                    this.root.focusTrolly();
+                                    // this.root.focusTrolly();
+                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
+                                    this.root.setCameraAnim(270,270,45,2);
+                                    const tout = setTimeout(() => {
+                                        this.root.wipeAlcohal.usealcohalwipe=true;
+                                        this.root.wipeAlcohal.alocohalwipe.isVisible = true;
+                                        this.root.wipeAlcohal.reset();
+                                        clearTimeout(tout);
+                                    },ANIM_TIME);
                                     this.meshRoot.setEnabled(false);
                                 }
                                 else if(this.name.includes("Drain Bag")){
@@ -295,15 +298,6 @@ export default class Item{
                  if(this.trollyPosition && ((this.root.level >2 && this.root.gamemode === gamemode.training) || this.root.gamemode !== gamemode.training)){   
                     if(this.meshRoot.position.x<-100)
                         new TWEEN.Tween(this.root.camera.target).to({x:-2,y:2,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(()=>{}).start();
-                    // else{
-                    //         this.root.tableObject.meshRoot.getChildTransformNodes().forEach(childnode=>{
-                    //             if(childnode.name==="tabledrawer"){
-                    //                 let drawerNode = childnode;  
-                    //                 this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.root.tableObject.meshRoot.position.z-.5));
-                    //             }
-                    //         });
-                    // }
-                        // new TWEEN.Tween(this.root.camera.target).to({x:-.5,y:2,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(()=>{}).start();
                     if(this.meshRoot.name.includes("DrainBag") && this.meshRoot.position.x<-160 && (this.meshRoot.position.y<-10 || this.meshRoot.position.z<130))
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=1;
                     else  
@@ -366,7 +360,7 @@ export default class Item{
                                 document.dispatchEvent(custom_event);
                             }
                         }
-                        this.placeItem(ANIM_TIME*.3,false);
+                        this.placeItem(ANIM_TIME*.2,false);
                     }
 
                     if(!placed){
@@ -389,7 +383,7 @@ export default class Item{
                 this.root.tableObject.setTableFocusAnim();
                 this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
                 clearTimeout(tout)
-            }, 500);
+            },100);
         }
         placeItem(time,autoplace){
             if(!time)
@@ -398,14 +392,14 @@ export default class Item{
             this.isPlaced=true;
             this.label.isVisible=false;
             if(this.parent !== this.root.scene.getTransformNodeByID("tablenode"))
-                this.placedPosition = {x:this.meshRoot.position.x,y:this.meshRoot.position.y-(autoplace?0:130),z:this.meshRoot.position.z};
+                this.placedPosition = {x:this.meshRoot.position.x,y:this.meshRoot.position.y-(autoplace?0:120),z:this.meshRoot.position.z};
             else    
                 this.placedPosition = this.tablePosition;
 
             this.parent           = this.root.scene.getTransformNodeByID("tablenode");
             this.meshRoot.parent  = null;
             this.meshRoot.parent  = this.parent;
-            new TWEEN.Tween(this.placedPosition).to({x:this.tablePosition.x,y:this.tablePosition.y,z:this.tablePosition.z},time).easing(TWEEN.Easing.Quartic.In).onUpdate(()=>{
+            new TWEEN.Tween(this.placedPosition).to({x:this.tablePosition.x,y:this.tablePosition.y,z:this.tablePosition.z},time).easing(TWEEN.Easing.Linear.None).onUpdate(()=>{
                 this.meshRoot.position = new BABYLON.Vector3(this.placedPosition.x,this.placedPosition.y,this.placedPosition.z);
             }).onComplete(() => {
                 this.root.scene.getMeshByName("tablecollider").visibility=0;
@@ -413,7 +407,7 @@ export default class Item{
                 this.meshRoot.position = new BABYLON.Vector3(this.placedPosition.x,this.placedPosition.y,this.placedPosition.z);
             }).start();
             if(this.placeRotation){
-                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},time*2).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},time*2).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
             }
         }
         // placeItem(time){
@@ -485,29 +479,17 @@ export default class Item{
 
         this.root.gui2D.userExitBtn.isVisible = false;
         this.root.gui2D.resetCamBtn.isVisible = true;
-        // new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(50).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-        // new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-        // this.root.gamestate.state = GameState.active;
-        // if(this.isPlaced){
-            if(this.placeRotation && (this.parent !== this.root.scene.getTransformNodeByID("tabledrawer")))
-                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-            else
-                new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x,y:this.startRotation.y,z:this.startRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();    
-            // new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-            new TWEEN.Tween(this.meshRoot.scaling).to({x:this.startScaling.x,y:this.startScaling.y,z:this.startScaling.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-            const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
-            new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-                 this.enableDrag(setdrag);
-                 this.root.gamestate.state = GameState.active;
-            }).start();
-        // }
-        // else{
-        //     new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x,y:this.startRotation.y,z:this.startRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-        //     new TWEEN.Tween(this.meshRoot.position).to({x:this.startPosition.x,y:this.startPosition.y,z:this.startPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-        //     new TWEEN.Tween(this.meshRoot.scaling).to({x:this.startScaling.x,y:this.startScaling.y,z:this.startScaling.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-        //     }).start();
-        // }
-        
+        if(this.placeRotation && (this.parent !== this.root.scene.getTransformNodeByID("tabledrawer")))
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placeRotation.x,y:this.placeRotation.y,z:this.placeRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        else
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x,y:this.startRotation.y,z:this.startRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();    
+        // new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        new TWEEN.Tween(this.meshRoot.scaling).to({x:this.startScaling.x,y:this.startScaling.y,z:this.startScaling.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
+        new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+                this.enableDrag(setdrag);
+                this.root.gamestate.state = GameState.active;
+        }).start();
       }
       usebpMachine(){
         // console.log(this.state);

@@ -74,11 +74,7 @@ export default class ACRemote{
                                 let isPositive=true;
                                 if(this.root.camera.alpha>BABYLON.Angle.FromDegrees(180).radians())
                                     isPositive = false;
-                                new TWEEN.Tween(this.root.camera).to({alpha:isPositive?BABYLON.Angle.FromDegrees(0).radians():BABYLON.Angle.FromDegrees(359).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-                                    this.root.camera.alpha = BABYLON.Angle.FromDegrees(0).radians();
-                                }).start();   
-                                new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(40).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-                                new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+                                this.root.setCameraAnim(isPositive?.1:359,.1,40,1.5);
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.1,this.meshRoot.position.y,this.meshRoot.position.z));
                                 this.root.gamestate.state = GameState.focus;
                         }    

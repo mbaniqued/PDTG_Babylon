@@ -75,9 +75,7 @@ export default class FanSwitch{
                         if(this.root.gamestate.state === GameState.default){
                             this.root.gamestate.state  =  GameState.active;
                             this.state=1;
-                            new TWEEN.Tween(this.root.camera).to({alpha:BABYLON.Angle.FromDegrees(185).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
-                            new TWEEN.Tween(this.root.camera).to({radius:1.5},ANIM_TIME).easing(TWEEN.Easing.Quadratic.In).onComplete(() => {}).start();
+                            this.root.setCameraAnim(185,185,90,1.5);
                             this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z+.25));
                         }
                         else if(this.state>0){
@@ -106,8 +104,11 @@ export default class FanSwitch{
         }
         updateoutLine(value){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
-                if(childmesh.name === "fanswitch1")
-                    childmesh.renderOutline = value;
+                childmesh.outlineWidth=2;
+                if(childmesh.name === "fanswitch1"){
+                    childmesh.renderOutline = false;
+                    childmesh.customOutline.isVisible = value;
+                }
                 else                    
                     childmesh.renderOutline = false;
                 childmesh.outlineColor  = BABYLON.Color3.Yellow();

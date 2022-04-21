@@ -12,13 +12,10 @@ export default class Cabinet{
         this.state      = 0;
         this.setPos();
         this.setDoor();
-        // this.initMeshOutline();
-        // this.mesh = new BABYLON.TransformNode();
         this.initAction();
         this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-150);
         this.label._children[0].text = "Cabinet";
         this.label.isVisible=false;
-        this.label.isPointerBlocker=true;
     }
     setPos(){
         this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);
@@ -41,7 +38,6 @@ export default class Cabinet{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
             if(rotateState.value===1)
                 return;
-            this.label.isVisible=this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
             this.setLabel();
             this.updateoutLine(mesh,true);
         }))
@@ -52,7 +48,6 @@ export default class Cabinet{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
             if(rotateState.value===1)
                 return;
-                this.label.isVisible=this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
                 this.setLabel();
                 this.updateoutLine(mesh,true);
                 this.root.scene.onPointerUp=()=>{
@@ -63,14 +58,19 @@ export default class Cabinet{
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                 if(rotateState.value===1)
                     return;
-                    this.label.isVisible= this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
                     this.updateoutLine(mesh,false);
-                    if(this.state>0 && this.root.gamestate.state === GameState.default){
+                    if((this.root.camera.target.x != this.meshRoot.position.x && this.root.camera.target.y != this.meshRoot.position.y)){
                         if(this.state>0 && this.isdoorOpen)
                             this.state =10;
                         else   
                             this.state =0;
                     }
+                    // if(this.state>0 && this.root.gamestate.state === GameState.default){
+                    //     if(this.state>0 && this.isdoorOpen)
+                    //         this.state =10;
+                    //     else   
+                    //         this.state =0;
+                    // }
                     this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));
                     switch(this.state){
                         case 0:
@@ -93,28 +93,20 @@ export default class Cabinet{
             )
     }
     cabinetFocusAnim(){
-        new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
         let isPositive =true;
         if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(45).radians())
             isPositive = false;
-            console.log("!! setTableFocusAnim!!! "+isPositive);
-        new TWEEN.Tween(this.root.camera).to({alpha:isPositive?BABYLON.Angle.FromDegrees(270).radians():-BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
-            this.root.gamestate.state = GameState.focus;
-            this.state =1;
-            this.root.camera.alpha = BABYLON.Angle.FromDegrees(270).radians();
-            // this.setCabinetDoorBorder(1);
-        }).start();
-        new TWEEN.Tween(this.root.camera).to({beta:BABYLON.Angle.FromDegrees(60).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        console.log("!! ispositive!! "+isPositive);
+        this.root.setCameraAnim(isPositive?270:-90,270,60,3);
+        this.state =1;
+        this.root.gamestate.state = GameState.focus;
     }
     openCloseDoor(){
         this.meshRoot.getChildTransformNodes().forEach(childnode => {
             if(!this.doorAnim){
                 if(childnode.name==="cabinetleftDoor"){
                     this.isdoorOpen = !this.isdoorOpen;
-                    if(this.isdoorOpen)
-                    this.root.audioManager.playSound(this.root.audioManager.cabinetOpen);
-                    else
-                        this.root.audioManager.playSound(this.root.audioManager.cabinetClose);
+                    this.root.audioManager.playSound(this.isdoorOpen?this.root.audioManager.cabinetOpen:this.root.audioManager.cabinetClose);
                     this.doorAnimation(childnode,90,true);
                 }
                 if(childnode.name==="cabinetrightDoor")
@@ -149,31 +141,8 @@ export default class Cabinet{
             this.label._children[0].text = "Cabinet";
         else
             this.label._children[0].text = this.isdoorOpen?"Close Cabinet":"Open Cabinet";
-    }
-    initMeshOutline(){
-        this.meshRoot.getChildTransformNodes().forEach(childnode=>{
-                if(childnode.name.includes("cabinetnode")){
-                    childnode.getChildMeshes().forEach(childmesh=>{
-                        this.root.loaderManager.setPickable(childmesh,1); 
-                    });
-                }
-                // this.setCabinetDoorBorder(-1);
-        });
-    }
-    setCabinetDoorBorder(value){
-        this.meshRoot.getChildTransformNodes().forEach(childnode=>{
-            if(childnode.name.includes("cabinetleftDoor")){
-                childnode.getChildMeshes().forEach(childmesh=>{
-                    this.root.loaderManager.setPickable(childmesh,value); 
-                });
-            }
-            if(childnode.name.includes("cabinetrightDoor")){
-                childnode.getChildMeshes().forEach(childmesh=>{
-                    this.root.loaderManager.setPickable(childmesh,value); 
-                });
-            }
-        });
-        
+        this.label.isVisible=this.root.gamestate.state == GameState.active || this.root.gamestate.state === GameState.default;
+        this.label.isPointerBlocker = false;
     }
     updateoutLine(mesh,value){
         if((mesh.parent.name ==="cabinetleftDoor"|| mesh.parent.name ==="cabinetrightDoor") && this.root.camera.radius>=3){
@@ -182,5 +151,4 @@ export default class Cabinet{
         else
             mesh.renderOutline = value;
         }
-   
 }
