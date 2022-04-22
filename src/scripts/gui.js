@@ -321,6 +321,20 @@ export default class GUI2D{
                 hidephasebtn();
            }
         });
+        switch(this.root.level){
+            case 0:
+                this.phasebtn.children[1].text="Room Prepration";
+              break;
+            case 1:
+                this.phasebtn.children[1].text="Item Prepration";
+            break;
+            case 2:
+                this.phasebtn.children[1].text="Self Prepration";
+            break;
+            case 3:
+                this.phasebtn.children[1].text="Machine Prepration";
+            break;
+        }
         this.roompreBtn.onPointerUpObservable.add(()=>{
             this.root.level   = 0;
             hidephasebtn();

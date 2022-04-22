@@ -51,6 +51,7 @@ export default class Item{
             this.meshRoot.setEnabled(true);
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.isVisible  = true;
+                childmesh.layerMask=1;
             });
         }
         setTrollyPosition(position){
@@ -438,7 +439,7 @@ export default class Item{
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.renderOutline = false;
             });
-           let scalAnim=1.2;
+           let scalAnim=1.5;
            let newPos  = new BABYLON.Vector3(0,0,0);
            if(this.parent ===  this.root.scene.getTransformNodeByID("tabledrawer"))
                 newPos  = new BABYLON.Vector3(0,-80,-60);
@@ -448,21 +449,22 @@ export default class Item{
                 else    
                     newPos = new BABYLON.Vector3(0,-80,-40);
            }
-           let upAng  = -BABYLON.Angle.FromDegrees(60).radians();
-           let zAng   =  BABYLON.Angle.FromDegrees(0).radians();
-        
+        let upAng  = -BABYLON.Angle.FromDegrees(60).radians();
+        let zAng   =  BABYLON.Angle.FromDegrees(0).radians();
         if(this.meshRoot.name.includes("ccpdrecordbook") || this.meshRoot.name.includes("Connection") ||  this.meshRoot.name.includes("Alchohal")){
-                scalAnim = 2;
+                scalAnim = 2.5;
         }
         if(this.meshRoot.name.includes("SurgicalMask")){
                 upAng =0;
         }
         if(this.meshRoot.name.includes("apd_package_node")){
             upAng = BABYLON.Angle.FromDegrees(60).radians();
-            zAng = -BABYLON.Angle.FromDegrees(180).radians();
+            zAng  = -BABYLON.Angle.FromDegrees(180).radians();
         }
         rotateState.value=1;
-        new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x+upAng,y:this.startRotation.y,z:this.startRotation.z+BABYLON.Angle.FromDegrees(360).radians()+zAng},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+        this.root.sceneCommon.addBlurEffect();
+        this.changeLayerMask(0x30000000);
+        new TWEEN.Tween(this.meshRoot.rotation).to({x:this.startRotation.x+upAng,y:this.startRotation.y,z:this.startRotation.z+zAng},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x,y:this.root.camera.target.y+newPos.y,z:this.root.camera.target.z+newPos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.scaling).to({x:scalAnim,y:scalAnim,z:scalAnim},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
             this.root.rotateMesh(this.meshRoot);
@@ -476,7 +478,8 @@ export default class Item{
         }).start();
       }
       resetItem(setdrag){
-
+        this.changeLayerMask(1);
+        this.root.sceneCommon.removeBlurEffect();
         this.root.gui2D.userExitBtn.isVisible = false;
         this.root.gui2D.resetCamBtn.isVisible = true;
         if(this.placeRotation && (this.parent !== this.root.scene.getTransformNodeByID("tabledrawer")))
@@ -489,7 +492,14 @@ export default class Item{
         new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
                 this.enableDrag(setdrag);
                 this.root.gamestate.state = GameState.active;
+                
         }).start();
+      }
+      changeLayerMask(layermask){
+        this.meshRoot.getChildMeshes().forEach(childmesh => {
+            childmesh.layerMask = layermask; 
+            
+        });
       }
       usebpMachine(){
         // console.log(this.state);

@@ -46,6 +46,7 @@ export default class CabinetItem{
       setPos(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.isVisible=true;
+                childmesh.layerMask=1;
             });
             this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
             if(this.meshRoot.name.includes("diasolutionnode"))
@@ -370,12 +371,15 @@ export default class CabinetItem{
                 }).start();
             }
         }
+        this.label.isVisible = false;
     }
     showItem(){ 
       showMenu = false;
       rotateState.value=1;
       let getdrag = this.pointerDragBehavior.enabled;
       this.enableDrag(false);
+      this.root.sceneCommon.addBlurEffect();
+      this.changeLayerMask(0x30000000);
       if(this.name.includes("Hand"))
          new TWEEN.Tween(this.meshRoot.rotation).to({x:0,y:0,z:BABYLON.Angle.FromDegrees(360).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
       else
@@ -393,6 +397,8 @@ export default class CabinetItem{
     }
     resetItem(setdrag){
         this.root.gui2D.userExitBtn.isVisible = false;
+        this.changeLayerMask(1);
+        this.root.sceneCommon.removeBlurEffect();
         let yAng = BABYLON.Angle.FromDegrees(90).radians();
         if(this.name.includes("Hand"))
             yAng = BABYLON.Angle.FromDegrees(0).radians();
@@ -406,6 +412,12 @@ export default class CabinetItem{
              this.root.gamestate.state = GameState.active;
         }).start();
     }
+    changeLayerMask(layermask){
+        this.meshRoot.getChildMeshes().forEach(childmesh => {
+            childmesh.layerMask = layermask; 
+            
+        });
+      }
     hideOutLine(){
       this.meshRoot.getChildMeshes().forEach(childmesh=>{
           childmesh.renderOutline=false;

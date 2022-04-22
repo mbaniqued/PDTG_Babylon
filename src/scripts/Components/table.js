@@ -81,6 +81,8 @@ export default class Table{
                     }
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
+
+                    console.log(rotateState.value+"     "+this.root.gamestate.state+"    "+this.root.camera.radius+"  "+this.root.scene.postProcessesEnabled);
                     if(rotateState.value ===1)
                         return;
                     this.updateoutLine(mesh,false);

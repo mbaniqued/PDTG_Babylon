@@ -1,6 +1,6 @@
 export const FOV=.78;
 const start_fov=1.2;
-export const LIGHTOFF=.05,LIGHTON=.5;
+export const LIGHTOFF=.2,LIGHTON=.6;
 import { GameState,IS_DRAG } from "./scene/MainScene";
 export default class Common{
      constructor(root){
@@ -8,6 +8,7 @@ export default class Common{
         this.game          = root.game;
         this.scene         = null;
         this.camera        = null; 
+        this.camera2       = null; 
         this.animFrameRate = 60;
         this.camDirection  = {deltaVal:1,margin:50}; 
         this.camVector     = new BABYLON.Vector3(0,3.2,0);
@@ -32,8 +33,9 @@ export default class Common{
         this.camera.fov   = start_fov;
         this.camera.layerMask=1;
         this.camera.inputs.clear();
-      //   this.camera.inputs.addPointers();
-      //   this.camera.inputs.addMouseWheel();
+        this.camera2  = new BABYLON.ArcRotateCamera("blureffectcamera",0,0,10,this.camVector,scene);
+      // this.camera.inputs.addPointers();
+      // this.camera.inputs.addMouseWheel();
         this.camera.position.set(0,0,0);
         this.camera.setTarget(this.camVector);
         this.camera.attachControl(this.game.canvas, true);  
@@ -59,7 +61,7 @@ export default class Common{
 
       }
       setView(){
-            this.hemiLight.intensity         = 0;
+            this.hemiLight.intensity         = LIGHTOFF;
             this.directionalLight.intensity  = LIGHTOFF;
             this.camera.fov   = start_fov;
             this.camera.setTarget(new BABYLON.Vector3(-4,3,-.5));
@@ -153,4 +155,22 @@ export default class Common{
             this.scene.activeCameras.splice(1,1);
             document.getElementById("borderRect").style.display = "none";
         }
+        addBlurEffect(){
+              this.camera2.position  = this.camera.position;
+              this.camera2.target    = this.camera.target;
+              this.camera2.layerMask = 0x30000000;
+              this.scene.activeCameras.push(this.camera2);
+              this.scene.postProcessesEnabled = true;
+              this.root.gui2D.advancedTexture.layer.layerMask=0x30000000;
+              this.scene.cameraToUseForPointers = this.camera2;
+              console.log("addBlurCamera"+"      "+this.scene.activeCameras.length);
+        }
+        removeBlurEffect(){
+            this.scene.postProcessesEnabled = false;
+            this.camera.detachPostProcess();
+            this.scene.removeCamera(this.camera2);
+            this.root.gui2D.advancedTexture.layer.layerMask=1;
+            this.scene.cameraToUseForPointers = this.camera;
+        }
+
 }

@@ -82,28 +82,13 @@ export default class MainScene {
     this.gameTime=undefined;
     this.addevents();
     this.handleUI();
-    const parameters = {
-      edge_blur: 1.0,
-      chromatic_aberration: 1.0,
-      distortion: 1.0,
-      // etc.
-    };
-    // this.lensEffect = new BABYLON.LensRenderingPipeline('lensEffects', parameters, this.scene, 1.0,this.camera);
-    // this.disableBlur();
+
+    this.blurH = new BABYLON.BlurPostProcess("H_blur", new BABYLON.Vector2(1,0.0), 32, 1,this.camera);
+    this.blurV = new BABYLON.BlurPostProcess("V_blur", new BABYLON.Vector2(0,1.0), 32, 1,this.camera);
+    this.scene.postProcessesEnabled = false;
+
   }
-  disableBlur(){
-    this.lensEffect.setEdgeBlur(0);
-    this.lensEffect.disableGrain();
-    this.lensEffect.disableChromaticAberration();
-    this.lensEffect.disableEdgeDistortion();
-    this.lensEffect.disableDepthOfField();
-    this.lensEffect.disablePentagonBokeh();
-    this.lensEffect.disableNoiseBlur();
-  }
-  enableBlur(){
-    this.lensEffect.setEdgeBlur(1);
-    this.lensEffect.setFocusDistance(10000);
-  }
+  
   initState(){
     this.gamestate  = {state:GameState.menu}; 
     this.userMode   = usermode.patient;
@@ -170,6 +155,7 @@ export default class MainScene {
 
     this.createccpdCanvas();
     this.startFan();
+    this.setAc(true);
     // this.scene.getMeshByName("fanbtn").isVisible = false;
     
     console.log(" !!!!!!!!! initscene!!! ");
@@ -472,6 +458,9 @@ export default class MainScene {
             this.gameTaskManager.reset();
             this.handwashactivity.washhand = false;
             this.wipeAlcohal.accessAlcohal = false;
+            this.sceneCommon.removeBlurEffect();
+            rotateState.value =0;
+            
           console.log("reset suceesss");
           resolve('resolved');
       });
@@ -952,6 +941,7 @@ export default class MainScene {
       });
   }
   handleUI(){
+        let isPostProcess=false; 
         this.gui2D.resetCamBtn.onPointerUpObservable.add(()=>{
           this.setCameraTarget(); 
           this.sceneCommon.removeMiniCam();
@@ -963,23 +953,30 @@ export default class MainScene {
         this.gui2D.submitBtn.onPointerUpObservable.add(()=>{
           this.gui2D.drawsubmitMenu(true);
           this.gui2D.submitBtn.isVisible=false;
+          isPostProcess = this.scene.postProcessesEnabled;
+          if(isPostProcess)
+            this.sceneCommon.removeBlurEffect();
         });
         const resultmenuBtn = this.gui2D.submitMenuContainer.getChildByName("result_btn");
         resultmenuBtn.onPointerUpObservable.add(()=>{
             this.resultPage=0;
             this.gamestate.state = GameState.result;
             this.isResetScene = true;
-            this.gui2D.resetCamBtn.isVisible=false;
             this.gui2D.drawsubmitMenu(false);
             this.sceneCommon.removeMiniCam();
             this.gui2D.drawObjectiveMenu(false);
             this.gui2D.drawResultShowMenu(true);
             this.updateResult();
+            this.gui2D.resetCamBtn.isVisible=false;
+            this.gui2D.userExitBtn.isVisible=false;
+            this.sceneCommon.removeBlurEffect();
       })
       const resultcontinueBtn = this.gui2D.submitMenuContainer.getChildByName("continue_btn");
       resultcontinueBtn.onPointerUpObservable.add(()=>{
           this.gui2D.submitBtn.isVisible=true;
           this.gui2D.drawsubmitMenu(false);
+          if(isPostProcess)
+            this.sceneCommon.addBlurEffect();
       })
       const resultdoneBtn = this.gui2D.resultContainer.getChildByName("doneresult");
        resultdoneBtn.onPointerUpObservable.add(()=>{
@@ -989,21 +986,29 @@ export default class MainScene {
       })
       this.gui2D.userBackBtn.onPointerUpObservable.add(()=>{
           this.gui2D.drawbackMenu(true);
+          isPostProcess = this.scene.postProcessesEnabled;
+          if(isPostProcess)
+            this.sceneCommon.removeBlurEffect();
       })
       const backmenuBtn = this.gui2D.backMenuContainer.getChildByName("menu_btn");
       backmenuBtn.onPointerUpObservable.add(()=>{
           this.isResetScene = true;
-          this.gui2D.resetCamBtn.isVisible=false;
           this.gamestate.state = GameState.menu;
           this.gui2D.drawMainMenu(true);
           this.gui2D.drawbackMenu(false);
           this.sceneCommon.removeMiniCam();
           this.gui2D.drawObjectiveMenu(false);
           this.handwashactivity.drawhandWash(false);
+          this.gui2D.resetCamBtn.isVisible=false;
+          this.gui2D.userExitBtn.isVisible=false;
+          this.sceneCommon.removeBlurEffect();
+
       })
       const backcontinueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
         backcontinueBtn.onPointerUpObservable.add(()=>{
           this.gui2D.drawbackMenu(false);
+          if(isPostProcess)
+            this.sceneCommon.addBlurEffect();
       })
   }
    enterScene(time){

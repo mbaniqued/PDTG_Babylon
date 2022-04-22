@@ -136,7 +136,7 @@ export default class WindowFrame{
              else{
                 this.label._children[0].text = this.windowClose?"Open Window":"Close Window"; 
              }   
-            this.label.isVisible= this.root.gamestate.state ===  GameState.active || this.root.gamestate.state ===  GameState.default;
+            this.label.isVisible= this.root.gamestate.state ===  GameState.active || this.root.gamestate.state ===  GameState.default ||  this.root.gamestate.state ===  GameState.focus;
             this.label.isPointerBlocker=false;
             this.label._children[0].isPointerBlocker=false;
         }
