@@ -118,7 +118,7 @@ export default class Cabinet{
         let val=0;
         if(mesh.rotation.z === BABYLON.Angle.FromDegrees(0).radians())
             val = BABYLON.Angle.FromDegrees(angle).radians();
-        new TWEEN.Tween(mesh.rotation).to({z:isleft?-val:val},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onUpdate(()=>{
+        new TWEEN.Tween(mesh.rotation).to({z:isleft?-val:val},ANIM_TIME*.7).easing(TWEEN.Easing.Sinusoidal.Out).onUpdate(()=>{
             this.doorAnim = true;
         }).onComplete(() => {
             if(isleft){

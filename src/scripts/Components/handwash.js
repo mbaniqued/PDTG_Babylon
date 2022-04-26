@@ -182,6 +182,7 @@ export default class HandWash{
                      this.handwashIcon[this.iconNo].getChildByName("handicon_incorrect").isVisible=false;
                      this.isplaced[this.iconNo] = false;
                   }
+                  
                 this.isplaced[this.iconNo] = false;
                 this.handwashIcon[this.iconNo].leftInPixels = iconPos[i][0];
                 this.handwashIcon[this.iconNo].topInPixels  = iconPos[i][1];
@@ -219,6 +220,16 @@ export default class HandWash{
                this.iconStack.splice(i,1);
             }
         }
+        if(this.iconStack.length>0 && this.root.gamemode === gamemode.training){
+         for(let i=0;i<this.iconStack.length;i++){
+            console.log(this.iconStack[i].name+"  ");
+            if(match[i] !==  this.iconStack[i].name){
+               this.iconStack[i].getChildByName("handicon_incorrect").isVisible=true;
+            }else{
+               this.iconStack[i].getChildByName("handicon_incorrect").isVisible=false;
+            }  
+         }
+      }
      }
      updateStack(){
          for(let i=0;i<this.iconStack.length;i++){

@@ -8,10 +8,10 @@ export default class LoaderManager {
     this.game = root.game;
     this.scene = root.scene;
     this.assetsManager = new BABYLON.AssetsManager(this.scene);
-    this.assetsManager.useDefaultLoadingScreen = true;
+    this.assetsManager.useDefaultLoadingScreen = false;
     this.Counter=0;
     this.isLoad=false;
-    this.root.scene.shadowsEnabled =true;
+    // this.root.scene.shadowsEnabled =true;
     
     this.loadSceneAssets();
   }
@@ -225,6 +225,7 @@ export default class LoaderManager {
                 task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
                 task.loadedMeshes[i].scaling.set(-10,10,10);
                 task.loadedMeshes[i].position.x-=12;
+                task.loadedMeshes[i].backFaceCulling = false;
                 this.setPickable(task.loadedMeshes[i],.1);
               }
               if(task.loadedMeshes[i].id === "ccpdback"){
@@ -406,17 +407,15 @@ export default class LoaderManager {
             tmproot.isPickable=false;
         }
         if(task.name === "room_reference"){
-
               for(let i=0;i<task.loadedMeshes.length;i++){
                   task.loadedMeshes[i].isPickable=false;
-                  task.loadedMeshes[i].receiveShadows = true;
+                  // task.loadedMeshes[i].receiveShadows = true;
                   if(task.loadedMeshes[i].name === "OutWall pCube31"){
                         const mat = new BABYLON.StandardMaterial("outwallmat",this.scene);
                         mat.diffuseColor = new BABYLON.Color3.FromInts(147,147,147);
                         mat.specularColor = new BABYLON.Color3.FromInts(0,0,0);
                         task.loadedMeshes[i].material = mat;
-                        this.createShadowGenerator(task.loadedMeshes[i]);
-                        
+                        // this.createShadowGenerator(task.loadedMeshes[i]);
                   }
                   else if(task.loadedMeshes[i].name === "pCube31 InteriorWall" || task.loadedMeshes[i].name === "Divider" || task.loadedMeshes[i].name ==="pPlane5"){
                       task.loadedMeshes[i].isPickable=false;
@@ -431,7 +430,7 @@ export default class LoaderManager {
                       }
                       mat.roughness       = .524;
                       task.loadedMeshes[i].material = mat;
-                      this.createShadowGenerator(task.loadedMeshes[i]);
+                      // this.createShadowGenerator(task.loadedMeshes[i]);
                   }
                   else if(task.loadedMeshes[i].name === "pPlane6"){
                     // const mat = kitchenpCube3Mat.clone();
@@ -442,7 +441,7 @@ export default class LoaderManager {
                       mat.metallic=0;
                       mat.roughness=1;
                       task.loadedMeshes[i].material = mat;
-                      this.createShadowGenerator(task.loadedMeshes[i]);
+                      // this.createShadowGenerator(task.loadedMeshes[i]);
                 }
                 else if(task.loadedMeshes[i].name === "Sink"){
                       const sinkMat = physicMat.clone("SinkMat");
@@ -450,7 +449,7 @@ export default class LoaderManager {
                       sinkMat.metallic   = 0;
                       sinkMat.roughness  = .22;
                       task.loadedMeshes[i].material = sinkMat;
-                      this.createShadowGenerator(task.loadedMeshes[i]);
+                      // this.createShadowGenerator(task.loadedMeshes[i]);
                 }
                 else if(task.loadedMeshes[i].name === "Kitchen pCube3"){
                       const mat =  standerdMat.clone("Kitchen pCube3Mat");
@@ -685,7 +684,7 @@ export default class LoaderManager {
     backplanMaterial.emissiveTexture= new BABYLON.Texture("models/texture/hallway.jpg",this.scene);
     backplanMaterial.diffuseTexture = new BABYLON.Texture("models/texture/hallway.jpg",this.scene);
     backPlan.rotation.y = BABYLON.Angle.FromDegrees(90).radians();
-    backPlan.position = new BABYLON.Vector3(10,2,.5);
+    backPlan.position = new BABYLON.Vector3(10,2,-.54);
     backPlan.scaling.y*=1.2;
     backPlan.material = backplanMaterial;
     backPlan.isPickable=false;

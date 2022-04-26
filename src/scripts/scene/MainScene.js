@@ -1,8 +1,9 @@
-// https://github.com/mbaniqued/PDTG_Babylon
+  // https://github.com/mbaniqued/PDTG_Babylon
 // Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The HTMLImageElement provided is in the 'broken' state.
 import * as BABYLON from "babylonjs";
 import "babylonjs-loaders";
 import LoaderManager from "../LoaderManager.js";
+// import SceneOptimiser from "../SceneOptimiser.js"; 
 import Common from '../Common.js' 
 import DoorObject from "../Components/doorobject.js";
 import Table from "../Components/table.js";
@@ -53,11 +54,9 @@ export default class MainScene {
     this.acRemoteRoot     = new BABYLON.TransformNode("ACREMOTe");
     this.apdmachineRoot   = new BABYLON.TransformNode("APDMACHINE");
     this.windowFrameRoot  = new BABYLON.TransformNode("WINDOW");
-    
     this.loaderManager    = new LoaderManager(this);
     this.audioManager     = new AudioManager(this);
     this.game.engine.hideLoadingUI();
-    
     this.windowbox=undefined,this.lightswtich=undefined;
     this.pickMesh=null;
     this.trollyObject=undefined,this.tableObject=undefined,this.cabinetObject=undefined,this.doorObject=undefined,this.windowObject=undefined;
@@ -65,15 +64,11 @@ export default class MainScene {
     this.ccpdRecordBook=undefined,this.apdmachinePackage=undefined,this.lightswitchObject=undefined,this.dialysisSolutionObject=[],this.sanitiserObject=[];
     this.fanAnim = null,this.paperTowelObject=undefined,this.handSoapObject=undefined;
     this.handwashactivity,this.wipeAlcohal,this.sinkArea=undefined;
-
     const size= 512;
     this.dynamicTexture   = new BABYLON.DynamicTexture("dynamictexture",size,this.scene);
-    // this.sceneOptimiser = new SceneOptimiser(50,500,this.scene);
-    // this.sceneOptimiser.startOptimiser();
     this.level=0,this.isUp=false,this.objectiveCount=0,this.totalobjective=0,this.itemCount=0,this.dialysisItemCnt=0,this.handsanitiserCnt=0;
     this.resultPage=0;
     this.bpRecord="",this.ccpdbpInputField;
-    
     this.initacParticle();
     this.handwashactivity = new HandWash(this);
     this.handwashactivity.drawhandWash(false);
@@ -82,10 +77,10 @@ export default class MainScene {
     this.gameTime=undefined;
     this.addevents();
     this.handleUI();
-
     this.blurH = new BABYLON.BlurPostProcess("H_blur", new BABYLON.Vector2(1,0.0), 32, 1,this.camera);
     this.blurV = new BABYLON.BlurPostProcess("V_blur", new BABYLON.Vector2(0,1.0), 32, 1,this.camera);
     this.scene.postProcessesEnabled = false;
+    // this.sceneOptimiser = new SceneOptimiser(60,300,this.scene);
 
   }
   
@@ -126,7 +121,7 @@ export default class MainScene {
     this.ccpdRecordBook     = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     // this.ccpdRecordBook2    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook").clone(),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage  = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
-    console.log(this.apdmachinePackage.startPosition+"        "+this.apdmachinePackage.placedPosition);
+    // console.log(this.apdmachinePackage.startPosition+"        "+this.apdmachinePackage.placedPosition);
     this.apdmachinePackage.setTrollyPosition({x:-231,y:-16,z:8});
     this.createApdPackageValidatiion();
     
@@ -165,7 +160,7 @@ export default class MainScene {
   addevents(){
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
-      const val=1;
+      const val=.01;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -188,13 +183,12 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      
-      
       // this.ccpdRecordBook.meshRoot.parent = this.scene.getCameraByName("maincamera");
       // this.ccpdRecordBook.meshRoot.scaling.set(.003,.013,.013);
       // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(SX,this.ccpdRecordBook.meshRoot.position.y,SZ);
       // this.scene.getMeshByName("fanbtn").position.set(SX,SY,SZ);
       // this.scene.getNodeByName("fanswitchnode").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());
+      //  this.scene.getMeshByName("backsidePlan").position = new BABYLON.Vector3(10,2,SZ); 
       //  console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
@@ -524,6 +518,7 @@ export default class MainScene {
     const font =  "bold 48px Orbitron";
     ctx.clearRect(0,0,size.width,size.height);
     this.apdmachineTexture.drawText("LOAD THE SET",30,270,font,"#00FF00","transparent",true);
+    this.apdmachineTexture.update();
     
   }
   createconnectionItemValidation(){
@@ -580,12 +575,13 @@ export default class MainScene {
       ctx.clearRect(0,0,size.width,size.height);
       this.connectionTexture.drawText("2024",14,208,font,"#0000ff","transparent",true);
       if(imgno>-1){
-        const font2 = "bold 96px Arial";
+        const font2 = "bold 92px Arial";
         const symbol=["\u003F","\u2713","\u274C"]
         const symbolcolor=["#808080","#00FF00","#FF0000"];
-        this.connectionTexture.drawText(symbol[imgno],160,140,font2,symbolcolor[imgno],"transparent",true);
+        this.connectionTexture.drawText(symbol[imgno],140,140,font2,symbolcolor[imgno],"transparent",true);
           // this.drawImageOnTexture(this.connectionTexture,this.validationImage[imgno],160,40,72,128);
       }
+      this.connectionTexture.update();
     }
     this.conectionValidatetion(-1);
   }
@@ -596,9 +592,6 @@ export default class MainScene {
       this.drainBagTexture.clear();
       this.drainBagTexture.dispose();
       this.drainBagTexture = null;
-      // this.scene.getMeshByName("validation_drainbag_plan").dispose();
-      // this.scene.getMeshByName("drainbag_highlight_plan").dispose();
-      // this.drainBagTexture.clear();
     }
      const plan = BABYLON.MeshBuilder.CreatePlane("validation_drainbag_plan",{width:15,height:8,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
      plan.parent = null;
@@ -647,8 +640,9 @@ export default class MainScene {
           const symbol=["\u003F","\u2713","\u274C"]
           const symbolcolor=["#000000","#00FF00","#FF0000"];
           this.drainBagTexture.drawText(symbol[imgno],190,130,font2,symbolcolor[imgno],"transparent",true);
-            // this.drawImageOnTexture(this.drainBagTexture,this.validationImage[imgno],190,60,56,112);
+          // this.drawImageOnTexture(this.drainBagTexture,this.validationImage[imgno],190,60,56,112);
         }
+        this.drainBagTexture.update();
       }
       this.updatedrainbagValidatetion(-1);
      
@@ -659,8 +653,6 @@ export default class MainScene {
       ctx.clearRect(0,0,this.apdDateTexture.getSize().width,this.apdDateTexture.getSize().height);
       this.apdDateTexture.dispose();
       this.apdDateTexture = null;
-      // this.removeMesh(this.scene.getMeshByName("validation_apddate_plan"));
-      // this.removeMesh(this.scene.getMeshByName("apd_highlight_plan"));
     }
      const datePlan = BABYLON.MeshBuilder.CreatePlane("validation_apddate_plan",{width:22,height:20,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
      datePlan.parent = this.apdmachinePackage.meshRoot;
@@ -736,9 +728,10 @@ export default class MainScene {
                 const symbol=["\u003F","\u2714","\u274C"]
                 const symbolcolor=["#808080","#00FF00","#FF0000"];
                 this.apdDateTexture.drawText(symbol[imgno],190,116,font2,symbolcolor[imgno],"transparent",true);
-                this.apdDateTexture.update();
             }
-         }else{
+            this.apdDateTexture2.update();
+         }
+         if(type === 1){
             let ctx = this.apdDateTexture2.getContext();
             ctx.clearRect(0,0,size.width,size.height);
             if(imgno>-1){
@@ -746,11 +739,12 @@ export default class MainScene {
               const symbol=["\u003F","\u2714","\u274C"]
               const symbolcolor=["#808080","#00FF00","#FF0000"];
               this.apdDateTexture2.drawText(symbol[imgno],127,117,font2,symbolcolor[imgno],"transparent",true);
-              this.apdDateTexture2.update();
             } 
+            this.apdDateTexture2.update();
          }
       }
       this.updateApdValidatetion(-1,0);
+      this.updateApdValidatetion(-1,1);
   }
   drawImageOnTexture(texture,img,x,y,w,h){
       const ctx = texture.getContext();
@@ -810,6 +804,7 @@ export default class MainScene {
         this.bpnumberTexture.drawText("",90, 150, font,fontcolor, "transparent", true);
         this.bpnumberTexture.drawText("",90, 230, font,fontcolor, "transparent", true);
       }
+      this.bpnumberTexture.update();
   }
   onpickMesh(pickedMesh){
      if(this.pickMesh)
@@ -853,24 +848,24 @@ export default class MainScene {
     this.camera.upperAlphaLimit =  null;
     this.camera.lowerBetaLimit  =  null;
     this.camera.upperBetaLimit  =  null;
-    new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(()=>{}).start();
-    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-    new TWEEN.Tween(this.camera).to({radius:3},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
-    new TWEEN.Tween(this.camera).to({fov:FOV},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(()=>{}).start();
+    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({fov:FOV},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
   }
   setCameraAnim(alphaAng,finalAlpha,betaAng,radius){
     if(alphaAng){
-      new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?BABYLON.Angle.FromDegrees(alphaAng).radians():-BABYLON.Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+      new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?BABYLON.Angle.FromDegrees(alphaAng).radians():-BABYLON.Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
         this.camera.alpha = BABYLON.Angle.FromDegrees(finalAlpha).radians();
       }).start();
     }
     if(betaAng)
-      new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(betaAng).radians()},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+      new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(betaAng).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
     if(radius)  
-      new TWEEN.Tween(this.camera).to({radius:radius},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+      new TWEEN.Tween(this.camera).to({radius:radius},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
   }
   setFocusOnObject(pos){
-    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
         this.showResetViewButton(true);
     }).start();
   }
@@ -938,7 +933,8 @@ export default class MainScene {
             this.startGame(); 
             resolve('setGame');
          }
-      });
+      // this.sceneOptimiser.startOptimiser();
+    });
   }
   handleUI(){
         let isPostProcess=false; 
@@ -1017,7 +1013,7 @@ export default class MainScene {
         this.gamestate.state = GameState.default;
         this.setCameraTarget();
         if(this.gui2D.loaginBg.isVisible)
-            new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME*.7).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+            new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
          this.gui2D.drawLoadingPage(false);
          this.gui2D.drawObjectiveMenu(this.gamemode === gamemode.training);
          this.gui2D.userBackBtn.isVisible=true;
@@ -1028,6 +1024,7 @@ export default class MainScene {
    }
    startGame(){
     // this.gamemode =  gamemode.training;
+    
     this.resetObjectiveBar();
     this.bpRecord="";
     this.removeAllActions();
@@ -1584,8 +1581,6 @@ export default class MainScene {
             ccpdPlan.isPickable=false;
             this.ccpdRecordBook.closeccpdRecordBook(300);
        }
-       const c = this.recordbookCanvas.getChildren()[0];
-       console.log(c.children[0]);
    }
    setbpValueCCPD(){
       this.ccpdbpInputField.text = this.bpRecord; 

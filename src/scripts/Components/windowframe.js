@@ -118,7 +118,7 @@ export default class WindowFrame{
         closeWindow(){
             this.windowClose =!this.windowClose;
             this.root.audioManager.playSound(this.root.audioManager.windowSlideSound);
-            new TWEEN.Tween(this.meshRoot.position).to({z:this.meshRoot.position.z>0?0:2},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {}).start();
+            new TWEEN.Tween(this.meshRoot.position).to({z:this.meshRoot.position.z>0?0:2},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
         }
         initMeshOutline(){
             this.meshRoot.getChildTransformNodes().forEach(childnode=>{

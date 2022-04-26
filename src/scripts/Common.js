@@ -84,7 +84,7 @@ export default class Common{
                   this.camera.alpha += BABYLON.Angle.FromDegrees(this.camDirection.deltaVal).radians();
                   if(this.camera.alpha>BABYLON.Angle.FromDegrees(359).radians()){
                         this.camera.alpha = BABYLON.Angle.FromDegrees(0).radians();
-                        console.log("!! innnnnnnnn set!!1");
+                        // console.log("!! innnnnnnnn set!!1");
 
                   }
             }
@@ -158,12 +158,17 @@ export default class Common{
         addBlurEffect(){
               this.camera2.position  = this.camera.position;
               this.camera2.target    = this.camera.target;
+              this.camera2.position  = this.camera.position;
+              this.camera2.alpha     = this.camera.alpha;
+              this.camera2.beta      = this.camera.beta;
+              this.camera2.radius    = this.camera.radius;
+              this.camera2.fov       = this.camera.fov;
               this.camera2.layerMask = 0x30000000;
               this.scene.activeCameras.push(this.camera2);
               this.scene.postProcessesEnabled = true;
               this.root.gui2D.advancedTexture.layer.layerMask=0x30000000;
               this.scene.cameraToUseForPointers = this.camera2;
-              console.log("addBlurCamera"+"      "+this.scene.activeCameras.length);
+            //   console.log("addBlurCamera"+"      "+this.scene.activeCameras.length);
         }
         removeBlurEffect(){
             this.scene.postProcessesEnabled = false;

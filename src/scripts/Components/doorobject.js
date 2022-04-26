@@ -57,14 +57,14 @@ export default class DoorObject{
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                         this.root.sceneCommon.removeMiniCam();
-                        if(this.state>0 && this.root.gamestate.state === GameState.default)
+                        if(this.root.camera.target.x != this.meshRoot.position.x && this.root.camera.target.z != this.meshRoot.position.z+.8)
                             this.state =0;
                         switch(this.state){
                             case 0:
                                 this.root.gamestate.state  =  GameState.focus;
                                 this.state =1;
-                                this.root.setCameraAnim(190,190,undefined,6);
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z));
+                                this.root.setCameraAnim(205,205,90,5.5);
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z+.8));
                                 break;
                             case 1:
                                 this.openCloseDoor(true);
@@ -83,7 +83,7 @@ export default class DoorObject{
                 this.anim=true;
                 this.closedoor = !this.closedoor;
                 this.root.audioManager.playSound(this.closedoor?this.root.audioManager.doorCloseSound:this.root.audioManager.doorOpenSound);
-                new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onComplete(() => {
+                new TWEEN.Tween(this.meshRoot.rotation).to({y:BABYLON.Angle.FromDegrees(val).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
                     this.anim=false;
                     if(this.closedoor){
                         this.label.isVisible=false;
@@ -103,9 +103,7 @@ export default class DoorObject{
                 this.label._children[0].text = "Door";
             else
                 this.label._children[0].text = this.closedoor?"Open Door":"Close Door"; 
-
             this.label.isVisible= this.interaction;
-         
         }
         updateoutLine(value){
             this.meshRoot.getChildMeshes().forEach(childmesh => {

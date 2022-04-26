@@ -20,7 +20,7 @@ export class GameManger {
                 this.mainScene = new MainScene(this);
                 break;
         }
-        // divFps = document.getElementById("fps");
+        divFps = document.getElementById("fps");
         window.addEventListener("resize",  ()=> {
             this.resizeBabylonEngine();
         },false);
@@ -43,18 +43,21 @@ export class GameManger {
         }
     }
     startRenderLoop(){
+        this.engine.scenes[0].registerBeforeRender(()=>{
+            if(this.mainScene.gamestate.state ===  GameState.default)
+                this.mainScene.sceneCommon.updateCam();
+            TWEEN.update();
+        })
         this.engine.runRenderLoop( ()=> {
             switch(this.sceneManager.currentSceneState){
                 case this.sceneManager.sceneState.basic:
                         if(this.mainScene && this.mainScene.scene && this.mainScene.loaderManager.isLoad){
                                 this.mainScene.scene.render();
-                            if(this.mainScene.gamestate.state ===  GameState.default)
-                                this.mainScene.sceneCommon.updateCam();
-                            TWEEN.update();
+                            
                         }
                     break;
             }
-            // divFps.innerHTML = this.engine.getFps().toFixed() + " fps";
+            divFps.innerHTML = this.engine.getFps().toFixed() + " fps";
         });
     }
     stopRenderLoop(){

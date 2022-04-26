@@ -10,6 +10,7 @@ export default class Table{
         this.position     = pos;
         this.isdrawerOpen = false;
         this.drawerAnim   = false;
+        this.drawerNode   = undefined;
         this.state=0;
         this.setPos();
         this.setDrawer();
@@ -82,7 +83,7 @@ export default class Table{
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
 
-                    console.log(rotateState.value+"     "+this.root.gamestate.state+"    "+this.root.camera.radius+"  "+this.root.scene.postProcessesEnabled);
+                    // console.log(rotateState.value+"     "+this.root.gamestate.state+"    "+this.root.camera.radius+"  "+this.root.scene.postProcessesEnabled);
                     if(rotateState.value ===1)
                         return;
                     this.updateoutLine(mesh,false);
@@ -110,7 +111,8 @@ export default class Table{
                                 this.setTableFocusAnim();
                                 this.meshRoot.getChildTransformNodes().forEach(childnode=>{
                                  if(childnode.name==="tabledrawer"){
-                                        let drawerNode = childnode;  
+                                        let drawerNode  = childnode;  
+                                        this.drawerNode = drawerNode;
                                         this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z:this.meshRoot.position.z-.5));
                                     }
                                 });
@@ -146,7 +148,7 @@ export default class Table{
                     let val = this.isdrawerOpen?-120:120; 
                     this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.meshRoot.position.z-.5));
                     // this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z+(this.isdrawerOpen?-2:0)));
-                    new TWEEN.Tween(drawerNode.position).to({y:drawerNode.position.y+val},ANIM_TIME).easing(TWEEN.Easing.Quartic.In).onUpdate(()=>{
+                    new TWEEN.Tween(drawerNode.position).to({y:drawerNode.position.y+val},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onUpdate(()=>{
                         this.drawerAnim = true;
                     }).onComplete(() => {
                         this.drawerAnim = false;   
@@ -163,6 +165,7 @@ export default class Table{
             if(childnode.name==="tabledrawer"){
                     let drawerNode = childnode;  
                     drawerNode.position.y =0;
+                    this.drawerNode = drawerNode;
             }
         });
     }
