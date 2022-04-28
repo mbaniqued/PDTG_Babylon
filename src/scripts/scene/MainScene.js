@@ -1119,7 +1119,7 @@ export default class MainScene {
                             if(i===5 || i===6)
                               this.objectivebar[i] = this.gui2D.createBar(values[i],380,34);
                             else if(i===9)
-                              this.objectivebar[i] = this.gui2D.createBar(values[i],380,105);
+                              this.objectivebar[i] = this.gui2D.createBar(values[i],380,120);
                             else if(i===10)
                               this.objectivebar[i] = this.gui2D.createBar(values[i],380,80);
                             else
@@ -1134,6 +1134,10 @@ export default class MainScene {
                         this.tableObject.initAction();
                         this.alcohalItem.initAction();
                         this.ccpdRecordBook.initAction();
+                        for(let i=0;i<this.dialysisSolutionObject.length;i++){
+                          this.dialysisSolutionObject[i].validationNode.getChildMeshes()[5].setEnabled(false);
+                          this.dialysisSolutionObject[i].validationNode.getChildMeshes()[6].setEnabled(false);
+                        }
                      break;  
               }
           break;

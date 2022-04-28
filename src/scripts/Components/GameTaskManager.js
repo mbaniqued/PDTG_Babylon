@@ -20,6 +20,9 @@ export default class GameTaskManager{
         this.isPhase2Start  = false;
         this.isPhase3Start  = false;
         this.isPhase4Start  = false;
+
+        this.distractors1   = false;
+        this.distractors2   = false;
     }
     reset(){
         this.isBonus   = [];
@@ -34,6 +37,9 @@ export default class GameTaskManager{
         this.isPhase2Start  = false;
         this.isPhase3Start  = false;
         this.isPhase4Start  = false;
+
+        this.distractors1   = false;
+        this.distractors2   = false;
     }
     completeRoomSetUp(){
         setTimeout(() => {
@@ -131,11 +137,12 @@ export default class GameTaskManager{
         this.root.apdmachinePackage.enableDrag(true);
         this.root.drainBagItem.enableDrag(true);
         this.root.ccpdRecordBook.enableDrag(true);
-
         
         for(let i=0;i<this.root.dialysisSolutionObject.length;i++){
             this.root.dialysisSolutionObject[i].initAction();
             this.root.dialysisSolutionObject[i].enableDrag(true);
+            this.root.dialysisSolutionObject[i].validationNode.getChildMeshes()[5].setEnabled(true);
+            this.root.dialysisSolutionObject[i].validationNode.getChildMeshes()[6].setEnabled(true);
           }
           for(let i=0;i<this.root.sanitiserObject.length;i++){
                 this.root.sanitiserObject[i].initAction();
@@ -228,6 +235,13 @@ export default class GameTaskManager{
                   result[9].value = value;
                   value = this.root.dialysisSolutionObject[index].checkValidation["cap_highlight_plan"];
                   result[10].value = value;
+
+                  value = this.root.dialysisSolutionObject[index].checkValidation["serial_highlight_plan"];
+                  if(value>0)
+                  this.distractors1 = true;
+                  value = this.root.dialysisSolutionObject[index].checkValidation["solution_highlight_plan"];
+                  if(value>0)
+                  this.distractors2 = true;
              }
              if(i===1){
                     let value = this.root.dialysisSolutionObject[index].checkValidation["volume_highlight_plan"];
@@ -240,6 +254,13 @@ export default class GameTaskManager{
                     result[14].value = value;
                     value = this.root.dialysisSolutionObject[index].checkValidation["expiry_highlight_plan"];
                     result[15].value = value;
+
+                 value = this.root.dialysisSolutionObject[index].checkValidation["serial_highlight_plan"];
+                  if(value>0)
+                    this.distractors1 = true;
+                    value = this.root.dialysisSolutionObject[index].checkValidation["solution_highlight_plan"];
+                  if(value>0)
+                    this.distractors2 = true;
               }
           }
           result[16].value = this.root.connectionItem.valdiationCheck>0;
@@ -315,6 +336,11 @@ export default class GameTaskManager{
              this.taskPoint =TOTAL_POINTS;
         if(this.taskDone>TOTAL_TASK)
             this.taskDone = TOTAL_TASK;
+
+         if(this.distractors1)   
+            this.taskPoint--;
+        if(this.distractors2)   
+            this.taskPoint--;
        console.log("!! total points !!"+this.taskPoint+" 222222  "+this.taskDone);     
     }
     checkPhaseComplete(result){

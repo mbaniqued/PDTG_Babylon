@@ -150,7 +150,7 @@ export default class Item{
                             this.label.isVisible=false;
                             this.isDraging = false;
                             this.pickObject = true;
-                            // console.log("!! OnPickTrigger!! "+this.root.gamestate.state);
+                            console.log("!!! OnPickTrigger!!! "+this.root.gamestate.state+"        "+rotateState.value+"      "+this.pointerDragBehavior.enabled);
                             this.updateoutLine(false);
                             if(this.root.camera.radius>2.5 && this.state<100){
                                 this.root.gamestate.state = GameState.focus;
@@ -159,7 +159,6 @@ export default class Item{
                                 this.root.tableObject.state=0;
                                 return;
                             }
-                            // console.log("!! onpick!! "+this.root.gamestate.state);
                             if(this.root.gamestate.state === GameState.inspect){
                                 // console.log(mesh.name);
                                 if(mesh.name.includes("highlight_plan") || mesh.name.includes("validation")){
@@ -218,7 +217,6 @@ export default class Item{
                                 }
                                 else if(this.name.includes("Alchohal Wipe")){
                                     this.state=100;
-                                    // this.root.focusTrolly();
                                     this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
                                     this.root.setCameraAnim(270,270,45,2);
                                     const tout = setTimeout(() => {
@@ -243,8 +241,8 @@ export default class Item{
                             this.root.gui2D.crossBtn._onPointerUp = ()=>{
                                 showMenu = false;
                                 this.root.gui2D.drawRadialMenu(showMenu);  
-                                this.root.gamestate.state = GameState.active;
                                 this.root.hideOutLine(this.meshRoot);
+                                this.root.gamestate.state = GameState.active;
                             };
                        }     
                     )
@@ -258,15 +256,15 @@ export default class Item{
             this.pointerDragBehavior.moveAttached = false;
             this.enableDrag(false);    
             this.pointerDragBehavior.onDragStartObservable.add((event)=>{
-                if( (!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect){
-                    // console.log("!!! onDragStartObservable!!! "+this.root.gamestate.state);
+                if((!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect){
+                    console.log("!!! onDragStartObservable!!! "+this.root.gamestate.state);
                     this.state =0;
-                    this.enableDrag(false);
+                    // this.enableDrag(false);
                     console.log("onDragStartObservable");   
                     return;
                 }
                 if(!this.isDraging && !this.interaction){
-                    // console.log("!!! 22222222onDragStartObservable!!! "+this.root.gamestate.state);
+                    console.log("!!! 22222222onDragStartObservable!!! "+this.root.gamestate.state);
                     return;
                 }
                 
@@ -275,7 +273,7 @@ export default class Item{
             this.pointerDragBehavior.onDragObservable.add((event)=>{
                 if( (!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect){
                     this.state =0;
-                    this.enableDrag(false);
+                    // this.enableDrag(false);
                     // console.log("onDragObservable");
                     return;
                 }
@@ -284,8 +282,6 @@ export default class Item{
                     return;
                 this.label.isVisible=false;
                 IS_DRAG.value = true;
-                // const tmp = new BABYLON.Vector3(-event.delta.x,event.delta.y,event.delta.z);
-                // this.pointerDragBehavior.attachedNode.position.addInPlace(tmp.scaleInPlace(-100));
                 this.pointerDragBehavior.attachedNode.position.x+=event.delta.x*120;
                 this.pointerDragBehavior.attachedNode.position.y+=event.delta.y*100;
                 this.pointerDragBehavior.attachedNode.position.z-=event.delta.z*100;
@@ -367,12 +363,10 @@ export default class Item{
                         console.log(event);
                         this.placeItem(ANIM_TIME*.25,false);
                     }
-
                     if(!placed){
                         // console.log(this.placedPosition+"     "+this.startPosition);    
                         const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
                         new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
-                            
                         }).start();
                     }
                     if(this.root.camera.target.x!==this.root.tableObject.meshRoot.position.x){
@@ -392,7 +386,7 @@ export default class Item{
         }
         placeItem(time,autoplace){
             // console.log(this.meshRoot.position);
-            const tmppos =  new BABYLON.Vector3(-this.meshRoot.position.x,this.meshRoot.position.y*.9,-this.meshRoot.position.z); 
+            const tmppos =  new BABYLON.Vector3(-this.meshRoot.position.x,this.meshRoot.position.y*.8,-this.meshRoot.position.z); 
             if(!time)
                time=ANIM_TIME;
             this.state=0;
@@ -401,7 +395,7 @@ export default class Item{
             if(!autoplace && this.parent !== this.root.scene.getTransformNodeByID("tablenode")){
                 this.meshRoot.position = this.meshRoot.position.normalize();
                 this.meshRoot.position.addInPlace(tmppos.scale(-1));
-                this.placedPosition    = {x:this.meshRoot.position.x,y:this.meshRoot.position.y-50,z:this.meshRoot.position.z+30};
+                this.placedPosition    = {x:this.meshRoot.position.x,y:this.meshRoot.position.y-50,z:this.meshRoot.position.z+20};
             }else{
                 this.placedPosition = this.tablePosition;
             }

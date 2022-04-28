@@ -388,13 +388,40 @@ export class Result{
         contentpanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
         contentscrollpanel.addControl(contentpanel);
         this.machinePreparation.addControl(contentscrollpanel);
-         for(let i=0;i<MACHINE_PREPRATION.length;i++){
+
+        const distractors1 = this.root.gui2D.createResultBar("Unnecessary Action :Dialysis Solution-Serial Number",450,80);
+        distractors1.name = "distractors1";
+        distractors1.paddingTopInPixels = 10;
+        contentpanel.addControl(distractors1);
+        distractors1.background = GREYCOLOR;
+        distractors1.color = GREYCOLOR;
+        let cross = distractors1.getChildByName("cross");
+        cross.isVisible=true;
+        let correct = distractors1.getChildByName("resultarrow");
+        correct.isVisible=false;
+        distractors1.isVisible=false;
+
+        const distractors2 = this.root.gui2D.createResultBar("Unnecessary Action :Dialysis Solution-Serial Type",450,80);
+        distractors2.name = "distractors2";
+        distractors2.paddingTopInPixels = 10;
+        contentpanel.addControl(distractors2);
+        distractors2.background = GREYCOLOR;
+        distractors2.color = GREYCOLOR;
+        cross = distractors2.getChildByName("cross");
+        cross.isVisible=true;
+        correct = distractors2.getChildByName("resultarrow");
+        correct.isVisible=false;
+        distractors2.isVisible=false;
+
+        
+         for(let i=0;i<MACHINE_PREPRATION.length+2;i++){
              const resultbar = this.root.gui2D.createResultBar(MACHINE_PREPRATION[i],450,80);
              resultbar.paddingTopInPixels = 10;
              contentpanel.addControl(resultbar);
              resultbar.background = FOCUSCOLOR;
              resultbar.color = FOCUSCOLOR;
          }
+        
      }
      updateMachineResult(result){
         const containter  = this.machinePreparation.getChildByName("machine_scroll_container");
@@ -432,6 +459,14 @@ export class Result{
                 // console.log("222222222222");
             }
         }
+        const distractors1bar = containter1.getChildByName("distractors1")
+        distractors1bar.isVisible=this.root.gameTaskManager.distractors1;
+
+        const distractors2bar = containter1.getChildByName("distractors2")
+        distractors2bar.isVisible=this.root.gameTaskManager.distractors2;
+
+
+        
         // console.log("!! task sone!! "+taskdone+"   "+MACHINE_PREPRATION.length);
         const accuracyResult = this.machinePreparation.getChildByName("accuracyresult");
         const accuracy       =  parseInt((taskdone/MACHINE_PREPRATION.length)*100);

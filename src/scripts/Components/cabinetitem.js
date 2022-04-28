@@ -95,7 +95,7 @@ export default class CabinetItem{
                     name =this.checkName(mesh.name);
                 }
                 if(name.includes("highlight_plan")){
-                    // console.log(name);
+                    console.log(name);
                     this.onhighlightDValidation(name,1);
                 }
             }
@@ -137,7 +137,7 @@ export default class CabinetItem{
                     this.isDraging = false; 
                     this.label.isVisible=false;
                     this.updateoutLine(false);
-                    if(this.root.gamestate.state === GameState.inspect){
+                    if(this.root.gamestate.state === GameState.inspect || this.root.gui2D.radialCircle.isVisible){
                         let name = mesh.name;
                         if(name.includes("."))
                             name =this.checkName(mesh.name);
@@ -538,7 +538,10 @@ export default class CabinetItem{
         serial_highlight_plan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
         serial_highlight_plan.parent    = this.validationNode;
         serial_highlight_plan.isPickable=true;
+        serial_highlight_plan.setEnabled(this.root.gamemode !== gamemode.training);
         serial_highlight_plan.visibility=0;
+
+        
 
         this.validationTxt["solution_highlight_plan"] = "is the correct solution type?";
         this.validationPos["solution_highlight_plan"] = [196,185];
@@ -546,11 +549,12 @@ export default class CabinetItem{
         
         const solution_highlight_plan = cap_highlight_plan.clone();
         solution_highlight_plan.name = "solution_highlight_plan";
-        solution_highlight_plan.position  = new BABYLON.Vector3(17,.5,-17);
-        solution_highlight_plan.scaling   = new BABYLON.Vector3(.15,.025,1); 
-        solution_highlight_plan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
-        solution_highlight_plan.parent    = this.validationNode;
-        solution_highlight_plan.isPickable=true;
+        solution_highlight_plan.position   = new BABYLON.Vector3(17,.5,-17);
+        solution_highlight_plan.scaling    = new BABYLON.Vector3(.15,.025,1); 
+        solution_highlight_plan.rotation   = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+        solution_highlight_plan.parent     = this.validationNode;
+        solution_highlight_plan.isPickable = true;
+        solution_highlight_plan.setEnabled (this.root.gamemode !== gamemode.training);
         solution_highlight_plan.visibility=0;
 
         this.validationTxt["concentration_highlight_plan"] = "is the correct concentration?";
@@ -558,11 +562,11 @@ export default class CabinetItem{
         this.checkValidation["concentration_highlight_plan"] = -1;
         const concentration_highlight_plan = cap_highlight_plan.clone();
         concentration_highlight_plan.name = "concentration_highlight_plan";
-        concentration_highlight_plan.position  = new BABYLON.Vector3(6,.5,-7);
-        concentration_highlight_plan.scaling   = new BABYLON.Vector3(.22,.025,1); 
-        concentration_highlight_plan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
-        concentration_highlight_plan.parent    = this.validationNode;
-        concentration_highlight_plan.isPickable=true;
+        concentration_highlight_plan.position   = new BABYLON.Vector3(6,.5,-7);
+        concentration_highlight_plan.scaling    = new BABYLON.Vector3(.22,.025,1); 
+        concentration_highlight_plan.rotation   = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+        concentration_highlight_plan.parent     = this.validationNode;
+        concentration_highlight_plan.isPickable = true;
         concentration_highlight_plan.visibility=0;
         this.onhighlightDValidation = (name,value)=>{
            this.validationNode.getChildMeshes().forEach(childmesh => {
@@ -580,7 +584,7 @@ export default class CabinetItem{
                       cnt++;
                }
            });
-           this.checkValidation.length=7;
+           this.checkValidation.length=5;
           if(cnt>=this.checkValidation.length && !this.validationDone){
                checkdialysisValidation++;
                this.validationDone = true;
