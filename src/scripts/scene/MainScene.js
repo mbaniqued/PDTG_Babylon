@@ -188,8 +188,9 @@ export default class MainScene {
       // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(SX,this.ccpdRecordBook.meshRoot.position.y,SZ);
       // this.scene.getMeshByName("fanbtn").position.set(SX,SY,SZ);
       // this.scene.getNodeByName("fanswitchnode").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());
-      //  this.scene.getMeshByName("backsidePlan").position = new BABYLON.Vector3(10,2,SZ); 
-      //  console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
+      //  this.scene.getMeshByName("cabinetpartcollider2").position = new BABYLON.Vector3(1.87,SY,2.43); 
+      //  this.scene.getMeshByName("cabinetpartcollider2").scaling = new BABYLON.Vector3(1.41,.54,1); 
+       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
     // if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
@@ -865,9 +866,10 @@ export default class MainScene {
       new TWEEN.Tween(this.camera).to({radius:radius},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
   }
   setFocusOnObject(pos){
-    new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
-        this.showResetViewButton(true);
-    }).start();
+      new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
+          this.showResetViewButton(true);
+      }).start();
+   
   }
   showResetViewButton(isVisible){
     this.gui2D.resetCamBtn.isVisible = isVisible;
@@ -1601,8 +1603,7 @@ export default class MainScene {
       let lastPointerX;
       let lastPointerY; 
       let isTouch = false;
-      console.log("!! rotateMesh    !!!");
-        this.scene.onPointerDown = (evt,pickResult)=>{
+      this.scene.onPointerDown = (evt,pickResult)=>{
           if(rotateState.value ===1){
               // console.log("!! onPointerDown!!!");
               lastPointerX = this.scene.pointerX;

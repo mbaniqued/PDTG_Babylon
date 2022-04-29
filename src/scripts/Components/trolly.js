@@ -75,7 +75,8 @@ export default class Trolly{
                     }
             }))
             mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                    console.log(this.root.gamestate.state+" "+mesh.name);
+                if(rotateState.value ===1 || this.root.gamestate.state === GameState.radial || this.root.gamestate.state === GameState.inspect)
+                        return;
                     switch(this.state){
                             case 0:
                                 this.root.gamestate.state = GameState.focus;
@@ -126,7 +127,6 @@ export default class Trolly{
             }
             else{
                 if(mesh.name.includes("apdswitch_sphere")){
-                    console.log(mesh.name+"      "+value);
                     mesh.renderOutline = value;
                     mesh.outlineWidth=.005;
                 }

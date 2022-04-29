@@ -1,4 +1,5 @@
 // https://www.babylonjs-playground.com/#NNT3VZ
+// https://www.babylonjs-playground.com/#UES9PH#0
 import { GameState,gamemode,ANIM_TIME,event_objectivecomplete,IS_DRAG,rotateState } from "../scene/MainScene";
 import { randomNumber } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
@@ -249,25 +250,24 @@ export default class Item{
                 )
         }
         initDrag(){
-            this.pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal:new BABYLON.Vector3(0,1,0)});
+            this.pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal:new BABYLON.Vector3(0,0,1)});
             this.meshRoot.addBehavior(this.pointerDragBehavior);
             this.pointerDragBehavior.useObjectOrientationForDragging = false;
-            this.pointerDragBehavior.updateDragPlane = false;
-            this.pointerDragBehavior.moveAttached = false;
+            this.pointerDragBehavior.updateDragPlane=false;
+            this.pointerDragBehavior.dragDeltaRatio =1;
+            // this.pointerDragBehavior.moveAttached = false;
             this.enableDrag(false);    
             this.pointerDragBehavior.onDragStartObservable.add((event)=>{
+                console.log("!!! cabinet item !!! "+this.root.gamestate.state+"      "+this.isDraging);
                 if((!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect){
-                    console.log("!!! onDragStartObservable!!! "+this.root.gamestate.state);
+                    // console.log("!!! onDragStartObservable!!! "+this.root.gamestate.state);
                     this.state =0;
                     // this.enableDrag(false);
-                    console.log("onDragStartObservable");   
                     return;
                 }
                 if(!this.isDraging && !this.interaction){
-                    console.log("!!! 22222222onDragStartObservable!!! "+this.root.gamestate.state);
                     return;
                 }
-                
                 
             });
             this.pointerDragBehavior.onDragObservable.add((event)=>{
@@ -282,18 +282,15 @@ export default class Item{
                     return;
                 this.label.isVisible=false;
                 IS_DRAG.value = true;
-                this.pointerDragBehavior.attachedNode.position.x+=event.delta.x*120;
-                this.pointerDragBehavior.attachedNode.position.y+=event.delta.y*100;
-                this.pointerDragBehavior.attachedNode.position.z-=event.delta.z*100;
-                this.meshRoot.position = this.pointerDragBehavior.attachedNode.position;
+                // this.pointerDragBehavior.attachedNode.position.x +=event.delta.x*100;
+                // this.pointerDragBehavior.attachedNode.position.z -=event.delta.y*100;
+                // this.meshRoot.position.z -=event.delta.z*100;
+                // console.log(event.delta);
                 // console.log(this.meshRoot.position);
-                if(this.meshRoot.position.x>-140 && this.root.camera.target.x !== this.root.tableObject.meshRoot.position.x){
+                if(this.meshRoot.position.x>=-140 && this.root.camera.target.x !== this.root.tableObject.meshRoot.position.x){
                     const posZ =  this.root.tableObject.isdrawerOpen? this.root.tableObject.drawerNode.absolutePosition.z:this.root.tableObject.meshRoot.position.z;
                     this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,posZ));
                 }
-                let upvalue  =  35; 
-                if(this.meshRoot.parent   == this.root.scene.getTransformNodeByID("tablenode"))    
-                        upvalue = -50;
                 if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90 && this.meshRoot.position.z<-10)){
                      this.root.scene.getMeshByName("tablecollider").visibility=1;
                 }
@@ -301,15 +298,19 @@ export default class Item{
                     this.root.scene.getMeshByName("tablecollider").visibility=0;
 
                 if(this.trollyPosition && ((this.root.level >2 && this.root.gamemode === gamemode.training) || this.root.gamemode !== gamemode.training)){   
-                    if(this.meshRoot.name.includes("DrainBag") && this.meshRoot.position.x<-160 && this.meshRoot.position.y<-40 && this.meshRoot.position.z>50)
+                    if(this.meshRoot.name.includes("DrainBag") && this.meshRoot.position.x<-150  && this.meshRoot.position.z>50){
+                        if(this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility===0 && this.root.camera.target.x !== this.root.trollyObject.meshRoot.position.x)
+                            this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z-1));
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=1;
+                    }
                     else  
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=0;
 
-                    if(this.meshRoot.name.includes("apd_package_node") && this.meshRoot.position.x<-160 && this.meshRoot.position.z>-20 && this.meshRoot.position.z<50){
-                        this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=1;
-                        if(this.root.camera.target.x !== this.root.trollyObject.meshRoot.position.x)
+                    if(this.meshRoot.name.includes("apd_package_node") && this.meshRoot.position.x<-150 && this.meshRoot.position.z>-20 && this.meshRoot.position.z<50){
+                        
+                        if(this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility===0 && this.root.camera.target.x !== this.root.trollyObject.meshRoot.position.x)
                             this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z-1));
+                            this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=1;
                     }
                     else
                         this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=0;     

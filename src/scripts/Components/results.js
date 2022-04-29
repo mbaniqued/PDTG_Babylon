@@ -388,78 +388,100 @@ export class Result{
         contentpanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
         contentscrollpanel.addControl(contentpanel);
         this.machinePreparation.addControl(contentscrollpanel);
-         for(let i=0;i<MACHINE_PREPRATION.length;i++){
-             const resultbar = this.root.gui2D.createResultBar(MACHINE_PREPRATION[i],450,80);
-             resultbar.paddingTopInPixels = 10;
-             contentpanel.addControl(resultbar);
-             resultbar.background = FOCUSCOLOR;
-             resultbar.color = FOCUSCOLOR;
-         }
-         const distractors1 = this.root.gui2D.createResultBar("Unnecessary Action :Dialysis Solution-Serial Number",450,80);
-         distractors1.name = "distractors1";
-         distractors1.paddingTopInPixels = 10;
-         contentpanel.addControl(distractors1);
-         distractors1.background = GREYCOLOR;
-         distractors1.color = GREYCOLOR;
-         let cross = distractors1.getChildByName("cross");
-         cross.isVisible=true;
-         let correct = distractors1.getChildByName("resultarrow");
-         correct.isVisible=false;
-         distractors1.isVisible=false;
+        const distractors1 = this.root.gui2D.createResultBar("Unnecessary Action :Dialysis Solution-Serial Number",450,80);
+        distractors1.name = "distractors1";
+        distractors1.paddingTopInPixels = 10;
+       //  contentpanel.addControl(distractors1);
+        distractors1.background = GREYCOLOR;
+        distractors1.color = GREYCOLOR;
+        let cross = distractors1.getChildByName("cross");
+        cross.isVisible=true;
+        let correct = distractors1.getChildByName("resultarrow");
+        correct.isVisible=false;
+        distractors1.isVisible=false;
 
-         const distractors2 = this.root.gui2D.createResultBar("Unnecessary Action :Dialysis Solution-Serial Type",450,80);
-         distractors2.name = "distractors2";
-         distractors2.paddingTopInPixels = 10;
-         contentpanel.addControl(distractors2);
-         distractors2.background = GREYCOLOR;
-         distractors2.color = GREYCOLOR;
-         cross = distractors2.getChildByName("cross");
-         cross.isVisible=true;
-         correct = distractors2.getChildByName("resultarrow");
-         correct.isVisible=false;
-         distractors2.isVisible=false;
+        const distractors2 = this.root.gui2D.createResultBar("Unnecessary Action :Dialysis Solution-Serial Type",450,80);
+        distractors2.name = "distractors2";
+        distractors2.paddingTopInPixels = 10;
+       //  contentpanel.addControl(distractors2);
+        distractors2.background = GREYCOLOR;
+        distractors2.color = GREYCOLOR;
+        cross = distractors2.getChildByName("cross");
+        cross.isVisible=true;
+        correct = distractors2.getChildByName("resultarrow");
+        correct.isVisible=false;
+        distractors2.isVisible=false;
+        let cnt =0;
+         for(let i=0;i<MACHINE_PREPRATION.length+2;i++){
+             if(i===16){
+                contentpanel.addControl(distractors1);
+             }
+             else if(i===17){
+                contentpanel.addControl(distractors2);
+             }
+             else{
+                // console.log(MACHINE_PREPRATION.indexOf("Inspect and validate the Connection Shield"));  
+                const resultbar = this.root.gui2D.createResultBar(MACHINE_PREPRATION[cnt],450,80);
+                resultbar.paddingTopInPixels = 10;
+                contentpanel.addControl(resultbar);
+                resultbar.background = FOCUSCOLOR;
+                resultbar.color = FOCUSCOLOR;
+                cnt++;
+             }
+         }
      }
      updateMachineResult(result){
         const containter  = this.machinePreparation.getChildByName("machine_scroll_container");
         const containter1 = containter.getChildByName("machine_content_container");
         let taskdone=0;
         console.table(result);
-        for(let i=0;i<MACHINE_PREPRATION.length;i++){
-            const bar   = containter1.children[i];
-            const arrow = bar.getChildByName("resultarrow");
-            arrow.isVisible=false;
-            const cross = bar.getChildByName("cross");
-            cross.isVisible=false;
-            bar.color = DISABECOLOR;
-            bar.background = DISABECOLOR;
-            
-            if(result[i].value  === true){
-                arrow.isVisible = true;
-                bar.color       = FOCUSCOLOR;
-                bar.background  = FOCUSCOLOR;
-                taskdone++;
-                // console.log("trueeeeeeeeeeee");
+        let count=0;
+        for(let i=0;i<MACHINE_PREPRATION.length+2;i++){
+             if(i===16){
+                const distractors1bar = containter1.getChildByName("distractors1");
+                distractors1bar.isVisible=this.root.gameTaskManager.distractors1;
+             }
+             else if(i===17){
+                 const distractors2bar = containter1.getChildByName("distractors2")
+                 distractors2bar.isVisible=this.root.gameTaskManager.distractors2;
             }
-            if(result[i].value===1){
-                arrow.isVisible = true;
-                bar.color       = FOCUSCOLOR;
-                bar.background = FOCUSCOLOR;
-                taskdone++;
-                // console.log("11111111111111111111");
-            }
-            else if(result[i].value===2){
-                cross.isVisible = true;
-                bar.color = GREYCOLOR;
-                bar.background = GREYCOLOR;
-                taskdone++;
-                // console.log("222222222222");
+            else{
+                const bar   = containter1.children[i];
+                const arrow = bar.getChildByName("resultarrow");
+                arrow.isVisible=false;
+                const cross = bar.getChildByName("cross");
+                cross.isVisible=false;
+                bar.color = DISABECOLOR;
+                bar.background = DISABECOLOR;
+                if(result[count].value  === true){
+                    arrow.isVisible = true;
+                    bar.color       = FOCUSCOLOR;
+                    bar.background  = FOCUSCOLOR;
+                    taskdone++;
+                    // console.log("trueeeeeeeeeeee");
+                }
+                if(result[count].value===1){
+                    arrow.isVisible = true;
+                    bar.color       = FOCUSCOLOR;
+                    bar.background = FOCUSCOLOR;
+                    taskdone++;
+                    // console.log("11111111111111111111");
+                }
+                else if(result[count].value===2){
+                    cross.isVisible = true;
+                    bar.color = GREYCOLOR;
+                    bar.background = GREYCOLOR;
+                    taskdone++;
+                    // console.log("222222222222");
+                }
+                count++;
             }
         }
-        const distractors1bar = containter1.getChildByName("distractors1")
-        distractors1bar.isVisible=this.root.gameTaskManager.distractors1;
+        // const distractors1bar = containter1.getChildByName("distractors1")
+        // distractors1bar.isVisible=this.root.gameTaskManager.distractors1;
 
-        const distractors2bar = containter1.getChildByName("distractors2")
-        distractors2bar.isVisible=this.root.gameTaskManager.distractors2;
+        // const distractors2bar = containter1.getChildByName("distractors2")
+        // distractors2bar.isVisible=this.root.gameTaskManager.distractors2;
         
         // console.log("!! task sone!! "+taskdone+"   "+MACHINE_PREPRATION.length);
         const accuracyResult = this.machinePreparation.getChildByName("accuracyresult");

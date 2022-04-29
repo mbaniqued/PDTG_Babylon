@@ -743,8 +743,37 @@ export default class LoaderManager {
     const acIndicatorMat = new StandardMaterial("acindicatormat",this.scene);
     acIndicator.position = new BABYLON.Vector3(-5.17,4.72,2.71);
     acIndicatorMat.diffuseColor  = new BABYLON.Color3.FromInts(0,255,0);
-    // acIndicatorMat.emissiveColor = new Color3.FromInts(0,255,0);
     acIndicator.material         = acIndicatorMat;
+
+    
+    const cabinetpart = BABYLON.MeshBuilder.CreatePlane("cabinetpartcollider1",{width:1,height:1,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+    const cabinetPartCollider = new BABYLON.StandardMaterial("cabinetPartCollider", this.scene);
+    cabinetPartCollider.diffuseColor = new BABYLON.Color3.FromInts(107,166,163);
+    cabinetPartCollider.emissiveColor = new BABYLON.Color3.FromInts(107,166,163);
+    cabinetpart.renderOutline=false;
+    cabinetpart.isPickable=false;
+    cabinetpart.material = tableMat;
+    cabinetpart.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),0,0);
+    cabinetpart.position.set(2.119,1.47,2.43);
+    cabinetpart.scaling.set(.82,.54,1);
+    cabinetpart.visibility=0;
+
+  const cabinetpart2 = cabinetpart.clone("cabinetpartcollider2");
+  cabinetpart2.position.set(1.87,1.07,2.43);
+  cabinetpart2.scaling.set(1.41,.54,1);
+  cabinetpart2.visibility=0;
+
+  const cabinetpart3 = cabinetpart.clone("cabinetpartcollider3");
+  cabinetpart3.position.set(1.87,.67,2.43);
+  cabinetpart3.scaling.set(1.41,.54,1);
+  cabinetpart3.visibility=0;
+
+  const cabinetpart4 = cabinetpart.clone("cabinetpartcollider4");
+  cabinetpart4.position.set(1.87,.24,2.43);
+  cabinetpart4.scaling.set(1.41,.54,1);
+  cabinetpart4.visibility=0;
+
+    
     
   // console.log("meshes", meshes)
    this.assetsManager.onProgress = (

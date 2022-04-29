@@ -84,13 +84,10 @@ export default class Table{
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
 
                     // console.log(rotateState.value+"     "+this.root.gamestate.state+"    "+this.root.camera.radius+"  "+this.root.scene.postProcessesEnabled);
-                    if(rotateState.value ===1)
+                    if(rotateState.value ===1 || this.root.gamestate.state === GameState.radial || this.root.gamestate.state === GameState.inspect)
                         return;
                     this.updateoutLine(mesh,false);
-                    if(this.root.gui2D.radialCircle.isVisible)
-                        return;
                     if(this.root.camera.radius>2.5 || (this.root.camera.target.x != this.meshRoot.position.x && this.root.camera.target.y != this.meshRoot.position.y)){
-                        this.root.gamestate.state = GameState.default;
                         if(this.isdrawerOpen)
                             this.state=10;
                         else    

@@ -56,7 +56,7 @@ export default class Cabinet{
                 }
         }))
         mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                if(rotateState.value===1)
+                if(rotateState.value ===1 || this.root.gamestate.state === GameState.radial || this.root.gamestate.state === GameState.inspect)
                     return;
                     this.updateoutLine(mesh,false);
                     if((this.root.camera.target.x != this.meshRoot.position.x && this.root.camera.target.y != this.meshRoot.position.y)){
@@ -96,7 +96,7 @@ export default class Cabinet{
         let isPositive =true;
         if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(45).radians())
             isPositive = false;
-        console.log("!! ispositive!! "+isPositive);
+        // console.log("!! ispositive!! "+isPositive);
         this.root.setCameraAnim(isPositive?270:-90,270,60,3);
         this.state =1;
         this.root.gamestate.state = GameState.focus;
