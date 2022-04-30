@@ -92,6 +92,9 @@ export default class Table{
                             this.state=10;
                         else    
                             this.state=0;
+                        let isPositive =true;
+                        if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(45).radians())
+                            isPositive = false;
                         this.root.setCameraAnim(isPositive?270:-90,270,45,2.5);
                     }
                     switch(this.state){
