@@ -83,7 +83,7 @@ export default class Table{
                 }))
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
 
-                    // console.log(rotateState.value+"     "+this.root.gamestate.state+"    "+this.root.camera.radius+"  "+this.root.scene.postProcessesEnabled);
+                    console.log(rotateState.value+"     "+this.root.gamestate.state+"    "+this.root.camera.radius+"  "+this.root.scene.postProcessesEnabled);
                     if(rotateState.value ===1 || this.root.gamestate.state === GameState.radial || this.root.gamestate.state === GameState.inspect)
                         return;
                     this.updateoutLine(mesh,false);
@@ -109,11 +109,11 @@ export default class Table{
                                 this.meshRoot.getChildTransformNodes().forEach(childnode=>{
                                  if(childnode.name==="tabledrawer"){
                                         let drawerNode  = childnode;  
-                                        this.drawerNode = drawerNode;
-                                        this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z:this.meshRoot.position.z-.5));
+                                        this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-.25:this.meshRoot.position.z-.5));
                                     }
                                 });
                                 this.root.gamestate.state = GameState.active;
+                                this.root.showResetViewButton(true);
                             break;
                     }        
                     this.setLabel();    

@@ -8,7 +8,6 @@ export default class Trolly{
             this.meshRoot   = meshobject;
             this.apdMachine = undefined;
             this.position   = pos;
-            this.state      = 0;
             this.setPos();
             
             // this.mesh = new BABYLON.Mesh();
@@ -38,10 +37,9 @@ export default class Trolly{
                     mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
                             if(rotateState.value===1)
                                 return;
-                            // console.log(" !!! switch!! "+mesh.name);
-                            if(this.root.camera.target.z!=this.meshRoot.position.z+1){
-                                
-                                    this.focusApd();
+                            if(this.root.camera.target.z!=this.meshRoot.position.z+.8){
+                                this.focusApd();
+                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.5,this.meshRoot.position.y-.1,this.meshRoot.position.z+.8));    
                             }
                             else{
                                 if((this.root.level==3 && this.root.gamemode === gamemode.training)  || this.root.gamemode !== gamemode.training){
@@ -57,38 +55,33 @@ export default class Trolly{
             }
         }
         addAction(mesh){
-            mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
-                if(this.root.gamestate.state === GameState.inspect)
-                    this.updateoutLine(mesh,false);
-                else
-                    this.updateoutLine(mesh,true);                        
-                
-            }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
-                   this.updateoutLine(mesh,false);
-            }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
-                this.updateoutLine(mesh,true);
-                    this.root.scene.onPointerUp=()=>{
+                mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+                    if(this.root.gamestate.state === GameState.inspect)
                         this.updateoutLine(mesh,false);
-                    }
-            }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
-                if(rotateState.value ===1 || this.root.gamestate.state === GameState.radial || this.root.gamestate.state === GameState.inspect)
-                        return;
-                    switch(this.state){
-                            case 0:
-                                this.root.gamestate.state = GameState.focus;
-                                this.focusApd();
-                                if(mesh.name.includes("trolly")){
-                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z));
-                                }
-                                if(mesh.name.includes("apdmachine")){
-                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.5,this.meshRoot.position.y-.1,this.meshRoot.position.z+1));    
-                                    // console.log(" !!! focus apd!!!");
-                                }
-                                break;
+                    else
+                        this.updateoutLine(mesh,true);                        
+                    
+                }))
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+                    this.updateoutLine(mesh,false);
+                }))
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+                    this.updateoutLine(mesh,true);
+                        this.root.scene.onPointerUp=()=>{
+                            this.updateoutLine(mesh,false);
+                        }
+                }))
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+                        if(rotateState.value ===1 || this.root.gamestate.state === GameState.radial || this.root.gamestate.state === GameState.inspect)
+                            return;
+                        this.root.gamestate.state = GameState.focus;
+                        this.focusApd();
+                        if(mesh.name.includes("trolly")){
+                            this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z));
+                        }
+                        if(mesh.name.includes("apdmachine")){
+                            this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.5,this.meshRoot.position.y-.1,this.meshRoot.position.z+.8));    
                         }
                     }
                 )
@@ -98,7 +91,7 @@ export default class Trolly{
             let isPositive =true;
             if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(90).radians())
                 isPositive = false;
-            this.root.setCameraAnim(isPositive?270:-90,270,70,2.5)
+            this.root.setCameraAnim(isPositive?270:-90,270,70,2.5);
         }
         setPos(){
             this.meshRoot.position.set(this.position.x,this.position.y,this.position.z);

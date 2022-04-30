@@ -224,93 +224,45 @@ export default class CabinetItem{
         // console.log(this.meshRoot.position);
         this.isDraging=this.pointerDragBehavior.dragging;
         IS_DRAG.value=true;
+        this.root.scene.getMeshByName("tablecollider").visibility=0;
+        this.root.scene.getMeshByName("trollycollider").visibility=0;
+        this.root.scene.getMeshByName("apdcollider").visibility=0;
+        this.root.scene.getMeshByName("cabinetpartcollider1").visibility=0;
+        this.root.scene.getMeshByName("cabinetpartcollider2").visibility=0;
+        this.root.scene.getMeshByName("cabinetpartcollider3").visibility=0;              
+        this.root.scene.getMeshByName("cabinetpartcollider4").visibility=0;
          if(this.meshRoot.position.x>-1.5 && this.meshRoot.position.x<1.1){
               this.root.scene.getMeshByName("tablecollider").visibility=1;
-              this.root.scene.getMeshByName("trollycollider").visibility=0;
-              this.root.scene.getMeshByName("apdcollider").visibility=0;
-              this.root.scene.getMeshByName("cabinetpartcollider1").visibility=0;
-              this.root.scene.getMeshByName("cabinetpartcollider2").visibility=0;
-              this.root.scene.getMeshByName("cabinetpartcollider3").visibility=0;              
-              this.root.scene.getMeshByName("cabinetpartcollider4").visibility=0;              
-              
+              this.root.setCameraAnim(270,270,45,2.5);
               this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
-            // new TWEEN.Tween(this.root.camera.target).to({x:0,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
-            // new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
           }
           else if(this.meshRoot.position.x>-2.5 && this.meshRoot.position.x<=-1.5){
-              this.root.scene.getMeshByName("trollycollider").visibility=1;
-              this.root.scene.getMeshByName("tablecollider").visibility=0;
-              this.root.scene.getMeshByName("apdcollider").visibility=0;
-              this.root.scene.getMeshByName("cabinetpartcollider1").visibility=0;
-              this.root.scene.getMeshByName("cabinetpartcollider2").visibility=0;
-              this.root.scene.getMeshByName("cabinetpartcollider3").visibility=0;              
-              this.root.scene.getMeshByName("cabinetpartcollider4").visibility=0;              
-            //   new TWEEN.Tween(this.root.camera.target).to({x:-2,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
-            //   }).start();
-            //   new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
+            this.root.scene.getMeshByName("trollycollider").visibility=1;
+            this.root.setCameraAnim(270,270,70,2.5);
             this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
           }
           else if(this.meshRoot.position.x<-2.5){
             this.root.scene.getMeshByName("apdcollider").visibility=1;  
-            this.root.scene.getMeshByName("tablecollider").visibility=0;
-            this.root.scene.getMeshByName("trollycollider").visibility=0;
-            this.root.scene.getMeshByName("cabinetpartcollider1").visibility=0;
-            this.root.scene.getMeshByName("cabinetpartcollider2").visibility=0;
-            this.root.scene.getMeshByName("cabinetpartcollider3").visibility=0;              
-            this.root.scene.getMeshByName("cabinetpartcollider4").visibility=0;              
+            this.root.setCameraAnim(270,270,70,2.5);     
             this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
           }
           else if(this.meshRoot.position.x>=1.1){
-            this.root.scene.getMeshByName("tablecollider").visibility=0;
-            this.root.scene.getMeshByName("trollycollider").visibility=0;
-            this.root.scene.getMeshByName("apdcollider").visibility=0;
-            this.root.scene.getMeshByName("cabinetpartcollider1").visibility=0;
-            this.root.scene.getMeshByName("cabinetpartcollider2").visibility=0;
-            this.root.scene.getMeshByName("cabinetpartcollider3").visibility=0;              
-            this.root.scene.getMeshByName("cabinetpartcollider4").visibility=0;              
+            this.root.setCameraAnim(270,270,60,3);     
             this.root.setFocusOnObject(new BABYLON.Vector3(this.root.cabinetObject.meshRoot.position.x,this.root.cabinetObject.meshRoot.position.y,this.root.cabinetObject.meshRoot.position.z-.5));
-            if(this.meshRoot.position.x>=1.5 && (this.meshRoot.position.y>1.4 && this.meshRoot.position.y<2)){
-                this.root.scene.getMeshByName("tablecollider").visibility=0;
-                this.root.scene.getMeshByName("trollycollider").visibility=0;
-                this.root.scene.getMeshByName("apdcollider").visibility=0;
-                this.root.scene.getMeshByName("cabinetpartcollider1").visibility=1;
-                this.root.scene.getMeshByName("cabinetpartcollider2").visibility=0;
-                this.root.scene.getMeshByName("cabinetpartcollider3").visibility=0;              
-                this.root.scene.getMeshByName("cabinetpartcollider4").visibility=0;
-                
+            if(this.meshRoot.position.x>=1.5 &&  this.meshRoot.position.x<=2.5){
+                if(this.meshRoot.position.y>1.4 && this.meshRoot.position.y<2){
+                    this.root.scene.getMeshByName("cabinetpartcollider1").visibility=1;
+                }
+                if(this.meshRoot.position.x>=1.5 && (this.meshRoot.position.y>1.1 && this.meshRoot.position.y<1.4)){
+                    this.root.scene.getMeshByName("cabinetpartcollider2").visibility=1;
+                }
+                if(this.meshRoot.position.x>=1.5 && (this.meshRoot.position.y>.7 && this.meshRoot.position.y<1.1)){
+                    this.root.scene.getMeshByName("cabinetpartcollider3").visibility=1;              
+                }
+                if(this.meshRoot.position.x>=1.5 && (this.meshRoot.position.y<.7)){
+                    this.root.scene.getMeshByName("cabinetpartcollider4").visibility=1;
+                }
             }
-            if(this.meshRoot.position.x>=1.5 && (this.meshRoot.position.y>1.1 && this.meshRoot.position.y<1.4)){
-                this.root.scene.getMeshByName("tablecollider").visibility=0;
-                this.root.scene.getMeshByName("trollycollider").visibility=0;
-                this.root.scene.getMeshByName("apdcollider").visibility=0;
-                this.root.scene.getMeshByName("cabinetpartcollider1").visibility=0;
-                this.root.scene.getMeshByName("cabinetpartcollider2").visibility=1;
-                this.root.scene.getMeshByName("cabinetpartcollider3").visibility=0;              
-                this.root.scene.getMeshByName("cabinetpartcollider4").visibility=0;
-                
-            }
-            if(this.meshRoot.position.x>=1.5 && (this.meshRoot.position.y>.7 && this.meshRoot.position.y<1.1)){
-                this.root.scene.getMeshByName("tablecollider").visibility=0;
-                this.root.scene.getMeshByName("trollycollider").visibility=0;
-                this.root.scene.getMeshByName("apdcollider").visibility=0;
-                this.root.scene.getMeshByName("cabinetpartcollider1").visibility=0;
-                this.root.scene.getMeshByName("cabinetpartcollider2").visibility=0;
-                this.root.scene.getMeshByName("cabinetpartcollider3").visibility=1;              
-                this.root.scene.getMeshByName("cabinetpartcollider4").visibility=0;
-                
-            }
-            if(this.meshRoot.position.x>=1.5 && (this.meshRoot.position.y<.7)){
-                this.root.scene.getMeshByName("tablecollider").visibility=0;
-                this.root.scene.getMeshByName("trollycollider").visibility=0;
-                this.root.scene.getMeshByName("apdcollider").visibility=0;
-                this.root.scene.getMeshByName("cabinetpartcollider1").visibility=0;
-                this.root.scene.getMeshByName("cabinetpartcollider2").visibility=0;
-                this.root.scene.getMeshByName("cabinetpartcollider3").visibility=0;              
-                this.root.scene.getMeshByName("cabinetpartcollider4").visibility=1;
-            }
-            // new TWEEN.Tween(this.root.camera.target).to({x:1.5,y:1.5,z:this.root.camera.target.z},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
-            // new TWEEN.Tween(this.root.camera).to({radius:3},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
-            // }).start();
           }
           else{
               this.root.scene.getMeshByName("tablecollider").visibility=0;
@@ -336,18 +288,15 @@ export default class CabinetItem{
                         this.placedRotation = new BABYLON.Vector3(0,0,0);
                         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();        
                         new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
-                            // this.enableDrag(false);
                             this.root.handsanitiserCnt++;
                             this.label.isVisible=false;
                             let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.handsanitiserCnt,level:1}});
                             document.dispatchEvent(custom_event);
                         }).start();
                     }
-                // else if(this.name.includes("Dialysis") && dialysis_tablepos<2){
                     else if(this.name.includes("Dialysis") && getdialysisTablePos(this.root)>-1){ 
                         placed = true;
-                        this.placeOnTable      = true;
-                        console.log(getdialysisTablePos(this.root)); 
+                        this.placeOnTable  = true;
                         if(this.root.itemCount>0)
                             this.root.itemCount--;
                         const index = getdialysisTablePos(this.root);   
@@ -356,8 +305,6 @@ export default class CabinetItem{
                         this.placedRotation = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(180).radians(),0);
                         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();        
                         new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
-                            //    this.enableDrag(false);
-                            //    this.removeAction();
                             this.root.dialysisItemCnt++;
                             this.label.isVisible=false;
                             let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"item_placed",itemcount:this.root.dialysisItemCnt,level:1}});
@@ -372,8 +319,6 @@ export default class CabinetItem{
                             placed = false;
                         if(getdialysisApdPosition(this.root)<0 && this.root.scene.getMeshByName("apdcollider").visibility>0)
                             placed = false;
-                    //   console.log(placed +"   11111111  "+dialysis_trollypos);
-                        // console.log(" %%%%%%%%%%%%%% "+getdialysisTrollyPosition(this.root));
                         if(placed){
                             const final_diasolutionpos = this.root.scene.getMeshByName("trollycollider").visibility>0?diasolutionpos3:diasolutionpos4;
                             this.placedPosition = final_diasolutionpos;
@@ -385,7 +330,6 @@ export default class CabinetItem{
                             }
                             new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();        
                             new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
-                                // this.enableDrag(false);
                                 let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_dialysis_apd_top"}});
                                 document.dispatchEvent(custom_event);
                             }).start();
@@ -397,14 +341,12 @@ export default class CabinetItem{
                         this.placedRotation = new BABYLON.Vector3(0,0,0);
                         new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();        
                         new TWEEN.Tween(this.meshRoot.position).to({x:this.placedPosition.x,y:this.placedPosition.y,z:this.placedPosition.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
-                            //   this.enableDrag(false);
                             let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,level:3,msg:"placed_sanitizer"}});
                             document.dispatchEvent(custom_event);
                         }).start();
                     }
                 }
                 if(!placed){
-                    // console.log(" not placedddddddd");
                     if(this.name.includes("Dialysis") && this.root.scene.getMeshByName("cabinetpartcollider1").visibility>0){
                         const isavailble =  !checkPosition(this.root,{x:2.16,y:1.57,z:2.34})
                         placed = false;

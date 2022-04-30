@@ -119,21 +119,12 @@ export default class MainScene {
     this.drainBagItem.setTrollyPosition({x:-265,y:1,z:138});
     this.createdrainBagValidation();
     this.ccpdRecordBook     = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook"),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
-    // this.ccpdRecordBook2    = new Item("CCPD Record Book",this,this.scene.getTransformNodeByID("ccpdrecordbook").clone(),{x:35,y:1,z:38},{x:-64,y:-10,z:-3},undefined);
     this.apdmachinePackage  = new Item("APD Cassette Package",this,this.scene.getTransformNodeByID("apd_package_node"),{x:75,y:-10,z:38},{x:-9,y:6,z:-5},undefined);
-    // console.log(this.apdmachinePackage.startPosition+"        "+this.apdmachinePackage.placedPosition);
     this.apdmachinePackage.setTrollyPosition({x:-231,y:-16,z:8});
     this.createApdPackageValidatiion();
-    
-    // const solutionclone = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode");
     this.dialysisSolutionObject[0] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode0"),{x:2.16,y:1.57,z:2.34});
-
-    // const solutionclone1 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode1");
-    // this.scene.getTransformNodeByID("diasolutionnode").setEnabled(true);
     this.dialysisSolutionObject[1] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode1"),{x:2.16,y:1.17,z:2.34});
-    // const solutionclone2 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode2");
     this.dialysisSolutionObject[2] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode3"),{x:2.16,y:.78,z:2.34});
-    // const solutionclone3 = this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode3");
     this.dialysisSolutionObject[3] = new CabinetItem("Dialysis Solution",this,this.scene.getTransformNodeByID("diasolutionnode").clone("diasolutionnode3"),{x:2.16,y:.31,z:2.34});
 
     this.scene.getTransformNodeByID("diasolutionnode").getChildMeshes().forEach(childmesh => {
@@ -152,7 +143,6 @@ export default class MainScene {
     this.startFan();
     this.setAc(true);
     // this.scene.getMeshByName("fanbtn").isVisible = false;
-    
     console.log(" !!!!!!!!! initscene!!! ");
       resolve('resolved');
     });
@@ -188,8 +178,8 @@ export default class MainScene {
       // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(SX,this.ccpdRecordBook.meshRoot.position.y,SZ);
       // this.scene.getMeshByName("fanbtn").position.set(SX,SY,SZ);
       // this.scene.getNodeByName("fanswitchnode").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());
-      //  this.scene.getMeshByName("cabinetpartcollider2").position = new BABYLON.Vector3(1.87,SY,2.43); 
-      //  this.scene.getMeshByName("cabinetpartcollider2").scaling = new BABYLON.Vector3(1.41,.54,1); 
+      // this.scene.getMeshByName("cabinetpartcollider2").position = new BABYLON.Vector3(1.87,SY,2.43); 
+      // this.scene.getMeshByName("cabinetpartcollider2").scaling = new BABYLON.Vector3(1.41,.54,1); 
        console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
@@ -808,24 +798,24 @@ export default class MainScene {
       this.bpnumberTexture.update();
   }
   onpickMesh(pickedMesh){
-     if(this.pickMesh)
-         this.checkObjectChange(this.pickMesh,pickedMesh);
-      this.pickMesh = pickedMesh;
+    //  if(this.pickMesh)
+    //      this.checkObjectChange(this.pickMesh,pickedMesh);
+    //   this.pickMesh = pickedMesh;
   }
   checkObjectChange(root1,root2){
-    if(this.gamestate.state === GameState.default || this.gamestate.state === GameState.active){
-        while(root1.parent !== null){
-            root1 = root1.parent;
-        }
-        while(root2.parent !== null){
-            root2 = root2.parent;
-        }
-        if(root1.name !== root2.name){
-          if(!root1.name.includes("items") && !root2.name.includes("items")){
-                this.gamestate.state = GameState.default;
-          }
-       }
-     }
+    // if(this.gamestate.state === GameState.default || this.gamestate.state === GameState.active){
+    //     while(root1.parent !== null){
+    //         root1 = root1.parent;
+    //     }
+    //     while(root2.parent !== null){
+    //         root2 = root2.parent;
+    //     }
+    //     if(root1.name !== root2.name){
+    //       if(!root1.name.includes("items") && !root2.name.includes("items")){
+    //             this.gamestate.state = GameState.default;
+    //       }
+    //    }
+    //  }
   }
   hideOutLine(meshroot){
     if(meshroot.parent){
