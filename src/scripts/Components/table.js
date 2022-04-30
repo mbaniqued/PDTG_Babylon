@@ -92,6 +92,7 @@ export default class Table{
                             this.state=10;
                         else    
                             this.state=0;
+                        this.root.setCameraAnim(isPositive?270:-90,270,45,2.5);
                     }
                     switch(this.state){
                         case 0:

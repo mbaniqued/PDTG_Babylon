@@ -4,7 +4,7 @@ import * as BABYLON from "babylonjs";
 import "babylonjs-loaders";
 import LoaderManager from "../LoaderManager.js";
 // import SceneOptimiser from "../SceneOptimiser.js"; 
-import Common from '../Common.js' 
+import Common from '../Enviroment.js' 
 import DoorObject from "../Components/doorobject.js";
 import Table from "../Components/table.js";
 import Trolly from "../Components/trolly.js";
@@ -19,7 +19,7 @@ import FanSwitch from "../Components/fanswitch.js";
 import SinkItem from "../Components/sinkitem.js";
 import TWEEN from '@tweenjs/tween.js';
 import * as GUI from 'babylonjs-gui';
-import { FOV } from "../Common.js";
+import Enviroment, { FOV } from "../Enviroment.js";
 import HandWash from "../Components/handwash.js";
 import AlcohalWipe from "../Components/alcohalwipe.js";
 import GameTaskManager from "../Components/GameTaskManager.js";
@@ -40,7 +40,7 @@ export default class MainScene {
   constructor(gameManager) {
     this.isResetScene=true;
     this.game = gameManager;
-    this.sceneCommon = new Common(this);
+    this.sceneCommon = new Enviroment(this);
     this.scene      = this.sceneCommon.createScene("basic");
     this.camera     = this.sceneCommon.createCamera(this.scene);
     this.initState();

@@ -338,9 +338,9 @@ export default class GameTaskManager{
             this.taskDone = TOTAL_TASK;
 
          if(this.distractors1)   
-            this.taskPoint--;
+            this.taskPoint-=2;
         if(this.distractors2)   
-            this.taskPoint--;
+            this.taskPoint-=2;
        console.log("!! total points !!"+this.taskPoint+" 222222  "+this.taskDone);     
     }
     checkPhaseComplete(result){

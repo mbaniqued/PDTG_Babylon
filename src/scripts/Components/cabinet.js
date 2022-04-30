@@ -64,6 +64,7 @@ export default class Cabinet{
                             this.state =10;
                         else   
                             this.state =0;
+                            this.root.setCameraAnim(isPositive?270:-90,270,60,3);
                     }
                     // if(this.state>0 && this.root.gamestate.state === GameState.default){
                     //     if(this.state>0 && this.isdoorOpen)

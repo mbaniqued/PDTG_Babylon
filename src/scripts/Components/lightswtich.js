@@ -1,6 +1,6 @@
 import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
-import { LIGHTON,LIGHTOFF } from "../Common";
+import { LIGHTON,LIGHTOFF } from "../Enviroment";
 export default class LightSwitch{
 
         constructor(root,meshobject){

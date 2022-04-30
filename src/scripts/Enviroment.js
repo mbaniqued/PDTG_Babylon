@@ -2,7 +2,7 @@ export const FOV=.78;
 const start_fov=1.2;
 export const LIGHTOFF=.2,LIGHTON=.8;
 import { GameState,IS_DRAG } from "./scene/MainScene";
-export default class Common{
+export default class Enviroment{
      constructor(root){
         this.root          = root;                    
         this.game          = root.game;
