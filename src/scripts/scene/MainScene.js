@@ -21,7 +21,7 @@ import TWEEN from '@tweenjs/tween.js';
 import * as GUI from 'babylonjs-gui';
 import Enviroment, { FOV } from "../Enviroment.js";
 import HandWash from "../Components/handwash.js";
-import AlcohalWipe from "../Components/alcohalwipe.js";
+import AlcoholWipe from "../Components/alcohalwipe.js";
 import GameTaskManager from "../Components/GameTaskManager.js";
 import { AudioManager } from "../audioManager.js";
 import { BP_Monitior } from "../Components/BpMonitor.js";
@@ -72,7 +72,7 @@ export default class MainScene {
     this.initacParticle();
     this.handwashactivity = new HandWash(this);
     this.handwashactivity.drawhandWash(false);
-    this.wipeAlcohal = new AlcohalWipe(this);
+    this.wipeAlcohal    = new AlcoholWipe(this);
     this.practiceResult = new Result(this);
     this.gameTime=undefined;
     this.addevents();
@@ -113,7 +113,7 @@ export default class MainScene {
     this.createBpText();
     this.connectionItem    = new Item("Connection Shield",this,this.scene.getTransformNodeByID("ConnectionShield"),{x:-70,y:5,z:38.5},{x:-65,y:-55,z:-4},undefined); 
     this.createconnectionItemValidation();
-    this.alcohalItem       = new Item("Alchohal Wipe",this,this.scene.getTransformNodeByID("Alcohol_Wipe"),{x:-45,y:8,z:38.5},{x:-36,y:-53,z:-4},{x:0,y:0,z:90});
+    this.alcohalItem       = new Item("Alcohol Wipe",this,this.scene.getTransformNodeByID("Alcohol_Wipe"),{x:-45,y:8,z:38.5},{x:-36,y:-53,z:-4},{x:0,y:0,z:90});
     this.maskItem          = new Item("Face Mask",this,this.scene.getTransformNodeByID("SurgicalMask"),{x:36,y:32,z:20},{x:0,y:-66,z:-14},undefined);
     this.drainBagItem      = new Item("Drain Bag",this,this.scene.getTransformNodeByID("DrainBag"),{x:-9,y:4,z:34},{x:70,y:-52,z:-10},{x:0,y:0,z:-90});
     this.drainBagItem.setTrollyPosition({x:-265,y:1,z:138});
@@ -150,7 +150,7 @@ export default class MainScene {
   addevents(){
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
-      const val=.01;
+      const val=.1;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -173,14 +173,12 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      // this.ccpdRecordBook.meshRoot.parent = this.scene.getCameraByName("maincamera");
-      // this.ccpdRecordBook.meshRoot.scaling.set(.003,.013,.013);
-      // this.ccpdRecordBook.meshRoot.position = new BABYLON.Vector3(SX,this.ccpdRecordBook.meshRoot.position.y,SZ);
-      // this.scene.getMeshByName("fanbtn").position.set(SX,SY,SZ);
-      // this.scene.getNodeByName("fanswitchnode").rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(SX).radians(),BABYLON.Angle.FromDegrees(SY).radians(),BABYLON.Angle.FromDegrees(SZ).radians());
-      // this.scene.getMeshByName("cabinetpartcollider2").position = new BABYLON.Vector3(1.87,SY,2.43); 
-      // this.scene.getMeshByName("cabinetpartcollider2").scaling = new BABYLON.Vector3(1.41,.54,1); 
-       console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
+      // this.scene.getNodeByName("apdnode").getChildMeshes().forEach(childmesh => {
+      //     if(childmesh.id === "DeviceDialysisReference_primitive5"){
+      //         // childmesh.position = new BABYLON.Vector3(SX,SY,SZ);
+      //     }
+      // });
+      // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
     // if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
@@ -584,7 +582,7 @@ export default class MainScene {
       this.drainBagTexture.dispose();
       this.drainBagTexture = null;
     }
-     const plan = BABYLON.MeshBuilder.CreatePlane("validation_drainbag_plan",{width:15,height:8,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+    const plan = BABYLON.MeshBuilder.CreatePlane("validation_drainbag_plan",{width:15,height:8,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
      plan.parent = null;
      plan.parent = this.drainBagItem.meshRoot;
      plan.isPickable=false;
@@ -861,6 +859,23 @@ export default class MainScene {
       }).start();
    
   }
+  setCameraAnimLinear(alphaAng,finalAlpha,betaAng,radius){
+    if(alphaAng){
+      new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?BABYLON.Angle.FromDegrees(alphaAng).radians():-BABYLON.Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+        this.camera.alpha = BABYLON.Angle.FromDegrees(finalAlpha).radians();
+      }).start();
+    }
+    if(betaAng)
+      new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(betaAng).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+    if(radius)  
+      new TWEEN.Tween(this.camera).to({radius:radius},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+  }
+  setFocusOnObjectLinear(pos){
+      new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+          this.showResetViewButton(true);
+      }).start();
+   
+  }
   showResetViewButton(isVisible){
     this.gui2D.resetCamBtn.isVisible = isVisible;
   }
@@ -931,19 +946,37 @@ export default class MainScene {
   handleUI(){
         let isPostProcess=false; 
         this.gui2D.resetCamBtn.onPointerUpObservable.add(()=>{
-          this.setCameraTarget(); 
-          this.sceneCommon.removeMiniCam();
-          this.handwashactivity.drawhandWash(false);
-          this.gui2D.advancedTexture.renderAtIdealSize=false;
-          if(this.handSoapObject.state>=100)
-            this.handSoapObject.state=0;
+            this.setCameraTarget(); 
+            this.sceneCommon.removeMiniCam();
+            this.wipeAlcohal.hideWipeClean();
+            this.handwashactivity.drawhandWash(false);
+            this.gui2D.advancedTexture.renderAtIdealSize=false;
+            if(this.handSoapObject.state>=100)
+                this.handSoapObject.state=0;
         });
-        this.gui2D.submitBtn.onPointerUpObservable.add(()=>{
+        this.gui2D.submitBtn._onPointerEnter =()=>{
+            if(this.gui2D.submitBtn.isVisible){
+               this.gui2D.submitBtn2.isVisible=true;
+               this.gui2D.submitBtn.isVisible=false;
+            }
+        }
+        this.gui2D.submitBtn2._onPointerOut =()=>{
+            if(this.gui2D.submitBtn2.isVisible){
+               this.gui2D.submitBtn2.isVisible=false;
+               this.gui2D.submitBtn.isVisible=true;
+            }
+        }
+        this.gui2D.submitBtn2.onPointerUpObservable.add(()=>{
           this.gui2D.drawsubmitMenu(true);
           this.gui2D.submitBtn.isVisible=false;
+          this.gui2D.submitBtn2.isVisible=false;
           isPostProcess = this.scene.postProcessesEnabled;
           if(isPostProcess)
             this.sceneCommon.removeBlurEffect();
+          if(this.wipeAlcohal.usealcohalwipe)
+            this.wipeAlcohal.alocohalwipe.isVisible = false;
+            this.gui2D.resetCamBtn.isVisible=false;
+            this.gui2D.userBackBtn.isVisible=false;
         });
         const resultmenuBtn = this.gui2D.submitMenuContainer.getChildByName("result_btn");
         resultmenuBtn.onPointerUpObservable.add(()=>{
@@ -965,6 +998,11 @@ export default class MainScene {
           this.gui2D.drawsubmitMenu(false);
           if(isPostProcess)
             this.sceneCommon.addBlurEffect();
+          if(this.wipeAlcohal.usealcohalwipe)
+            this.wipeAlcohal.alocohalwipe.isVisible = true;
+          if(this.camera.radius<3)
+            this.gui2D.resetCamBtn.isVisible=true;
+            this.gui2D.userBackBtn.isVisible=true;
       })
       const resultdoneBtn = this.gui2D.resultContainer.getChildByName("doneresult");
        resultdoneBtn.onPointerUpObservable.add(()=>{
@@ -977,6 +1015,10 @@ export default class MainScene {
           isPostProcess = this.scene.postProcessesEnabled;
           if(isPostProcess)
             this.sceneCommon.removeBlurEffect();
+          if(this.wipeAlcohal.usealcohalwipe)
+            this.wipeAlcohal.alocohalwipe.isVisible = false;
+          this.gui2D.resetCamBtn.isVisible=false;
+          this.gui2D.userBackBtn.isVisible=false;
       })
       const backmenuBtn = this.gui2D.backMenuContainer.getChildByName("menu_btn");
       backmenuBtn.onPointerUpObservable.add(()=>{
@@ -997,6 +1039,11 @@ export default class MainScene {
           this.gui2D.drawbackMenu(false);
           if(isPostProcess)
             this.sceneCommon.addBlurEffect();
+          if(this.wipeAlcohal.usealcohalwipe)
+              this.wipeAlcohal.alocohalwipe.isVisible = true;
+          if(this.camera.radius<3)
+              this.gui2D.resetCamBtn.isVisible=true;
+          this.gui2D.userBackBtn.isVisible=true;
       })
   }
    enterScene(time){
@@ -1024,7 +1071,7 @@ export default class MainScene {
         case gamemode.training:
               switch(this.level){
                 case 0:{
-                      this.gui2D.objectiveTitle.text = "Room Prepration";
+                      this.gui2D.objectiveTitle.text = "Room Preparation";
                       this.totalobjective=5; //5
                       const values = ["Close The Door","Switch On The Light","Turn-off the Fan","Close the window","Turn-off the AC using remote"];   
                       this.doorObject.initAction(); 
@@ -1045,9 +1092,9 @@ export default class MainScene {
                     }
                   break;
                 case 1:{
-                        this.gui2D.objectiveTitle.text = "Item Prepration";
+                        this.gui2D.objectiveTitle.text = "Item Preparation";
                         this.totalobjective=2; //2
-                        const values = ["Place the required eqipment from the drawer on the top of the table: \n \u2022 BP Monitor \n \u2022 CCPD Record Book \n \u2022 Alcohal Wipe \n \u2022 Connection Shield \n \u2022 APD Cassette Package \n \u2022 Face Mask \n \u2022 Drain Bag",
+                        const values = ["Place the required eqipment from the drawer on the top of the table: \n \u2022 BP Monitor \n \u2022 CCPD Record Book \n \u2022 Alcohol Wipe \n \u2022 Connection Shield \n \u2022 APD Cassette Package \n \u2022 Face Mask \n \u2022 Drain Bag",
                                         "Place the required eqipment from the brown cabinet on top of the table: \n \u2022 Dialysis Solution x2 \n \u2022 Hand Sanitizer"];   
                         this.tableObject.initAction();
                         this.bpMachineItem.initAction();
@@ -1082,7 +1129,7 @@ export default class MainScene {
                 case 2:{
                         this.tableObject.initAction();
                         this.bpMachineItem.initAction();
-                        this.gui2D.objectiveTitle.text = "Self Prepration";
+                        this.gui2D.objectiveTitle.text = "Self Preparation";
                         this.totalobjective=6; 
                         const values = ["Measure your blood pressure  using the BP Monitor","Access the CCPD Record Book","Record your BP in the CCPD Record Book"
                                         ,"Use a face mask","Navigate to the sink,and wash your hands","Dry your hands with the paper towel"];   
@@ -1099,9 +1146,9 @@ export default class MainScene {
                       }
                      break;
                   case 3:
-                      this.gui2D.objectiveTitle.text = "Machine Prepration";
+                      this.gui2D.objectiveTitle.text = "Machine Preparation";
                       this.totalobjective=11; 
-                      const values = ["Use the alcohal wipes to clean the APD Machin & Rack","Place the hand disinfectant on the APD Rack","Inspect & Validate the APD Cassette Package",
+                      const values = ["Use the alcohol wipes to clean the APD Machin & Rack","Place the hand disinfectant on the APD Rack","Inspect & Validate the APD Cassette Package",
                                       "Inspect & validate the selected Dialysis Solutions","Inspect & Validate the connection shield","Inspect & validate the drain bag",
                                       "Open the drain bag packaging","Place the Drain bag on the bottom tray od APD Rack","Place the dislysis solution on the top of the APD Machine",
                                       "Place the following items on the top of the APD Rack:\n\u2022 Dialysis Solution \n\u2022 APD Cassette Package",
@@ -1448,17 +1495,17 @@ export default class MainScene {
         
         switch(this.level){
             case 0:
-                this.gui2D.winPopUp.getChildByName("popup_tittle").text = "Room PrepRation\n Complete!";
+                this.gui2D.winPopUp.getChildByName("popup_tittle").text = "Room Preparation\n Complete!";
               break;
             case 1:
-                this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Item PrepRation\n Complete!";
+                this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Item Preparation\n Complete!";
                 this.cabinetObject.openCloseDoor();
               break;
             case 2:
-                this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Self PrepRation\n Complete!";
+                this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Self Preparation\n Complete!";
               break;
             case 3:
-                this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Machine PrepRation\n Complete!";
+                this.gui2D.winPopUp.getChildByName("popup_tittle").text   = "Machine Preparation\n Complete!";
               break;
         }
         this.gui2D.nextBtn._onPointerUp=()=>{

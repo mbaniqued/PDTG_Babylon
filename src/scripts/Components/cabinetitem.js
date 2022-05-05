@@ -14,14 +14,14 @@ let dialysis_tablepos=0,checkdialysisValidation=0;
 export default class CabinetItem{
 
       constructor(name,root,meshobject,pos){
-        this.name            = name;
-        this.root            = root;
-        this.meshRoot        = meshobject;
+        this.name             = name;
+        this.root             = root;
+        this.meshRoot         = meshobject;
         
-        this.startPosition   = pos;
+        this.startPosition    = pos;
         this.placedPosition   = undefined;
         this.placedRotation   = undefined;
-        this.lastPosition   = undefined;
+        this.lastPosition     = undefined;
         this.setPos(); 
         this.pickObject = false;
         this.initDrag();
@@ -49,8 +49,9 @@ export default class CabinetItem{
                 childmesh.isVisible=true;
                 childmesh.layerMask=1;
             });
-            this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
-            this.lastPosition = {x:this.meshRoot.position.x,y:this.meshRoot.position.y,z:this.meshRoot.position.z};
+            this.meshRoot.position   = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
+            this.initialScal         = {x:this.meshRoot.scaling.x,y:this.meshRoot.scaling.y,z:this.meshRoot.scaling.z};
+            this.lastPosition        = {x:this.meshRoot.position.x,y:this.meshRoot.position.y,z:this.meshRoot.position.z};
             if(this.meshRoot.name.includes("diasolutionnode"))
                 this.meshRoot.rotation  = new BABYLON.Vector3(0,BABYLON.Angle.FromDegrees(90).radians(),0);
             else
@@ -233,22 +234,22 @@ export default class CabinetItem{
         this.root.scene.getMeshByName("cabinetpartcollider4").visibility=0;
          if(this.meshRoot.position.x>-1.5 && this.meshRoot.position.x<1.1){
               this.root.scene.getMeshByName("tablecollider").visibility=1;
-              this.root.setCameraAnim(270,270,45,2.5);
-              this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
+              this.root.setCameraAnimLinear(270,270,45,2.5);
+              this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
           }
           else if(this.meshRoot.position.x>-2.5 && this.meshRoot.position.x<=-1.5){
             this.root.scene.getMeshByName("trollycollider").visibility=1;
-            this.root.setCameraAnim(270,270,70,2.5);
-            this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
+            this.root.setCameraAnimLinear(270,270,70,2.5);
+            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
           }
-          else if(this.meshRoot.position.x<-2.5){
+          else if(this.name.includes("Dialysis") && this.meshRoot.position.x<-2.5){
             this.root.scene.getMeshByName("apdcollider").visibility=1;  
-            this.root.setCameraAnim(270,270,70,2.5);     
-            this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
+            this.root.setCameraAnimLinear(270,270,70,2.5);     
+            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
           }
           else if(this.meshRoot.position.x>=1.1){
-            this.root.setCameraAnim(270,270,60,3);     
-            this.root.setFocusOnObject(new BABYLON.Vector3(this.root.cabinetObject.meshRoot.position.x,this.root.cabinetObject.meshRoot.position.y,this.root.cabinetObject.meshRoot.position.z-.5));
+            this.root.setCameraAnimLinear(270,270,60,3);     
+            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.cabinetObject.meshRoot.position.x,this.root.cabinetObject.meshRoot.position.y,this.root.cabinetObject.meshRoot.position.z-.5));
             if(this.meshRoot.position.x>=1.5 &&  this.meshRoot.position.x<=2.5){
                 if(this.meshRoot.position.y>1.4 && this.meshRoot.position.y<2){
                     this.root.scene.getMeshByName("cabinetpartcollider1").visibility=1;
@@ -396,23 +397,23 @@ export default class CabinetItem{
                 }
                 if(this.lastPosition.x>-1.5 && this.lastPosition.x<1.1){
                     setTimeout(() => {
-                        this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));    
+                        this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));    
                     }, 500);
                     
                 }
                 else if(this.lastPosition.x>-2.5 && this.lastPosition.x<=-1.5){
                     setTimeout(() => {
-                        this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
+                        this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
                     }, 500);
                 }
                 else if(this.lastPosition.x<-2.5){
                     setTimeout(() => {
-                        this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
+                        this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
                     }, 500);
                 }
                 else if(this.lastPosition.x>=1.1){
                     setTimeout(() => {
-                        this.root.setFocusOnObject(new BABYLON.Vector3(this.root.cabinetObject.meshRoot.position.x,this.root.cabinetObject.meshRoot.position.y,this.root.cabinetObject.meshRoot.position.z-.5));
+                        this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.cabinetObject.meshRoot.position.x,this.root.cabinetObject.meshRoot.position.y,this.root.cabinetObject.meshRoot.position.z-.5));
                     }, 500);
                 }
              }
@@ -450,7 +451,8 @@ export default class CabinetItem{
         this.label.isVisible = false;
     }
     showItem(){ 
-      this.validationNode.setEnabled(true); 
+    if(this.name.includes("Dialysis")) 
+        this.validationNode.setEnabled(true); 
       showMenu = false;
       rotateState.value=1;
       let getdrag = this.pointerDragBehavior.enabled;
@@ -461,8 +463,15 @@ export default class CabinetItem{
          new TWEEN.Tween(this.meshRoot.rotation).to({x:0,y:0,z:BABYLON.Angle.FromDegrees(360).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
       else
          new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(110).radians(),y:0,z:BABYLON.Angle.FromDegrees(180).radians()},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();        
-        new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x,y:this.root.camera.target.y+.8,z:this.root.camera.position.z+1},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
+         
+        const mul = 1.5; 
+        new TWEEN.Tween(this.meshRoot.scaling).to({x:this.initialScal.x*mul,y:this.initialScal.y*mul,z:this.initialScal.z*mul},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();        
+         
+        // const yy = this.root.camera.target.y<3?this.root.camera.target.y:2;
+        const yy = this.root.camera.target.y+.7;
+        new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x,y:yy,z:this.root.camera.position.z+.95},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
         this.root.gui2D.userExitBtn.isVisible = true;
+        this.root.gui2D.resetCamBtn.isVisible = false;
         this.root.rotateMesh(this.meshRoot);
         this.root.gui2D.userExitBtn._onPointerUp = ()=>{
               rotateState.value=0;
@@ -473,8 +482,10 @@ export default class CabinetItem{
       }).start();
     }
     resetItem(setdrag){
-        this.validationNode.setEnabled(false); 
+        if(this.name.includes("Dialysis")) 
+            this.validationNode.setEnabled(false); 
         this.root.gui2D.userExitBtn.isVisible = false;
+        this.root.gui2D.resetCamBtn.isVisible = true;
         this.changeLayerMask(1);
         this.root.sceneCommon.removeBlurEffect();
         let yAng = BABYLON.Angle.FromDegrees(90).radians();
@@ -484,6 +495,7 @@ export default class CabinetItem{
             new TWEEN.Tween(this.meshRoot.rotation).to({x:this.placedRotation.x,y:this.placedRotation.y,z:this.placedRotation.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
         else
             new TWEEN.Tween(this.meshRoot.rotation).to({x:0,y:yAng,z:0},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();    
+        new TWEEN.Tween(this.meshRoot.scaling).to({x:this.initialScal.x,y:this.initialScal.y,z:this.initialScal.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();        
         const finalpos = this.placedPosition!==undefined?this.placedPosition:this.startPosition;
         new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
              this.enableDrag(setdrag);
@@ -540,7 +552,7 @@ export default class CabinetItem{
          cap_highlight_plan.material = planmat2; 
          cap_highlight_plan.visibility=0;
 
-         this.validationTxt["greencap_highlight_plan"] = "is the Green Franginle seal present?";
+         this.validationTxt["greencap_highlight_plan"] = "is the Green FRANGIBLE seal present?";
          this.validationPos["greencap_highlight_plan"] = [300,15];
          this.checkValidation["greencap_highlight_plan"] = -1;
          const greencap_highlight_plan = cap_highlight_plan.clone();
@@ -564,7 +576,7 @@ export default class CabinetItem{
          expiry_highlight_plan.isPickable=true;
          expiry_highlight_plan.visibility=0;
 
-         this.validationTxt["volume_highlight_plan"] = "is the correct volume?";
+         this.validationTxt["volume_highlight_plan"] = "is the volume correct?";
          this.validationPos["volume_highlight_plan"] = [378,147];
          this.checkValidation["volume_highlight_plan"] = -1;
         const volume_highlight_plan = cap_highlight_plan.clone();

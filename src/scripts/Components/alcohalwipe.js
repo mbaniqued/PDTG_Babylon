@@ -3,7 +3,7 @@ const position =[{x: -2.35,y: 1.80,z:2.19},{x: -2.35,y: 1.80,z:2.86},{x:-3.34,y:
 const fillMode =["#d6ffd6","#c7ffc7","#b8ffb8","#a8ffa8","#99ff99","#99ff99","#8aff8a","#7aff7a","#6bff6b","#5cff5c","#4dff4d","#3dff3d","#2eff2e","#1fff1f"];
 let colorCounter=0;
 import * as GUI from 'babylonjs-gui';
-export default class AlcohalWipe{
+export default class AlcoholWipe{
 
         constructor(root){
             this.root = root;    
@@ -69,6 +69,7 @@ export default class AlcohalWipe{
             this.msg.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
             this.msg.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
             this.alocohalwipe.isVisible = false;
+            this.alocohalwipe.zIndex=0;
             this.msg.isVisible = false;
             this.msg.isPointerBlocker=false;
             this.msg.leftInPixels=300;
@@ -84,35 +85,35 @@ export default class AlcohalWipe{
             });       
             this.touch=false;
             this.root.scene.onPointerObservable.add((pointerInfo) => {      	
-            switch (pointerInfo.type) {
-                case BABYLON.PointerEventTypes.POINTERDOWN:
-                    if(this.usealcohalwipe){
-                        const pickinfo = this.root.scene.pick(this.root.scene.pointerX, this.root.scene.pointerY);
-                            if(pickinfo.pickedMesh && pickinfo.pickedMesh.parent){
-                            if(pickinfo.pickedMesh.parent.name.includes("wipespot")){
-                                this.touch = true;
-                                this.findSpot(pickinfo.pickedMesh);
-                            }
-                            }
-                        }
-                    break;
-                case BABYLON.PointerEventTypes.POINTERUP:{
-                        this.touch = false;
-                    }
-                    break;
-                case BABYLON.PointerEventTypes.POINTERMOVE:
-                    if(this.usealcohalwipe){ 
-                        const pickinfo = this.root.scene.pick(this.root.scene.pointerX, this.root.scene.pointerY);
-                        if(pickinfo.pickedMesh && pickinfo.pickedMesh.parent){
-                            if(pickinfo.pickedMesh.parent.name.includes("wipespot")){
-                                if(this.touch){
-                                    this.findSpot(pickinfo.pickedMesh);
-                                    
+            if(this.usealcohalwipe && this.alocohalwipe.isVisible){
+                switch (pointerInfo.type) {
+                    case BABYLON.PointerEventTypes.POINTERDOWN:{
+                            const pickinfo = this.root.scene.pick(this.root.scene.pointerX, this.root.scene.pointerY);
+                                if(pickinfo.pickedMesh && pickinfo.pickedMesh.parent){
+                                    if(pickinfo.pickedMesh.parent.name.includes("wipespot")){
+                                        this.touch = true;
+                                        this.findSpot(pickinfo.pickedMesh);
+                                    }
                                 }
                             }
+                        break;
+                    case BABYLON.PointerEventTypes.POINTERUP:{
+                            this.touch = false;
                         }
+                        break;
+                    case BABYLON.PointerEventTypes.POINTERMOVE:
+                            const pickinfo = this.root.scene.pick(this.root.scene.pointerX, this.root.scene.pointerY);
+                            if(pickinfo.pickedMesh && pickinfo.pickedMesh.parent){
+                                if(pickinfo.pickedMesh.parent.name.includes("wipespot")){
+                                    if(this.touch){
+                                        this.findSpot(pickinfo.pickedMesh);
+                                        
+                                    }
+                                }
+                            }
+                        
+                        break;
                     }
-                    break;
                 }
             });
         }
@@ -177,6 +178,14 @@ export default class AlcohalWipe{
             }
             return allclear;
         }
+        hideWipeClean(){
+            this.usealcohalwipe=false;
+            this.alocohalwipe.isVisible=false;
+            this.msg.isVisible = false;
+            for(let i=0;i<this.wipespotplanenode.length;i++){
+                this.drawalcohalwipe(false,i);
+            }
+        }
         reset(){
             this.accessAlcohal=false;
             this.usealcohalwipe=true;
@@ -192,10 +201,15 @@ export default class AlcohalWipe{
                 this.wipespotplanenode[i].getChildMeshes()[1].material.emissiveColor   = new BABYLON.Color3.FromInts(128,128,128);
                 this.drawalcohalwipe(true,i);
             }   
+            
         }
         drawalcohalwipe(draw,i){
             this.wipespotplanenode[i].getChildMeshes()[0].setEnabled(draw);
             this.wipespotplanenode[i].getChildMeshes()[1].setEnabled(draw);
             this.alocohalwipe.isVisible = draw;
+            this.root.gui2D.resetCamBtn.zIndex=draw?100:0;
+            this.root.gui2D.userBackBtn.zIndex=draw?100:0;
+            this.root.gui2D.submitBtn.zIndex=draw?100:0;
+            this.root.gui2D.submitBtn2.zIndex=draw?100:0;
         }
 }   

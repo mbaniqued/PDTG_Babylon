@@ -158,7 +158,7 @@ export default class LoaderManager {
                 task.loadedMeshes[i].isVisible = false;
                 this.setPickable(task.loadedMeshes[i],1);
             }
-            node.scaling.set(-.005,.005,.005);
+            node.scaling = new BABYLON.Vector3(-.005,.005,.005);
             node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians());
         }
         if(task.name === "bp_monitor"){
@@ -259,12 +259,23 @@ export default class LoaderManager {
             this.setPickable(task.loadedMeshes[i],.3);
             if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive3"){
                  task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
-                 task.loadedMeshes[i].position = new BABYLON.Vector3(0,-7,6);
+                 task.loadedMeshes[i].position = new BABYLON.Vector3(0,-9,5);
             }
             if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive6" || task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive5"){
-              task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
-              task.loadedMeshes[i].position = new BABYLON.Vector3(0,-7,6);
+              if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive6"){
+                  task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(75).radians();  
+                  task.loadedMeshes[i].position = new BABYLON.Vector3(-13.5,-8.6,-.5);
+              }
+              else{
+                  task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
+                  task.loadedMeshes[i].position = new BABYLON.Vector3(-13.2,-9.2,1);
+                  // -13.199999999999969 !!sy!!  -9.199999999999983!! sz !! 0.9999999999999996
+              }
+              task.loadedMeshes[i].rotation.z = BABYLON.Angle.FromDegrees(90).radians();  
+              
             }
+            if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive7")
+                task.loadedMeshes[i].position.z = -1.4;
           }
           apdnode.scaling.set(-5,5,5);
           apdnode.parent = this.root.trollyRoot;

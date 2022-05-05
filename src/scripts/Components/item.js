@@ -210,13 +210,14 @@ export default class Item{
                                 else if(this.name.includes("Blood Pressure")){
                                     this.state=100;
                                     this.showItem(true);
+                                    rotateState.value=0;
                                 }
                                 else if(this.name.includes("Mask")){
                                     this.state=100;
                                     this.useMask(ANIM_TIME*.5);
-                                    this.root.gui2D.resetCamBtn.isVisible =true;
+                                    rotateState.value=0;
                                 }
-                                else if(this.name.includes("Alchohal Wipe")){
+                                else if(this.name.includes("Alcohol Wipe")){
                                     this.state=100;
                                     this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
                                     this.root.setCameraAnim(270,270,45,2);
@@ -224,20 +225,22 @@ export default class Item{
                                         this.root.wipeAlcohal.usealcohalwipe=true;
                                         this.root.wipeAlcohal.alocohalwipe.isVisible = true;
                                         this.root.wipeAlcohal.reset();
-                                        clearTimeout(tout);
+                                        clearTimeout(tout); 
                                     },ANIM_TIME);
                                     this.meshRoot.setEnabled(false);
                                 }
                                 else if(this.name.includes("Drain Bag")){
                                     this.root.gamestate.state = GameState.active; 
+                                    this.root.scene.getMeshByName("validation_drainbag_plan").visibility = 0; 
                                     this.meshRoot.getChildMeshes().forEach(childmesh => {
-                                       if(childmesh.id.includes("DrainBagPlasticCover"))
+                                    if(childmesh.id.includes("DrainBagPlasticCover"))
                                             childmesh.isVisible = false;
                                         const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"drainbag_use",level:3}});
                                         document.dispatchEvent(custom_event);
                                     });
                                 }
                                 this.root.gamestate.state = GameState.active;
+                                this.root.gui2D.resetCamBtn.isVisible =true;
                             };
                             this.root.gui2D.crossBtn._onPointerUp = ()=>{
                                 showMenu = false;
@@ -259,7 +262,7 @@ export default class Item{
             this.enableDrag(false);    
             this.pointerDragBehavior.onDragStartObservable.add((event)=>{
                 console.log("!!! cabinet item !!! "+this.root.gamestate.state+"      "+this.isDraging);
-                if((!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect){
+                if((!this.interaction && !this.pickObject)  && (this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect)){
                     // console.log("!!! onDragStartObservable!!! "+this.root.gamestate.state);
                     this.state =0;
                     // this.enableDrag(false);
@@ -271,7 +274,7 @@ export default class Item{
                 
             });
             this.pointerDragBehavior.onDragObservable.add((event)=>{
-                if( (!this.interaction && !this.pickObject)  ||  this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect){
+                if( (!this.interaction && !this.pickObject)  &&  this.root.gamestate.state ===  GameState.radial || this.root.gamestate.state ===  GameState.inspect){
                     this.state =0;
                     // this.enableDrag(false);
                     // console.log("onDragObservable");
@@ -289,7 +292,7 @@ export default class Item{
                 // console.log(this.meshRoot.position);
                 if(this.meshRoot.position.x>=-140 && this.root.camera.target.x !== this.root.tableObject.meshRoot.position.x){
                     const posZ =  this.root.tableObject.isdrawerOpen? this.root.tableObject.drawerNode.absolutePosition.z:this.root.tableObject.meshRoot.position.z;
-                    this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,posZ));
+                    this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,posZ));
                 }
                 if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90 && this.meshRoot.position.z<-10)){
                      this.root.scene.getMeshByName("tablecollider").visibility=1;
@@ -300,7 +303,7 @@ export default class Item{
                 if(this.trollyPosition && ((this.root.level >2 && this.root.gamemode === gamemode.training) || this.root.gamemode !== gamemode.training)){   
                     if(this.meshRoot.name.includes("DrainBag") && this.meshRoot.position.x<-150  && this.meshRoot.position.z>50){
                         if(this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility===0 && this.root.camera.target.x !== this.root.trollyObject.meshRoot.position.x)
-                            this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z-1));
+                            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z-1));
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=1;
                     }
                     else  
@@ -309,7 +312,7 @@ export default class Item{
                     if(this.meshRoot.name.includes("apd_package_node") && this.meshRoot.position.x<-150 && this.meshRoot.position.z>-20 && this.meshRoot.position.z<50){
                         
                         if(this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility===0 && this.root.camera.target.x !== this.root.trollyObject.meshRoot.position.x)
-                            this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z-1));
+                            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z-1));
                             this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=1;
                     }
                     else
@@ -373,7 +376,7 @@ export default class Item{
                     if(this.root.camera.target.x!==this.root.tableObject.meshRoot.position.x){
                         setTimeout(() => {
                             const posZ =  this.root.tableObject.isdrawerOpen? this.root.tableObject.drawerNode.absolutePosition.z:this.root.tableObject.meshRoot.position.z;
-                            this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,posZ));
+                            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,posZ));
                         }, 500);
                     }
                     
@@ -396,7 +399,7 @@ export default class Item{
             if(!autoplace && this.parent !== this.root.scene.getTransformNodeByID("tablenode")){
                 this.meshRoot.position = this.meshRoot.position.normalize();
                 this.meshRoot.position.addInPlace(tmppos.scale(-1));
-                this.placedPosition    = {x:this.meshRoot.position.x,y:this.meshRoot.position.y-50,z:this.meshRoot.position.z+20};
+                this.placedPosition    = {x:this.meshRoot.position.x,y:this.meshRoot.position.y-50,z:this.meshRoot.position.z+30};
             }else{
                 this.placedPosition = this.tablePosition;
             }
@@ -463,7 +466,7 @@ export default class Item{
                 upAng  =  -BABYLON.Angle.FromDegrees(10).radians();
             }
         }
-        if(this.meshRoot.name.includes("ccpdrecordbook") || this.meshRoot.name.includes("Connection") ||  this.meshRoot.name.includes("Alchohal")){
+        if(this.meshRoot.name.includes("ccpdrecordbook") || this.meshRoot.name.includes("Connection") ||  this.meshRoot.name.includes("Alcohol")){
                 scalAnim = 2.5;
         }
         if(this.meshRoot.name.includes("SurgicalMask")){
@@ -667,7 +670,7 @@ export default class Item{
            if(this.name.includes("Drain Bag") && this.valdiationCheck>0)
                 this.root.gui2D.useBtn.isVisible = true;
         }
-        if(this.name.includes("Blood Pressure") || this.name.includes("Face Mask") || this.name.includes("CCPD Record Book") || this.name.includes("Alchohal Wipe")){
+        if(this.name.includes("Blood Pressure") || this.name.includes("Face Mask") || this.name.includes("CCPD Record Book") || this.name.includes("Alcohol Wipe")){
             if(this.root.gamemode === gamemode.training){
                 if((this.name.includes("Blood Pressure") || this.name.includes("Face Mask") || this.name.includes("CCPD Record Book")) && this.root.level>1) 
                     this.root.gui2D.useBtn.isVisible = true;
