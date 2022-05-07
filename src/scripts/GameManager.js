@@ -10,7 +10,7 @@ export class GameManger {
 
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
-        this.engine = new BABYLON.Engine(this.canvas, true);
+        this.engine = new BABYLON.Engine(this.canvas,true, null, false);
         this.engine.enableOfflineSupport=true;
         this.sceneManager = new SceneManager();
         this.sceneManager.setSceneState(this.sceneManager.sceneState.basic);
@@ -18,7 +18,12 @@ export class GameManger {
         switch(this.sceneManager.currentSceneState){
             case this.sceneManager.sceneState.basic:
                 this.mainScene = new MainScene(this);
-                break;
+                this.setCamFov();
+                this.engine.onResizeObservable.add(() => {
+                    this.setCamFov();
+                    this.engine.resize();
+                });
+            break;
         }
         divFps = document.getElementById("fps");
         window.addEventListener("resize",  ()=> {
@@ -26,7 +31,16 @@ export class GameManger {
         },false);
         this.startRenderLoop();
     }
+    setCamFov(){
+        if(this.engine.getRenderHeight()>this.engine.getRenderWidth()){
+            this.mainScene.camera.fovMode = BABYLON.Camera.FOVMODE_HORIZONTAL_FIXED;
+        }
+        else{
+            this.mainScene.camera.fovMode = BABYLON.Camera.FOVMODE_VERTICAL_FIXED;
+        }
+    }
     resizeBabylonEngine(){
+        this.setCamFov();
         this.engine.resize();
     }
     restartScene(){

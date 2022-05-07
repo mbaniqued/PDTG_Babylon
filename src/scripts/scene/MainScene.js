@@ -148,9 +148,12 @@ export default class MainScene {
     });
   }
   addevents(){
+    // document.addEventListener('mousemove', e => {
+    //       // const pos = world2ScreenPos(new BABYLON.Vector3(this.scene.pointerX,this.scene.pointerY,1),this.scene);
+    // });
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
-      const val=.1;
+      const val=.01;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -173,6 +176,7 @@ export default class MainScene {
             SZ-=val;
           break;
       }
+      
       // this.scene.getNodeByName("apdnode").getChildMeshes().forEach(childmesh => {
       //     if(childmesh.id === "DeviceDialysisReference_primitive5"){
       //         // childmesh.position = new BABYLON.Vector3(SX,SY,SZ);
@@ -1775,11 +1779,32 @@ export default class MainScene {
        }
    }
 }
-function getScreenPos(){
-  // var posInView = BABYLON.Vector3.TransformCoordinates(sprite.pos, scene.getViewMatrix());
-  //           var posInViewProj = BABYLON.Vector3.TransformCoordinates(sprite.pos, scene.getTransformMatrix());
-  //           var screenCoords = posInViewProj.multiplyByFloats(0.5, -0.5, 1.0).add(new BABYLON.Vector3(0.5, 0.5, 0.0)).
-  //                                   multiplyByFloats(engine.getRenderWidth(), engine.getRenderHeight(), 1);
+
+function screen2WorldPos(pos,scene){
+  const posInView     = BABYLON.Vector3.TransformCoordinates(pos, scene.getViewMatrix());
+  const posInViewProj = BABYLON.Vector3.TransformCoordinates(pos, scene.getTransformMatrix());
+  const screenCoords = posInViewProj.multiplyByFloats(0.5, -0.5, 1.0).add(new BABYLON.Vector3(0.5, 0.5, 0.0)).
+                                    multiplyByFloats(scene.getEngine().getRenderWidth(), scene.getEngine().getRenderHeight(),1);
+  return screenCoords;                           
+  
+  // var coordinates = BABYLON.Vector3.Project(vector3,
+  //   BABYLON.Matrix.Identity(),
+  //   scene.getTransformMatrix(),
+  //   camera.viewport.toGlobal(
+  //   engine.getRenderWidth(),
+  //   engine.getRenderHeight(),
+}
+function world2ScreenPos(pos,scene){
+  const screenpos =  BABYLON.Vector3.Unproject(pos,scene.getEngine().getRenderWidth(), scene.getEngine().getRenderHeight(), BABYLON.Matrix.Identity(),scene.getViewMatrix(), scene.getProjectionMatrix());
+  return screenpos;
+}
+function screen2worldX(a,scene) {
+	const c = ((a / scene.getEngine().getRenderWidth()) - 0.5) * 2;
+	return c;
+}
+function screen2worldY(a,scene) {
+	const c = ((a / scene.getEngine().getRenderHeight()) - 0.5) * (-2);
+	return c;
 }
 export function randomNumber(min, max) { 
   return Math.random() * (max - min) + min;

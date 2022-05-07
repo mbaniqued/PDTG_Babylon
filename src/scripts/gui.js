@@ -7,12 +7,14 @@ export default class GUI2D{
         this.root = root;
         this.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this.advancedTexture.layer.layerMask=1;
+        const dpr = window.devicePixelRatio;
+        this.advancedTexture.renderScale = dpr;
         this.initUi();
      }
      initUi(){
         this.advancedTexture.idealWidth = 1920;
-        this.advancedTexture.idealHeight = 1080;
-        // this.advancedTexture.useSmallestIdeal = true
+        // this.advancedTexture.idealHeight = 1080;
+        this.advancedTexture.useSmallestIdeal = false;
         this.advancedTexture.renderAtIdealSize = true;
         this.resetCamBtn   =  this.createButon("resetcambtn","ui/move.png","#ffffffff","",0,0,72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
         
@@ -99,7 +101,7 @@ export default class GUI2D{
         
       }
       drawMainMenu(isDraw){ 
-        this.advancedTexture.renderAtIdealSize = true;
+        this.advancedTexture.renderAtIdealSize = isDraw;
         this.menuContainer.isPointerBlocker=true;
         this.menuContainer.isVisible  =  isDraw;
         this.menuContainer.getChildByName("usermodetxt").text = "User Mode";
@@ -220,7 +222,7 @@ export default class GUI2D{
         this.phasebtnDisable.isPointerBlocker=false;
       }
       drawStageMenu(isDraw){
-          this.advancedTexture.renderAtIdealSize = true;
+          this.advancedTexture.renderAtIdealSize = isDraw;
           // this.root.level   = 0;
           this.menuContainer.isVisible = isDraw;
           this.menuContainer.getChildByName("usermodetxt").text = "Select Stage";
