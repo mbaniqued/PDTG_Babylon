@@ -204,6 +204,7 @@ export default class GUI2D{
               this.drawMainMenu(false);
               this.root.gamestate.state = GameState.levelstage; 
               this.drawStageMenu(true);
+              this.root.scene.getEngine().enterFullscreen();
           }
       }
       initStageMenu(){
