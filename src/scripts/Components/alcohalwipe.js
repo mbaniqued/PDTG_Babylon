@@ -141,7 +141,7 @@ export default class AlcoholWipe{
             if(this.checkallClear()){
                 let tout = setTimeout(() => {
                     this.root.tableObject.setTableFocusAnim();
-                    this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
+                    this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-1));
                     clearTimeout(tout)
                 }, 500);
                 

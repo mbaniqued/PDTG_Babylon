@@ -1035,6 +1035,9 @@ export default class MainScene {
           this.handwashactivity.drawhandWash(false);
           this.gui2D.resetCamBtn.isVisible=false;
           this.gui2D.userExitBtn.isVisible=false;
+          this.gui2D.submitBtn.isVisible=false;
+          this.gui2D.submitBtn.isVisible=false;
+          this.wipeAlcohal.hideWipeClean();
           this.sceneCommon.removeBlurEffect();
 
       })

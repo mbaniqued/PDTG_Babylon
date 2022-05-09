@@ -8,12 +8,12 @@ export default class GUI2D{
         this.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this.advancedTexture.layer.layerMask=1;
         const dpr = window.devicePixelRatio;
-        this.advancedTexture.renderScale = dpr;
+        this.advancedTexture.renderScale = 2;
         this.initUi();
      }
      initUi(){
         this.advancedTexture.idealWidth = 1920;
-        // this.advancedTexture.idealHeight = 1080;
+        this.advancedTexture.idealHeight = 1080;
         this.advancedTexture.useSmallestIdeal = false;
         this.advancedTexture.renderAtIdealSize = true;
         this.resetCamBtn   =  this.createButon("resetcambtn","ui/move.png","#ffffffff","",0,0,72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
@@ -482,7 +482,7 @@ export default class GUI2D{
         bartitle.lineSpacing    = 0;
         bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
         bartitle.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        bartitle.resizeToFit = true;
+        bartitle.resizeToFit = false;
         bartitle.leftInPixels =40;
         bartitle.paddingTopInPixels =2;
         bartitle.textWrapping=true;
@@ -787,7 +787,7 @@ export default class GUI2D{
       bartitle.heightInPixels =  height;
       bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
       bartitle.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-      bartitle.resizeToFit = true;
+      bartitle.resizeToFit = false;
       bartitle.leftInPixels =40;
       bartitle.textWrapping=true;
       bartitle.paddingTopInPixels =2;
