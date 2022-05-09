@@ -440,12 +440,14 @@ export class Result{
              if(i===16){
                 const distractors1bar = containter1.getChildByName("distractors1");
                 distractors1bar.isVisible=this.root.gameTaskManager.distractors1;
-                taskdone--;
+                if(distractors1bar.isVisible)
+                    taskdone-=2;
              }
              else if(i===17){
                  const distractors2bar = containter1.getChildByName("distractors2")
                  distractors2bar.isVisible=this.root.gameTaskManager.distractors2;
-                 taskdone--;
+                 if(distractors2bar.isVisible)
+                    taskdone-=2;
             }
             else{
                 const bar   = containter1.children[i];
@@ -487,7 +489,7 @@ export class Result{
         
         // console.log("!! task sone!! "+taskdone+"   "+MACHINE_PREPRATION.length);
         const accuracyResult = this.machinePreparation.getChildByName("accuracyresult");
-        const accuracy       =  parseInt((taskdone/MACHINE_PREPRATION.length)*100);
+        let accuracy       =  parseInt((taskdone/MACHINE_PREPRATION.length)*100);
         if(accuracy<0)
             accuracy=0;
         accuracyResult.text  = accuracy+"%";

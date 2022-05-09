@@ -750,9 +750,8 @@ export default class CabinetItem{
     }
     checkAllValidationDone(){
         let isCheck=false;
-        if(this.checkValidation["cap_highlight_plan"]>0 && this.checkValidation["greencap_highlight_plan"]>0 && this.checkValidation["expiry_highlight_plan"]>0 &&
-           this.checkValidation["volume_highlight_plan"]>0 && this.checkValidation["serial_highlight_plan"]>0 &&  this.checkValidation["solution_highlight_plan"]>0 &&
-           this.checkValidation["concentration_highlight_plan"]>0){
+        if(this.checkValidation["cap_highlight_plan"]>0   && this.checkValidation["greencap_highlight_plan"]>0 && this.checkValidation["expiry_highlight_plan"]>0 &&
+           this.checkValidation["volume_highlight_plan"]>0 && this.checkValidation["concentration_highlight_plan"]>0){
             isCheck = true;
         }   
         return isCheck;
