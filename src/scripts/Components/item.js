@@ -665,18 +665,20 @@ export default class Item{
             // this.meshRoot.scaling.set(.01,.01,.01);
             // this.meshRoot.position.set(-.24,-1.14,4.78);
             // this.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
-
-            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(-60).radians(),y:BABYLON.Angle.FromDegrees(0).radians()},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
-            new TWEEN.Tween(this.meshRoot.scaling).to({x:5,y:5,z:5},anim_time*2).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
-            new TWEEN.Tween(this.meshRoot.position).to({x:this.meshRoot.position.x-10,y:this.meshRoot.position.y-100,z:this.meshRoot.position.z-20},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(0).radians(),y:BABYLON.Angle.FromDegrees(0).radians(),z:BABYLON.Angle.FromDegrees(180).radians()},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
+            new TWEEN.Tween(this.meshRoot.scaling).to({x:4,y:4,z:4},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
                 this.meshRoot.parent = null;
                 this.parent = this.root.scene.getCameraByName("maincamera");
                 this.meshRoot.parent = this.parent;
+                this.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-60).radians(),0,0);
                 this.meshRoot.scaling = new BABYLON.Vector3(.06,.06,.06); 
                 this.meshRoot.position = new BABYLON.Vector3(.06,-1.15,1.05); 
                 this.removeAction();
                 const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"mask_used",level:2}});
                 document.dispatchEvent(custom_event);        
+
+            }).start();
+            new TWEEN.Tween(this.meshRoot.position).to({x:this.meshRoot.position.x-10,y:this.meshRoot.position.y-100,z:this.meshRoot.position.z-50},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
             }).start();
      }
      enableDrag(value){
