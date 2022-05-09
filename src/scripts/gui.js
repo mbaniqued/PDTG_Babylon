@@ -774,15 +774,15 @@ export default class GUI2D{
     }
     createResultBar(msg,width,height){
       const  objectivebar     =  this.createRect("resultbar",width,height,5,"#50F10042",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
-      const  rightArrowImage  =  this.createImage("resultarrow","ui/green.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+      const  rightArrowImage  =  this.createImage("resultarrow","ui/green.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
       rightArrowImage.isVisible=true;
       objectivebar.addControl(rightArrowImage);
 
-      const  wrongArrowImage  =  this.createImage("cross","ui/cross2_png.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+      const  wrongArrowImage  =  this.createImage("cross","ui/cross2_png.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
       wrongArrowImage.isVisible=true;
       objectivebar.addControl(wrongArrowImage);
       const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-      bartitle.lineSpacing    = 0;
+      bartitle.lineSpacing    = -2;
       bartitle.widthInPixels  =  parseInt(width*.85);
       bartitle.heightInPixels =  height;
       bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;

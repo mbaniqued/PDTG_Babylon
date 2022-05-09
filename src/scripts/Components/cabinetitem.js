@@ -234,22 +234,30 @@ export default class CabinetItem{
         this.root.scene.getMeshByName("cabinetpartcollider4").visibility=0;
          if(this.meshRoot.position.x>-1.5 && this.meshRoot.position.x<1.1){
               this.root.scene.getMeshByName("tablecollider").visibility=1;
-              this.root.setCameraAnimLinear(270,270,45,2.5);
-              this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
+              if(this.root.camera.target.x != this.root.tableObject.meshRoot.position.x){
+                this.root.setCameraAnimLinear(270,270,45,2.5);
+                this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
+              }
           }
           else if(this.meshRoot.position.x>-2.5 && this.meshRoot.position.x<=-1.5){
             this.root.scene.getMeshByName("trollycollider").visibility=1;
-            this.root.setCameraAnimLinear(270,270,70,2.5);
-            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
+            if(this.root.camera.target.x != this.root.trollyObject.meshRoot.position.x){
+                this.root.setCameraAnimLinear(270,270,70,2.5);
+                this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
+            }
           }
           else if(this.name.includes("Dialysis") && this.meshRoot.position.x<-2.5){
             this.root.scene.getMeshByName("apdcollider").visibility=1;  
-            this.root.setCameraAnimLinear(270,270,70,2.5);     
-            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
+            if(this.root.camera.target.x != this.root.trollyObject.meshRoot.position.x){
+                this.root.setCameraAnimLinear(270,270,70,2.5);     
+                this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
+            }
           }
           else if(this.meshRoot.position.x>=1.1){
-            this.root.setCameraAnimLinear(270,270,60,3);     
-            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.cabinetObject.meshRoot.position.x,this.root.cabinetObject.meshRoot.position.y,this.root.cabinetObject.meshRoot.position.z-.5));
+            if(this.root.camera.target.x != this.root.cabinetObject.meshRoot.position.x){
+                this.root.setCameraAnimLinear(270,270,60,3);     
+                this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.cabinetObject.meshRoot.position.x,this.root.cabinetObject.meshRoot.position.y,this.root.cabinetObject.meshRoot.position.z-.5));
+            }
             if(this.meshRoot.position.x>=1.5 &&  this.meshRoot.position.x<=2.5){
                 if(this.meshRoot.position.y>1.4 && this.meshRoot.position.y<2){
                     this.root.scene.getMeshByName("cabinetpartcollider1").visibility=1;
@@ -397,22 +405,26 @@ export default class CabinetItem{
                 }
                 if(this.lastPosition.x>-1.5 && this.lastPosition.x<1.1){
                     setTimeout(() => {
+                        this.root.setCameraAnimLinear(270,270,45,2.5);
                         this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));    
                     }, 500);
                     
                 }
                 else if(this.lastPosition.x>-2.5 && this.lastPosition.x<=-1.5){
                     setTimeout(() => {
+                        this.root.setCameraAnimLinear(270,270,70,2.5);
                         this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
                     }, 500);
                 }
                 else if(this.lastPosition.x<-2.5){
                     setTimeout(() => {
+                        this.root.setCameraAnimLinear(270,270,70,2.5);
                         this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
                     }, 500);
                 }
                 else if(this.lastPosition.x>=1.1){
                     setTimeout(() => {
+                        this.root.setCameraAnimLinear(270,270,60,3);     
                         this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.cabinetObject.meshRoot.position.x,this.root.cabinetObject.meshRoot.position.y,this.root.cabinetObject.meshRoot.position.z-.5));
                     }, 500);
                 }

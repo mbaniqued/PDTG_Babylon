@@ -81,7 +81,8 @@ export default class MainScene {
     this.blurV = new BABYLON.BlurPostProcess("V_blur", new BABYLON.Vector2(0,1.0), 32, 1,this.camera);
     this.scene.postProcessesEnabled = false;
     // this.sceneOptimiser = new SceneOptimiser(60,300,this.scene);
-
+    this.focusAnim=false;
+    this.cameraAnim=false;
   }
   
   initState(){
@@ -864,20 +865,28 @@ export default class MainScene {
    
   }
   setCameraAnimLinear(alphaAng,finalAlpha,betaAng,radius){
-    if(alphaAng){
-      new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?BABYLON.Angle.FromDegrees(alphaAng).radians():-BABYLON.Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-        this.camera.alpha = BABYLON.Angle.FromDegrees(finalAlpha).radians();
-      }).start();
+    if(!this.cameraAnim){
+      this.cameraAnim = true;
+      if(alphaAng){
+        new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?BABYLON.Angle.FromDegrees(alphaAng).radians():-BABYLON.Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+          this.camera.alpha = BABYLON.Angle.FromDegrees(finalAlpha).radians();
+          this.cameraAnim = false;
+        }).start();
+      }
+      if(betaAng)
+        new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(betaAng).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+      if(radius)  
+        new TWEEN.Tween(this.camera).to({radius:radius},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
     }
-    if(betaAng)
-      new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(betaAng).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
-    if(radius)  
-      new TWEEN.Tween(this.camera).to({radius:radius},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
   }
   setFocusOnObjectLinear(pos){
-      new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-          this.showResetViewButton(true);
-      }).start();
+    if(!this.focusAnim){
+        this.focusAnim = true;
+        new TWEEN.Tween(this.camera.target).to({x:pos.x,y:pos.y,z:pos.z},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+            this.showResetViewButton(true);
+            this.focusAnim = false;
+        }).start();
+    }
    
   }
   showResetViewButton(isVisible){
