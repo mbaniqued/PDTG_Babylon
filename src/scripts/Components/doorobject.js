@@ -63,7 +63,7 @@ export default class DoorObject{
                             case 0:
                                 this.root.gamestate.state  =  GameState.focus;
                                 this.state =1;
-                                this.root.setCameraAnim(205,205,90,5.5);
+                                this.root.setCameraAnim(205,205,90,6);
                                 this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z+.8));
                                 break;
                             case 1:
