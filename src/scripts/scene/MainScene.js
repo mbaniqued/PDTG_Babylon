@@ -3,7 +3,7 @@
 import * as BABYLON from "babylonjs";
 import "babylonjs-loaders";
 import LoaderManager from "../LoaderManager.js";
-// import SceneOptimiser from "../SceneOptimiser.js"; 
+import SceneOptimiser from "../SceneOptimiser.js"; 
 import Common from '../Enviroment.js' 
 import DoorObject from "../Components/doorobject.js";
 import Table from "../Components/table.js";
@@ -977,6 +977,7 @@ export default class MainScene {
           isPostProcess = this.scene.postProcessesEnabled;
           if(isPostProcess)
             this.sceneCommon.removeBlurEffect();
+          this.sceneCommon.removeMiniCam();
           if(this.wipeAlcohal.usealcohalwipe)
             this.wipeAlcohal.alocohalwipe.isVisible = false;
             this.gui2D.resetCamBtn.isVisible=false;
@@ -987,14 +988,14 @@ export default class MainScene {
             this.resultPage=0;
             this.gamestate.state = GameState.result;
             this.isResetScene = true;
+            this.sceneCommon.removeBlurEffect();
             this.gui2D.drawsubmitMenu(false);
-            this.sceneCommon.removeMiniCam();
             this.gui2D.drawObjectiveMenu(false);
             this.gui2D.drawResultShowMenu(true);
             this.updateResult();
             this.gui2D.resetCamBtn.isVisible=false;
             this.gui2D.userExitBtn.isVisible=false;
-            this.sceneCommon.removeBlurEffect();
+            
       })
       const resultcontinueBtn = this.gui2D.submitMenuContainer.getChildByName("continue_btn");
       resultcontinueBtn.onPointerUpObservable.add(()=>{
@@ -1005,7 +1006,7 @@ export default class MainScene {
           if(this.wipeAlcohal.usealcohalwipe)
             this.wipeAlcohal.alocohalwipe.isVisible = true;
           if(this.camera.radius<3)
-            this.gui2D.resetCamBtn.isVisible=true;
+             this.gui2D.resetCamBtn.isVisible=true;
             this.gui2D.userBackBtn.isVisible=true;
       })
       const resultdoneBtn = this.gui2D.resultContainer.getChildByName("doneresult");
@@ -1019,6 +1020,7 @@ export default class MainScene {
           isPostProcess = this.scene.postProcessesEnabled;
           if(isPostProcess)
             this.sceneCommon.removeBlurEffect();
+          this.sceneCommon.removeMiniCam();
           if(this.wipeAlcohal.usealcohalwipe)
             this.wipeAlcohal.alocohalwipe.isVisible = false;
           this.gui2D.resetCamBtn.isVisible=false;
@@ -1028,18 +1030,16 @@ export default class MainScene {
       backmenuBtn.onPointerUpObservable.add(()=>{
           this.isResetScene = true;
           this.gamestate.state = GameState.menu;
-          this.gui2D.drawMainMenu(true);
           this.gui2D.drawbackMenu(false);
-          this.sceneCommon.removeMiniCam();
+          this.gui2D.drawMainMenu(true);
           this.gui2D.drawObjectiveMenu(false);
           this.handwashactivity.drawhandWash(false);
+          this.wipeAlcohal.hideWipeClean();
+          this.gui2D.drawsubmitMenu(false);
+          this.sceneCommon.removeMiniCam();
+          this.sceneCommon.removeBlurEffect();
           this.gui2D.resetCamBtn.isVisible=false;
           this.gui2D.userExitBtn.isVisible=false;
-          this.gui2D.submitBtn.isVisible=false;
-          this.gui2D.submitBtn.isVisible=false;
-          this.wipeAlcohal.hideWipeClean();
-          this.sceneCommon.removeBlurEffect();
-
       })
       const backcontinueBtn = this.gui2D.backMenuContainer.getChildByName("continue_btn");
         backcontinueBtn.onPointerUpObservable.add(()=>{
