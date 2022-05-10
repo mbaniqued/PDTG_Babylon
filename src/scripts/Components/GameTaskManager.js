@@ -337,29 +337,35 @@ export default class GameTaskManager{
         if(this.taskDone>TOTAL_TASK)
             this.taskDone = TOTAL_TASK;
 
-         if(this.distractors1)   
+         if(this.distractors1){   
             this.taskPoint-=2;
-        if(this.distractors2)   
+            this.taskDone-=1;
+         }
+        if(this.distractors2){   
             this.taskPoint-=2;
+            this.taskDone-=1;
+        }
        console.log("!! total points !!"+this.taskPoint+" 222222  "+this.taskDone);     
     }
     checkPhaseComplete(result){
         let isComp = 0;
-        for(let i=0;i<result.length;i++){
-            if(result[i].value!==undefined){
-                if(result[i].value===true)
-                   isComp++;
-                if(result[i].value>0)
+        if(result){
+            for(let i=0;i<result.length;i++){
+                if(result[i].value!==undefined){
+                    if(result[i].value===true)
                     isComp++;
+                    if(result[i].value>0)
+                        isComp++;
+                }
+                else{
+                    if(result[i])
+                        isComp++;
+                }
             }
-            else{
-                if(result[i])
-                    isComp++;
-            }
+            if(isComp>=result.length)
+                return true;    
+            else   
+                return false;    
         }
-         if(isComp>=result.length)
-            return true;    
-         else   
-            return false;    
     }
 }

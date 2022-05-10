@@ -101,7 +101,7 @@ export default class GUI2D{
         
       }
       drawMainMenu(isDraw){ 
-        this.advancedTexture.renderAtIdealSize = isDraw;
+        this.advancedTexture.renderAtIdealSize = true;
         this.menuContainer.isPointerBlocker=true;
         this.menuContainer.isVisible  =  isDraw;
         this.menuContainer.getChildByName("usermodetxt").text = "User Mode";
@@ -204,7 +204,8 @@ export default class GUI2D{
               this.drawMainMenu(false);
               this.root.gamestate.state = GameState.levelstage; 
               this.drawStageMenu(true);
-              this.root.scene.getEngine().enterFullscreen();
+              // this.root.scene.getEngine().enterFullscreen();
+              document.body.requestFullscreen();
           }
       }
       initStageMenu(){
@@ -223,7 +224,7 @@ export default class GUI2D{
         this.phasebtnDisable.isPointerBlocker=false;
       }
       drawStageMenu(isDraw){
-          this.advancedTexture.renderAtIdealSize = isDraw;
+          this.advancedTexture.renderAtIdealSize = true;
           // this.root.level   = 0;
           this.menuContainer.isVisible = isDraw;
           this.menuContainer.getChildByName("usermodetxt").text = "Select Stage";
@@ -796,6 +797,7 @@ export default class GUI2D{
       return objectivebar;
     }
     drawResultShowMenu(isdraw){
+      this.advancedTexture.renderAtIdealSize = true;
       this.resultContainer.zIndex=101;
        this.resultContainer.isPointerBlocker=true;
        this.resultContainer.isVisible = isdraw;

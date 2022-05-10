@@ -82,7 +82,7 @@ export default class MainScene {
     this.scene.postProcessesEnabled = false;
     // this.sceneOptimiser = new SceneOptimiser(60,300,this.scene);
     this.focusAnim=false;
-    this.cameraAnim=false;
+    
   }
   
   initState(){
@@ -865,12 +865,10 @@ export default class MainScene {
    
   }
   setCameraAnimLinear(alphaAng,finalAlpha,betaAng,radius){
-    if(!this.cameraAnim){
-      this.cameraAnim = true;
+    if(!this.focusAnim){
       if(alphaAng){
         new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?BABYLON.Angle.FromDegrees(alphaAng).radians():-BABYLON.Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
           this.camera.alpha = BABYLON.Angle.FromDegrees(finalAlpha).radians();
-          this.cameraAnim = false;
         }).start();
       }
       if(betaAng)
@@ -963,6 +961,7 @@ export default class MainScene {
             this.sceneCommon.removeMiniCam();
             this.wipeAlcohal.hideWipeClean();
             this.handwashactivity.drawhandWash(false);
+            this.sceneCommon.removeBlurEffect();
             this.gui2D.advancedTexture.renderAtIdealSize=false;
             if(this.handSoapObject.state>=100)
                 this.handSoapObject.state=0;
@@ -1614,7 +1613,11 @@ export default class MainScene {
               inputfield.placeholderText = "SYS/DIA(PH)";
               this.ccpdbpInputField = inputfield;
               inputfield.onTextChangedObservable.add(()=>{
-                if(this.bpRecord ===inputfield.text){
+                let inputValue = inputfield.text;
+                inputValue = inputValue.replace(" ","");
+                this.ccpdbpInputField.text = inputValue;
+                console.log(this.ccpdbpInputField.text);
+                if(inputValue.includes(this.bpRecord)){
                     let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this.ccpdRecordBook,msg:"ccprd_record_fill",level:2}});
                     document.dispatchEvent(custom_event);                                                
                  }
