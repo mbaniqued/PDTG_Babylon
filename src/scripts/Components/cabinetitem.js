@@ -685,7 +685,7 @@ export default class CabinetItem{
                         const y =  this.validationPos[childmesh.name][1];
                         if(i>-1){
                                 const font2 = "bold 36px Arial";
-                                const symbol=["\u003F","\u2713","\u274C"]
+                                const symbol=["\u003F","\u2714","\u274C"]
                                 const symbolcolor=["#808080","#00FF00","#FF0000"];
                                 this.dynamicTexture.drawText(symbol[i],x*2-18,y*2+20,font2,symbolcolor[i],"transparent",true);
                             // this.root.drawImageOnTexture(this.dynamicTexture,this.root.validationImage[i],x,y,28,20);

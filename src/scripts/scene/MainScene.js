@@ -570,7 +570,7 @@ export default class MainScene {
       this.connectionTexture.drawText("2024",14,208,font,"#0000ff","transparent",true);
       if(imgno>-1){
         const font2 = "bold 92px Arial";
-        const symbol=["\u003F","\u2713","\u274C"]
+        const symbol=["\u003F","\u2714","\u274C"]
         const symbolcolor=["#808080","#00FF00","#FF0000"];
         this.connectionTexture.drawText(symbol[imgno],140,140,font2,symbolcolor[imgno],"transparent",true);
           // this.drawImageOnTexture(this.connectionTexture,this.validationImage[imgno],160,40,72,128);
@@ -630,11 +630,15 @@ export default class MainScene {
         this.drainBagTexture.drawText("2020-04-08",4,70,font,"#000000","transparent",true);
         this.drainBagTexture.drawText("2023-04-08",4,160,font,"#000000","transparent",true);
         if(imgno>-1){
-          const font2 = "bold 64px Arial";
-          const symbol=["\u003F","\u2713","\u274C"]
+          let font2 = "bold 64px Arial";
+          if(imgno==2)
+            font2 = "bold 48px Arial";
+          const symbol=["\u003F","\u2714","\u274C"]
           const symbolcolor=["#000000","#00FF00","#FF0000"];
-          this.drainBagTexture.drawText(symbol[imgno],190,130,font2,symbolcolor[imgno],"transparent",true);
-          // this.drawImageOnTexture(this.drainBagTexture,this.validationImage[imgno],190,60,56,112);
+          // if(imgno !==1)
+              this.drainBagTexture.drawText(symbol[imgno],190,130,font2,symbolcolor[imgno],"transparent",true);
+          //  else 
+          //     this.drawImageOnTexture(this.drainBagTexture,document.getElementById("correctsymbol"),190,70,64,128);
         }
         this.drainBagTexture.update();
       }
