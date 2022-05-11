@@ -1,10 +1,9 @@
-  // https://github.com/mbaniqued/PDTG_Babylon
+// https://github.com/mbaniqued/PDTG_Babylon
 // Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The HTMLImageElement provided is in the 'broken' state.
 import * as BABYLON from "babylonjs";
 import "babylonjs-loaders";
 import LoaderManager from "../LoaderManager.js";
 import SceneOptimiser from "../SceneOptimiser.js"; 
-import Common from '../Enviroment.js' 
 import DoorObject from "../Components/doorobject.js";
 import Table from "../Components/table.js";
 import Trolly from "../Components/trolly.js";
@@ -80,7 +79,7 @@ export default class MainScene {
     this.blurH = new BABYLON.BlurPostProcess("H_blur", new BABYLON.Vector2(1,0.0), 32, 1,this.camera);
     this.blurV = new BABYLON.BlurPostProcess("V_blur", new BABYLON.Vector2(0,1.0), 32, 1,this.camera);
     this.scene.postProcessesEnabled = false;
-    // this.sceneOptimiser = new SceneOptimiser(60,300,this.scene);
+    
     this.focusAnim=false;
     
   }
@@ -143,6 +142,8 @@ export default class MainScene {
     this.createccpdCanvas();
     this.startFan();
     this.setAc(true);
+    this.scene.freezeMaterials();
+    this.sceneOptimiser = new SceneOptimiser(60,500,this.scene);  
     // this.scene.getMeshByName("fanbtn").isVisible = false;
     console.log(" !!!!!!!!! initscene!!! ");
       resolve('resolved');
@@ -635,10 +636,10 @@ export default class MainScene {
             font2 = "bold 48px Arial";
           const symbol=["\u003F","\u2714","\u274C"]
           const symbolcolor=["#000000","#00FF00","#FF0000"];
-          // if(imgno !==1)
+          if(imgno !==1)
               this.drainBagTexture.drawText(symbol[imgno],190,130,font2,symbolcolor[imgno],"transparent",true);
-          //  else 
-          //     this.drawImageOnTexture(this.drainBagTexture,document.getElementById("correctsymbol"),190,70,64,128);
+           else 
+              this.drawImageOnTexture(this.drainBagTexture,document.getElementById("correctsymbol"),190,70,64,128);
         }
         this.drainBagTexture.update();
       }
@@ -955,7 +956,7 @@ export default class MainScene {
             this.startGame(); 
             resolve('setGame');
          }
-      // this.sceneOptimiser.startOptimiser();
+      this.sceneOptimiser.startOptimiser();
     });
   }
   handleUI(){
@@ -990,8 +991,10 @@ export default class MainScene {
           if(isPostProcess)
             this.sceneCommon.removeBlurEffect();
           this.sceneCommon.removeMiniCam();
-          if(this.wipeAlcohal.usealcohalwipe)
-            this.wipeAlcohal.alocohalwipe.isVisible = false;
+          if(this.wipeAlcohal.usealcohalwipe){
+             this.wipeAlcohal.alocohalwipe.isVisible = false;
+             document.getElementById("alcoholwipeicon").style.display="none";
+          }
             this.gui2D.resetCamBtn.isVisible=false;
             this.gui2D.userBackBtn.isVisible=false;
         });
@@ -1015,8 +1018,10 @@ export default class MainScene {
           this.gui2D.drawsubmitMenu(false);
           if(isPostProcess)
             this.sceneCommon.addBlurEffect();
-          if(this.wipeAlcohal.usealcohalwipe)
+          if(this.wipeAlcohal.usealcohalwipe){
             this.wipeAlcohal.alocohalwipe.isVisible = true;
+            document.getElementById("alcoholwipeicon").style.display="block";
+          }
           if(this.camera.radius<3)
              this.gui2D.resetCamBtn.isVisible=true;
             this.gui2D.userBackBtn.isVisible=true;
@@ -1033,8 +1038,10 @@ export default class MainScene {
           if(isPostProcess)
             this.sceneCommon.removeBlurEffect();
           this.sceneCommon.removeMiniCam();
-          if(this.wipeAlcohal.usealcohalwipe)
-            this.wipeAlcohal.alocohalwipe.isVisible = false;
+          if(this.wipeAlcohal.usealcohalwipe){
+             this.wipeAlcohal.alocohalwipe.isVisible = false;
+             document.getElementById("alcoholwipeicon").style.display="none";
+          }
           this.gui2D.resetCamBtn.isVisible=false;
           this.gui2D.userBackBtn.isVisible=false;
       })
@@ -1058,8 +1065,10 @@ export default class MainScene {
           this.gui2D.drawbackMenu(false);
           if(isPostProcess)
             this.sceneCommon.addBlurEffect();
-          if(this.wipeAlcohal.usealcohalwipe)
+          if(this.wipeAlcohal.usealcohalwipe){
               this.wipeAlcohal.alocohalwipe.isVisible = true;
+              document.getElementById("alcoholwipeicon").style.display="block";
+          }
           if(this.camera.radius<3)
               this.gui2D.resetCamBtn.isVisible=true;
           this.gui2D.userBackBtn.isVisible=true;

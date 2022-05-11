@@ -12,7 +12,6 @@ export default class LoaderManager {
     this.Counter=0;
     this.isLoad=false;
     // this.root.scene.shadowsEnabled =true;
-    
     this.loadSceneAssets();
   }
    
@@ -708,15 +707,15 @@ export default class LoaderManager {
     tableupperColllider.renderOutline=false;
     tableupperColllider.isPickable=false;
     tableupperColllider.material = tableMat;
-    tableupperColllider.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),0,0);
-    tableupperColllider.position.set(-.3,1.92,2.5);
+    tableupperColllider.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),0,0);
+    tableupperColllider.position = new BABYLON.Vector3(-.3,1.92,2.5);
     tableupperColllider.visibility=0;
 
     const trollyCollider = tableupperColllider.clone("trollycollider"); 
     trollyCollider.renderOutline=false;
     trollyCollider.isPickable=false;
     trollyCollider.position = new BABYLON.Vector3(-2.2,1.80,2.50);
-    trollyCollider.scaling.set(.3,.8,1)
+    trollyCollider.scaling  = new BABYLON.Vector3(.3,.8,1)
     trollyCollider.visibility=0;
     trollyCollider.isPickable=false;
     trollyCollider.renderOutline=false;
@@ -727,10 +726,10 @@ export default class LoaderManager {
     apdCassetteTrolly.visibility=0;
     apdCassetteTrolly.position = new BABYLON.Vector3(-2.7,1.80,2.50);
 
-    const trollyreckCollider =   trollyCollider.clone("trollyreckcollider")  
-    trollyreckCollider.visibility=0;
-    trollyreckCollider.position  = new BABYLON.Vector3(-2.9,.5,2.5); 
-    trollyreckCollider.scaling.set(.83,.83,1);
+    const trollyreckCollider      = trollyCollider.clone("trollyreckcollider")  
+    trollyreckCollider.visibility = 0;
+    trollyreckCollider.position   = new BABYLON.Vector3(-2.9,.5,2.5); 
+    trollyreckCollider.scaling    = new BABYLON.Vector3(.83,.83,1);
 
     const apdCollider = tableupperColllider.clone("apdcollider"); 
     apdCollider.renderOutline=false;
@@ -742,17 +741,17 @@ export default class LoaderManager {
     apdCollider.visibility=0;
 
 
-    const apdSwitch = BABYLON.MeshBuilder.CreateSphere("apdswitch_sphere", {diameterX:.04,diameterY:.04,diameterZ:.02});
-    apdSwitch.position.set(-3.688,1.890, 2.12);
-    apdSwitch.visibility=1;
-    const apdSwitchmat = new BABYLON.StandardMaterial("apdswitch_sphere_mat")
+    const apdSwitch      = BABYLON.MeshBuilder.CreateSphere("apdswitch_sphere", {diameterX:.04,diameterY:.04,diameterZ:.02});
+    apdSwitch.position   = new BABYLON.Vector3(-3.688,1.890, 2.12);
+    apdSwitch.visibility = 1;
+    const apdSwitchmat   = new BABYLON.StandardMaterial("apdswitch_sphere_mat")
     apdSwitchmat.diffuseColor = new BABYLON.Color3.FromInts(0,255,0);
-    apdSwitch.material =  apdSwitchmat;
+    apdSwitch.material    =  apdSwitchmat;
     this.setPickable(apdSwitch,.01);
 
-    const acIndicator = BABYLON.MeshBuilder.CreateSphere("acindicator", {diameter:.05},this.scene);
-    const acIndicatorMat = new StandardMaterial("acindicatormat",this.scene);
-    acIndicator.position = new BABYLON.Vector3(-5.17,4.72,2.71);
+    const acIndicator            = BABYLON.MeshBuilder.CreateSphere("acindicator", {diameter:.05},this.scene);
+    const acIndicatorMat         = new StandardMaterial("acindicatormat",this.scene);
+    acIndicator.position         = new BABYLON.Vector3(-5.17,4.72,2.71);
     acIndicatorMat.diffuseColor  = new BABYLON.Color3.FromInts(0,255,0);
     acIndicator.material         = acIndicatorMat;
 
@@ -762,30 +761,27 @@ export default class LoaderManager {
     cabinetPartCollider.diffuseColor = new BABYLON.Color3.FromInts(107,166,163);
     cabinetPartCollider.emissiveColor = new BABYLON.Color3.FromInts(107,166,163);
     cabinetpart.renderOutline=false;
-    cabinetpart.isPickable=false;
-    cabinetpart.material = tableMat;
-    cabinetpart.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),0,0);
-    cabinetpart.position.set(2.119,1.47,2.43);
-    cabinetpart.scaling.set(.82,.54,1);
-    cabinetpart.visibility=0;
+    cabinetpart.isPickable = false;
+    cabinetpart.material   = tableMat;
+    cabinetpart.rotation   = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),0,0);
+    cabinetpart.position   = new BABYLON.Vector3(2.119,1.47,2.43);
+    cabinetpart.scaling    = new BABYLON.Vector3(.82,.54,1);
+    cabinetpart.visibility = 0;
 
-  const cabinetpart2 = cabinetpart.clone("cabinetpartcollider2");
-  cabinetpart2.position.set(1.87,1.07,2.43);
-  cabinetpart2.scaling.set(1.41,.54,1);
+  const cabinetpart2    = cabinetpart.clone("cabinetpartcollider2");
+  cabinetpart2.position = new BABYLON.Vector3(1.87,1.07,2.43);
+  cabinetpart2.scaling  = new BABYLON.Vector3(1.41,.54,1);
   cabinetpart2.visibility=0;
 
-  const cabinetpart3 = cabinetpart.clone("cabinetpartcollider3");
-  cabinetpart3.position.set(1.87,.67,2.43);
-  cabinetpart3.scaling.set(1.41,.54,1);
+  const cabinetpart3    = cabinetpart.clone("cabinetpartcollider3");
+  cabinetpart3.position = new BABYLON.Vector3(1.87,.67,2.43);
+  cabinetpart3.scaling  = new BABYLON.Vector3(1.41,.54,1);
   cabinetpart3.visibility=0;
 
   const cabinetpart4 = cabinetpart.clone("cabinetpartcollider4");
-  cabinetpart4.position.set(1.87,.24,2.43);
-  cabinetpart4.scaling.set(1.41,.54,1);
+  cabinetpart4.position = new BABYLON.Vector3(1.87,.24,2.43);
+  cabinetpart4.scaling  = new BABYLON.Vector3(1.41,.54,1);
   cabinetpart4.visibility=0;
-
-    
-    
   // console.log("meshes", meshes)
    this.assetsManager.onProgress = (
       remainingCount,
@@ -820,10 +816,10 @@ export default class LoaderManager {
    
   }
   createShadowGenerator(mesh){
-    this.shadowGenerator = new BABYLON.ShadowGenerator(512, this.root.sceneCommon.directionalLight);
-    this.shadowGenerator.getShadowMap().renderList.push(mesh);
-    this.shadowGenerator.useContactHardeningShadow = true;
-    this.shadowGenerator.contactHardeningLightSizeUVRatio = 0.07;
+    // this.shadowGenerator = new BABYLON.ShadowGenerator(512, this.root.sceneCommon.directionalLight);
+    // this.shadowGenerator.getShadowMap().renderList.push(mesh);
+    // this.shadowGenerator.useContactHardeningShadow = true;
+    // this.shadowGenerator.contactHardeningLightSizeUVRatio = 0.07;
   }
   
 }

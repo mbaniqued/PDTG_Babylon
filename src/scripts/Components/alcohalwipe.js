@@ -64,7 +64,8 @@ export default class AlcoholWipe{
             }
         }
         createwipeAlcohalIcon(){
-            this.alocohalwipe   =  this.root.gui2D.createImage("alocohalwipeicon","ui/wetwipes.png",100,100,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+            this.alocohalwipe   =  this.root.gui2D.createImage("alocohalwipeicon","ui/wetwipes.png",100,100,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+            this.alocohalwipe.alpha=0;
             this.msg            =  this.root.gui2D.createText("bartitle","Click & swipe to clean\n the highlighted areas",32,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
             this.msg.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
             this.msg.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
@@ -76,11 +77,13 @@ export default class AlcoholWipe{
             this.msg.topInPixels=30;
             this.root.scene.registerBeforeRender(()=> {
                 if(this.usealcohalwipe){
-                    const width  = this.root.game.engine.getRenderWidth();
-                    const height = this.root.game.engine.getRenderHeight();
-                    this.alocohalwipe.leftInPixels = this.root.scene.pointerX - (width / 2.0);
-                    this.alocohalwipe.topInPixels  = this.root.scene.pointerY - (height / 2.0);
-                    this.alocohalwipe.isPointerBlocker=false;
+                    // const width  = this.root.game.engine.getRenderWidth();
+                    // const height = this.root.game.engine.getRenderHeight();
+                    // this.alocohalwipe.leftInPixels = this.root.scene.pointerX;
+                    // this.alocohalwipe.topInPixels  = this.root.scene.pointerY-height;
+                    // this.alocohalwipe.isPointerBlocker=false;
+                    document.getElementById("alcoholwipeicon").style.left = this.root.scene.pointerX-this.alocohalwipe.widthInPixels/2 + "px";
+                    document.getElementById("alcoholwipeicon").style.top = this.root.scene.pointerY-this.alocohalwipe.heightInPixels/2+"px";
                 }
             });       
             this.touch=false;
@@ -144,7 +147,7 @@ export default class AlcoholWipe{
                     this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-1));
                     clearTimeout(tout)
                 }, 500);
-                
+                document.getElementById("alcoholwipeicon").style.display = "none";
                 this.accessAlcohal=true;
                 this.usealcohalwipe=false;
                 this.alocohalwipe.isVisible = false;
@@ -185,6 +188,7 @@ export default class AlcoholWipe{
             for(let i=0;i<this.wipespotplanenode.length;i++){
                 this.drawalcohalwipe(false,i);
             }
+            document.getElementById("alcoholwipeicon").style.display = "none";
         }
         reset(){
             this.accessAlcohal=false;
@@ -201,6 +205,7 @@ export default class AlcoholWipe{
                 this.wipespotplanenode[i].getChildMeshes()[1].material.emissiveColor   = new BABYLON.Color3.FromInts(128,128,128);
                 this.drawalcohalwipe(true,i);
             }   
+            document.getElementById("alcoholwipeicon").style.display = "block";
             
         }
         drawalcohalwipe(draw,i){

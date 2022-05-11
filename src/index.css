@@ -16,6 +16,9 @@ html, body{
     src: url("/ui/font/S_Hand.ttf") format("truetype");
   }
   #game{
+      position: fixed;
+      left: 0%;
+      top: 0%;
       margin:  0;
       padding: 0;
       width:   100%;
@@ -71,6 +74,15 @@ html, body{
   touch-action: none;
   pointer-events: none;
   display: none;
+}
+#alcoholwipeicon{
+  position: absolute;
+   display:none; 
+   z-index: 1; 
+   width: 5vw;
+   height: 5vw; 
+   touch-action: none;
+   pointer-events: none;
 }
 @keyframes spin {
   0% { transform: rotate(0deg); }
