@@ -142,7 +142,7 @@ export default class MainScene {
     this.createccpdCanvas();
     this.startFan();
     this.setAc(true);
-    this.scene.freezeMaterials();
+    // this.scene.freezeMaterials();
     this.sceneOptimiser = new SceneOptimiser(60,500,this.scene);  
     // this.scene.getMeshByName("fanbtn").isVisible = false;
     console.log(" !!!!!!!!! initscene!!! ");
