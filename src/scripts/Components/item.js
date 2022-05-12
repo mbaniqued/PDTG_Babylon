@@ -26,7 +26,6 @@ export default class Item{
             this.label = this.root.gui2D.createRectLabel(this.name,228,36,10,"#FFFFFF",this.meshRoot,150,-100);
             this.label.isVisible=false;
             
-            this.useItem=false;
             this.tout=undefined;
             this.tween=undefined;
             this.valdiationCheck=-1;
@@ -493,6 +492,7 @@ export default class Item{
         new TWEEN.Tween(this.meshRoot.position).to({x:this.root.camera.target.x+newPos.x,y:this.root.camera.target.y+newPos.y,z:this.root.camera.target.z+newPos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
         new TWEEN.Tween(this.meshRoot.scaling).to({x:scalAnim,y:scalAnim,z:scalAnim},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
             this.root.rotateMesh(this.meshRoot);
+            this.root.gui2D.resetCamBtn.isVisible = false;
             this.root.gui2D.userExitBtn.isVisible = true;
             this.root.gui2D.userExitBtn._onPointerUp = ()=>{
                 showMenu = false;

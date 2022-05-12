@@ -109,7 +109,7 @@ export default class MainScene {
     this.fanswitchobject   = new FanSwitch(this,this.scene.getNodeByName("fanswitchnode"));
     
     
-    this.bpMachineItem     = new Item("Blood Pressure Monitor",this,this.scene.getTransformNodeByID("bpmachinenode"),{x:-69,y:30,z:33},{x:-93,y:17,z:-8},undefined);
+    this.bpMachineItem     = new Item("Blood Pressure Monitor",this,this.scene.getTransformNodeByID("bpmachinenode"),{x:-69,y:30,z:33},{x:-93,y:17,z:0},undefined);
     this.createBpText();
     this.connectionItem    = new Item("Connection Shield",this,this.scene.getTransformNodeByID("ConnectionShield"),{x:-70,y:5,z:38.5},{x:-65,y:-55,z:-4},undefined); 
     this.createconnectionItemValidation();
@@ -155,7 +155,7 @@ export default class MainScene {
     // });
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
-      const val=.01;
+      const val=.1;
       switch(event.key){
          case "ArrowDown":
             SY -=val;
@@ -178,12 +178,12 @@ export default class MainScene {
             SZ-=val;
           break;
       }
-      
-      // this.scene.getNodeByName("apdnode").getChildMeshes().forEach(childmesh => {
-      //     if(childmesh.id === "DeviceDialysisReference_primitive5"){
-      //         // childmesh.position = new BABYLON.Vector3(SX,SY,SZ);
+      // this.bpMachineItem.meshRoot.getChildMeshes().forEach(childmesh => {
+      //     if(childmesh.id === "BPBandArmClose.003"){//BPBandArmClose.003
+      //         childmesh.position = new BABYLON.Vector3( SX,SY,SZ);
       //     }
       // });
+      // this.scene.getMeshByName("bptextplan").position = new BABYLON.Vector3( SX,SY,SZ);
       // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
@@ -652,13 +652,18 @@ export default class MainScene {
       ctx.clearRect(0,0,this.apdDateTexture.getSize().width,this.apdDateTexture.getSize().height);
       this.apdDateTexture.dispose();
       this.apdDateTexture = null;
+
+      ctx = this.apdDateTexture2.getContext();
+      ctx.clearRect(0,0,this.apdDateTexture2.getSize().width,this.apdDateTexture2.getSize().height);
+      this.apdDateTexture2.dispose();
+      this.apdDateTexture2 = null;
     }
      const datePlan = BABYLON.MeshBuilder.CreatePlane("validation_apddate_plan",{width:22,height:20,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
      datePlan.parent = this.apdmachinePackage.meshRoot;
      datePlan.isPickable=false;
      datePlan.renderOutline=false;
      datePlan.outlineWidth=0;
-     datePlan.position  = new BABYLON.Vector3(-9.7,-.5,-30.7);
+     datePlan.position  = new BABYLON.Vector3(-11,-2,-29);
      datePlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
      
      this.apdDateTexture   = this.dynamicTexture.clone(); //new BABYLON.DynamicTexture("apddate_texture",size,this.scene);
@@ -676,19 +681,19 @@ export default class MainScene {
      dateHighlightPlan.parent    = null;
      dateHighlightPlan.parent    = this.apdmachinePackage.meshRoot;
      dateHighlightPlan.isPickable=true;
-     dateHighlightPlan.position  = new BABYLON.Vector3(-2.10,-.4,-29.8);
+     dateHighlightPlan.position  = new BABYLON.Vector3(-5,0,-29);
      dateHighlightPlan.scaling   = new BABYLON.Vector3(1.3,.3,1);
      dateHighlightPlan.visibility=0;
      const planmat2              = this.scene.getMaterialByName("highlight_mat").clone();
      dateHighlightPlan.material  = planmat2;
 
 
-     const tubevalidationPlan = BABYLON.MeshBuilder.CreatePlane("validation_tube_plan",{width:20,height:20,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.scene);
+     const tubevalidationPlan = BABYLON.MeshBuilder.CreatePlane("validation_tube_plan",{width:30,height:20,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.scene);
      tubevalidationPlan.parent = this.apdmachinePackage.meshRoot;
      tubevalidationPlan.isPickable=false;
      tubevalidationPlan.renderOutline=false;
      tubevalidationPlan.outlineWidth=0;
-     tubevalidationPlan.position  = new BABYLON.Vector3(1,-17,-24);
+     tubevalidationPlan.position  = new BABYLON.Vector3(1,-8,-25);
      tubevalidationPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
 
      this.apdDateTexture2   = this.dynamicTexture.clone(); //new BABYLON.DynamicTexture("apddate_texture",size,this.scene);
@@ -707,7 +712,7 @@ export default class MainScene {
      tubeHighlightPlan.parent    = null;
      tubeHighlightPlan.parent    = this.apdmachinePackage.meshRoot;
      tubeHighlightPlan.isPickable=true;
-     tubeHighlightPlan.position  = new BABYLON.Vector3(0,-22,-20);
+     tubeHighlightPlan.position  = new BABYLON.Vector3(0,-14,-15);
      tubeHighlightPlan.scaling   = new BABYLON.Vector3(1.35,.9,-1);
      tubeHighlightPlan.visibility=0;
      this.onHighlightApdPlan = (value,type)=>{
@@ -728,7 +733,7 @@ export default class MainScene {
                 const symbolcolor=["#808080","#00FF00","#FF0000"];
                 this.apdDateTexture.drawText(symbol[imgno],190,116,font2,symbolcolor[imgno],"transparent",true);
             }
-            this.apdDateTexture2.update();
+            this.apdDateTexture.update();
          }
          if(type === 1){
             let ctx = this.apdDateTexture2.getContext();
@@ -775,7 +780,8 @@ export default class MainScene {
     planmat.diffuseTexture = this.bpnumberTexture;
     bpPlan.material  = planmat;
     bpPlan.scaling   = new BABYLON.Vector3(1.4,3.2,1);
-    bpPlan.position  = new BABYLON.Vector3(17.8,13,-8);
+    // 2.500000000000001 !!sy!!  0.9999999999999997!! sz !! -15.499999999999961
+    bpPlan.position  = new BABYLON.Vector3(2.5,1,-16);
     bpPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-30).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
     this.setbpRecord(0,false);
   }
@@ -1143,7 +1149,7 @@ export default class MainScene {
 
                         for(let i=0;i<values.length;i++){ 
                           gameObjectives.push({status:false,msg:values[i]});
-                          this.objectivebar[i] = this.gui2D.createBar(values[i],380,i===0?250:160);
+                          this.objectivebar[i] = this.gui2D.createBar(values[i],380,i===0?270:160);
                           this.gui2D.objectiveBg.addControl(this.objectivebar[i]); 
                           this.objectivebar[i].isVisible = i===0;
                           this.objectivebar[i].getChildByName("rightarrow").alpha=.5;
@@ -1629,7 +1635,6 @@ export default class MainScene {
                 let inputValue = inputfield.text;
                 inputValue = inputValue.replace(" ","");
                 this.ccpdbpInputField.text = inputValue;
-                console.log(this.ccpdbpInputField.text);
                 if(inputValue.includes(this.bpRecord)){
                     let custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this.ccpdRecordBook,msg:"ccprd_record_fill",level:2}});
                     document.dispatchEvent(custom_event);                                                

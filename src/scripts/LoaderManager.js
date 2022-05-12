@@ -29,8 +29,8 @@ export default class LoaderManager {
       this.assetsManager.addMeshTask("gasStove2","","models/","gasStove2.glb");
       this.assetsManager.addMeshTask("cabinethanging","","models/","Cabinet_Hanging.glb");
       this.assetsManager.addMeshTask("airconditioner_remote","","models/","Airconditioner_Remote.glb");
-      this.assetsManager.addMeshTask("APD_Machine_v2","","models/","APD_Machine_v2.glb");
-      this.assetsManager.addMeshTask("bp_monitor","","models/Items/","bpmachine.glb");
+      this.assetsManager.addMeshTask("APD_Machine_v2","","models/","APD_Machine_v3.glb");
+      this.assetsManager.addMeshTask("bp_monitor","","models/Items/","BPMonitor_Final.glb");
       this.assetsManager.addMeshTask("Alcohol_Wipe","","models/Items/","Alcohol_Wipe.glb");
       this.assetsManager.addMeshTask("ConnectionShield","","models/Items/","ConnectionShield.glb");
       this.assetsManager.addMeshTask("DrainBag","","models/Items/","DrainBag_final.glb");
@@ -41,7 +41,7 @@ export default class LoaderManager {
       this.assetsManager.addMeshTask("ceiling_fan","","models/","ceiling_fan.glb");
       
       this.assetsManager.addMeshTask("fanswitch","","models/","fanswitch.glb");
-      this.assetsManager.addMeshTask("APD_Package_v2","","models/Items/","APD_Package_v2.glb");
+      this.assetsManager.addMeshTask("APD_Package_v2","","models/Items/","apd_final2.glb");
       this.assetsManager.addMeshTask("PaperTowel","","models/Items/","PaperTowel.glb");
       this.assetsManager.addMeshTask("LiquidHandsoap","","models/Items/","LiquidHandsoap.glb");
       
@@ -168,6 +168,12 @@ export default class LoaderManager {
               task.loadedMeshes[i].name="bp_monitor"+i;
               this.setPickable(task.loadedMeshes[i],1);
               task.loadedMeshes[i].scaling.set(-.8,.8,.8);
+              if(task.loadedMeshes[i].id === "BPMonitor_primitive0")
+                  task.loadedMeshes[i].position = new BABYLON.Vector3(18,1,0); 
+              if(task.loadedMeshes[i].id === "BPBandArmClose.003"){
+                  task.loadedMeshes[i].position = new BABYLON.Vector3(-28,-72,0);
+                  task.loadedMeshes[i].rotation = new BABYLON.Vector3(0,0,0);
+              }
             }
             // bpnode.scaling.set(-.8,.8,.8);
         }
@@ -253,28 +259,28 @@ export default class LoaderManager {
           const apdnode       = new BABYLON.TransformNode("apdnode");
           for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
             task.loadedMeshes[i].parent  = apdnode;
-            task.loadedMeshes[i].position = new BABYLON.Vector3(0,0,0);
+            // task.loadedMeshes[i].position = new BABYLON.Vector3(0,0,0);
             task.loadedMeshes[i].name="apdmachine"+i;
             this.setPickable(task.loadedMeshes[i],.3);
-            if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive3"){
-                 task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
-                 task.loadedMeshes[i].position = new BABYLON.Vector3(0,-9,5);
-            }
-            if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive6" || task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive5"){
-              if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive6"){
-                  task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(75).radians();  
-                  task.loadedMeshes[i].position = new BABYLON.Vector3(-13.5,-8.6,-.5);
-              }
-              else{
-                  task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
-                  task.loadedMeshes[i].position = new BABYLON.Vector3(-13.2,-9.2,1);
-                  // -13.199999999999969 !!sy!!  -9.199999999999983!! sz !! 0.9999999999999996
-              }
-              task.loadedMeshes[i].rotation.z = BABYLON.Angle.FromDegrees(90).radians();  
+            // if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive3"){
+            //      task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
+            //      task.loadedMeshes[i].position = new BABYLON.Vector3(0,-9,5);
+            // }
+            // if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive6" || task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive5"){
+            //   if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive6"){
+            //       task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(75).radians();  
+            //       task.loadedMeshes[i].position = new BABYLON.Vector3(-13.5,-8.6,-.5);
+            //   }
+            //   else{
+            //       task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
+            //       task.loadedMeshes[i].position = new BABYLON.Vector3(-13.2,-9.2,1);
+            //       // -13.199999999999969 !!sy!!  -9.199999999999983!! sz !! 0.9999999999999996
+            //   }
+            //   task.loadedMeshes[i].rotation.z = BABYLON.Angle.FromDegrees(90).radians();  
               
-            }
-            if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive7")
-                task.loadedMeshes[i].position.z = -1.4;
+            // }
+            // if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive7")
+            //     task.loadedMeshes[i].position.z = -1.4;
           }
           apdnode.scaling.set(-5,5,5);
           apdnode.parent = this.root.trollyRoot;
@@ -741,8 +747,8 @@ export default class LoaderManager {
     apdCollider.visibility=0;
 
 
-    const apdSwitch      = BABYLON.MeshBuilder.CreateSphere("apdswitch_sphere", {diameterX:.04,diameterY:.04,diameterZ:.02});
-    apdSwitch.position   = new BABYLON.Vector3(-3.688,1.890, 2.12);
+    const apdSwitch      = BABYLON.MeshBuilder.CreateSphere("apdswitch_sphere", {diameterX:.035,diameterY:.035,diameterZ:.02});
+    apdSwitch.position   = new BABYLON.Vector3(-3.685,1.895, 2.121);
     apdSwitch.visibility = 1;
     const apdSwitchmat   = new BABYLON.StandardMaterial("apdswitch_sphere_mat")
     apdSwitchmat.diffuseColor = new BABYLON.Color3.FromInts(0,255,0);
