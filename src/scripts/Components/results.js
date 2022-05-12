@@ -421,7 +421,7 @@ export class Result{
              }
              else{
                 // console.log(MACHINE_PREPRATION.indexOf("Inspect and validate the Connection Shield"));  
-                const resultbar = this.root.gui2D.createResultBar(MACHINE_PREPRATION[cnt],450,80);
+                const resultbar = this.root.gui2D.createResultBar(MACHINE_PREPRATION[cnt],450,82);
                 resultbar.paddingTopInPixels = 10;
                 contentpanel.addControl(resultbar);
                 resultbar.background = FOCUSCOLOR;

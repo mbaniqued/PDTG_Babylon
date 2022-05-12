@@ -786,7 +786,7 @@ export default class GUI2D{
       wrongArrowImage.isVisible=true;
       objectivebar.addControl(wrongArrowImage);
       const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-      bartitle.lineSpacing    = -2;
+      bartitle.lineSpacing    =  -1;
       bartitle.widthInPixels  =  parseInt(width*.85);
       bartitle.heightInPixels =  height;
       bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
