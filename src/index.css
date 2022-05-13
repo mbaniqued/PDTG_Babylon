@@ -10,11 +10,6 @@ html, body{
   -webkit-touch-callout: none;
    /* position: fixed; */
   }
-  @font-face {
-    font-family: "s_hand";
-    font-weight: 400;
-    src: url("/ui/font/S_Hand.ttf") format("truetype");
-  }
   #game{
       position: fixed;
       left: 0%;
@@ -24,25 +19,6 @@ html, body{
       width:   100%;
       height:  100%;
       user-select: none;
-  }
-/* Solid border */
-  .btn {
-    border: 2px solid black;
-    background-color: white;
-    color: black;
-    padding: 10px 25px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-left: 37px;    
-  }
-  .btn-primary{
-    position: absolute;
-    left: 50%;
-    top:  50%;
-    align-self: center;
-    transform: translate(-50%, -50%);
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
   }
   #fps{
     position: absolute;
