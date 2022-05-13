@@ -5,18 +5,17 @@ export default class GUI2D{
 
      constructor(root){
         this.root = root;
-        this.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        this.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI",true,this.root.scene,BABYLON.Texture.NEAREST_NEAREST);
         this.advancedTexture.layer.layerMask=1;
-        // this.advancedTexture.useInvalidateRectOptimization = false;
-        let dpr = window.devicePixelRatio;
-        if(dpr<1)
-           dpr =1;
-        if(dpr>1)
-           dpr=1;
-        console.log(this.advancedTexture.renderScale+"      "+window.devicePixelRatio);
-        this.advancedTexture.renderScale = window.devicePixelRatio<=1?1:2;
-        this.advancedTexture.rootContainer.scaleX = dpr;
-        this.advancedTexture.rootContainer.scaleY = dpr;
+        // let dpr = window.devicePixelRatio;
+        // if(dpr<1)
+        //    dpr =1;
+        // if(dpr>1)
+        //    dpr=1;
+        // console.log(this.advancedTexture.renderScale+"      "+window.devicePixelRatio);
+        this.advancedTexture.renderScale = 2;
+        this.advancedTexture.rootContainer.scaleX = 1;
+        this.advancedTexture.rootContainer.scaleY = 1;
         this.initUi();
      }
      initUi(){
@@ -485,20 +484,19 @@ export default class GUI2D{
       }
       createBar(msg,width,height){
         const  objectivebar     =  this.createRect("objectivebar",width,height,5,"#567F9033",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
-        const  rightArrowImage  =  this.createImage("rightarrow","ui/white.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        const  rightArrowImage  =  this.createImage("rightarrow","ui/white.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         rightArrowImage.isVisible=true;
         objectivebar.addControl(rightArrowImage);
-        const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
         bartitle.widthInPixels  =  parseInt(width*.8);
         bartitle.heightInPixels =  height;
-        bartitle.lineSpacing    = 0;
+        bartitle.lineSpacing    = -5;
         bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        bartitle.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        bartitle.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
         bartitle.resizeToFit = false;
         bartitle.leftInPixels =40;
-        bartitle.paddingTopInPixels =2;
+        // bartitle.paddingTopInPixels =2;
         bartitle.textWrapping=true;
-        // objectivebar._automaticSize =true;
         objectivebar.addControl(bartitle);
         return objectivebar;
       }
@@ -794,7 +792,8 @@ export default class GUI2D{
       wrongArrowImage.isVisible=true;
       objectivebar.addControl(wrongArrowImage);
       const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-      bartitle.lineSpacing    =  -2;
+      bartitle.lineSpacing    = -2;
+      
       bartitle.widthInPixels  =  parseInt(width*.85);
       bartitle.heightInPixels =  height;
       bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
@@ -802,7 +801,7 @@ export default class GUI2D{
       bartitle.resizeToFit = false;
       bartitle.leftInPixels =40;
       bartitle.textWrapping=true;
-      bartitle.paddingTopInPixels =2;
+      // bartitle.paddingTopInPixels =2;
       objectivebar.addControl(bartitle);
       return objectivebar;
     }
