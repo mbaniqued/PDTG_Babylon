@@ -61,7 +61,7 @@ export default class GameTaskManager{
             this.root.windowObject.closeWindow();
         }, action_time*4);
         setTimeout(() => {
-            this.root.acItem.isAcOff = false;
+            this.root.acItem.isAcOff = true;
             this.root.scene.getMeshByName("acindicator").material.diffuseColor  = new BABYLON.Color3.FromInts(255,0,0);
             this.root.audioManager.playSound(this.root.audioManager.acSound);
             this.root.setAc(false);

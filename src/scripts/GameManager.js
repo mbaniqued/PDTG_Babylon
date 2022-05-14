@@ -10,7 +10,7 @@ export class GameManger {
 
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
-        this.engine = new BABYLON.Engine(this.canvas,true, null, false);
+        this.engine = new BABYLON.Engine(this.canvas,true);
         this.engine.enableOfflineSupport=true;
         this.sceneManager = new SceneManager();
         this.sceneManager.setSceneState(this.sceneManager.sceneState.basic);

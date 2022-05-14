@@ -5,17 +5,19 @@ export default class GUI2D{
 
      constructor(root){
         this.root = root;
-        this.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI",true,this.root.scene,BABYLON.Texture.NEAREST_NEAREST);
+        this.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this.advancedTexture.layer.layerMask=1;
-        // let dpr = window.devicePixelRatio;
+        let dpr = window.devicePixelRatio;
         // if(dpr<1)
         //    dpr =1;
         // if(dpr>1)
         //    dpr=1;
         // console.log(this.advancedTexture.renderScale+"      "+window.devicePixelRatio);
         this.advancedTexture.renderScale = 2;
-        this.advancedTexture.rootContainer.scaleX = 1;
-        this.advancedTexture.rootContainer.scaleY = 1;
+        // const sceneSize = Math.min(window.innerWidth, window.innerHeight);
+        // this.advancedTexture.scale(dpr);
+        // this.advancedTexture.rootContainer.scaleX = 1;
+        // this.advancedTexture.rootContainer.scaleY = 1;
         this.initUi();
      }
      initUi(){
