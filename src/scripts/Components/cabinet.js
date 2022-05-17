@@ -1,5 +1,6 @@
 import { GameState,ANIM_TIME,rotateState } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
+import {Vector3,Angle,ActionManager,ExecuteCodeAction} from 'babylonjs';
 export default class Cabinet{
 
     constructor(root,meshobject,pos){
@@ -34,18 +35,18 @@ export default class Cabinet{
         });
     }
     addAction(mesh){
-        mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-        mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+        mesh.actionManager = new ActionManager(this.root.scene);
+        mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, (object)=> {
             if(rotateState.value===1)
                 return;
             this.setLabel();
             this.updateoutLine(mesh,true);
         }))
-        mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+        mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOutTrigger, (object)=> {
                 this.label.isVisible=false;
                 this.updateoutLine(mesh,false);
         }))
-        mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+        mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (object)=> {
             if(rotateState.value===1)
                 return;
                 this.setLabel();
@@ -55,7 +56,7 @@ export default class Cabinet{
                     this.updateoutLine(mesh,false);
                 }
         }))
-        mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+        mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickTrigger, (object)=> {
                 if(rotateState.value ===1 || this.root.gamestate.state === GameState.radial || this.root.gamestate.state === GameState.inspect)
                     return;
                     this.updateoutLine(mesh,false);
@@ -65,7 +66,7 @@ export default class Cabinet{
                         else   
                             this.state =0;
                         let isPositive =true;
-                        if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(45).radians())
+                        if(this.root.camera.alpha<Angle.FromDegrees(45).radians())
                             isPositive = false;
                         this.root.setCameraAnim(isPositive?270:-90,270,60,3);
                     }
@@ -75,7 +76,7 @@ export default class Cabinet{
                     //     else   
                     //         this.state =0;
                     // }
-                    this.root.setFocusOnObject(new BABYLON.Vector3(this.position.x,this.position.y,this.position.z-.5));
+                    this.root.setFocusOnObject(new Vector3(this.position.x,this.position.y,this.position.z-.5));
                     switch(this.state){
                         case 0:
                                 this.root.gamestate.state = GameState.default;
@@ -98,7 +99,7 @@ export default class Cabinet{
     }
     cabinetFocusAnim(){
         let isPositive =true;
-        if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(45).radians())
+        if(this.root.camera.alpha<Angle.FromDegrees(45).radians())
             isPositive = false;
         // console.log("!! ispositive!! "+isPositive);
         this.root.setCameraAnim(isPositive?270:-90,270,60,3);
@@ -120,8 +121,8 @@ export default class Cabinet{
     }
     doorAnimation(mesh,angle,isleft){
         let val=0;
-        if(mesh.rotation.z === BABYLON.Angle.FromDegrees(0).radians())
-            val = BABYLON.Angle.FromDegrees(angle).radians();
+        if(mesh.rotation.z === Angle.FromDegrees(0).radians())
+            val = Angle.FromDegrees(angle).radians();
         new TWEEN.Tween(mesh.rotation).to({z:isleft?-val:val},ANIM_TIME*.7).easing(TWEEN.Easing.Sinusoidal.Out).onUpdate(()=>{
             this.doorAnim = true;
         }).onComplete(() => {

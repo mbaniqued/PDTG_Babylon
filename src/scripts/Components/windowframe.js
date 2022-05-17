@@ -1,6 +1,7 @@
 
 import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
+import {Mesh,Color3 ,MeshBuilder,Vector3,Angle,ActionManager,ExecuteCodeAction,StandardMaterial } from 'babylonjs';
 export default class WindowFrame{
         constructor(root,meshobject,pos){
             this.name           = meshobject.name;
@@ -10,14 +11,14 @@ export default class WindowFrame{
             this.state          = 0;
             this.windowClose    = false;
             this.setPos();
-            // this.mesh = new BABYLON.Mesh();
+            // this.mesh = new Mesh();
             
-            this.plan = BABYLON.MeshBuilder.CreatePlane("glassplane",{width:4.2,height:2.5,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.root.scene);
-            const glasssplanMat = new BABYLON.StandardMaterial("glassplaneMat", this.root.scene);
-            glasssplanMat.diffuseColor = new BABYLON.Color3.FromInts(255,0,0);  
+            this.plan = MeshBuilder.CreatePlane("glassplane",{width:4.2,height:2.5,sideOrientation: Mesh.DOUBLESIDE},this.root.scene);
+            const glasssplanMat = new StandardMaterial("glassplaneMat", this.root.scene);
+            glasssplanMat.diffuseColor = new Color3.FromInts(255,0,0);  
             this.plan.material = glasssplanMat;
             this.plan.position.set(-7.6,3.45,1);
-            this.plan.rotation.y = BABYLON.Angle.FromDegrees(90).radians();
+            this.plan.rotation.y = Angle.FromDegrees(90).radians();
             this.plan.visibility=0;
             this.plan.outlineWidth=1;
             
@@ -39,7 +40,7 @@ export default class WindowFrame{
             this.label.isVisible=false;
 
             this.initAction();
-            // const windowplan = BABYLON.MeshBuilder.CreatePlane("glassplane",{width:500,height:270,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.root.scene);
+            // const windowplan = MeshBuilder.CreatePlane("glassplane",{width:500,height:270,sideOrientation: Mesh.DOUBLESIDE},this.root.scene);
 
             // this.meshRoot.getChildMeshes().forEach(childmesh => {
             //     if(childmesh.name==="windowframe"){
@@ -64,8 +65,8 @@ export default class WindowFrame{
             this.root.removeRegisterAction(this.plan);
         }
         addAction(mesh){
-            mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=>{
+            mesh.actionManager = new ActionManager(this.root.scene);
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickTrigger, (object)=>{
                         console.log(this.root.gamestate.state+"   "+mesh.name+"   "+this.state);
                         if(this.root.camera.radius>2.5){
                             this.state =0;
@@ -76,10 +77,10 @@ export default class WindowFrame{
                             case 0:
                                     this.root.gamestate.state = GameState.default;
                                     let isPositive=true;
-                                    if(this.root.camera.alpha>BABYLON.Angle.FromDegrees(180).radians())
+                                    if(this.root.camera.alpha>Angle.FromDegrees(180).radians())
                                         isPositive = false;
-                                    console.log("!! setTableFocusAnim!!! "+isPositive+"         "+BABYLON.Angle.FromRadians(this.root.camera.alpha).degrees());
-                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y+.1,1));
+                                    console.log("!! setTableFocusAnim!!! "+isPositive+"         "+Angle.FromRadians(this.root.camera.alpha).degrees());
+                                    this.root.setFocusOnObject(new Vector3(this.meshRoot.position.x+3,this.meshRoot.position.y+.1,1));
                                     this.root.setCameraAnim(isPositive?.1:359,.1,90,1.5);
                                     this.state=1;
                                     this.root.gamestate.state = GameState.focus;
@@ -98,15 +99,15 @@ export default class WindowFrame{
                     }
                 )
             )
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, (object)=> {
                 this.setLabel();
                 this.updateoutLine(mesh,true);
             }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
                     this.updateoutLine(mesh,false);
             }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (object)=> {
                     this.setLabel();
                     this.updateoutLine(mesh,true);
                     this.root.scene.onPointerUp=()=>{
@@ -145,7 +146,7 @@ export default class WindowFrame{
                  if(mesh.name === "glassplane"){
                     this.root.windowbox.renderOutline = value;
                     this.root.windowbox.outlineWidth =1;
-                    this.root.windowbox.outlineColor  = BABYLON.Color3.Yellow();
+                    this.root.windowbox.outlineColor  = Color3.Yellow();
                     console.log("innnnnnn glassplan");
                  }
                  if(mesh.name === "windowframeplan"){
@@ -153,7 +154,7 @@ export default class WindowFrame{
                           if(childmesh.name==="windowframe"){
                              childmesh.renderOutline = value;
                              childmesh.outlineWidth  = 1;
-                             childmesh.outlineColor  = BABYLON.Color3.Yellow();
+                             childmesh.outlineColor  = Color3.Yellow();
                           }
                           else{
                             childmesh.renderOutline = false;

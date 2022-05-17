@@ -1,6 +1,6 @@
 
 import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
-import TWEEN from "@tweenjs/tween.js";
+import {Vector3,Angle,Color3,ActionManager,ExecuteCodeAction} from 'babylonjs';
 export default class ACRemote{
         constructor(root,meshobject,pos,_parent){
             this.name            = meshobject.name;
@@ -16,7 +16,7 @@ export default class ACRemote{
             
         }
         setPos(){
-            this.meshRoot.position  = new BABYLON.Vector3(this.position.x,this.position.y,this.position.z);
+            this.meshRoot.position  = new Vector3(this.position.x,this.position.y,this.position.z);
         }
         initAction(){
             this.meshRoot.getChildMeshes().forEach(childmesh => {
@@ -31,8 +31,8 @@ export default class ACRemote{
             });
         }
         addAction(mesh){
-                    mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-                    mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+                    mesh.actionManager = new ActionManager(this.root.scene);
+                    mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, (object)=> {
                         if(this.state>0 && this.root.gamestate.state === GameState.default)
                             this.state =0;
                         if(this.root.camera.radius<2){
@@ -42,17 +42,17 @@ export default class ACRemote{
                         this.updateoutLine(true);
                         this.setLabel();
                     }))
-                    mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+                    mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOutTrigger, (object)=> {
                             this.label.isVisible=false;
                             this.updateoutLine(false);
                     }))
-                    mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+                    mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (object)=> {
                             if(this.state>0 && this.root.gamestate.state === GameState.default)
                                 this.state =0;
                             if(this.root.camera.radius<2){
                                 this.root.gamestate.state = GameState.focus;
                                 this.state =1;
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.1,this.meshRoot.position.y,this.meshRoot.position.z));
+                                this.root.setFocusOnObject(new Vector3(this.meshRoot.position.x-.1,this.meshRoot.position.y,this.meshRoot.position.z));
                             }
                             this.updateoutLine(true);
                             this.setLabel();
@@ -61,7 +61,7 @@ export default class ACRemote{
                                 this.updateoutLine(false);
                             }
                     }))
-                    mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+                    mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickTrigger, (object)=> {
 
                         this.root.sceneCommon.setminiCamTarget(1);
                         if(this.state>0 && this.root.gamestate.state === GameState.default)
@@ -72,15 +72,15 @@ export default class ACRemote{
                                 this.state= 1;
                                 this.label._children[0].text = "Power Off AC";
                                 let isPositive=true;
-                                if(this.root.camera.alpha>BABYLON.Angle.FromDegrees(180).radians())
+                                if(this.root.camera.alpha>Angle.FromDegrees(180).radians())
                                     isPositive = false;
                                 this.root.setCameraAnim(isPositive?.1:359,.1,40,1.5);
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x-.1,this.meshRoot.position.y,this.meshRoot.position.z));
+                                this.root.setFocusOnObject(new Vector3(this.meshRoot.position.x-.1,this.meshRoot.position.y,this.meshRoot.position.z));
                                 this.root.gamestate.state = GameState.focus;
                         }    
                         else if(this.state>0) {
                                 this.isAcOff = !this.isAcOff;
-                                this.root.scene.getMeshByName("acindicator").material.diffuseColor  = this.isAcOff?new BABYLON.Color3.FromInts(255,0,0):new BABYLON.Color3.FromInts(0,255,0);
+                                this.root.scene.getMeshByName("acindicator").material.diffuseColor  = this.isAcOff?new Color3.FromInts(255,0,0):new Color3.FromInts(0,255,0);
                                 this.root.setAc(!this.isAcOff);
                                 this.root.audioManager.playSound(this.root.audioManager.acSound);
                                 if(this.isAcOff){

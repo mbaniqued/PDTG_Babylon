@@ -1,5 +1,5 @@
 import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
-import TWEEN from "@tweenjs/tween.js";
+import {Color3,Vector3,ActionManager,ExecuteCodeAction} from 'babylonjs';
 export default class FanSwitch{
 
         constructor(root,meshobject){
@@ -28,8 +28,8 @@ export default class FanSwitch{
             });
         }
         addAction(mesh){
-            mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+            mesh.actionManager = new ActionManager(this.root.scene);
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, (object)=> {
                 if(this.root.camera.radius<3){
                     this.state =1;
                     this.root.gamestate.state  =  GameState.active;
@@ -41,11 +41,11 @@ export default class FanSwitch{
                 this.setLabel();
                 this.updateoutLine(true);
             }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
                     this.updateoutLine(false);
             }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (object)=> {
                     if(this.root.camera.radius<3){
                         this.state =1;
                         this.root.gamestate.state  =  GameState.active;
@@ -61,7 +61,7 @@ export default class FanSwitch{
                         this.updateoutLine(false);
                     }
             }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickTrigger, (object)=> {
                         if(this.root.camera.radius<3){
                             this.state =1;
                             this.root.gamestate.state  =  GameState.active;
@@ -76,7 +76,7 @@ export default class FanSwitch{
                             this.root.gamestate.state  =  GameState.active;
                             this.state=1;
                             this.root.setCameraAnim(185,185,90,1.5);
-                            this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z+.25));
+                            this.root.setFocusOnObject(new Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z+.25));
                         }
                         else if(this.state>0){
                             this.isFanOff =!this.isFanOff;
@@ -111,7 +111,7 @@ export default class FanSwitch{
                 }
                 else                    
                     childmesh.renderOutline = false;
-                childmesh.outlineColor  = BABYLON.Color3.Yellow();
+                childmesh.outlineColor  = Color3.Yellow();
 
             });
         }

@@ -1,7 +1,9 @@
 // https://github.com/mbaniqued/PDTG_Babylon
 // Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The HTMLImageElement provided is in the 'broken' state.
-import * as BABYLON from "babylonjs";
-import "babylonjs-loaders";
+import { TransformNode,DynamicTexture,Vector2,Vector3,BlurPostProcess,PointerEventTypes } from 'babylonjs';
+import { MeshBuilder,Texture,Mesh,StandardMaterial,Color3,Angle,ParticleSystem,Matrix } from "babylonjs";
+import TWEEN from '@tweenjs/tween.js';
+import * as GUI from 'babylonjs-gui';
 import LoaderManager from "../LoaderManager.js";
 import SceneOptimiser from "../SceneOptimiser.js"; 
 import DoorObject from "../Components/doorobject.js";
@@ -16,8 +18,6 @@ import LightSwitch from "../Components/lightswtich.js";
 import CabinetItem from "../Components/cabinetitem.js"; 
 import FanSwitch from "../Components/fanswitch.js";
 import SinkItem from "../Components/sinkitem.js";
-import TWEEN from '@tweenjs/tween.js';
-import * as GUI from 'babylonjs-gui';
 import Enviroment, { FOV } from "../Enviroment.js";
 import HandWash from "../Components/handwash.js";
 import AlcoholWipe from "../Components/alcohalwipe.js";
@@ -46,13 +46,13 @@ export default class MainScene {
     this.gui2D            = new GUI2D(this);
     this.gameTaskManager  = new GameTaskManager(this);
     this.bpMonitor        = new BP_Monitior();
-    this.trollyRoot       = new BABYLON.TransformNode("TROLLY"),
-    this.tableRoot        = new BABYLON.TransformNode("TABLE");
-    this.cabinetRoot      = new BABYLON.TransformNode("CABINET");
-    this.doorRoot         = new BABYLON.TransformNode("DOOR");
-    this.acRemoteRoot     = new BABYLON.TransformNode("ACREMOTe");
-    this.apdmachineRoot   = new BABYLON.TransformNode("APDMACHINE");
-    this.windowFrameRoot  = new BABYLON.TransformNode("WINDOW");
+    this.trollyRoot       = new TransformNode("TROLLY"),
+    this.tableRoot        = new TransformNode("TABLE");
+    this.cabinetRoot      = new TransformNode("CABINET");
+    this.doorRoot         = new TransformNode("DOOR");
+    this.acRemoteRoot     = new TransformNode("ACREMOTe");
+    this.apdmachineRoot   = new TransformNode("APDMACHINE");
+    this.windowFrameRoot  = new TransformNode("WINDOW");
     this.loaderManager    = new LoaderManager(this);
     this.audioManager     = new AudioManager(this);
     this.game.engine.hideLoadingUI();
@@ -64,7 +64,7 @@ export default class MainScene {
     this.fanAnim = null,this.paperTowelObject=undefined,this.handSoapObject=undefined;
     this.handwashactivity,this.wipeAlcohal,this.sinkArea=undefined;
     const size= 512;
-    this.dynamicTexture   = new BABYLON.DynamicTexture("dynamictexture",size,this.scene);
+    this.dynamicTexture   = new DynamicTexture("dynamictexture",size,this.scene);
     this.level=0,this.isUp=false,this.objectiveCount=0,this.totalobjective=0,this.itemCount=0,this.dialysisItemCnt=0,this.handsanitiserCnt=0;
     this.resultPage=0;
     this.bpRecord="",this.ccpdbpInputField;
@@ -76,8 +76,8 @@ export default class MainScene {
     this.gameTime=undefined;
     this.addevents();
     this.handleUI();
-    this.blurH = new BABYLON.BlurPostProcess("H_blur", new BABYLON.Vector2(1,0.0), 32, 1,this.camera);
-    this.blurV = new BABYLON.BlurPostProcess("V_blur", new BABYLON.Vector2(0,1.0), 32, 1,this.camera);
+    this.blurH = new BlurPostProcess("H_blur", new Vector2(1,0.0), 32, 1,this.camera);
+    this.blurV = new BlurPostProcess("V_blur", new Vector2(0,1.0), 32, 1,this.camera);
     this.scene.postProcessesEnabled = false;
     
     this.focusAnim=false;
@@ -145,13 +145,13 @@ export default class MainScene {
     // this.scene.freezeMaterials();
     this.sceneOptimiser = new SceneOptimiser(60,500,this.scene);  
     // this.scene.getMeshByName("fanbtn").isVisible = false;
-    console.log(" !!!!!!!!! initscene!!! ");
+    console.log(" !!! initscene!!!    ");
       resolve('resolved');
     });
   }
   addevents(){
     // document.addEventListener('mousemove', e => {
-    //       // const pos = world2ScreenPos(new BABYLON.Vector3(this.scene.pointerX,this.scene.pointerY,1),this.scene);
+    //       // const pos = world2ScreenPos(new Vector3(this.scene.pointerX,this.scene.pointerY,1),this.scene);
     // });
     document.addEventListener('keydown', (event)=> {
       // console.log(event.key);
@@ -180,27 +180,27 @@ export default class MainScene {
       }
       // this.bpMachineItem.meshRoot.getChildMeshes().forEach(childmesh => {
       //     if(childmesh.id === "BPBandArmClose.003"){//BPBandArmClose.003
-      //         childmesh.position = new BABYLON.Vector3( SX,SY,SZ);
+      //         childmesh.position = new Vector3( SX,SY,SZ);
       //     }
       // });
-      // this.scene.getMeshByName("bptextplan").position = new BABYLON.Vector3( SX,SY,SZ);
+      // this.scene.getMeshByName("bptextplan").position = new Vector3( SX,SY,SZ);
       // console.log("!! sx!! "+SX+" !!sy!!  "+SY+"!! sz !! "+SZ);  
   }, false);
    this.scene.onPointerObservable.add((pointerInfo) => {    
     // if(this.gamestate.state === GameState.menu || this.gamestate.state === GameState.levelstage || this.gamestate.state === GameState.radial)
     //     return ;
       switch (pointerInfo.type) {
-            case BABYLON.PointerEventTypes.POINTERDOWN:{
+            case PointerEventTypes.POINTERDOWN:{
                     const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
                       if(pickinfo.pickedMesh){
                          this.onpickMesh(pickinfo.pickedMesh);
                       }
                   }
               break;
-            case BABYLON.PointerEventTypes.POINTERUP:{
+            case PointerEventTypes.POINTERUP:{
                 }
               break;
-            case BABYLON.PointerEventTypes.POINTERMOVE:{ 
+            case PointerEventTypes.POINTERMOVE:{ 
                     const pickinfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
                     if(pickinfo.pickedMesh) {
                       this.onpickMesh(pickinfo.pickedMesh);
@@ -495,14 +495,14 @@ export default class MainScene {
        this.apdmachineTexture = null;
        this.removeMesh(this.scene.getMeshByName("apd_machinetxt_plan"));
     }
-    const plan = BABYLON.MeshBuilder.CreatePlane("apd_machinetxt_plan",{width:.3,height:.3,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);  
+    const plan = MeshBuilder.CreatePlane("apd_machinetxt_plan",{width:.3,height:.3,sideOrientation: Mesh.FRONTSIDE},this.scene);  
     plan.position.set(-3.569,2.02,2.119);
     plan.isPickable=false;
     plan.renderOutline=false;
     plan.visibility=0;
-    const planmat         = new BABYLON.StandardMaterial("validation_connection_plan_mat", this.scene);
-    planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
-    planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+    const planmat         = new StandardMaterial("validation_connection_plan_mat", this.scene);
+    planmat.diffuseColor  = new Color3.FromInts(255,255,255);
+    planmat.emissiveColor = new Color3.FromInts(255,255,255);
     plan.material = planmat;
     this.apdmachineTexture   = this.dynamicTexture.clone();
     this.apdmachineTexture.hasAlpha=true;
@@ -526,37 +526,37 @@ export default class MainScene {
       // this.removeMesh(this.scene.getMeshByName("validation_connection_plan"));
       // this.removeMesh(this.scene.getMeshByName("highlight_plan"));
     }
-    const plan = BABYLON.MeshBuilder.CreatePlane("connection_validation_plan",{width:1,height:1,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+    const plan = MeshBuilder.CreatePlane("connection_validation_plan",{width:1,height:1,sideOrientation: Mesh.FRONTSIDE},this.scene);
     plan.parent = null;
     plan.parent = this.connectionItem.meshRoot;
     plan.isPickable=false;
     plan.renderOutline=false;
     plan.outlineWidth=0;
     
-    this.connectionTexture   = this.dynamicTexture.clone(); //new BABYLON.DynamicTexture("connection_plan_texture",size,this.scene);
+    this.connectionTexture   = this.dynamicTexture.clone(); //new DynamicTexture("connection_plan_texture",size,this.scene);
     this.connectionTexture.scale(.5);
     const size=this.connectionTexture.getSize();
     this.connectionTexture.hasAlpha=true;
-    const planmat         = new BABYLON.StandardMaterial("validation_connection_plan_mat", this.scene);
-    planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
-    planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+    const planmat         = new StandardMaterial("validation_connection_plan_mat", this.scene);
+    planmat.diffuseColor  = new Color3.FromInts(255,255,255);
+    planmat.emissiveColor = new Color3.FromInts(255,255,255);
     planmat.diffuseTexture = this.connectionTexture;
     plan.material      = planmat;
-    plan.scaling   = new BABYLON.Vector3(8,4,1); 
-    plan.position  = new BABYLON.Vector3(-5.2,-9.8,-.5); 
-    plan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+    plan.scaling   = new Vector3(8,4,1); 
+    plan.position  = new Vector3(-5.2,-9.8,-.5); 
+    plan.rotation  = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
 
     const plan2 = plan.clone("connection_highlight_plan");
     plan2.name = "connection_highlight_plan";
-    plan2.scaling    = new BABYLON.Vector3(4.5,4,1); 
+    plan2.scaling    = new Vector3(4.5,4,1); 
     plan2.parent     = null
     plan2.parent     = this.connectionItem.meshRoot;
     plan2.isPickable = true;
-    plan2.position   = new BABYLON.Vector3(-6.8,-9.8,-.5); 
+    plan2.position   = new Vector3(-6.8,-9.8,-.5); 
     
-    const planmat2         = new BABYLON.StandardMaterial("highlight_mat", this.scene);
-    planmat2.diffuseColor  = new BABYLON.Color3.FromInts(0,193,201);
-    planmat2.emissiveColor = new BABYLON.Color3.FromInts(0,193,201);
+    const planmat2         = new StandardMaterial("highlight_mat", this.scene);
+    planmat2.diffuseColor  = new Color3.FromInts(0,193,201);
+    planmat2.emissiveColor = new Color3.FromInts(0,193,201);
     planmat2.alpha=.5;
     plan2.material = planmat2; 
     plan2.visibility=0;
@@ -588,34 +588,34 @@ export default class MainScene {
       this.drainBagTexture.dispose();
       this.drainBagTexture = null;
     }
-    const plan = BABYLON.MeshBuilder.CreatePlane("validation_drainbag_plan",{width:15,height:8,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+    const plan = MeshBuilder.CreatePlane("validation_drainbag_plan",{width:15,height:8,sideOrientation: Mesh.FRONTSIDE},this.scene);
      plan.parent = null;
      plan.parent = this.drainBagItem.meshRoot;
      plan.isPickable=false;
      plan.renderOutline=false;
      plan.outlineWidth=0;
      
-     plan.position  = new BABYLON.Vector3(-12, 9.59,-10);
-     plan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(90).radians());
+     plan.position  = new Vector3(-12, 9.59,-10);
+     plan.rotation  = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(90).radians());
      
-     this.drainBagTexture   = this.dynamicTexture.clone();// new BABYLON.DynamicTexture("drain_bag_texture",size,this.scene);
+     this.drainBagTexture   = this.dynamicTexture.clone();// new DynamicTexture("drain_bag_texture",size,this.scene);
      this.drainBagTexture.scale(.5);
      this.drainBagTexture.hasAlpha=true;
      const size=this.dynamicTexture.getSize();
-     const planmat         = new BABYLON.StandardMaterial("validation_drainbag_plan_mat", this.scene);
-     planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
-     planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+     const planmat         = new StandardMaterial("validation_drainbag_plan_mat", this.scene);
+     planmat.diffuseColor  = new Color3.FromInts(255,255,255);
+     planmat.emissiveColor = new Color3.FromInts(255,255,255);
      planmat.diffuseTexture = this.drainBagTexture;
      plan.material      = planmat;
       
 
      const plan2 = plan.clone("drainbag_highlight_plan");
       plan2.name = "drainbag_highlight_plan";
-      plan2.scaling   = new BABYLON.Vector3(.75,.6,1); 
+      plan2.scaling   = new Vector3(.75,.6,1); 
       plan2.parent   = null;
       plan2.parent   = this.drainBagItem.meshRoot;
       plan2.isPickable=true;
-      plan2.position  = new BABYLON.Vector3(-12.6, 7.2,-10);
+      plan2.position  = new Vector3(-12.6, 7.2,-10);
       const planmat2         = this.scene.getMaterialByName("highlight_mat").clone();
       planmat2.name = "highlight_plan_mat";
       plan2.material = planmat2; 
@@ -658,21 +658,21 @@ export default class MainScene {
       this.apdDateTexture2.dispose();
       this.apdDateTexture2 = null;
     }
-     const datePlan = BABYLON.MeshBuilder.CreatePlane("validation_apddate_plan",{width:22,height:20,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+     const datePlan = MeshBuilder.CreatePlane("validation_apddate_plan",{width:22,height:20,sideOrientation: Mesh.FRONTSIDE},this.scene);
      datePlan.parent = this.apdmachinePackage.meshRoot;
      datePlan.isPickable=false;
      datePlan.renderOutline=false;
      datePlan.outlineWidth=0;
-     datePlan.position  = new BABYLON.Vector3(-11,-2,-29);
-     datePlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+     datePlan.position  = new Vector3(-11,-2,-29);
+     datePlan.rotation  = new Vector3(Angle.FromDegrees(90).radians(),Angle.FromDegrees(180).radians(),Angle.FromDegrees(0).radians());
      
-     this.apdDateTexture   = this.dynamicTexture.clone(); //new BABYLON.DynamicTexture("apddate_texture",size,this.scene);
+     this.apdDateTexture   = this.dynamicTexture.clone(); //new DynamicTexture("apddate_texture",size,this.scene);
      this.apdDateTexture.scale(.5);
      const size=this.apdDateTexture.getSize();
      this.apdDateTexture.hasAlpha=true;
-     const planmat         = new BABYLON.StandardMaterial("validation_apddate_mat", this.scene);
-     planmat.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
-     planmat.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+     const planmat         = new StandardMaterial("validation_apddate_mat", this.scene);
+     planmat.diffuseColor  = new Color3.FromInts(255,255,255);
+     planmat.emissiveColor = new Color3.FromInts(255,255,255);
      planmat.diffuseTexture = this.apdDateTexture;
      datePlan.material      = planmat;
      
@@ -681,27 +681,27 @@ export default class MainScene {
      dateHighlightPlan.parent    = null;
      dateHighlightPlan.parent    = this.apdmachinePackage.meshRoot;
      dateHighlightPlan.isPickable=true;
-     dateHighlightPlan.position  = new BABYLON.Vector3(-5,0,-29);
-     dateHighlightPlan.scaling   = new BABYLON.Vector3(1.3,.3,1);
+     dateHighlightPlan.position  = new Vector3(-5,0,-29);
+     dateHighlightPlan.scaling   = new Vector3(1.3,.3,1);
      dateHighlightPlan.visibility=0;
      const planmat2              = this.scene.getMaterialByName("highlight_mat").clone();
      dateHighlightPlan.material  = planmat2;
 
 
-     const tubevalidationPlan = BABYLON.MeshBuilder.CreatePlane("validation_tube_plan",{width:30,height:20,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.scene);
+     const tubevalidationPlan = MeshBuilder.CreatePlane("validation_tube_plan",{width:30,height:20,sideOrientation: Mesh.DOUBLESIDE},this.scene);
      tubevalidationPlan.parent = this.apdmachinePackage.meshRoot;
      tubevalidationPlan.isPickable=false;
      tubevalidationPlan.renderOutline=false;
      tubevalidationPlan.outlineWidth=0;
-     tubevalidationPlan.position  = new BABYLON.Vector3(1,-8,-25);
-     tubevalidationPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+     tubevalidationPlan.position  = new Vector3(1,-8,-25);
+     tubevalidationPlan.rotation  = new Vector3(Angle.FromDegrees(-90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
 
-     this.apdDateTexture2   = this.dynamicTexture.clone(); //new BABYLON.DynamicTexture("apddate_texture",size,this.scene);
+     this.apdDateTexture2   = this.dynamicTexture.clone(); //new DynamicTexture("apddate_texture",size,this.scene);
      this.apdDateTexture2.scale(.5);
      this.apdDateTexture2.hasAlpha=true;
-     const planmat3         = new BABYLON.StandardMaterial("validation2_apddate_mat", this.scene);
-     planmat3.diffuseColor  = new BABYLON.Color3.FromInts(255,255,255);
-     planmat3.emissiveColor = new BABYLON.Color3.FromInts(255,255,255);
+     const planmat3         = new StandardMaterial("validation2_apddate_mat", this.scene);
+     planmat3.diffuseColor  = new Color3.FromInts(255,255,255);
+     planmat3.emissiveColor = new Color3.FromInts(255,255,255);
      planmat3.diffuseTexture = this.apdDateTexture2;
      tubevalidationPlan.material      = planmat3;
 
@@ -712,8 +712,8 @@ export default class MainScene {
      tubeHighlightPlan.parent    = null;
      tubeHighlightPlan.parent    = this.apdmachinePackage.meshRoot;
      tubeHighlightPlan.isPickable=true;
-     tubeHighlightPlan.position  = new BABYLON.Vector3(0,-14,-15);
-     tubeHighlightPlan.scaling   = new BABYLON.Vector3(1.35,.9,-1);
+     tubeHighlightPlan.position  = new Vector3(0,-14,-15);
+     tubeHighlightPlan.scaling   = new Vector3(1.35,.9,-1);
      tubeHighlightPlan.visibility=0;
      this.onHighlightApdPlan = (value,type)=>{
         if(type===0)
@@ -765,24 +765,24 @@ export default class MainScene {
       this.bpnumberTexture =null;
       // this.removeMesh(this.scene.getMeshByName("bptextplan"));
     }
-    const bpPlan = BABYLON.MeshBuilder.CreatePlane("bptextplan",{width:8,height:5,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+    const bpPlan = MeshBuilder.CreatePlane("bptextplan",{width:8,height:5,sideOrientation: Mesh.FRONTSIDE},this.scene);
     bpPlan.parent = null;
     bpPlan.parent = this.bpMachineItem.meshRoot;
     bpPlan.isPickable=false;
     bpPlan.renderOutline=false;
     bpPlan.outlineWidth=0;
-    this.bpnumberTexture   = this.dynamicTexture.clone(); //new BABYLON.DynamicTexture("bpnumberTexture",256,this.scene);
+    this.bpnumberTexture   = this.dynamicTexture.clone(); //new DynamicTexture("bpnumberTexture",256,this.scene);
     this.bpnumberTexture.scale(.5);
     this.bpnumberTexture.hasAlpha=true;
-    const planmat         = new BABYLON.StandardMaterial("bptextmat", this.scene);
-    planmat.diffuseColor  = new BABYLON.Color3.FromInts(30,30,30);
-    planmat.emissiveColor = new BABYLON.Color3.FromInts(30,30,30);
+    const planmat         = new StandardMaterial("bptextmat", this.scene);
+    planmat.diffuseColor  = new Color3.FromInts(30,30,30);
+    planmat.emissiveColor = new Color3.FromInts(30,30,30);
     planmat.diffuseTexture = this.bpnumberTexture;
     bpPlan.material  = planmat;
-    bpPlan.scaling   = new BABYLON.Vector3(1.4,3.2,1);
+    bpPlan.scaling   = new Vector3(1.4,3.2,1);
     // 2.500000000000001 !!sy!!  0.9999999999999997!! sz !! -15.499999999999961
-    bpPlan.position  = new BABYLON.Vector3(2.5,1,-16);
-    bpPlan.rotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-30).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+    bpPlan.position  = new Vector3(2.5,1,-16);
+    bpPlan.rotation  = new Vector3(Angle.FromDegrees(-30).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
     this.setbpRecord(0,false);
   }
   setbpRecord(v1,isupdate){
@@ -847,25 +847,25 @@ export default class MainScene {
     this.showResetViewButton(false);
     this.gamestate.state = GameState.default;
     // this.camera.fov=FOV;
-    this.sceneCommon.camVector  = new BABYLON.Vector3(0,3.2,0);
+    this.sceneCommon.camVector  = new Vector3(0,3.2,0);
     this.camera.position.set(0,0,0);
     this.camera.lowerAlphaLimit =  null;
     this.camera.upperAlphaLimit =  null;
     this.camera.lowerBetaLimit  =  null;
     this.camera.upperBetaLimit  =  null;
     new TWEEN.Tween(this.camera.target).to({x:this.sceneCommon.camVector.x,y:this.sceneCommon.camVector.y,z:this.sceneCommon.camVector.z},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(()=>{}).start();
-    new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
+    new TWEEN.Tween(this.camera).to({beta:Angle.FromDegrees(90).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
     new TWEEN.Tween(this.camera).to({radius:3},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
     new TWEEN.Tween(this.camera).to({fov:FOV},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
   }
   setCameraAnim(alphaAng,finalAlpha,betaAng,radius){
     if(alphaAng){
-      new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?BABYLON.Angle.FromDegrees(alphaAng).radians():-BABYLON.Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
-        this.camera.alpha = BABYLON.Angle.FromDegrees(finalAlpha).radians();
+      new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?Angle.FromDegrees(alphaAng).radians():-Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
+        this.camera.alpha = Angle.FromDegrees(finalAlpha).radians();
       }).start();
     }
     if(betaAng)
-      new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(betaAng).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
+      new TWEEN.Tween(this.camera).to({beta:Angle.FromDegrees(betaAng).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
     if(radius)  
       new TWEEN.Tween(this.camera).to({radius:radius},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
   }
@@ -878,12 +878,12 @@ export default class MainScene {
   setCameraAnimLinear(alphaAng,finalAlpha,betaAng,radius){
     if(!this.focusAnim){
       if(alphaAng){
-        new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?BABYLON.Angle.FromDegrees(alphaAng).radians():-BABYLON.Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-          this.camera.alpha = BABYLON.Angle.FromDegrees(finalAlpha).radians();
+        new TWEEN.Tween(this.camera).to({alpha:alphaAng>=0?Angle.FromDegrees(alphaAng).radians():-Angle.FromDegrees(Math.abs(alphaAng)).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+          this.camera.alpha = Angle.FromDegrees(finalAlpha).radians();
         }).start();
       }
       if(betaAng)
-        new TWEEN.Tween(this.camera).to({beta:BABYLON.Angle.FromDegrees(betaAng).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
+        new TWEEN.Tween(this.camera).to({beta:Angle.FromDegrees(betaAng).radians()},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
       if(radius)  
         new TWEEN.Tween(this.camera).to({radius:radius},ANIM_TIME).easing(TWEEN.Easing.Linear.None).onComplete(() => {}).start();
     }
@@ -904,7 +904,7 @@ export default class MainScene {
   startFan(){
       const fanNode =  this.scene.getNodeByName("fannode");
       if(this.fanAnim == null){
-        this.fanAnim = new TWEEN.Tween(fanNode.rotation).to({y:BABYLON.Angle.FromDegrees(359).radians()},ANIM_TIME).repeat(Infinity).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+        this.fanAnim = new TWEEN.Tween(fanNode.rotation).to({y:Angle.FromDegrees(359).radians()},ANIM_TIME).repeat(Infinity).easing(TWEEN.Easing.Linear.None).onComplete(() => {
         }).start();
       }
       else{
@@ -915,17 +915,17 @@ export default class MainScene {
     this.fanAnim.pause();    
   }
   initacParticle(){
-    const box = BABYLON.MeshBuilder.CreateBox("acbox", {width:2, height:.5,depth:1},this.scene);
-    box.material = new BABYLON.StandardMaterial("mat",this.scene);
+    const box = MeshBuilder.CreateBox("acbox", {width:2, height:.5,depth:1},this.scene);
+    box.material = new StandardMaterial("mat",this.scene);
     box.position.set(-6,4.65,3.25);
     box.material.wireframe = true;
     box.isPickable=false;
     box.renderOutline = false;
     box.visibility=0;
-    this.acparticle                 = new BABYLON.ParticleSystem("acparticles",300,this.scene);
-    this.acparticle.particleTexture = new BABYLON.Texture("models/texture/particles1.png",this.scene);
+    this.acparticle                 = new ParticleSystem("acparticles",300,this.scene);
+    this.acparticle.particleTexture = new Texture("models/texture/particles1.png",this.scene);
     
-    this.acparticle.emitter         = BABYLON.Vector3.Zero(); 
+    this.acparticle.emitter         = Vector3.Zero(); 
     this.acparticle.minSize         = .03;
     this.acparticle.maxSize         = .03;
     
@@ -935,7 +935,7 @@ export default class MainScene {
     this.acparticle.emitRate = 300;
     this.acparticle.isBillboardBased=true;
     
-    this.acparticle.createBoxEmitter(new BABYLON.Vector3(0,-5,-5), new BABYLON.Vector3(0,-5,-5), new BABYLON.Vector3(box.position.x-.9,box.position.y,box.position.z), new BABYLON.Vector3(box.position.x+.9,box.position.y,box.position.z));
+    this.acparticle.createBoxEmitter(new Vector3(0,-5,-5), new Vector3(0,-5,-5), new Vector3(box.position.x-.9,box.position.y,box.position.z), new Vector3(box.position.x+.9,box.position.y,box.position.z));
     this.acparticle.minEmitPower = .3;
     this.acparticle.maxEmitPower = .3;
     this.acparticle.updateSpeed = 0.005;
@@ -1086,7 +1086,7 @@ export default class MainScene {
         this.gamestate.state = GameState.default;
         this.setCameraTarget();
         if(this.gui2D.loaginBg.isVisible)
-            new TWEEN.Tween(this.camera).to({alpha: BABYLON.Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
+            new TWEEN.Tween(this.camera).to({alpha: Angle.FromDegrees(270).radians()},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
          this.gui2D.drawLoadingPage(false);
          this.gui2D.drawObjectiveMenu(this.gamemode === gamemode.training);
          this.gui2D.userBackBtn.isVisible=true;
@@ -1226,7 +1226,7 @@ export default class MainScene {
     this.gui2D.downArrow._onPointerUp =()=>{
       this.isUp =!this.isUp;
       this.gui2D.objectiveBg.isVisible=false;
-      this.gui2D.downArrow.rotation = BABYLON.Angle.FromDegrees(this.isUp?90:270).radians(); 
+      this.gui2D.downArrow.rotation = Angle.FromDegrees(this.isUp?90:270).radians(); 
       this.updateObjective();
     }
    }
@@ -1421,7 +1421,7 @@ export default class MainScene {
                         this.objectiveCount++;
                       gameObjectives[0].status = true;
                       this.tableObject.setTableFocusAnim();
-                      this.setFocusOnObject(new BABYLON.Vector3(this.tableObject.meshRoot.position.x,this.tableObject.meshRoot.position.y,this.tableObject.meshRoot.position.z-.5));
+                      this.setFocusOnObject(new Vector3(this.tableObject.meshRoot.position.x,this.tableObject.meshRoot.position.y,this.tableObject.meshRoot.position.z-.5));
                       for(let i=0;i<this.sanitiserObject.length;i++){
                          this.sanitiserObject[i].initAction();
                          this.sanitiserObject[i].enableDrag(true);
@@ -1435,7 +1435,7 @@ export default class MainScene {
                         gameObjectives[1].status = true
                         this.gamestate.state = GameState.focus;
                         this.tableObject.setTableFocusAnim();
-                        this.setFocusOnObject(new BABYLON.Vector3(this.tableObject.meshRoot.position.x,this.tableObject.meshRoot.position.y,this.tableObject.meshRoot.position.z-.5));
+                        this.setFocusOnObject(new Vector3(this.tableObject.meshRoot.position.x,this.tableObject.meshRoot.position.y,this.tableObject.meshRoot.position.z-.5));
                         this.apdmachinePackage.initAction();
                         this.apdmachinePackage.enableDrag(false);
                         let index = this.sanitiserObject.indexOf(detail.object_type);
@@ -1479,7 +1479,6 @@ export default class MainScene {
                   
                   if(detail.object_type === this.drainBagItem){
                        if(detail.msg && detail.msg.includes("drain_bag_trolly")){
-                          console.log("#############");
                             if(!gameObjectives[7].status)
                               this.objectiveCount++;
                            gameObjectives[7].status = true;
@@ -1580,14 +1579,14 @@ export default class MainScene {
             this.bpRecord="";
            return;
        }
-      let ccpdPlan      =  BABYLON.MeshBuilder.CreatePlane("ccpdplane",{width:1,height:1,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
+      let ccpdPlan      =  MeshBuilder.CreatePlane("ccpdplane",{width:1,height:1,sideOrientation: Mesh.FRONTSIDE},this.scene);
       ccpdPlan.parent   = this.scene.getCameraByName("maincamera");
-      const mat           = new BABYLON.StandardMaterial("ccpdplanemat",this.scene);
-      mat.diffuseColor    = new BABYLON.Color3(1,0,0);
+      const mat           = new StandardMaterial("ccpdplanemat",this.scene);
+      mat.diffuseColor    = new Color3(1,0,0);
       ccpdPlan.material = mat;
       ccpdPlan.scaling.set(.46,.72,1);
       // 0.3940000000000003 !!sy!!  -0.002!! sz !! 1.0489999999999953
-      ccpdPlan.position = new BABYLON.Vector3(0.335,0,1.0489); 
+      ccpdPlan.position = new Vector3(0.335,0,1.0489); 
       ccpdPlan.isPickable=false;
       ccpdPlan.outlineWidth=0;
       ccpdPlan.isVisible=false;
@@ -1666,11 +1665,11 @@ export default class MainScene {
       this.ccpdbpInputField.text = this.bpRecord; 
    }
    getSceneCordinate(){
-      let vector= BABYLON.Vector3.Unproject(
-      new BABYLON.Vector2(this.scene.pointerX,this.scene.pointerY),
+      let vector= Vector3.Unproject(
+      new Vector2(this.scene.pointerX,this.scene.pointerY),
       this.scene.getEngine().getRenderWidth(),
       this.scene.getEngine().getRenderHeight(),
-      BABYLON.Matrix.Identity(),this.scene.getViewMatrix(),
+      Matrix.Identity(),this.scene.getViewMatrix(),
       this.scene.getProjectionMatrix());
    }
    rotateMesh(mesh){
@@ -1774,8 +1773,7 @@ export default class MainScene {
           this.practiceResult.updateMachineResult(result4);
 
           this.gameTaskManager.countTaskPoints();
-          console.log(" 111111111111111   "+this.gameTaskManager.taskPoint);
-          
+          // console.log(" 111111111111111   "+this.gameTaskManager.taskPoint);
           this.gui2D.resultContainer.getChildByName("allmode_scroll_viewer").isVisible=false;
           const assestmentContainer = this.gui2D.resultContainer.getChildByName("assesmentcontainer");
           let time="";
@@ -1799,7 +1797,7 @@ export default class MainScene {
             if(this.gameTaskManager.isBonus[i])
               this.gameTaskManager.taskPoint+=1;
           }
-          console.log(" 222222222222222  "+this.gameTaskManager.taskPoint);
+          // console.log(" 222222222222222  "+this.gameTaskManager.taskPoint);
           const overallAccuracy = Math.floor(Math.round((this.gameTaskManager.taskDone/TOTAL_TASK)*100));
           assestmentContainer.getChildByName("overall_value").text     = overallAccuracy+"%";
           let bonus=0;
@@ -1812,32 +1810,23 @@ export default class MainScene {
        }
    }
 }
-
 function screen2WorldPos(pos,scene){
-  const posInView     = BABYLON.Vector3.TransformCoordinates(pos, scene.getViewMatrix());
-  const posInViewProj = BABYLON.Vector3.TransformCoordinates(pos, scene.getTransformMatrix());
-  const screenCoords = posInViewProj.multiplyByFloats(0.5, -0.5, 1.0).add(new BABYLON.Vector3(0.5, 0.5, 0.0)).
+  const posInView     = Vector3.TransformCoordinates(pos, scene.getViewMatrix());
+  const posInViewProj = Vector3.TransformCoordinates(pos, scene.getTransformMatrix());
+  const screenCoords = posInViewProj.multiplyByFloats(0.5, -0.5, 1.0).add(new Vector3(0.5, 0.5, 0.0)).
                                     multiplyByFloats(scene.getEngine().getRenderWidth(), scene.getEngine().getRenderHeight(),1);
   return screenCoords;                           
   
-  // var coordinates = BABYLON.Vector3.Project(vector3,
-  //   BABYLON.Matrix.Identity(),
+  // var coordinates = Vector3.Project(vector3,
+  //   Matrix.Identity(),
   //   scene.getTransformMatrix(),
   //   camera.viewport.toGlobal(
   //   engine.getRenderWidth(),
   //   engine.getRenderHeight(),
 }
 function world2ScreenPos(pos,scene){
-  const screenpos =  BABYLON.Vector3.Unproject(pos,scene.getEngine().getRenderWidth(), scene.getEngine().getRenderHeight(), BABYLON.Matrix.Identity(),scene.getViewMatrix(), scene.getProjectionMatrix());
+  const screenpos =  Vector3.Unproject(pos,scene.getEngine().getRenderWidth(), scene.getEngine().getRenderHeight(), Matrix.Identity(),scene.getViewMatrix(), scene.getProjectionMatrix());
   return screenpos;
-}
-function screen2worldX(a,scene) {
-	const c = ((a / scene.getEngine().getRenderWidth()) - 0.5) * 2;
-	return c;
-}
-function screen2worldY(a,scene) {
-	const c = ((a / scene.getEngine().getRenderHeight()) - 0.5) * (-2);
-	return c;
 }
 export function randomNumber(min, max) { 
   return Math.random() * (max - min) + min;

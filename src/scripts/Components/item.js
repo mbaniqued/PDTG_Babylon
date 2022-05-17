@@ -1,9 +1,8 @@
 // https://www.babylonjs-playground.com/#NNT3VZ
 // https://www.babylonjs-playground.com/#UES9PH#0
 import { GameState,gamemode,ANIM_TIME,event_objectivecomplete,IS_DRAG,rotateState } from "../scene/MainScene";
-import { randomNumber } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
-import { Control } from "babylonjs-gui";
+import {Vector3,Angle,ActionManager,ExecuteCodeAction,PointerDragBehavior } from 'babylonjs';
 let showMenu = false;
 export default class Item{
         constructor(name,root,meshobject,pos,placedpos,rotation){
@@ -14,8 +13,8 @@ export default class Item{
             this.tablePosition   = placedpos;
             this.placedPosition   = undefined;
             if(rotation)
-                this.placeRotation  =  new BABYLON.Vector3(BABYLON.Angle.FromDegrees(rotation.x).radians(),BABYLON.Angle.FromDegrees(rotation.y).radians(),BABYLON.Angle.FromDegrees(rotation.z).radians());
-            this.parent             = this.root.scene.getTransformNodeByID("tabledrawer");
+                this.placeRotation  =  new Vector3(Angle.FromDegrees(rotation.x).radians(),Angle.FromDegrees(rotation.y).radians(),Angle.FromDegrees(rotation.z).radians());
+            this.parent             =  this.root.scene.getTransformNodeByID("tabledrawer");
             this.state              = 0;
             this.isPlaced           = false;
             this.pickObject         = false;
@@ -41,13 +40,13 @@ export default class Item{
             this.parent          = this.root.scene.getTransformNodeByID("tabledrawer");
             this.meshRoot.parent = this.parent;
             this.meshRoot.name   +="items";
-            this.meshRoot.position  = new BABYLON.Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
-            this.startRotation      = new BABYLON.Vector3(0,0,0);
+            this.meshRoot.position  = new Vector3(this.startPosition.x,this.startPosition.y,this.startPosition.z);
+            this.startRotation      = new Vector3(0,0,0);
             if(this.meshRoot.name.includes("apd_package_node"))
-                this.startRotation  = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(180).radians());
-            this.meshRoot.rotation  = new BABYLON.Vector3(this.startRotation.x,this.startRotation.y,this.startRotation.z);
-            this.startScaling       = new BABYLON.Vector3(this.meshRoot.scaling.x,this.meshRoot.scaling.y,this.meshRoot.scaling.z);
-            this.meshRoot.scaling   = new BABYLON.Vector3(1,1,1);
+                this.startRotation  = new Vector3(Angle.FromDegrees(90).radians(),Angle.FromDegrees(180).radians(),Angle.FromDegrees(180).radians());
+            this.meshRoot.rotation  = new Vector3(this.startRotation.x,this.startRotation.y,this.startRotation.z);
+            this.startScaling       = new Vector3(this.meshRoot.scaling.x,this.meshRoot.scaling.y,this.meshRoot.scaling.z);
+            this.meshRoot.scaling   = new Vector3(1,1,1);
             this.meshRoot.setEnabled(true);
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 childmesh.isVisible  = true;
@@ -58,7 +57,7 @@ export default class Item{
             this.trollyPosition = position;
         }
         removeAction(){
-            // let mesh = new BABYLON.Mesh();
+            // let mesh = new Mesh();
             this.interaction = false;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 if(childmesh.parent.name.includes("items")){
@@ -81,8 +80,8 @@ export default class Item{
             });
         }
         addAction(mesh){
-                mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+                mesh.actionManager = new ActionManager(this.root.scene);
+                mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, (object)=> {
                     this.label.isVisible = (this.root.gamestate.state === GameState.default ||this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state<100;
                     // console.log(this.pointerDragBehavior.enabled+"        "+this.meshRoot.name+"           "+mesh.isPickable+"     "+this.state+"      "+this.root.gamestate.state);
                     this.updateoutLine(this.label.isVisible);
@@ -105,7 +104,7 @@ export default class Item{
                     }
                    
                 }))
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+                mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
                     this.updateoutLine(false);
                         if(this.root.gamestate.state === GameState.inspect){
@@ -120,7 +119,7 @@ export default class Item{
                                 this.root.onhighlightDrainBagPlan(0);
                         }
                 }))
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+                mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (object)=> {
                         // console.log(this.root.gamestate.state+"!! OnPickDownTrigger!!! ")
                             
                             this.label.isVisible= (this.root.gamestate.state === GameState.default ||this.root.gamestate.state === GameState.focus || this.root.gamestate.state === GameState.active) && this.state<100;
@@ -146,16 +145,16 @@ export default class Item{
                         }
                     )
                 )
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+                mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickTrigger, (object)=> {
                             this.label.isVisible=false;
                             this.isDraging = false;
                             this.pickObject = true;
                             console.log("!!! OnPickTrigger!!! "+this.root.gamestate.state+"        "+rotateState.value+"      "+this.pointerDragBehavior.enabled);
                             this.updateoutLine(false);
-                            if(this.root.camera.radius>2.5 && this.state<100){
+                            if(this.root.camera.radius>2.51 && this.state<100){
                                 this.root.gamestate.state = GameState.focus;
                                 this.root.tableObject.setTableFocusAnim();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
+                                this.root.setFocusOnObject(new Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,this.root.tableObject.meshRoot.position.z-.5));
                                 this.root.tableObject.state=0;
                                 return;
                             }
@@ -218,7 +217,7 @@ export default class Item{
                                 }
                                 else if(this.name.includes("Alcohol Wipe")){
                                     this.state=100;
-                                    this.root.setFocusOnObject(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
+                                    this.root.setFocusOnObject(new Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z));
                                     this.root.setCameraAnim(270,270,45,2);
                                     const tout = setTimeout(() => {
                                         this.root.wipeAlcohal.usealcohalwipe=true;
@@ -252,7 +251,7 @@ export default class Item{
                 )
         }
         initDrag(){
-            this.pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal:new BABYLON.Vector3(0,0,1)});
+            this.pointerDragBehavior = new PointerDragBehavior({dragPlaneNormal:new Vector3(0,0,1)});
             this.meshRoot.addBehavior(this.pointerDragBehavior);
             this.pointerDragBehavior.useObjectOrientationForDragging = false;
             this.pointerDragBehavior.updateDragPlane=false;
@@ -291,7 +290,7 @@ export default class Item{
                 // console.log(this.meshRoot.position);
                 if(this.meshRoot.position.x>=-140 && this.root.camera.target.x !== this.root.tableObject.meshRoot.position.x){
                     const posZ =  this.root.tableObject.isdrawerOpen? this.root.tableObject.drawerNode.absolutePosition.z:this.root.tableObject.meshRoot.position.z;
-                    this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,posZ));
+                    this.root.setFocusOnObjectLinear(new Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,posZ));
                 }
                 if((this.meshRoot.position.x>-140 && this.meshRoot.position.x<90 && this.meshRoot.position.z<-10)){
                      this.root.scene.getMeshByName("tablecollider").visibility=1;
@@ -302,7 +301,7 @@ export default class Item{
                 if(this.trollyPosition && ((this.root.level >2 && this.root.gamemode === gamemode.training) || this.root.gamemode !== gamemode.training)){   
                     if(this.meshRoot.name.includes("DrainBag") && this.meshRoot.position.x<-150  && this.meshRoot.position.z>50){
                         if(this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility===0 && this.root.camera.target.x !== this.root.trollyObject.meshRoot.position.x)
-                            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z-1));
+                            this.root.setFocusOnObjectLinear(new Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z-1));
                         this.root.scene.getMeshByName("trollyreckcollider").visibility=1;
                     }
                     else  
@@ -311,7 +310,7 @@ export default class Item{
                     if(this.meshRoot.name.includes("apd_package_node") && this.meshRoot.position.x<-150 && this.meshRoot.position.z>-20 && this.meshRoot.position.z<50){
                         
                         if(this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility===0 && this.root.camera.target.x !== this.root.trollyObject.meshRoot.position.x)
-                            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z-1));
+                            this.root.setFocusOnObjectLinear(new Vector3(this.root.trollyObject.meshRoot.position.x,this.root.trollyObject.meshRoot.position.y,this.root.trollyObject.meshRoot.position.z-1));
                             this.root.scene.getMeshByName("apdCassetteTrolly_collider").visibility=1;
                     }
                     else
@@ -372,11 +371,11 @@ export default class Item{
                         new TWEEN.Tween(this.meshRoot.position).to({x:finalpos.x,y:finalpos.y,z:finalpos.z},ANIM_TIME*.5).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
                         }).start();
                     }
-                    if(this.root.camera.target.x!==this.root.tableObject.meshRoot.position.x){
+                    if(this.root.camera.target.x!= this.root.tableObject.meshRoot.position.x){
                         setTimeout(() => {
-                            const posZ =  this.root.tableObject.isdrawerOpen? this.root.tableObject.drawerNode.absolutePosition.z:this.root.tableObject.meshRoot.position.z;
-                            this.root.setFocusOnObjectLinear(new BABYLON.Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,posZ));
-                        }, 500);
+                            const posZ =  this.root.tableObject.isdrawerOpen?this.root.tableObject.meshRoot.position.z-1.5:this.root.tableObject.meshRoot.position.z-.5;
+                            this.root.setFocusOnObjectLinear(new Vector3(this.root.tableObject.meshRoot.position.x,this.root.tableObject.meshRoot.position.y,posZ));
+                        }, 1000);
                     }
                     
                 }
@@ -389,7 +388,7 @@ export default class Item{
         }
         placeItem(time,autoplace){
             // console.log(this.meshRoot.position);
-            const tmppos =  new BABYLON.Vector3(-this.meshRoot.position.x,this.meshRoot.position.y*.8,-this.meshRoot.position.z); 
+            const tmppos =  new Vector3(-this.meshRoot.position.x,this.meshRoot.position.y*.8,-this.meshRoot.position.z); 
             if(!time)
                time=ANIM_TIME;
             this.state=0;
@@ -406,7 +405,7 @@ export default class Item{
             this.meshRoot.parent   = null;
             this.meshRoot.parent   = this.parent;
             new TWEEN.Tween(this.placedPosition).to({x:this.tablePosition.x,y:this.tablePosition.y,z:this.tablePosition.z},time).easing(TWEEN.Easing.Linear.None).onUpdate(()=>{
-                this.meshRoot.position = new BABYLON.Vector3(this.placedPosition.x,this.placedPosition.y,this.placedPosition.z);
+                this.meshRoot.position = new Vector3(this.placedPosition.x,this.placedPosition.y,this.placedPosition.z);
             }) .onComplete(() => {
                 this.root.scene.getMeshByName("tablecollider").visibility=0;
                 this.placedPosition = this.tablePosition;
@@ -444,16 +443,16 @@ export default class Item{
                 childmesh.renderOutline = false;
             });
            let scalAnim=1.5;
-           let upAng  = -BABYLON.Angle.FromDegrees(60).radians();
-           let zAng   =  BABYLON.Angle.FromDegrees(0).radians();
-           let newPos  = new BABYLON.Vector3(0,0,0);
+           let upAng  = -Angle.FromDegrees(60).radians();
+           let zAng   =  Angle.FromDegrees(0).radians();
+           let newPos  = new Vector3(0,0,0);
            if(this.parent ===  this.root.scene.getTransformNodeByID("tabledrawer"))
-                newPos  = new BABYLON.Vector3(0,-80,-60);
+                newPos  = new Vector3(0,-80,-60);
            else{     
                 if(this.root.tableObject.isdrawerOpen)
-                    newPos = new BABYLON.Vector3(0,-200,-60);
+                    newPos = new Vector3(0,-200,-60);
                 else
-                    newPos = new BABYLON.Vector3(0,-80,-40);
+                    newPos = new Vector3(0,-80,-40);
              
            }
         if(this.name.includes("Blood Pressure")){
@@ -462,7 +461,7 @@ export default class Item{
             if(isbpuse){ 
                 newPos.y -=10;
                 newPos.z +=40;
-                upAng  =  -BABYLON.Angle.FromDegrees(10).radians();
+                upAng  =  -Angle.FromDegrees(10).radians();
             }
         }
         if(this.meshRoot.name.includes("ccpdrecordbook") || this.meshRoot.name.includes("Connection") ||  this.meshRoot.name.includes("Alcohol")){
@@ -472,8 +471,8 @@ export default class Item{
                 upAng =0;
         }
         if(this.meshRoot.name.includes("apd_package_node")){
-            upAng =  BABYLON.Angle.FromDegrees(60).radians();
-            zAng  = -BABYLON.Angle.FromDegrees(180).radians();
+            upAng =  Angle.FromDegrees(60).radians();
+            zAng  = -Angle.FromDegrees(180).radians();
         }
         if(this.name.includes("APD Cassette")){
             this.root.updateApdValidatetion(this.apdValidateType[0],0);
@@ -579,14 +578,14 @@ export default class Item{
       }
       useccpdRecordBook(anim_time,callevent){
           if(this.name.includes("CCPD")){
-            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(0).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
-                this.meshRoot.position = new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y+10,this.meshRoot.position.z-10);
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:Angle.FromDegrees(0).radians(),y:0,z:0},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
+                this.meshRoot.position = new Vector3(this.meshRoot.position.x,this.meshRoot.position.y+10,this.meshRoot.position.z-10);
                 new TWEEN.Tween(this.meshRoot.position).to({x:this.meshRoot.position.x+100,y:this.meshRoot.position.y-100,z:this.meshRoot.position.z},anim_time).easing(TWEEN.Easing.Linear.None).onComplete(() => {
                     this.meshRoot.parent = null;
                     this.parent = this.root.scene.getCameraByName("maincamera");
                     this.meshRoot.parent = this.parent;
                     this.meshRoot.scaling.set(.003,.003,.003);
-                    // this.meshRoot.position = new BABYLON.Vector3(.55,-0.23,1.1);
+                    // this.meshRoot.position = new Vector3(.55,-0.23,1.1);
                     let xpos =.75;
                     const ratio =  this.root.scene.getEngine().getRenderHeight()/this.root.scene.getEngine().getRenderWidth();
                     if(ratio>.5 && ratio<=.6)
@@ -597,8 +596,8 @@ export default class Item{
                         xpos =ratio*.7;
                     else if(ratio>1)
                         xpos =ratio*.5;
-                    this.meshRoot.position = new BABYLON.Vector3(xpos,-0.3,1.1);
-                    this.meshRoot.rotation = new BABYLON.Vector3(0,0,0);
+                    this.meshRoot.position = new Vector3(xpos,-0.3,1.1);
+                    this.meshRoot.rotation = new Vector3(0,0,0);
                     this.label.isVisible = false;
                     this.enableDrag(false);
                     
@@ -620,7 +619,7 @@ export default class Item{
         });
         this.root.audioManager.playSound(this.root.audioManager.pageFlipSound);
         if(this.state===100){  
-            new TWEEN.Tween(frontpage.rotation).to({y:BABYLON.Angle.FromDegrees(120).radians()},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
+            new TWEEN.Tween(frontpage.rotation).to({y:Angle.FromDegrees(120).radians()},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
             new TWEEN.Tween(this.meshRoot.scaling).to({x:.019,y:.019,z:.019},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
                 this.root.scene.getMeshByName("ccpdplane").isVisible=true;
                 this.root.scene.getMeshByName("ccpdplane").isPickable=true;
@@ -664,15 +663,15 @@ export default class Item{
             // this.meshRoot.parent = this.parent;
             // this.meshRoot.scaling.set(.01,.01,.01);
             // this.meshRoot.position.set(-.24,-1.14,4.78);
-            // this.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());  
-            new TWEEN.Tween(this.meshRoot.rotation).to({x:BABYLON.Angle.FromDegrees(0).radians(),y:BABYLON.Angle.FromDegrees(0).radians(),z:BABYLON.Angle.FromDegrees(180).radians()},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
+            // this.meshRoot.rotation = new Vector3(Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());  
+            new TWEEN.Tween(this.meshRoot.rotation).to({x:Angle.FromDegrees(0).radians(),y:Angle.FromDegrees(0).radians(),z:Angle.FromDegrees(180).radians()},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {}).start();
             new TWEEN.Tween(this.meshRoot.scaling).to({x:4,y:4,z:4},anim_time).easing(TWEEN.Easing.Sinusoidal.Out).onComplete(() => {
                 this.meshRoot.parent = null;
                 this.parent = this.root.scene.getCameraByName("maincamera");
                 this.meshRoot.parent = this.parent;
-                this.meshRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(-60).radians(),0,0);
-                this.meshRoot.scaling = new BABYLON.Vector3(.06,.06,.06); 
-                this.meshRoot.position = new BABYLON.Vector3(.06,-1.15,1.05); 
+                this.meshRoot.rotation = new Vector3(Angle.FromDegrees(-60).radians(),0,0);
+                this.meshRoot.scaling = new Vector3(.06,.06,.06); 
+                this.meshRoot.position = new Vector3(.06,-1.15,1.05); 
                 this.removeAction();
                 const  custom_event = new CustomEvent(event_objectivecomplete,{detail:{object_type:this,msg:"mask_used",level:2}});
                 document.dispatchEvent(custom_event);        
@@ -800,8 +799,11 @@ export default class Item{
                 childmesh.renderOutline = false;
             else
                 childmesh.renderOutline = value;
-             if(childmesh.name.includes("ccpd")){
-                childmesh.outlineWidth=.1;
+
+             if(childmesh.id === "ccpdback"){
+                childmesh.outlineWidth=0;
+                childmesh.renderOutline = false;   
+                childmesh.customOutline.setEnabled(value);
              }
              if(childmesh.parent.name.includes("DrainBag")){
                 if(childmesh.id === "DrainBagPlasticCover" || childmesh.id === "DrainBagA_2"){
@@ -812,11 +814,11 @@ export default class Item{
                 }
              }
              if(childmesh.parent.name.includes("apd_package_node")){
-                    if(childmesh.name.includes("APDCassetteRevisedWithPackaging2.001_primitive42") || childmesh.name.includes("APDCassetteRevisedWithPackaging2.001_primitive12")){
-                        childmesh.outlineWidth  = 5;
-                    }
-                    else{
-                        childmesh.renderOutline = false;   
+                    childmesh.renderOutline = false;   
+                    childmesh.outlineWidth  = 0;
+                    if(childmesh.id === "APDCassetteRevisedWithPackaging2 (1)_primitive40"){
+                        console.log(value+"       "+childmesh.customOutline.isVisible);
+                        childmesh.customOutline.setEnabled(value);
                     }
              }
         });
@@ -828,7 +830,7 @@ export default class Item{
             this.root.scene.getMeshByName("ccpdplane").isPickable=false;
             this.meshRoot.getChildMeshes().forEach(childmesh => {
                 if(childmesh.id ==="ccpdfront"){
-                    childmesh.rotation.y = BABYLON.Angle.FromDegrees(0).radians();
+                    childmesh.rotation.y = Angle.FromDegrees(0).radians();
                 }
             });
         }
@@ -839,7 +841,7 @@ export default class Item{
         this.trollyPosition=undefined;
         this.tablePosition=undefined;
         this.startPosition=undefined;
-        this.meshRoot.scaling   = new BABYLON.Vector3(1,1,1);
+        this.meshRoot.scaling   = new Vector3(1,1,1);
         this.removeAction();
         this.pointerDragBehavior.releaseDrag();
         this.pointerDragBehavior.detach();

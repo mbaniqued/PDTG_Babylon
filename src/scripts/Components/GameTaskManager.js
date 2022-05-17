@@ -1,6 +1,7 @@
 const action_time=500;
-import { ANIM_TIME,randomNumber } from "../scene/MainScene";
-import { diasolutionpos1,diasolutionpos2,diasolutionpos3,diasolutionpos4,sanitizerpos1,sanitizerpos2 } from "./cabinetitem";
+import { ANIM_TIME} from "../scene/MainScene";
+import {diasolutionpos3,diasolutionpos4,sanitizerpos2 } from "./cabinetitem";
+import {Color3} from 'babylonjs';
 import { MACHINE_PREPRATION } from "./results";
 export const TOTAL_POINTS = 41,TOTAL_SEQUENCE_POINTS =9,TOTAL_TASK=45;
 const TASKPOINT=1;
@@ -62,7 +63,7 @@ export default class GameTaskManager{
         }, action_time*4);
         setTimeout(() => {
             this.root.acItem.isAcOff = true;
-            this.root.scene.getMeshByName("acindicator").material.diffuseColor  = new BABYLON.Color3.FromInts(255,0,0);
+            this.root.scene.getMeshByName("acindicator").material.diffuseColor  = new Color3.FromInts(255,0,0);
             this.root.audioManager.playSound(this.root.audioManager.acSound);
             this.root.setAc(false);
         }, action_time*5);

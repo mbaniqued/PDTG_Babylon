@@ -1,13 +1,14 @@
+import { SceneOptimizerOptions,HardwareScalingOptimization,SceneOptimizer} from "babylonjs"; 
 export default class SceneOptimiser{
 
         constructor(targertframeRate,time,scene){
             try {
-                this.options = new BABYLON.SceneOptimizerOptions(targertframeRate,time);
+                this.options = new SceneOptimizerOptions(targertframeRate,time);
                 // BABYLON.SceneOptimizerOptions.LowDegradationAllowed(targertframeRate);
                 // BABYLON.SceneOptimizerOptions.ModerateDegradationAllowed();
                 // BABYLON.SceneOptimizerOptions.HighDegradationAllowed();
-                this.options.addOptimization(new BABYLON.HardwareScalingOptimization(0,1));
-                this.optimizer = new BABYLON.SceneOptimizer(scene,this.options);
+                this.options.addOptimization(new HardwareScalingOptimization(0,1));
+                this.optimizer = new SceneOptimizer(scene,this.options);
                 this.optimizer.onSuccessObservable.add(()=> {
                     console.log("optimizer.onSuccessObservable");
                 });

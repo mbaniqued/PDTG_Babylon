@@ -1,5 +1,4 @@
-import * as GUI from 'babylonjs-gui';
-
+import { Container,Control,StackPanel,ScrollViewer } from 'babylonjs-gui';
 export const ROOM_PREPRATION=["Close the Door","Switch on the Lights","Turn-off the Fan","Close the window","Turn off the AC using the remote"];
 export const ITEM_PREPRATION=["Place the APD Cassette Package on the table","Place the CCPD Record Book on the table","Place the Drain Bag Package on the table"
 ,"Place the Alcohal wipe on the table","Place the BP monitor on the table","Place the Connection Shiels on the table","Place the Face Mask on the table","Place the Dialysis Solution on the table"
@@ -29,7 +28,7 @@ export class Result{
         this.createMachineResult();
      }
      createRoomResult(){
-        this.roomPreparation = new GUI.Container("room_container");   
+        this.roomPreparation = new Container("room_container");   
         this.roomPreparation.isVisible =false;
         this.roomTime=undefined;
         this.roomPreparation.isPointerBlocker=true;
@@ -42,45 +41,45 @@ export class Result{
         const container2 = container.getChildByName("scrollcontainer");
         container2.addControl(this.roomPreparation);
 
-        const title = this.root.gui2D.createText("roomtitle","Room Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        title.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const title = this.root.gui2D.createText("roomtitle","Room Prepration",36,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        title.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        title.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         title.paddingTopInPixels =5;
         this.roomPreparation.addControl(title);
 
-        const accuracytxt = this.root.gui2D.createText("accuracytitle","Accuracy",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        accuracytxt.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        accuracytxt.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const accuracytxt = this.root.gui2D.createText("accuracytitle","Accuracy",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        accuracytxt.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        accuracytxt.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         accuracytxt.topInPixels=50;
         this.roomPreparation.addControl(accuracytxt);
 
-        const accuracyresult = this.root.gui2D.createText("accuracyresult","100%",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        accuracyresult.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        accuracyresult.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const accuracyresult = this.root.gui2D.createText("accuracyresult","100%",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        accuracyresult.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        accuracyresult.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         accuracyresult.topInPixels=70;
         accuracyresult.leftInPixels=-60;
         this.roomPreparation.addControl(accuracyresult);
 
-        const durationtxt = this.root.gui2D.createText("durationtitle","Duration",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        durationtxt.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        durationtxt.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const durationtxt = this.root.gui2D.createText("durationtitle","Duration",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        durationtxt.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        durationtxt.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         durationtxt.topInPixels=50;
         durationtxt.leftInPixels=50;
         this.roomPreparation.addControl(durationtxt);
 
-        const durationresult = this.root.gui2D.createText("durationresult","40s",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        durationresult.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        durationresult.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const durationresult = this.root.gui2D.createText("durationresult","40s",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        durationresult.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        durationresult.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         durationresult.topInPixels=70;
         durationresult.leftInPixels=-60;
         this.roomPreparation.addControl(durationresult);
 
-        const contentpanel = new GUI.StackPanel("room_content_container");   
+        const contentpanel = new StackPanel("room_content_container");   
         contentpanel.widthInPixels = this.roomPreparation.widthInPixels;
         contentpanel.heightInPixels = this.roomPreparation.heightInPixels-100;
         contentpanel.background = "#FFFFFF00";
-        contentpanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        contentpanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        contentpanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        contentpanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         contentpanel.topInPixels=130;
         this.roomPreparation.addControl(contentpanel);
          for(let i=0;i<ROOM_PREPRATION.length;i++){
@@ -124,7 +123,7 @@ export class Result{
         this.roomTime = undefined;
      }
      createItemResult(){
-        this.itemPreparation = new GUI.Container("item_container");   
+        this.itemPreparation = new Container("item_container");   
         this.itemTime=undefined;
         this.itemPreparation.isVisible = false;
         this.itemPreparation.isPointerBlocker=true;
@@ -137,54 +136,54 @@ export class Result{
         const container2 = container.getChildByName("scrollcontainer");
         container2.addControl(this.itemPreparation);
 
-        const title = this.root.gui2D.createText("roomtitle","Item Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        title.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const title = this.root.gui2D.createText("roomtitle","Item Prepration",36,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        title.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        title.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         title.paddingTopInPixels =5;
         this.itemPreparation.addControl(title);
 
-        const accuracytxt = this.root.gui2D.createText("accuracytitle","Accuracy",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        accuracytxt.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        accuracytxt.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const accuracytxt = this.root.gui2D.createText("accuracytitle","Accuracy",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        accuracytxt.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        accuracytxt.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         accuracytxt.topInPixels=50;
         this.itemPreparation.addControl(accuracytxt);
 
-        const accuracyresult = this.root.gui2D.createText("accuracyresult","100%",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        accuracyresult.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        accuracyresult.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const accuracyresult = this.root.gui2D.createText("accuracyresult","100%",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        accuracyresult.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        accuracyresult.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         accuracyresult.topInPixels=70;
         accuracyresult.leftInPixels=-60;
         this.itemPreparation.addControl(accuracyresult);
 
-        const durationtxt = this.root.gui2D.createText("durationtitle","Duration",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        durationtxt.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        durationtxt.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const durationtxt = this.root.gui2D.createText("durationtitle","Duration",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        durationtxt.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        durationtxt.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         durationtxt.topInPixels=50;
         durationtxt.leftInPixels=50;
         this.itemPreparation.addControl(durationtxt);
 
-        const durationresult = this.root.gui2D.createText("durationresult","40s",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        durationresult.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        durationresult.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const durationresult = this.root.gui2D.createText("durationresult","40s",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        durationresult.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        durationresult.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         durationresult.topInPixels=70;
         durationresult.leftInPixels=-60;
         this.itemPreparation.addControl(durationresult);
 
-        const contentscrollpanel = new GUI.ScrollViewer("item_scroll_container");
+        const contentscrollpanel = new ScrollViewer("item_scroll_container");
         contentscrollpanel.name = "item_scroll_container";
         contentscrollpanel.widthInPixels = this.itemPreparation.widthInPixels;
         contentscrollpanel.heightInPixels = this.itemPreparation.heightInPixels-150;
         contentscrollpanel.paddingLeftInPixels=5;
         contentscrollpanel.topInPixels=130;
         contentscrollpanel.color = "#FFFFFF00";
-        contentscrollpanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        const contentpanel = new GUI.StackPanel("item_content_container");   
+        contentscrollpanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        const contentpanel = new StackPanel("item_content_container");   
         contentpanel.name = "item_content_container";
         // contentpanel.widthInPixels = this.itemPreparation.widthInPixels;
         // contentpanel.heightInPixels = this.itemPreparation.heightInPixels-100;
         contentpanel.background = "#FFFFFF00";
-        contentpanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        contentpanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        contentpanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        contentpanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         contentscrollpanel.addControl(contentpanel);
         this.itemPreparation.addControl(contentscrollpanel);
          for(let i=0;i<ITEM_PREPRATION.length;i++){
@@ -231,7 +230,7 @@ export class Result{
         this.itemTime = undefined;
      }
      createSelfResult(){
-        this.selfPreparation = new GUI.Container("self_container");   
+        this.selfPreparation = new Container("self_container");   
         this.selfTime = undefined;
         this.selfPreparation.isVisible=false;
         this.selfPreparation.isPointerBlocker=true;
@@ -244,45 +243,45 @@ export class Result{
         const container2 = container.getChildByName("scrollcontainer");
         container2.addControl(this.selfPreparation);
 
-        const title = this.root.gui2D.createText("selftitle","Self Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        title.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const title = this.root.gui2D.createText("selftitle","Self Prepration",36,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        title.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        title.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         title.paddingTopInPixels =5;
         this.selfPreparation.addControl(title);
 
-        const accuracytxt = this.root.gui2D.createText("accuracytitle","Accuracy",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        accuracytxt.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        accuracytxt.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const accuracytxt = this.root.gui2D.createText("accuracytitle","Accuracy",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        accuracytxt.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        accuracytxt.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         accuracytxt.topInPixels=50;
         this.selfPreparation.addControl(accuracytxt);
 
-        const accuracyresult = this.root.gui2D.createText("accuracyresult","100%",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        accuracyresult.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        accuracyresult.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const accuracyresult = this.root.gui2D.createText("accuracyresult","100%",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        accuracyresult.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        accuracyresult.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         accuracyresult.topInPixels=70;
         accuracyresult.leftInPixels=-60;
         this.selfPreparation.addControl(accuracyresult);
 
-        const durationtxt = this.root.gui2D.createText("durationtitle","Duration",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        durationtxt.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        durationtxt.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const durationtxt = this.root.gui2D.createText("durationtitle","Duration",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        durationtxt.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        durationtxt.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         durationtxt.topInPixels=50;
         durationtxt.leftInPixels=50;
         this.selfPreparation.addControl(durationtxt);
 
-        const durationresult = this.root.gui2D.createText("durationresult","40s",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        durationresult.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        durationresult.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const durationresult = this.root.gui2D.createText("durationresult","40s",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        durationresult.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        durationresult.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         durationresult.topInPixels=70;
         durationresult.leftInPixels=-60;
         this.selfPreparation.addControl(durationresult);
 
-        const contentpanel = new GUI.StackPanel("self_content_container");   
+        const contentpanel = new StackPanel("self_content_container");   
         contentpanel.widthInPixels = this.selfPreparation.widthInPixels;
         contentpanel.heightInPixels = this.selfPreparation.heightInPixels-100;
         contentpanel.background = "#FFFFFF00";
-        contentpanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        contentpanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        contentpanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        contentpanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         contentpanel.topInPixels=130;
         this.selfPreparation.addControl(contentpanel);
          for(let i=0;i<SELF_PREPRATION.length;i++){
@@ -327,7 +326,7 @@ export class Result{
         this.selfTime = undefined;
      }
      createMachineResult(){
-        this.machinePreparation = new GUI.Container("machine_container");   
+        this.machinePreparation = new Container("machine_container");   
         this.machinePreparation.isVisible = false;
         this.machineTime = undefined;
         this.machinePreparation.isPointerBlocker=true;
@@ -340,52 +339,52 @@ export class Result{
         const container2 = container.getChildByName("scrollcontainer");
         container2.addControl(this.machinePreparation);
 
-        const title = this.root.gui2D.createText("roomtitle","Machine Prepration",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        title.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const title = this.root.gui2D.createText("roomtitle","Machine Prepration",36,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        title.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        title.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         title.paddingTopInPixels =5;
         this.machinePreparation.addControl(title);
 
-        const accuracytxt = this.root.gui2D.createText("accuracytitle","Accuracy",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        accuracytxt.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        accuracytxt.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const accuracytxt = this.root.gui2D.createText("accuracytitle","Accuracy",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        accuracytxt.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        accuracytxt.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         accuracytxt.topInPixels=50;
         this.machinePreparation.addControl(accuracytxt);
 
-        const accuracyresult = this.root.gui2D.createText("accuracyresult","100%",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        accuracyresult.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        accuracyresult.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const accuracyresult = this.root.gui2D.createText("accuracyresult","100%",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        accuracyresult.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        accuracyresult.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         accuracyresult.topInPixels=70;
         accuracyresult.leftInPixels=-60;
         this.machinePreparation.addControl(accuracyresult);
 
-        const durationtxt = this.root.gui2D.createText("durationtitle","Duration",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        durationtxt.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        durationtxt.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const durationtxt = this.root.gui2D.createText("durationtitle","Duration",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        durationtxt.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        durationtxt.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         durationtxt.topInPixels=50;
         durationtxt.leftInPixels=50;
         this.machinePreparation.addControl(durationtxt);
 
-        const durationresult = this.root.gui2D.createText("durationresult","40s",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        durationresult.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        durationresult.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const durationresult = this.root.gui2D.createText("durationresult","40s",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        durationresult.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        durationresult.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         durationresult.topInPixels=70;
         durationresult.leftInPixels=-60;
         this.machinePreparation.addControl(durationresult);
 
-        const contentscrollpanel = new GUI.ScrollViewer("machine_scroll_container");
+        const contentscrollpanel = new ScrollViewer("machine_scroll_container");
         contentscrollpanel.widthInPixels = this.machinePreparation.widthInPixels;
         contentscrollpanel.heightInPixels = this.machinePreparation.heightInPixels-150;
         contentscrollpanel.paddingLeftInPixels=5;
         contentscrollpanel.topInPixels=130;
         contentscrollpanel.color = "#FFFFFF00";
-        contentscrollpanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        const contentpanel = new GUI.StackPanel("machine_content_container");   
+        contentscrollpanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        const contentpanel = new StackPanel("machine_content_container");   
         // contentpanel.widthInPixels = this.machinePreparation.widthInPixels;
         // contentpanel.heightInPixels = this.machinePreparation.heightInPixels-100;
         contentpanel.background = "#FFFFFF00";
-        contentpanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        contentpanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        contentpanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        contentpanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         contentscrollpanel.addControl(contentpanel);
         this.machinePreparation.addControl(contentscrollpanel);
         const distractors1 = this.root.gui2D.createResultBar("Unnecessary Action :Dialysis Solution-Serial Number",450,80);

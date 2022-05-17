@@ -1,5 +1,4 @@
-
-import * as BABYLON from 'babylonjs';
+import { Engine,Camera } from 'babylonjs';
 import MainScene from './scene/MainScene';
 import SceneManager   from './SceneManager';
 import TWEEN from '@tweenjs/tween.js';
@@ -10,7 +9,7 @@ export class GameManger {
 
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
-        this.engine = new BABYLON.Engine(this.canvas,true);
+        this.engine = new Engine(this.canvas,true);
         this.engine.enableOfflineSupport=true;
         this.sceneManager = new SceneManager();
         this.sceneManager.setSceneState(this.sceneManager.sceneState.basic);
@@ -33,10 +32,10 @@ export class GameManger {
     }
     setCamFov(){
         if(this.engine.getRenderHeight()>this.engine.getRenderWidth()){
-            this.mainScene.camera.fovMode = BABYLON.Camera.FOVMODE_HORIZONTAL_FIXED;
+            this.mainScene.camera.fovMode = Camera.FOVMODE_HORIZONTAL_FIXED;
         }
         else{
-            this.mainScene.camera.fovMode = BABYLON.Camera.FOVMODE_VERTICAL_FIXED;
+            this.mainScene.camera.fovMode = Camera.FOVMODE_VERTICAL_FIXED;
         }
     }
     resizeBabylonEngine(){

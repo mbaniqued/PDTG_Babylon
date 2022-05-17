@@ -1,4 +1,6 @@
 import * as GUI from 'babylonjs-gui';
+import { Control,StackPanel,Container } from 'babylonjs-gui';
+import {Vector2,Angle} from 'babylonjs';
 import { event_objectivecomplete,gamemode,randomNumber } from '../scene/MainScene';
 const msg = "Drag the bubbles HERE in the correct 7 - Step Handwashing Sequence";
 // https://www.babylonjs-playground.com/#XCPP9Y#134
@@ -11,8 +13,8 @@ const match=["step1","step2","step3","step4","step5","step6","step7"];
 export default class HandWash{
      constructor(root){
         this.root = root;
-        this.containter = this.root.gui2D.createRect("handwash_container",1280,1080,5,"#ff000000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,true);
-        this.iconContainer = new GUI.Container("icon_container");
+        this.containter = this.root.gui2D.createRect("handwash_container",1280,1080,5,"#ff000000",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,true);
+        this.iconContainer = new Container("icon_container");
         this.iconContainer.isPointerBlocker=true;
         this.handwashIcon=[];
         this.handwashIconWrong=[];
@@ -37,7 +39,7 @@ export default class HandWash{
             this.initEvents(i);
             this.isplaced[i] = false;
         }
-        this.doneBtn = this.root.gui2D.createRectBtn("dont_btn",128,64,2,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"Done \u2713","#00BAFF",24,false);
+        this.doneBtn = this.root.gui2D.createRectBtn("dont_btn",128,64,2,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,"Done \u2713","#00BAFF",24,false);
         this.containter.addControl(this.doneBtn);
 
         
@@ -76,21 +78,21 @@ export default class HandWash{
       }
      createHeader(){
         
-        this.topHeader  = this.root.gui2D.createRect("handwash_header",1000,200,5,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        this.topHeader  = this.root.gui2D.createRect("handwash_header",1000,200,5,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false);
         this.topHeader.isPointerBlocker=false;
         this.containter.addControl(this.topHeader);
-        this.msgtext    = this.root.gui2D.createText("handwash_txt",msg,20,"#000000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        this.msgtext    = this.root.gui2D.createText("handwash_txt",msg,20,"#000000",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false);
         this.topHeader.addControl(this.msgtext);
         this.topHeader.topInPixels=40;
-        const bubbleLeft = this.root.gui2D.createImage("bubbleleft","ui/handwash/bubble_border.png",156,156,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        const bubbleLeft = this.root.gui2D.createImage("bubbleleft","ui/handwash/bubble_border.png",156,156,Control.HORIZONTAL_ALIGNMENT_LEFT,Control.VERTICAL_ALIGNMENT_TOP,false);
         bubbleLeft.isVisible=true;
-        bubbleLeft.rotation = BABYLON.Angle.FromDegrees(-90).radians();
+        bubbleLeft.rotation = Angle.FromDegrees(-90).radians();
         bubbleLeft.topInPixels  = -20;
         bubbleLeft.leftInPixels =  70;
         this.containter.addControl(bubbleLeft);
-        const bubbleRight = this.root.gui2D.createImage("bubbleright","ui/handwash/bubble_border.png",156,156,GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        const bubbleRight = this.root.gui2D.createImage("bubbleright","ui/handwash/bubble_border.png",156,156,Control.HORIZONTAL_ALIGNMENT_RIGHT,Control.VERTICAL_ALIGNMENT_TOP,false);
         bubbleRight.isVisible=true;
-        bubbleRight.rotation = BABYLON.Angle.FromDegrees(90).radians();
+        bubbleRight.rotation = Angle.FromDegrees(90).radians();
         bubbleRight.topInPixels  = 150;
         bubbleRight.leftInPixels = -70;
         this.containter.addControl(bubbleRight);
@@ -100,24 +102,24 @@ export default class HandWash{
      createhandIcon(name,path,path2,msg,xpos,ypos){
          const width  =100;
          const height =100; 
-         const iconcontainer = this.root.gui2D.createCircle(name,width+50,height+35,"#ffffff00",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER);
-         const handicon    = this.root.gui2D.createImage("handicon",path,width,height,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+         const iconcontainer = this.root.gui2D.createCircle(name,width+50,height+35,"#ffffff00",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER);
+         const handicon    = this.root.gui2D.createImage("handicon",path,width,height,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false);
          handicon.isVisible=true;
          handicon.isPointerBlocker=false;
 
-         const handiconincorrect    = this.root.gui2D.createImage("handicon_incorrect",path2,width,height,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+         const handiconincorrect    = this.root.gui2D.createImage("handicon_incorrect",path2,width,height,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false);
          handiconincorrect.isVisible=false;
          handiconincorrect.isPointerBlocker=false;
 
-         const bubbleicon  = this.root.gui2D.createImage("bubbleleft","ui/handwash/bubblev2.png",width,height,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+         const bubbleicon  = this.root.gui2D.createImage("bubbleleft","ui/handwash/bubblev2.png",width,height,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false);
          bubbleicon.isVisible=true;
          bubbleicon.alpha=.5;
          bubbleicon.isPointerBlocker=false;
 
 
-         const msgtext    = this.root.gui2D.createText(msg,msg,12,"#000000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,false);
-         msgtext.textHorizontalAlignment  = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-         msgtext.textVerticalAlignment    = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+         const msgtext    = this.root.gui2D.createText(msg,msg,12,"#000000",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_BOTTOM,false);
+         msgtext.textHorizontalAlignment  = Control.HORIZONTAL_ALIGNMENT_CENTER;
+         msgtext.textVerticalAlignment    = Control.VERTICAL_ALIGNMENT_BOTTOM;
          msgtext.topInPixels -=10;
                   
          iconcontainer.addControl(handicon);
@@ -149,8 +151,8 @@ export default class HandWash{
      initEvents(i){
          this.handwashIcon[i].onPointerDownObservable.add((coordinates)=> {
             this.iconNo=i;
-            this.startingPoint    = new BABYLON.Vector2(coordinates.x, coordinates.y);
-            this.iconStartPos     = new BABYLON.Vector2(this.handwashIcon[i].leftInPixels,this.handwashIcon[i].topInPixels);
+            this.startingPoint    = new Vector2(coordinates.x, coordinates.y);
+            this.iconStartPos     = new Vector2(this.handwashIcon[i].leftInPixels,this.handwashIcon[i].topInPixels);
             this.drag = true;
             this.drop = false;
             // console.log("!! down!!! "+this.startingPoint+"   "+this.iconNo);
@@ -193,7 +195,7 @@ export default class HandWash{
             if (!this.startingPoint)
                   return;
                if (this.drag == true && this.drop == false) {
-                  let diff = this.startingPoint.subtract(new BABYLON.Vector2(coordinates.x, coordinates.y));
+                  let diff = this.startingPoint.subtract(new Vector2(coordinates.x, coordinates.y));
                   this.handwashIcon[this.iconNo].leftInPixels =   this.iconStartPos.x-diff.x;
                   this.handwashIcon[this.iconNo].topInPixels  =   this.iconStartPos.y-diff.y;
                   this.ispicked[this.iconNo] = true;
@@ -203,11 +205,11 @@ export default class HandWash{
          this.iconContainer.onPointerMoveObservable.add(onMove); 
      }
      createStakPanel(){
-         this.stackPanel    =  new GUI.StackPanel();    
+         this.stackPanel    =  new StackPanel();    
          this.stackPanel.widthInPixels = this.topHeader.widthInPixels;
          this.stackPanel.heightInPixels = this.topHeader.heightInPixels;
-         this.stackPanel.horizontalAlignment =  GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-         this.stackPanel.verticalAlignment   =  GUI.Control.VERTICAL_ALIGNMENT_TOP;
+         this.stackPanel.horizontalAlignment =  Control.HORIZONTAL_ALIGNMENT_CENTER;
+         this.stackPanel.verticalAlignment   =  Control.VERTICAL_ALIGNMENT_TOP;
          this.stackPanel.background = "#FFFF00";
          this.stackPanel.topInPixels=40;
          this.stackPanel.isPointerBlocker=true;

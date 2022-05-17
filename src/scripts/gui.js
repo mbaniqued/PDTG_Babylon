@@ -1,11 +1,11 @@
-import * as GUI from 'babylonjs-gui';
+import {AdvancedDynamicTexture,Button,Control,TextBlock,Container,StackPanel,Image,Rectangle,Ellipse,InputText,ScrollViewer } from 'babylonjs-gui';
 import TWEEN from '@tweenjs/tween.js';
 import {GameState, usermode,gamemode } from './scene/MainScene';
 export default class GUI2D{
 
      constructor(root){
         this.root = root;
-        this.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        this.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this.advancedTexture.layer.layerMask=1;
         let dpr = window.devicePixelRatio;
         // if(dpr<1)
@@ -25,32 +25,32 @@ export default class GUI2D{
         this.advancedTexture.idealHeight = 1080;
         this.advancedTexture.useSmallestIdeal = false;
         this.advancedTexture.renderAtIdealSize = true;
-        this.resetCamBtn   =  this.createButon("resetcambtn","ui/move.png","#ffffffff","",0,0,72,72,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
+        this.resetCamBtn   =  this.createButon("resetcambtn","ui/move.png","#ffffffff","",0,0,72,72,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_BOTTOM,true);
         
-        this.userBackBtn   =  this.createButon("userbackbtn","ui/exit_icon.png","#ffffff00","",0,"",48,48,GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT,GUI.Control.VERTICAL_ALIGNMENT_TOP,true);
+        this.userBackBtn   =  this.createButon("userbackbtn","ui/exit_icon.png","#ffffff00","",0,"",48,48,Control.HORIZONTAL_ALIGNMENT_RIGHT,Control.VERTICAL_ALIGNMENT_TOP,true);
         this.userBackBtn.leftInPixels =-20;
         this.userBackBtn.topInPixels  = 20;
 
-        this.userExitBtn   =  this.createCircle("userexitbtn",72,72,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_BOTTOM,true);
-        const userImg      =  this.createImage("userexitbtn","ui/Users-Exit-icon.png",48,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.userExitBtn   =  this.createCircle("userexitbtn",72,72,"white",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_BOTTOM,true);
+        const userImg      =  this.createImage("userexitbtn","ui/Users-Exit-icon.png",48,48,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         userImg.isPointerBlocker=false;
         userImg.isVisible  = true;
         this.userExitBtn.addControl(userImg);
         this.userExitBtn.isVisible=false;
         this.userExitBtn.isPointerBlocker=true;
 
-        this.submitBtn       = this.createRectBtn("submitBtn",92,42,1,"#74FF45",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,"","#FFFFFF",0,true);
-        const downArrow      = this.createImage("arrow","ui/arrow.png",24,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.submitBtn       = this.createRectBtn("submitBtn",92,42,1,"#74FF45",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,"","#FFFFFF",0,true);
+        const downArrow      = this.createImage("arrow","ui/arrow.png",24,36,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         downArrow.rotation   = BABYLON.Angle.FromDegrees(270).radians(); 
         downArrow.isVisible  = true;
         downArrow.isPointerBlocker=false;
         this.submitBtn.addControl(downArrow);
         this.submitBtn.isVisible=false;
 
-        this.submitBtn2      = this.createRectBtn("submit2Btn",123,82,1,"#74FF45",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,"SUBMIT","#FFFFFF",18,true);
+        this.submitBtn2      = this.createRectBtn("submit2Btn",123,82,1,"#74FF45",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,"SUBMIT","#FFFFFF",18,true);
         this.submitBtn2.children[0].topInPixels =35;
         
-        const submitimg      = this.createImage("submit_img","ui/check_png3.png",48,48,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+        const submitimg      = this.createImage("submit_img","ui/check_png3.png",48,48,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false);
         submitimg.isVisible  = true;
         submitimg.isPointerBlocker=false;
         this.submitBtn2.addControl(submitimg);
@@ -70,36 +70,36 @@ export default class GUI2D{
       }
       initMainMenu(){
         
-        this.menuContainer =  this.createRect("menucontiner",1920,1080,0,"#FFFFFF00",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.menuContainer =  this.createRect("menucontiner",1920,1080,0,"#FFFFFF00",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
 
-        const menuBg       =  this.createRect("menubg2",1920,1080,0,"#7EC5DDE6",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const menuBg       =  this.createRect("menubg2",1920,1080,0,"#7EC5DDE6",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         menuBg.isPointerBlocker=true;
-        const whiteimg     =  this.createRect("menubg3",1920,1080,0,"#FFFFFF73",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const whiteimg     =  this.createRect("menubg3",1920,1080,0,"#FFFFFF73",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         whiteimg.isPointerBlocker=true;
-        const menuBgImg    =  this.createImage("menubg1","ui/apd_bg.PNG",1920,1080,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const menuBgImg    =  this.createImage("menubg1","ui/apd_bg.PNG",1920,1080,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         menuBgImg.isVisible=true;
         menuBgImg.isPointerBlocker=true;
         
-        const menufont    =  this.createText("menufont","Peritoneal Dialysis \nGame",90,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false) 
+        const menufont    =  this.createText("menufont","Peritoneal Dialysis \nGame",90,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false) 
         this.setTextOutLine(menufont,"#000000",2);
         menufont.topInPixels =-240;
-        const userModeText =  this.createText("usermodetxt","User Mode",40,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false) 
+        const userModeText =  this.createText("usermodetxt","User Mode",40,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false) 
         this.setTextOutLine(userModeText,"#000000",2);
 
-        this.patientModeBtn   = this.createButon("patient","ui/button2.png","#ffffff00","Patient",24,"#808080",216,56,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.caregiverModeBtn = this.createButon("caregiver","ui/button2.png","#ffffff00","Caregiver",24,"#808080",216,56,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.userModeBtn = this.createButon("userdropbutton","ui/button.png","#ffffff00","Patient",24,"#808080",216,56,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.patientModeBtn   = this.createButon("patient","ui/button2.png","#ffffff00","Patient",24,"#808080",216,56,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.caregiverModeBtn = this.createButon("caregiver","ui/button2.png","#ffffff00","Caregiver",24,"#808080",216,56,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.userModeBtn = this.createButon("userdropbutton","ui/button.png","#ffffff00","Patient",24,"#808080",216,56,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
 
 
         
-        const gameModeText =  this.createText("gamemodetxt","Game Mode",40,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false) 
+        const gameModeText =  this.createText("gamemodetxt","Game Mode",40,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false) 
         this.setTextOutLine(gameModeText,"#000000",2);
 
-        this.proceedBtn        = this.createButon("proceedbtn","ui/proceed.png","#ffffff00","",24,"#808080",193,78,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.trainingModeBtn   = this.createButon("trainingbtn","ui/button2.png","#ffffff00","Training",24,"#808080",216,56,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.practiceModeBtn   = this.createButon("practicebtn","ui/button2.png","#ffffff00","Practice",24,"#808080",216,56,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.assesmentModeBtn  = this.createButon("assesmentbtn","ui/button2.png","#ffffff00","Assessment",24,"#808080",216,56,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.gameModeBtn       = this.createButon("gameModeBtn","ui/button.png","#ffffff00","Training",24,"#808080",216,56,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.proceedBtn        = this.createButon("proceedbtn","ui/proceed.png","#ffffff00","",24,"#808080",193,78,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.trainingModeBtn   = this.createButon("trainingbtn","ui/button2.png","#ffffff00","Training",24,"#808080",216,56,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.practiceModeBtn   = this.createButon("practicebtn","ui/button2.png","#ffffff00","Practice",24,"#808080",216,56,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.assesmentModeBtn  = this.createButon("assesmentbtn","ui/button2.png","#ffffff00","Assessment",24,"#808080",216,56,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.gameModeBtn       = this.createButon("gameModeBtn","ui/button.png","#ffffff00","Training",24,"#808080",216,56,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
         
 
         
@@ -221,17 +221,17 @@ export default class GUI2D{
           }
       }
       initStageMenu(){
-        this.backBtn        = this.createButon("backbtn","ui/backbtn.png","#ffffff00","",24,"#808080",119,67,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.playBtn        = this.createButon("playbtn","ui/play.png","#ffffff00","",24,"#808080",193,78,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.stage1btn      = this.createButon("prepration1btn","ui/button2.png","#ffffff00","Stage1:Preparation",19,"#808080",256,66,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.stagebtn       = this.createButon("stagemodbtn","ui/button.png","#ffffff00","Stage1:Preparation",19,"#808080",256,66,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.backBtn        = this.createButon("backbtn","ui/backbtn.png","#ffffff00","",24,"#808080",119,67,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.playBtn        = this.createButon("playbtn","ui/play.png","#ffffff00","",24,"#808080",193,78,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.stage1btn      = this.createButon("prepration1btn","ui/button2.png","#ffffff00","Stage1:Preparation",19,"#808080",256,66,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.stagebtn       = this.createButon("stagemodbtn","ui/button.png","#ffffff00","Stage1:Preparation",19,"#808080",256,66,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
         
-        this.roompreBtn     = this.createButon("roomprebtn","ui/button2.png","#ffffff00","Room Preparation",19,"#808080",256,66,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.itempreBtn     = this.createButon("itemprebtn","ui/button2.png","#ffffff00","Item Preparation",19,"#808080",256,66,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.selfpreBtn     = this.createButon("selfprebtn","ui/button2.png","#ffffff00","Self Preparation",19,"#808080",256,66,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.machinepreBtn  = this.createButon("machineprebtn","ui/button2.png","#ffffff00","Machine Preparation",19,"#808080",256,66,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.phasebtn       = this.createButon("phasebtn","ui/button.png","#ffffff00","Room Preparation",19,"#808080",256,66,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        this.phasebtnDisable = this.createRect("disable_rect",256,66,4,"#A2A2A280",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.roompreBtn     = this.createButon("roomprebtn","ui/button2.png","#ffffff00","Room Preparation",19,"#808080",256,66,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.itempreBtn     = this.createButon("itemprebtn","ui/button2.png","#ffffff00","Item Preparation",19,"#808080",256,66,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.selfpreBtn     = this.createButon("selfprebtn","ui/button2.png","#ffffff00","Self Preparation",19,"#808080",256,66,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.machinepreBtn  = this.createButon("machineprebtn","ui/button2.png","#ffffff00","Machine Preparation",19,"#808080",256,66,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.phasebtn       = this.createButon("phasebtn","ui/button.png","#ffffff00","Room Preparation",19,"#808080",256,66,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        this.phasebtnDisable = this.createRect("disable_rect",256,66,4,"#A2A2A280",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
         this.phasebtnDisable.isVisible=false;
         this.phasebtnDisable.isPointerBlocker=false;
       }
@@ -392,8 +392,8 @@ export default class GUI2D{
         }
       }
       initLoadingPage(){
-        this.loaginBg =  this.createRect("loadingBg",1920,1080,0,"#7EC5DDB3",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        const title   =  this.createText("title","Preparing the room...",60,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false); 
+        this.loaginBg =  this.createRect("loadingBg",1920,1080,0,"#7EC5DDB3",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        const title   =  this.createText("title","Preparing the room...",60,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false); 
         this.setTextOutLine(title,"#000000",2);
         title.leftInPixels = -550;
         title.topInPixels  =  400;
@@ -405,26 +405,26 @@ export default class GUI2D{
       }
       initRadialMenu(){
         
-        this.radiaMenuContainer  = new GUI.Container("radialcontainer");        
+        this.radiaMenuContainer  = new Container("radialcontainer");        
         this.advancedTexture.addControl(this.radiaMenuContainer);
-        this.radialCircle    =  this.createImage("RadialCircleBig","ui/CircleBig.png",192,192,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.radialCircle    =  this.createImage("RadialCircleBig","ui/CircleBig.png",192,192,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         this.radialCircle.isPointerBlocker=true;
-        this.inspectBtn      =  this.createCircle("inspectBtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        const inspectImg     =  this.createImage("inspectBtn","ui/magnifying-glass-with-check-mark.png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.inspectBtn      =  this.createCircle("inspectBtn",54,54,"white",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const inspectImg     =  this.createImage("inspectBtn","ui/magnifying-glass-with-check-mark.png",36,36,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         inspectImg.isVisible=true;
         inspectImg.isPointerBlocker = false;
         this.inspectBtn.isPointerBlocker = true;
         this.inspectBtn.addControl(inspectImg);
         
-        this.useBtn      =  this.createCircle("useBtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        const useImg     =  this.createImage("useBtn","ui/NicePng_hand-png_45955 (2).png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.useBtn      =  this.createCircle("useBtn",54,54,"white",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const useImg     =  this.createImage("useBtn","ui/NicePng_hand-png_45955 (2).png",36,36,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         useImg.isVisible=true;
         useImg.isPointerBlocker=false;
         this.useBtn.isPointerBlocker = true;
         this.useBtn.addControl(useImg);
         
-        this.crossBtn      =  this.createCircle("crossbtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        const crossImg     =  this.createImage("crossbtn","ui/cross2_png.png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        this.crossBtn      =  this.createCircle("crossbtn",54,54,"white",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const crossImg     =  this.createImage("crossbtn","ui/cross2_png.png",36,36,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         crossImg.isVisible=true;
         crossImg.isPointerBlocker=false;
         this.crossBtn.isPointerBlocker = true;
@@ -453,31 +453,31 @@ export default class GUI2D{
       }
       initObjectiveMenu(){
 
-         this.objectiveBg  =  new GUI.StackPanel();    
+         this.objectiveBg  =  new StackPanel();    
          this.objectiveBg.isPointerBlocker=true;
          this.objectiveBg.widthInPixels = 400;
          this.objectiveBg.background = "#9EF6FF66";
-         this.objectiveBg.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-         this.objectiveBg.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+         this.objectiveBg.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+         this.objectiveBg.verticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
          this.advancedTexture.addControl(this.objectiveBg);   
          this.objectiveBg.ignoreLayoutWarnings = true
-        //  this.objectiveBg       =  this.createRect("objectivebg",400,200,5,"#7BABB2B3",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,true);
+        //  this.objectiveBg       =  this.createRect("objectivebg",400,200,5,"#7BABB2B3",Control.HORIZONTAL_ALIGNMENT_LEFT,Control.VERTICAL_ALIGNMENT_TOP,true);
          
-         this.objectiveTitle   =  this.createText("objectivetitle","Room Preparation",32,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
+         this.objectiveTitle   =  this.createText("objectivetitle","Room Preparation",32,"#ffffff",Control.HORIZONTAL_ALIGNMENT_LEFT,Control.VERTICAL_ALIGNMENT_TOP,false);
          this.objectiveTitle.widthInPixels=400;
          this.objectiveTitle.heightInPixels=40;
-         this.objectiveTitle.textHorizontalAlignment  = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-         this.objectiveTitle.textVerticalAlignment    = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+         this.objectiveTitle.textHorizontalAlignment  = Control.HORIZONTAL_ALIGNMENT_LEFT;
+         this.objectiveTitle.textVerticalAlignment    = Control.VERTICAL_ALIGNMENT_TOP;
          this.objectiveBg.addControl(this.objectiveTitle);
 
-         this.objectiveTitle2  =  this.createText("objectivetitle2","Current Objective :",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
-         this.objectiveTitle2.textHorizontalAlignment  = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-         this.objectiveTitle2.textVerticalAlignment    = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+         this.objectiveTitle2  =  this.createText("objectivetitle2","Current Objective :",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_LEFT,Control.VERTICAL_ALIGNMENT_TOP,false);
+         this.objectiveTitle2.textHorizontalAlignment  = Control.HORIZONTAL_ALIGNMENT_LEFT;
+         this.objectiveTitle2.textVerticalAlignment    = Control.VERTICAL_ALIGNMENT_TOP;
          this.objectiveTitle2.widthInPixels=400;
          this.objectiveTitle2.heightInPixels=36;
          this.objectiveBg.addControl(this.objectiveTitle2);
 
-         this.downArrow =  this.createImage("downarrow","ui/arrow.png",10,34,GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+         this.downArrow =  this.createImage("downarrow","ui/arrow.png",10,34,Control.HORIZONTAL_ALIGNMENT_RIGHT,Control.VERTICAL_ALIGNMENT_CENTER,false);
          this.downArrow.isVisible=true;
          this.downArrow.leftInPixels =-20;
          this.downArrow.rotation =BABYLON.Angle.FromDegrees(270).radians(); 
@@ -485,16 +485,16 @@ export default class GUI2D{
         this.drawObjectiveMenu(false);
       }
       createBar(msg,width,height){
-        const  objectivebar     =  this.createRect("objectivebar",width,height,5,"#567F9033",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
-        const  rightArrowImage  =  this.createImage("rightarrow","ui/white.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const  objectivebar     =  this.createRect("objectivebar",width,height,5,"#567F9033",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false);
+        const  rightArrowImage  =  this.createImage("rightarrow","ui/white.png",28,28,Control.HORIZONTAL_ALIGNMENT_LEFT,Control.VERTICAL_ALIGNMENT_CENTER,false);
         rightArrowImage.isVisible=true;
         objectivebar.addControl(rightArrowImage);
-        const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",Control.HORIZONTAL_ALIGNMENT_LEFT,Control.VERTICAL_ALIGNMENT_CENTER,false);
         bartitle.widthInPixels  =  parseInt(width*.8);
         bartitle.heightInPixels =  height;
         bartitle.lineSpacing    = -5;
-        bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        bartitle.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        bartitle.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        bartitle.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_CENTER;
         bartitle.resizeToFit = false;
         bartitle.leftInPixels =40;
         // bartitle.paddingTopInPixels =2;
@@ -510,22 +510,22 @@ export default class GUI2D{
         
       }
       initLevelComplete(){
-        this.winPopUp =  this.createRect("objectivebar",480,320,5,"#96E5ED",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        const title   =  this.createText("popup_tittle","Room Preparation\n Complete!",36,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        title.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        this.winPopUp =  this.createRect("objectivebar",480,320,5,"#96E5ED",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        const title   =  this.createText("popup_tittle","Room Preparation\n Complete!",36,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        title.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        title.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         this.winPopUp.addControl(title);
 
-        this.nextBtn =  this.createRect("nextntn",196,64,5,"#62F56F",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        let btnText   =  this.createText("btnText","Next Phase\n-->",24,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        btnText.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        btnText.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        this.nextBtn =  this.createRect("nextntn",196,64,5,"#62F56F",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        let btnText   =  this.createText("btnText","Next Phase\n-->",24,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        btnText.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        btnText.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         this.nextBtn.addControl(btnText);
 
-        this.endsessionBtn =  this.createRect("endsession",128,32,5,"#F55656",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,true);
-        btnText   =  this.createText("endsessiontext","End Session",16,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-        btnText.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        btnText.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        this.endsessionBtn =  this.createRect("endsession",128,32,5,"#F55656",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,true);
+        btnText   =  this.createText("endsessiontext","End Session",16,"#ffffff",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+        btnText.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        btnText.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
 
         this.endsessionBtn.addControl(btnText);
         this.drawLevelComplete(false);
@@ -540,34 +540,34 @@ export default class GUI2D{
         
       }
       initValidationMenu(){
-          this.radiaMenuContainer2  = new GUI.Container("radialcontainer2");        
+          this.radiaMenuContainer2  = new Container("radialcontainer2");        
           this.advancedTexture.addControl(this.radiaMenuContainer2);
-          this.radialCircle2    =  this.createImage("RadialCircleBig","ui/CircleBig.png",192,192,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+          this.radialCircle2    =  this.createImage("RadialCircleBig","ui/CircleBig.png",192,192,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
           
-          this.rightBtn        =  this.createCircle("righBtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-          const rightImg       =  this.createImage("rightimg","ui/green.png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+          this.rightBtn        =  this.createCircle("righBtn",54,54,"white",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+          const rightImg       =  this.createImage("rightimg","ui/green.png",36,36,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
           rightImg.isVisible=true;
           rightImg.isPointerBlocker = false;
           this.rightBtn.isPointerBlocker = true;
           this.rightBtn.addControl(rightImg);
           
-          this.wrongBtn      =  this.createCircle("wrongBtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-          const wrongimg     =  this.createImage("wrongimg2","ui/cross2_png.png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+          this.wrongBtn      =  this.createCircle("wrongBtn",54,54,"white",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+          const wrongimg     =  this.createImage("wrongimg2","ui/cross2_png.png",36,36,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
           wrongimg.isVisible=true;
           wrongimg.isPointerBlocker=false;
           this.wrongBtn.isPointerBlocker = true;
           this.wrongBtn.addControl(wrongimg);
           
-          this.doneBtn      =  this.createCircle("crossbtn",54,54,"white",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
-          const doneimg     =  this.createImage("crossbtn","ui/Users-Exit-icon.png",36,36,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+          this.doneBtn      =  this.createCircle("crossbtn",54,54,"white",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
+          const doneimg     =  this.createImage("crossbtn","ui/Users-Exit-icon.png",36,36,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
           doneimg.isVisible=true;
           doneimg.isPointerBlocker=false;
           this.doneBtn.isPointerBlocker = true;
           this.doneBtn.addControl(doneimg);
 
-          this.validationRect = this.createRect("menucontiner",512,48,2,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          this.validationRect = this.createRect("menucontiner",512,48,2,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
           const msg = "Is the APD Cassette Package still valid?"
-          this.validationText = this.createText("validation_txt",msg,24,"#000000",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false); 
+          this.validationText = this.createText("validation_txt",msg,24,"#000000",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false); 
           this.validationRect.addControl(this.validationText);
 
           this.radiaMenuContainer2.addControl(this.radialCircle2);
@@ -602,25 +602,25 @@ export default class GUI2D{
         
       }
       initbackMenu(){
-          this.backMenuContainer = new GUI.Container("backMenuContainer");
+          this.backMenuContainer = new Container("backMenuContainer");
           this.backMenuContainer.background = "#000000CC";
-          const popupRect = this.createRect("popuprect",450,250,5,"#91E2EA",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+          const popupRect = this.createRect("popuprect",450,250,5,"#91E2EA",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
           popupRect.isPointerBlocker=false;
-          const title     = this.createText("title_txt","Return to Main Menu?",32,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          const title     = this.createText("title_txt","Return to Main Menu?",32,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
           title.topInPixels = -100;
-          const subtitle  = this.createText("subtitle_txt","(progress will not be saved)",24,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          const subtitle  = this.createText("subtitle_txt","(progress will not be saved)",24,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
           subtitle.topInPixels = -60;
-          const continueBtn     = this.createRectBtn("continue_btn",156,52,2,"#62F56F",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"No Continue"
+          const continueBtn     = this.createRectBtn("continue_btn",156,52,2,"#62F56F",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,"No Continue"
           ,"#FFFFFF",20,false);  
-          const arrowTxt = this.createText("arrow_txt","\u2192",32,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          const arrowTxt = this.createText("arrow_txt","\u2192",32,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
           continueBtn.addControl(arrowTxt);
           continueBtn.topInPixels =20;
           continueBtn.children[0].topInPixels=-10;
           arrowTxt.topInPixels=10;
           arrowTxt.isPointerBlocker = false;
-          const menuBtn     = this.createRectBtn("menu_btn",128,36,2,"#F55656",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"Retun To Main"
+          const menuBtn     = this.createRectBtn("menu_btn",128,36,2,"#F55656",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,"Retun To Main"
           ,"#FFFFFF",14,false);  
-          const menuTxt = this.createText("menu_txt","Menu",14,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          const menuTxt = this.createText("menu_txt","Menu",14,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
           menuTxt.isPointerBlocker = false;
           menuBtn.topInPixels = 75;
           menuBtn.children[0].topInPixels=-7;
@@ -642,24 +642,24 @@ export default class GUI2D{
         
       }
        initsubmitMenu(){
-          this.submitMenuContainer = new GUI.Container("backMenuContainer");
+          this.submitMenuContainer = new Container("backMenuContainer");
           this.submitMenuContainer.background = "#000000CC";
-          const popupRect = this.createRect("popuprect",450,250,5,"#91E2EA",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+          const popupRect = this.createRect("popuprect",450,250,5,"#91E2EA",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
           popupRect.isPointerBlocker=false;
-          const title     = this.createText("title_txt","End Therapy session?",32,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          const title     = this.createText("title_txt","End Therapy session?",32,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
           title.topInPixels = -80;
           
 
-          const continueBtn     = this.createRectBtn("continue_btn",156,52,2,"#62F56F",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"No Continue"
+          const continueBtn     = this.createRectBtn("continue_btn",156,52,2,"#62F56F",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,"No Continue"
           ,"#FFFFFF",20,false);  
-          const arrowTxt = this.createText("arrow_txt","\u2192",32,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          const arrowTxt = this.createText("arrow_txt","\u2192",32,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
           continueBtn.addControl(arrowTxt);
           continueBtn.topInPixels =0;
           continueBtn.children[0].topInPixels=-10;
           arrowTxt.topInPixels=10;
           arrowTxt.isPointerBlocker = false;
 
-          const resultBtn     = this.createRectBtn("result_btn",132,36,2,"#F55656",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"YES END SESSION"
+          const resultBtn     = this.createRectBtn("result_btn",132,36,2,"#F55656",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,"YES END SESSION"
           ,"#FFFFFF",14,false);  
           resultBtn.topInPixels = 75;
           
@@ -677,28 +677,28 @@ export default class GUI2D{
         
       }
       initResultShowMenu(){
-        this.resultContainer = new GUI.Container("backMenuContainer");
+        this.resultContainer = new Container("backMenuContainer");
         this.resultContainer.background = "#000000CC";
         
-        const resultpopup = this.createRect("resultpopup",1850,900,5,"#9EF6FFE6",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const resultpopup = this.createRect("resultpopup",1850,900,5,"#9EF6FFE6",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         resultpopup.isPointerBlocker=true;
         this.resultContainer.addControl(resultpopup);
 
-        const title     = this.createText("title_txt","Results",48,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
-        title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        title.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const title     = this.createText("title_txt","Results",48,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
+        title.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        title.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         resultpopup.addControl(title);
 
-        const contentpopup = this.createRect("contentpopup",1757,697,5,"#6C6C6C40",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const contentpopup = this.createRect("contentpopup",1757,697,5,"#6C6C6C40",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         contentpopup.isPointerBlocker=true;
         this.resultContainer.addControl(contentpopup);
 
 
-        const modescrollpanel = new GUI.ScrollViewer("allmode_scroll_viewer");
+        const modescrollpanel = new ScrollViewer("allmode_scroll_viewer");
         modescrollpanel.isPointerBlocker=true;
         this.resultContainer.addControl(modescrollpanel);
 
-        const scrollpopup  =  new GUI.StackPanel("scrollcontainer");    
+        const scrollpopup  =  new StackPanel("scrollcontainer");    
         scrollpopup.isPointerBlocker=true;
         scrollpopup.widthInPixels  = 2200;
         scrollpopup.heightInPixels = 680;
@@ -719,51 +719,51 @@ export default class GUI2D{
         
         
         //assesment result
-        const assesmentContainer =  new GUI.Container("assesmentcontainer");
+        const assesmentContainer =  new Container("assesmentcontainer");
         assesmentContainer.isPointerBlocker=true;
         this.resultContainer.addControl(assesmentContainer);
-        const titlestage1  = this.createText("titlestage1","STAGE 1 : Preparation",42,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
-        titlestage1.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        titlestage1.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        const titlestage1  = this.createText("titlestage1","STAGE 1 : Preparation",42,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
+        titlestage1.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        titlestage1.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_TOP;
         titlestage1.topInPixels=150;
         assesmentContainer.addControl(titlestage1);
         assesmentContainer.isVisible=false;
         
         const value=["Duration:","Overall Accuracy:","Steps Accuracy:","Sequence Accuracy:"];
         for(let i=0;i<value.length;i++){
-          const valuetext  = this.createText(value[i],value[i],36,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          const valuetext  = this.createText(value[i],value[i],36,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
           valuetext.topInPixels = -150+i*100;
           valuetext.leftInPixels = 400;
-          valuetext.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-          valuetext.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+          valuetext.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+          valuetext.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_CENTER;
           assesmentContainer.addControl(valuetext);
         }
         const value2=["duration_value","overall_value","steps_value","sequence_value"];
         for(let i=0;i<value2.length;i++){
-          const valuetext  = this.createText(value2[i],i==0?"0s":"0%",36,"#FFFFFF",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false); 
+          const valuetext  = this.createText(value2[i],i==0?"0s":"0%",36,"#FFFFFF",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false); 
           valuetext.topInPixels = -150+i*100;
           valuetext.leftInPixels = -400;
-          valuetext.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-          valuetext.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+          valuetext.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+          valuetext.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_CENTER;
           assesmentContainer.addControl(valuetext);
         }
 
-        const leftRect = this.createRectBtn("leftRectBtn",64,500,5,"#6E6E6E40",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"","",0,false);
+        const leftRect = this.createRectBtn("leftRectBtn",64,500,5,"#6E6E6E40",Control.HORIZONTAL_ALIGNMENT_LEFT,Control.VERTICAL_ALIGNMENT_CENTER,"","",0,false);
         this.resultContainer.addControl(leftRect);
-        const leftArrow      =  this.createImage("leftArrow","ui/arrow.png",36,36*3,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const leftArrow      =  this.createImage("leftArrow","ui/arrow.png",36,36*3,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         leftArrow.isVisible=true;
         leftRect.addControl(leftArrow);
         leftRect.leftInPixels =90;
         
-        const rightRect = this.createRectBtn("rightRectBtn",64,500,5,"#6E6E6E40",GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"","",0,false);
+        const rightRect = this.createRectBtn("rightRectBtn",64,500,5,"#6E6E6E40",Control.HORIZONTAL_ALIGNMENT_RIGHT,Control.VERTICAL_ALIGNMENT_CENTER,"","",0,false);
         this.resultContainer.addControl(rightRect);
-        const rightArrow      =  this.createImage("leftArrow","ui/arrow.png",36,36*3,GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+        const rightArrow      =  this.createImage("leftArrow","ui/arrow.png",36,36*3,Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,false);
         rightArrow.isVisible=true;
         rightArrow.rotation = BABYLON.Angle.FromDegrees(180).radians();
         rightRect.addControl(rightArrow);
         rightRect.leftInPixels =-90;
 
-        const doneResultBtn =  this.createRectBtn("doneresult",192,72,2,"#66FF73",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_CENTER,"Done","#FFFFFF"
+        const doneResultBtn =  this.createRectBtn("doneresult",192,72,2,"#66FF73",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_CENTER,"Done","#FFFFFF"
         ,35,false);
         doneResultBtn.topInPixels = 400;
         this.resultContainer.addControl(doneResultBtn);
@@ -785,21 +785,21 @@ export default class GUI2D{
         });
     }
     createResultBar(msg,width,height){
-      const  objectivebar     =  this.createRect("resultbar",width,height,5,"#50F10042",GUI.Control.HORIZONTAL_ALIGNMENT_CENTER,GUI.Control.VERTICAL_ALIGNMENT_TOP,false);
-      const  rightArrowImage  =  this.createImage("resultarrow","ui/green.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+      const  objectivebar     =  this.createRect("resultbar",width,height,5,"#50F10042",Control.HORIZONTAL_ALIGNMENT_CENTER,Control.VERTICAL_ALIGNMENT_TOP,false);
+      const  rightArrowImage  =  this.createImage("resultarrow","ui/green.png",28,28,Control.HORIZONTAL_ALIGNMENT_LEFT,Control.VERTICAL_ALIGNMENT_CENTER,false);
       rightArrowImage.isVisible=true;
       objectivebar.addControl(rightArrowImage);
 
-      const  wrongArrowImage  =  this.createImage("cross","ui/cross2_png.png",28,28,GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+      const  wrongArrowImage  =  this.createImage("cross","ui/cross2_png.png",28,28,Control.HORIZONTAL_ALIGNMENT_LEFT,Control.VERTICAL_ALIGNMENT_CENTER,false);
       wrongArrowImage.isVisible=true;
       objectivebar.addControl(wrongArrowImage);
-      const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",GUI.Control.HORIZONTAL_ALIGNMENT_LEFT,GUI.Control.VERTICAL_ALIGNMENT_CENTER,false);
+      const bartitle          =  this.createText("bartitle",msg,18,"#ffffff",Control.HORIZONTAL_ALIGNMENT_LEFT,Control.VERTICAL_ALIGNMENT_CENTER,false);
       bartitle.lineSpacing    = -2;
       
       bartitle.widthInPixels  =  parseInt(width*.85);
       bartitle.heightInPixels =  height;
-      bartitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-      bartitle.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+      bartitle.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+      bartitle.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_CENTER;
       bartitle.resizeToFit = false;
       bartitle.leftInPixels =40;
       bartitle.textWrapping=true;
@@ -827,11 +827,11 @@ export default class GUI2D{
        
       }
      createImage(name,src,width,height,horizontal,verticle,isadd){
-        const image  =  new GUI.Image(name,src);
+        const image  =  new Image(name,src);
         image.widthInPixels  = width;
         image.heightInPixels = height;
         image.populateNinePatchSlicesFromImage = true;
-        // image.stretch = BABYLON.GUI.Image.STRETCH_NINE_PATCH;
+        // image.stretch = BABYLON.Image.STRETCH_NINE_PATCH;
         image.isVisible=false;
         image.isPointerBlocker=true;
         image.horizontalAlignment = horizontal;
@@ -842,7 +842,7 @@ export default class GUI2D{
         return image;
       } 
      createButon(name,src,bgcolor,txt,fontSize,fontcolor,width,height,horizontal,verticle,isadd){
-        const button = GUI.Button.CreateImageOnlyButton(name, src);
+        const button = new Button.CreateImageOnlyButton(name, src);
         button.widthInPixels = width;
         button.heightInPixels = height;
         button.color = bgcolor;
@@ -852,14 +852,14 @@ export default class GUI2D{
         button.verticalAlignment   = verticle;
         button.isPointerBlocker=true;
         if(txt.length>0){
-          const text = new GUI.TextBlock(name);
+          const text = new TextBlock(name);
           text.text = txt;
           text.fontFamily = "Shrikhand";
           text.fontSize = fontSize+"px";
           text.color    = fontcolor;
           text.isPointerBlocker=false;
-          text.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-          text.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+          text.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+          text.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_CENTER;
           button.addControl(text);
         }
         if(isadd)
@@ -895,7 +895,7 @@ export default class GUI2D{
         // console.log(event+"    "+buttontype);
       }
       createCircle(name,width,height,color,horizontal,verticle,isadd){
-        const circle   = new GUI.Ellipse(name);
+        const circle   = new Ellipse(name);
         circle.widthInPixels   = width;
         circle.heightInPixels  = height;
         circle.color   = color;
@@ -923,7 +923,7 @@ export default class GUI2D{
         return circle;
       }
       createRectLabel(name,width,height,radius,color,mesh,linkOffsetX,linkOffsetY){
-        const rect = new GUI.Rectangle(name);
+        const rect = new Rectangle(name);
         rect.widthInPixels  = width;
         rect.heightInPixels = height;
         rect.cornerRadius = radius;
@@ -931,16 +931,16 @@ export default class GUI2D{
         rect.thickness = 4;
         rect.background = color;
         rect.isPointerBlocker=false;
-        rect.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        rect.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        rect.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        rect.verticalAlignment   = Control.VERTICAL_ALIGNMENT_CENTER;
         this.advancedTexture.addControl(rect);
         rect.linkOffsetXInPixels = linkOffsetX;
         rect.linkOffsetYInPixels = linkOffsetY;
         rect.linkWithMesh(mesh);   
         
-        const label = new GUI.TextBlock(name+"txt");
-        label.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        label.verticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        const label = new TextBlock(name+"txt");
+        label.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        label.verticalAlignment   = Control.VERTICAL_ALIGNMENT_CENTER;
         label.text =  name;
         label.fontSizeInPixels =20;
         label.color = "#A5A5A5";
@@ -950,7 +950,7 @@ export default class GUI2D{
         return rect;
       }
       createRect(name,width,height,radius,color,horizontal,verticle,isadd){
-        const rect = new GUI.Rectangle(name);
+        const rect = new Rectangle(name);
         rect.widthInPixels  = width;
         rect.heightInPixels = height;
         rect.cornerRadius = radius;
@@ -965,7 +965,7 @@ export default class GUI2D{
         return rect;
       }
       createRectBtn(name,width,height,radius,color,horizontal,verticle,_text,fontcolor,fontSize,isadd){
-        const rect = new GUI.Button(name);
+        const rect = new Button(name);
         rect.widthInPixels  = width;
         rect.heightInPixels = height;
         rect.cornerRadius = radius;
@@ -975,21 +975,21 @@ export default class GUI2D{
         rect.isPointerBlocker=true;
         rect.horizontalAlignment = horizontal;
         rect.verticalAlignment   = verticle;
-        const text = new GUI.TextBlock(name);
+        const text = new TextBlock(name);
         text.text = _text;
         text.fontFamily = "Shrikhand";
         text.fontSizeInPixels = fontSize;
         text.color    = fontcolor;
         text.isPointerBlocker=false;
-        text.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        text.textVerticalAlignment   = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        text.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        text.textVerticalAlignment   = Control.VERTICAL_ALIGNMENT_CENTER;
         rect.addControl(text);
         if(isadd)
           this.advancedTexture.addControl(rect);
         return rect;
       }
       createText(name,_text,size,color,horizontal,verticle,isadd){
-        const text = new GUI.TextBlock(name);
+        const text = new TextBlock(name);
         text.text = _text;
         text.fontFamily = "Shrikhand";
         text.fontSizeInPixels = size;
@@ -1008,7 +1008,7 @@ export default class GUI2D{
         textObj.outlineWidth = widht;
       }
       createStackPanel(name,width,height,color,horizontalAlignment,verticalAlignment){
-        const panel  =  new GUI.StackPanel(name);    
+        const panel  =  new StackPanel(name);    
         panel.widthInPixels = width;
         panel.heightInPixels = height;
         panel.background = color;
@@ -1018,7 +1018,7 @@ export default class GUI2D{
         return panel;
       } 
       createInputField(name,text,placeholder,width,height,bgcolor,fontcolor,horizontalAlignment,verticalAlignment){
-        const inputfield = new BABYLON.GUI.InputText(name);
+        const inputfield = new InputText(name);
         inputfield.text  = text;
         inputfield.placeholderText  = placeholder;
         inputfield.widthInPixels = width;

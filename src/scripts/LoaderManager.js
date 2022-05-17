@@ -1,13 +1,12 @@
-import * as BABYLON from "babylonjs";
-import { Color3, PBRMaterial, StandardMaterial } from "babylonjs";
-import "babylonjs-loaders";
-
+import { Color3, PBRMaterial, StandardMaterial,TransformNode,AssetsManager,Angle,Vector3,BoundingInfo} from "babylonjs";
+import { MeshBuilder,Texture,Mesh } from "babylonjs";
+import { GLTFFileLoader } from "babylonjs-loaders";
 export default class LoaderManager {
   constructor(root) {
     this.root = root;
     this.game = root.game;
     this.scene = root.scene;
-    this.assetsManager = new BABYLON.AssetsManager(this.scene);
+    this.assetsManager = new AssetsManager(this.scene);
     this.assetsManager.useDefaultLoadingScreen = false;
     this.Counter=0;
     this.isLoad=false;
@@ -17,10 +16,10 @@ export default class LoaderManager {
    
   loadSceneAssets() {
       
-      const physicMat   = new BABYLON.PBRMaterial("kitchenpCube3",this.scene);
-      const standerdMat = new BABYLON.StandardMaterial("standerd",this.scene);
-      this.root.door    = new BABYLON.TransformNode("doornode");
-      this.root.door.scaling = new BABYLON.Vector3(.01,.01,.01);
+      const physicMat   = new PBRMaterial("kitchenpCube3",this.scene);
+      const standerdMat = new StandardMaterial("standerd",this.scene);
+      this.root.door    = new TransformNode("doornode");
+      this.root.door.scaling = new Vector3(.01,.01,.01);
       // const sinkMat          = kitchenpCube3Mat.clone();
       this.assetsManager.addMeshTask("room_reference","","models/","roomscene.glb");
       this.assetsManager.addMeshTask("trolley","","models/","Trolley_v2.glb");
@@ -50,67 +49,76 @@ export default class LoaderManager {
         
         
         if(task.name === "LiquidHandsoap"){
-          const node   = new BABYLON.TransformNode("liquidhandsoap_node");
+          const node   = new TransformNode("liquidhandsoap_node");
           for(let i=0;i<task.loadedMeshes.length;i++){ //liquidhandsoap_node
             task.loadedMeshes[i].parent = node;
             task.loadedMeshes[i].scaling.set(-.4,.4,.4);
             this.setPickable(task.loadedMeshes[i],.03);
           } 
-          node.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          node.rotation.set(Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
           node.position.set(0,0,0);
           
         }
         if(task.name === "PaperTowel"){
-          const node   = new BABYLON.TransformNode("papertowel_node");
+          const node   = new TransformNode("papertowel_node");
           for(let i=0;i<task.loadedMeshes.length;i++){ //paper_towel
             task.loadedMeshes[i].parent = node;
             // console.log(task.loadedMeshes[i].id)
             task.loadedMeshes[i].scaling.set(.012,.012,.012);
             this.setPickable(task.loadedMeshes[i],1);
           } 
-          node.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(45).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          node.rotation.set(Angle.FromDegrees(90).radians(),Angle.FromDegrees(45).radians(),Angle.FromDegrees(0).radians());
           node.position.set(0,0,0);
           
           
         }
         if(task.name === "APD_Package_v2"){
-          const node   = new BABYLON.TransformNode("apd_package_node");
+          const node   = new TransformNode("apd_package_node");
           for(let i=0;i<task.loadedMeshes.length;i++){ //apd_package
             task.loadedMeshes[i].parent = node;
-            // console.log(task.loadedMeshes[i].id);
+            
             task.loadedMeshes[i].scaling.set(-.5,.5,.5);
-            if(task.loadedMeshes[i].name === "APDCassetteRevisedWithPackaging2.001_primitive11"){
-              task.loadedMeshes[i].isVisible = false;
+            if(task.loadedMeshes[i].id === "APDCassetteRevisedWithPackaging2 (1)_primitive40"){
+              console.log(task.loadedMeshes[i].id);
+              task.loadedMeshes[i].customOutline = task.loadedMeshes[i].clone(task.loadedMeshes[i].name+"outline");
+              task.loadedMeshes[i].customOutline.setEnabled(false);
+              task.loadedMeshes[i].customOutline.parent    = node;
+              const outlinemat = new StandardMaterial("outlinemat",this.scene);
+              outlinemat.diffuseColor  = Color3.Yellow();
+              outlinemat.emissiveColor = Color3.Yellow();
+              task.loadedMeshes[i].customOutline.material = outlinemat;
+              task.loadedMeshes[i].customOutline.scaling  = new Vector3(task.loadedMeshes[i].scaling.x*1.05,task.loadedMeshes[i].scaling.y*1.05,task.loadedMeshes[i].scaling.z*1.05);  
+              task.loadedMeshes[i].customOutline.position = new Vector3(task.loadedMeshes[i].position.x,task.loadedMeshes[i].position.y+1,task.loadedMeshes[i].position.z); 
             }
-            this.setPickable(task.loadedMeshes[i],5);
+            this.setPickable(task.loadedMeshes[i],0);
           } 
-          node.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(180).radians());
+          node.rotation.set(Angle.FromDegrees(90).radians(),Angle.FromDegrees(180).radians(),Angle.FromDegrees(180).radians());
           node.position.set(0,0,0);
         }
         if(task.name === "fanswitch"){
-          const node   = new BABYLON.TransformNode("fanswitchnode");
+          const node   = new TransformNode("fanswitchnode");
             for(let i=0;i<task.loadedMeshes.length;i++){ //fanswitch
               task.loadedMeshes[i].parent = node;
               if(task.loadedMeshes[i].id === "OnSwitch2"){
                   const mat          = physicMat.clone("fanswitch");
-                  mat.albedoColor    = new BABYLON.Color3.FromInts(226,226,226);
-                  // mat.emissiveColor   = new BABYLON.Color3.FromInts(50,50,50);
+                  mat.albedoColor    = new Color3.FromInts(226,226,226);
+                  // mat.emissiveColor   = new Color3.FromInts(50,50,50);
                   mat.metallic  = 0;  
                   mat.roughness = .2;  
                   task.loadedMeshes[i].material = mat;
                   task.loadedMeshes[i].customOutline = task.loadedMeshes[i].clone( task.loadedMeshes[i].name+"outline");
                   task.loadedMeshes[i].customOutline.isVisible = false;
                   task.loadedMeshes[i].customOutline.parent    = node;
-                  const outlinemat = new BABYLON.StandardMaterial("outlinemat",this.scene);
-                  outlinemat.diffuseColor  = BABYLON.Color3.Yellow();
-                  outlinemat.emissiveColor = BABYLON.Color3.Yellow();
+                  const outlinemat = new StandardMaterial("outlinemat",this.scene);
+                  outlinemat.diffuseColor  = Color3.Yellow();
+                  outlinemat.emissiveColor = Color3.Yellow();
                   task.loadedMeshes[i].customOutline.material = outlinemat;
-                  task.loadedMeshes[i].customOutline.scaling  = new BABYLON.Vector3(task.loadedMeshes[i].scaling.x*1.07,task.loadedMeshes[i].scaling.y*1.07,task.loadedMeshes[i].scaling.z*1.07);  
-                  task.loadedMeshes[i].customOutline.position = new BABYLON.Vector3(task.loadedMeshes[i].position.x-.005,task.loadedMeshes[i].position.y,task.loadedMeshes[i].position.z); 
+                  task.loadedMeshes[i].customOutline.scaling  = new Vector3(task.loadedMeshes[i].scaling.x*1.07,task.loadedMeshes[i].scaling.y*1.07,task.loadedMeshes[i].scaling.z*1.07);  
+                  task.loadedMeshes[i].customOutline.position = new Vector3(task.loadedMeshes[i].position.x-.005,task.loadedMeshes[i].position.y,task.loadedMeshes[i].position.z); 
                   this.setPickable(task.loadedMeshes[i],1);
               }else{
                   const mat           = physicMat.clone("fanswitch_2");
-                  mat.albedoColor     = new BABYLON.Color3.FromInts(128,128,128);
+                  mat.albedoColor     = new Color3.FromInts(128,128,128);
                   mat.metallic  = .5;  
                   mat.roughness = .1;  
                   task.loadedMeshes[i].material = mat;
@@ -118,23 +126,23 @@ export default class LoaderManager {
               }
               task.loadedMeshes[i].name="fanswitch"+i;
             }
-            node.rotation.set(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+            node.rotation.set(Angle.FromDegrees(0).radians(),Angle.FromDegrees(180).radians(),Angle.FromDegrees(0).radians());
             node.position.set(3.049,3.209,-0.61);
         }
 
         if(task.name === "ceiling_fan"){
-            const node   = new BABYLON.TransformNode("fannode");
+            const node   = new TransformNode("fannode");
             for(let i=0;i<task.loadedMeshes.length;i++){ //fannode
               task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="ceilingfan"+i;
               task.loadedMeshes[i].isPickable=false;
             }
           node.scaling.set(.01,.01,.01);
-          node.rotation.set(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          node.rotation.set(Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
           node.position.set(-5.9,5.90,0);
         }
         if(task.name === "HandSanitizer"){
-          const node   = new BABYLON.TransformNode("handsanitizernode");
+          const node   = new TransformNode("handsanitizernode");
             for(let i=0;i<task.loadedMeshes.length;i++){ //handsanitizernode
                 task.loadedMeshes[i].parent = node;
                 task.loadedMeshes[i].name="sanitizer"+i;
@@ -144,24 +152,24 @@ export default class LoaderManager {
             // this.root.tmp = node;
         }
         if(task.name === "diaSol_complete"){
-            const node   = new BABYLON.TransformNode("diasolutionnode");
+            const node   = new TransformNode("diasolutionnode");
             for(let i=0;i<task.loadedMeshes.length;i++){ //diasolutionnode
                 task.loadedMeshes[i].parent = node;
                 task.loadedMeshes[i].name="diasolution"+i;
                 if(task.loadedMeshes[i].id.includes("DialysisSolution_primitive")){
-                    task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
+                    task.loadedMeshes[i].rotation = new Vector3(Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(180).radians());
                 }
                 else{
-                  task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
+                  task.loadedMeshes[i].rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(180).radians());
                 }
                 task.loadedMeshes[i].isVisible = false;
                 this.setPickable(task.loadedMeshes[i],1);
             }
-            node.scaling = new BABYLON.Vector3(-.005,.005,.005);
-            node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians());
+            node.scaling = new Vector3(-.005,.005,.005);
+            node.rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians());
         }
         if(task.name === "bp_monitor"){
-          const node       = new BABYLON.TransformNode("bpmachinenode");
+          const node       = new TransformNode("bpmachinenode");
           for(let i=0;i<task.loadedMeshes.length;i++){ //bpmachinenode
               
               task.loadedMeshes[i].parent = node;
@@ -169,114 +177,121 @@ export default class LoaderManager {
               this.setPickable(task.loadedMeshes[i],1);
               task.loadedMeshes[i].scaling.set(-.8,.8,.8);
               if(task.loadedMeshes[i].id === "BPMonitor_primitive0")
-                  task.loadedMeshes[i].position = new BABYLON.Vector3(18,1,0); 
+                  task.loadedMeshes[i].position = new Vector3(18,1,0); 
               if(task.loadedMeshes[i].id === "BPBandArmClose.003"){
-                  task.loadedMeshes[i].position = new BABYLON.Vector3(-28,-72,0);
-                  task.loadedMeshes[i].rotation = new BABYLON.Vector3(0,0,0);
+                  task.loadedMeshes[i].position = new Vector3(-28,-72,0);
+                  task.loadedMeshes[i].rotation = new Vector3(0,0,0);
               }
             }
             // bpnode.scaling.set(-.8,.8,.8);
         }
         if(task.name === "Alcohol_Wipe"){
-          const node       = new BABYLON.TransformNode("Alcohol_Wipe");
+          const node       = new TransformNode("Alcohol_Wipe");
           for(let i=0;i<task.loadedMeshes.length;i++){ //Alcohol_Wipe
               task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="Alcohol_Wipe"+i;
               this.setPickable(task.loadedMeshes[i],1);
-              task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+              task.loadedMeshes[i].rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
               task.loadedMeshes[i].scaling.set(-1,1,1);
             }
         }
         if(task.name === "ConnectionShield"){
-          const node       = new BABYLON.TransformNode("ConnectionShield");
+          const node       = new TransformNode("ConnectionShield");
           for(let i=0;i<task.loadedMeshes.length;i++){ //ConnectionShield
               
               task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="ConnectionShield"+i;
               this.setPickable(task.loadedMeshes[i],1);
-              task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(-180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+              task.loadedMeshes[i].rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(-180).radians(),Angle.FromDegrees(0).radians());
               task.loadedMeshes[i].scaling.set(-1,1,1);
             }
         }
         if(task.name === "DrainBag"){
-          const node       = new BABYLON.TransformNode("DrainBag");
+          const node       = new TransformNode("DrainBag");
           for(let i=0;i<task.loadedMeshes.length;i++){ //DrainBag
               // console.log(task.loadedMeshes[i].id);
               task.loadedMeshes[i].parent = node;
-              task.loadedMeshes[i].position = new BABYLON.Vector3(0,0,0);
+              task.loadedMeshes[i].position = new Vector3(0,0,0);
               if(task.loadedMeshes[i].id === "DrainBagPlasticCover" || task.loadedMeshes[i].id === "DrainBagA_2")
                 this.setPickable(task.loadedMeshes[i],1);
                else 
                 this.setPickable(task.loadedMeshes[i],0);
 
-              // task.loadedMeshes[i].position = new BABYLON.Vector3(0,0,-5);
-              task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(180).radians());
+              // task.loadedMeshes[i].position = new Vector3(0,0,-5);
+              task.loadedMeshes[i].rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(180).radians(),Angle.FromDegrees(180).radians());
               task.loadedMeshes[i].name="DrainBag"+i;
               task.loadedMeshes[i].scaling.set(.6,.6,.6);
               
             }
             
-            // node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+            // node.rotation = new Vector3(Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
             
         }
         if(task.name === "ccpdrecordbook"){
-          const node       = new BABYLON.TransformNode("ccpdrecordbook");
+          const node       = new TransformNode("ccpdrecordbook");
           for(let i=0;i<task.loadedMeshes.length;i++){ //ccpdrecordbook
-              
-              
               task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="ccpdrecordbook"+i;
               if(task.loadedMeshes[i].id === "ccpdfront"){
-                task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians());
+                task.loadedMeshes[i].rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(180).radians());
                 task.loadedMeshes[i].scaling.set(-10,10,10);
                 task.loadedMeshes[i].position.x-=12;
-                task.loadedMeshes[i].backFaceCulling = false;
-                this.setPickable(task.loadedMeshes[i],.1);
               }
               if(task.loadedMeshes[i].id === "ccpdback"){
-                task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(180).radians(),BABYLON.Angle.FromDegrees(0).radians());
+                task.loadedMeshes[i].rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(180).radians(),Angle.FromDegrees(0).radians());
                 task.loadedMeshes[i].isPickable=false;
-                this.setPickable(task.loadedMeshes[i],.1);
+                this.setPickable(task.loadedMeshes[i],0);
                 task.loadedMeshes[i].scaling.set(-10,10,10);
+                console.log(task.loadedMeshes[i].id);
+                task.loadedMeshes[i].customOutline = task.loadedMeshes[i].clone(task.loadedMeshes[i].name+"outline");
+                task.loadedMeshes[i].customOutline.setEnabled(false);
+                task.loadedMeshes[i].customOutline.parent    = node;
+                const outlinemat = new StandardMaterial("outlinemat",this.scene);
+                outlinemat.diffuseColor  = Color3.Yellow();
+                outlinemat.emissiveColor = Color3.Yellow();
+                task.loadedMeshes[i].customOutline.material = outlinemat;
+                task.loadedMeshes[i].customOutline.scaling  = new Vector3(task.loadedMeshes[i].scaling.x*1.1,task.loadedMeshes[i].scaling.y*1.1,task.loadedMeshes[i].scaling.z*1.1);  
+                task.loadedMeshes[i].customOutline.position = new Vector3(task.loadedMeshes[i].position.x,task.loadedMeshes[i].position.y+.5,task.loadedMeshes[i].position.z+.5); 
               }
+              this.setPickable(task.loadedMeshes[i],0);
               
             }
             node.scaling.set(1,1,1);
-            // node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+            // node.rotation = new Vector3(Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
         }
         if(task.name === "SurgicalMask"){
-          const node       = new BABYLON.TransformNode("SurgicalMask");
+          const node       = new TransformNode("SurgicalMask");
           for(let i=0;i<task.loadedMeshes.length;i++){ //SurgicalMask
               task.loadedMeshes[i].parent = node;
               task.loadedMeshes[i].name="SurgicalMask"+i;
               this.setPickable(task.loadedMeshes[i],1);
-              task.loadedMeshes[i].rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(270).radians());
+              task.loadedMeshes[i].rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(270).radians());
             }
             // node.scaling.set(1,1,1);
-            // node.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(270).radians());
+            // node.rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(270).radians());
         }
         if(task.name === "APD_Machine_v2"){
-          const apdnode       = new BABYLON.TransformNode("apdnode");
+          const apdnode       = new TransformNode("apdnode");
           for(let i=0;i<task.loadedMeshes.length;i++){ //APD_Machine
             task.loadedMeshes[i].parent  = apdnode;
-            // task.loadedMeshes[i].position = new BABYLON.Vector3(0,0,0);
+            // task.loadedMeshes[i].position = new Vector3(0,0,0);
             task.loadedMeshes[i].name="apdmachine"+i;
             this.setPickable(task.loadedMeshes[i],.3);
             // if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive3"){
-            //      task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
-            //      task.loadedMeshes[i].position = new BABYLON.Vector3(0,-9,5);
+            //      task.loadedMeshes[i].rotation.x = Angle.FromDegrees(90).radians();  
+            //      task.loadedMeshes[i].position = new Vector3(0,-9,5);
             // }
             // if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive6" || task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive5"){
             //   if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive6"){
-            //       task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(75).radians();  
-            //       task.loadedMeshes[i].position = new BABYLON.Vector3(-13.5,-8.6,-.5);
+            //       task.loadedMeshes[i].rotation.x = Angle.FromDegrees(75).radians();  
+            //       task.loadedMeshes[i].position = new Vector3(-13.5,-8.6,-.5);
             //   }
             //   else{
-            //       task.loadedMeshes[i].rotation.x = BABYLON.Angle.FromDegrees(90).radians();  
-            //       task.loadedMeshes[i].position = new BABYLON.Vector3(-13.2,-9.2,1);
+            //       task.loadedMeshes[i].rotation.x = Angle.FromDegrees(90).radians();  
+            //       task.loadedMeshes[i].position = new Vector3(-13.2,-9.2,1);
             //       // -13.199999999999969 !!sy!!  -9.199999999999983!! sz !! 0.9999999999999996
             //   }
-            //   task.loadedMeshes[i].rotation.z = BABYLON.Angle.FromDegrees(90).radians();  
+            //   task.loadedMeshes[i].rotation.z = Angle.FromDegrees(90).radians();  
               
             // }
             // if(task.loadedMeshes[i].id ==="DeviceDialysisReference_primitive7")
@@ -291,27 +306,27 @@ export default class LoaderManager {
             task.loadedMeshes[i].name="acremot"+i;
             this.setPickable(task.loadedMeshes[i],.35);
             const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
-            const boundingInfo = new BABYLON.BoundingInfo(min, max);
+            const boundingInfo = new BoundingInfo(min, max);
             const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
-            task.loadedMeshes[i].position = new BABYLON.Vector3(centerPoint.x,centerPoint.y,centerPoint.z);
+            task.loadedMeshes[i].position = new Vector3(centerPoint.x,centerPoint.y,centerPoint.z);
           }
-          this.root.acRemoteRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(105).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          this.root.acRemoteRoot.rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(105).radians(),Angle.FromDegrees(0).radians());
           this.root.acRemoteRoot.position.set(0,0,0);
           this.root.acRemoteRoot.scaling.set(.01,.01,.01);
         }
         if(task.name === "cabinethanging"){
-          const wallcabinet         = new BABYLON.TransformNode("cabinethangingnode");
+          const wallcabinet         = new TransformNode("cabinethangingnode");
           for(let i=0;i<task.loadedMeshes.length;i++){ // cabinethanging
             task.loadedMeshes[i].parent  = wallcabinet;
             task.loadedMeshes[i].isPickable=false;
             task.loadedMeshes[i].name="cabinethanging"+i;
           }
-          wallcabinet.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          wallcabinet.rotation = new Vector3(Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
           wallcabinet.position.set(0,4.5,2.9);
           wallcabinet.scaling.set(.01,.01,.01);
         }
         if(task.name === "trolley"){
-          const trolly         = new BABYLON.TransformNode("trollynode");
+          const trolly         = new TransformNode("trollynode");
           for(let i=0;i<task.loadedMeshes.length;i++){ // trolly
             
             task.loadedMeshes[i].parent  = trolly;
@@ -319,13 +334,13 @@ export default class LoaderManager {
             this.setPickable(task.loadedMeshes[i],1);
           }
           trolly.parent = this.root.trollyRoot;
-          this.root.trollyRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          this.root.trollyRoot.rotation = new Vector3(Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
           this.root.trollyRoot.scaling.set(.01,.01,.01);
         }
         if(task.name === "table"){
-          const table         = new BABYLON.TransformNode("tablenode");
-          const tabledrawer   = new BABYLON.TransformNode("tabledrawer");
-          const tableknob     = new BABYLON.TransformNode("tableknob");
+          const table         = new TransformNode("tablenode");
+          const tabledrawer   = new TransformNode("tabledrawer");
+          const tableknob     = new TransformNode("tableknob");
           for(let i=0;i<task.loadedMeshes.length;i++){ // table
               
               if(task.loadedMeshes[i].id === "Table_primitive0"){
@@ -347,13 +362,13 @@ export default class LoaderManager {
           tableknob.parent   = tabledrawer;
           tabledrawer.parent = this.root.tableRoot;
           table.parent       = this.root.tableRoot; 
-          this.root.tableRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          this.root.tableRoot.rotation = new Vector3(Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
           this.root.tableRoot.scaling.set(.01,.01,.01);
         }
         if(task.name === "cabinet"){
-          const cabinet       = new BABYLON.TransformNode("cabinetnode");
-          const cebinetLeft   = new BABYLON.TransformNode("cabinetleftDoor");
-          const cabinetRight  = new BABYLON.TransformNode("cabinetrightDoor");
+          const cabinet       = new TransformNode("cabinetnode");
+          const cebinetLeft   = new TransformNode("cabinetleftDoor");
+          const cabinetRight  = new TransformNode("cabinetrightDoor");
           for(let i=0;i<task.loadedMeshes.length;i++){ // cabinet
             // console.log(task.loadedMeshes[i].id);
             if(task.loadedMeshes[i].id  ===  "Cabinet_Main_primitive1")
@@ -364,7 +379,7 @@ export default class LoaderManager {
                 part1.parent  = cabinet;
                 part1.position.set(80,-38,2.5);
                 part1.scaling.set(1,1,.65);
-                part1.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(90).radians());
+                part1.rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(90).radians(),Angle.FromDegrees(90).radians());
                 
                 const part2  =  part1.clone("cabinetpart2");
                 part2.position.set(83,-38,42.5);
@@ -380,36 +395,36 @@ export default class LoaderManager {
             this.setPickable(task.loadedMeshes[i],1);
             task.loadedMeshes[i].name="cabinet"+i;
             const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
-            const boundingInfo = new BABYLON.BoundingInfo(min, max);
+            const boundingInfo = new BoundingInfo(min, max);
             const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
-            task.loadedMeshes[i].position = new BABYLON.Vector3(centerPoint.x,centerPoint.y,centerPoint.z);
+            task.loadedMeshes[i].position = new Vector3(centerPoint.x,centerPoint.y,centerPoint.z);
             if(task.loadedMeshes[i].id  === "Cabinet_Main_primitive1"){
-              const tmp = new BABYLON.TransformNode("tmpcabinetRight");
+              const tmp = new TransformNode("tmpcabinetRight");
               task.loadedMeshes[i].parent =tmp;
               tmp.parent=cabinetRight; 
-              tmp.position = new BABYLON.Vector3(-35,0,0);
+              tmp.position = new Vector3(-35,0,0);
             }
             else if(task.loadedMeshes[i].id=== "Cabinet_Main_primitive2"){
-              const tmp = new BABYLON.TransformNode("tmpcabinetLeft");
+              const tmp = new TransformNode("tmpcabinetLeft");
               task.loadedMeshes[i].parent =tmp;
               tmp.parent=cebinetLeft; 
-              tmp.position = new BABYLON.Vector3(35,0,0);
+              tmp.position = new Vector3(35,0,0);
             }
           }
           cabinet.parent = this.root.cabinetRoot;
           cabinetRight.parent   = this.root.cabinetRoot;
           cebinetLeft.parent    = this.root.cabinetRoot;
-          cabinetRight.position = new BABYLON.Vector3(68.5,-50,0);
-          cebinetLeft.position  = new BABYLON.Vector3(-68.5,-50,0);
-          this.root.cabinetRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+          cabinetRight.position = new Vector3(68.5,-50,0);
+          cebinetLeft.position  = new Vector3(-68.5,-50,0);
+          this.root.cabinetRoot.rotation = new Vector3(Angle.FromDegrees(90).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
           this.root.cabinetRoot.scaling.set(.01,.01,.01);
         }
         if(task.name === "gasStove2"){
-            const tmproot  = new BABYLON.TransformNode("gasStove2"); 
+            const tmproot  = new TransformNode("gasStove2"); 
             tmproot.scaling.set(.01,.01,.01);
             for(let i=0;i<task.loadedMeshes.length;i++){ // gasstove
               const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
-              const boundingInfo = new BABYLON.BoundingInfo(min, max);
+              const boundingInfo = new BoundingInfo(min, max);
               const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
               task.loadedMeshes[i].position =  centerPoint;
               task.loadedMeshes[i].parent = tmproot;
@@ -418,7 +433,7 @@ export default class LoaderManager {
               task.loadedMeshes[i].renderOutline=false;
               task.loadedMeshes[i].outlineWidth=0;
             }
-            tmproot.rotation.x+=BABYLON.Angle.FromDegrees(90).radians();
+            tmproot.rotation.x+=Angle.FromDegrees(90).radians();
             tmproot.position.set(-.17,0,-3.2);
             tmproot.isPickable=false;
         }
@@ -427,9 +442,9 @@ export default class LoaderManager {
                   task.loadedMeshes[i].isPickable=false;
                   // task.loadedMeshes[i].receiveShadows = true;
                   if(task.loadedMeshes[i].name === "OutWall pCube31"){
-                        const mat = new BABYLON.StandardMaterial("outwallmat",this.scene);
-                        mat.diffuseColor = new BABYLON.Color3.FromInts(147,147,147);
-                        mat.specularColor = new BABYLON.Color3.FromInts(0,0,0);
+                        const mat = new StandardMaterial("outwallmat",this.scene);
+                        mat.diffuseColor = new Color3.FromInts(147,147,147);
+                        mat.specularColor = new Color3.FromInts(0,0,0);
                         task.loadedMeshes[i].material = mat;
                         // this.createShadowGenerator(task.loadedMeshes[i]);
                   }
@@ -438,11 +453,11 @@ export default class LoaderManager {
                       task.loadedMeshes[i].renderOutline=false;
                       task.loadedMeshes[i].outlineWidth=0;
                       const mat           = standerdMat.clone("innerWall");
-                      mat.diffuseColor    = new BABYLON.Color3.FromInts(126,135,143);
-                      mat.emissiveColor   = new BABYLON.Color3.FromInts(126,135,143);
+                      mat.diffuseColor    = new Color3.FromInts(126,135,143);
+                      mat.emissiveColor   = new Color3.FromInts(126,135,143);
                       if(task.loadedMeshes[i].name ==="pPlane5"){
-                          mat.diffuseColor   = new BABYLON.Color3.FromInts(101,105,110);
-                          mat.emissiveColor  = new BABYLON.Color3.FromInts(101,105,110);
+                          mat.diffuseColor   = new Color3.FromInts(101,105,110);
+                          mat.emissiveColor  = new Color3.FromInts(101,105,110);
                       }
                       mat.roughness       = .524;
                       task.loadedMeshes[i].material = mat;
@@ -451,9 +466,9 @@ export default class LoaderManager {
                   else if(task.loadedMeshes[i].name === "pPlane6"){
                     // const mat = kitchenpCube3Mat.clone();
                       const mat         = physicMat.clone("pPlane6");
-                      mat.albedoTexture   = new BABYLON.Texture("models/texture/FloorShape.jpg",this.scene);
-                      mat.bumpTexture   = new BABYLON.Texture("models/texture/FloorShape normal.jpg",this.scene);
-                      mat.albedoColor   = new BABYLON.Color3.FromInts(156,156,156); 
+                      mat.albedoTexture   = new Texture("models/texture/FloorShape.jpg",this.scene);
+                      mat.bumpTexture   = new Texture("models/texture/FloorShape normal.jpg",this.scene);
+                      mat.albedoColor   = new Color3.FromInts(156,156,156); 
                       mat.metallic=0;
                       mat.roughness=1;
                       task.loadedMeshes[i].material = mat;
@@ -461,7 +476,7 @@ export default class LoaderManager {
                 }
                 else if(task.loadedMeshes[i].name === "Sink"){
                       const sinkMat = physicMat.clone("SinkMat");
-                      sinkMat.albedoColor = new BABYLON.Color3.FromInts(255,255,255);
+                      sinkMat.albedoColor = new Color3.FromInts(255,255,255);
                       sinkMat.metallic   = 0;
                       sinkMat.roughness  = .22;
                       task.loadedMeshes[i].material = sinkMat;
@@ -469,7 +484,7 @@ export default class LoaderManager {
                 }
                 else if(task.loadedMeshes[i].name === "Kitchen pCube3"){
                       const mat =  standerdMat.clone("Kitchen pCube3Mat");
-                      mat.diffuseColor = new BABYLON.Color3.FromInts(108,82,58);
+                      mat.diffuseColor = new Color3.FromInts(108,82,58);
                       mat.metallic   = .8;
                       mat.roughness  = 1;
                       task.loadedMeshes[i].material = mat;
@@ -479,32 +494,32 @@ export default class LoaderManager {
                 }
                 else if(task.loadedMeshes[i].name === "StoveExhaust"){
                       const mat         = standerdMat.clone("StoveExhaustMat");
-                      mat.diffuseColor  = new BABYLON.Color3.FromInts(51,51,51);
-                      mat.emissiveColor = new BABYLON.Color3.FromInts(0,0,0);
+                      mat.diffuseColor  = new Color3.FromInts(51,51,51);
+                      mat.emissiveColor = new Color3.FromInts(0,0,0);
                       mat.metallic   = .1;
                       mat.roughness  = .38;
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "Exhaust"){
                       const mat      = physicMat.clone("ExhaustMat");
-                      mat.albedoColor  = new BABYLON.Color3.FromInts(202,202,202);
+                      mat.albedoColor  = new Color3.FromInts(202,202,202);
                       mat.metallic   = .4;
                       mat.roughness  = .12;
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "Fridge1"){
                       const mat         = physicMat.clone("Fridge1Mat");
-                      mat.albedoColor   = new BABYLON.Color3.FromInts(255,255,255);
-                      // mat.emissiveColor  = new BABYLON.Color3.FromInts(157,155,153);
+                      mat.albedoColor   = new Color3.FromInts(255,255,255);
+                      // mat.emissiveColor  = new Color3.FromInts(157,155,153);
                       mat.metallic   =  0;
                       mat.roughness  = .81;
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "Cabinet" || task.loadedMeshes[i].name === "Cabinet4" || task.loadedMeshes[i].name === "Cabinet6"){
                       const mat            = physicMat.clone("Fridge1Mat");
-                      mat.albedoColor     = new BABYLON.Color3.FromInts(255,255,255);
-                      // mat.emissiveColor   = new BABYLON.Color3.FromInts(128,128,128);
-                      mat.albedoTexture   = new BABYLON.Texture("models/texture/picturemessage_rajvwxq1.qr2.png",this.scene);
+                      mat.albedoColor     = new Color3.FromInts(255,255,255);
+                      // mat.emissiveColor   = new Color3.FromInts(128,128,128);
+                      mat.albedoTexture   = new Texture("models/texture/picturemessage_rajvwxq1.qr2.png",this.scene);
                       mat.albedoTexture.uScale = 8.55;
                       mat.metallic      = .878;
                       mat.roughness     = 1;
@@ -512,23 +527,23 @@ export default class LoaderManager {
                   }
                   else if(task.loadedMeshes[i].name === "BedFoam"){
                       const mat           = physicMat.clone("BedFoamMat");
-                      mat.albedoColor    = new BABYLON.Color3.FromInts(154,154,154);
-                      mat.albedoTexture  = new BABYLON.Texture("models/texture/Fabric040_2K_Color.jpg",this.scene);
+                      mat.albedoColor    = new Color3.FromInts(154,154,154);
+                      mat.albedoTexture  = new Texture("models/texture/Fabric040_2K_Color.jpg",this.scene);
                       mat.metallic        = 0;
                       mat.roughness       = 1;
                       task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "Bed1"){
                         const mat       = physicMat.clone("Bed1");
-                        mat.albedoColor = new BABYLON.Color3.FromInts(185,185,185);
-                        // mat.ambientColor = new BABYLON.Color3.FromInts(120,120,120);
+                        mat.albedoColor = new Color3.FromInts(185,185,185);
+                        // mat.ambientColor = new Color3.FromInts(120,120,120);
                         mat.metallic  = .58;
                         mat.roughness = 1;  
                         task.loadedMeshes[i].material = mat;
                   }
                   else if(task.loadedMeshes[i].name === "Pillow" || task.loadedMeshes[i].name ===  "pCube38"){
                       const mat       = standerdMat.clone("Bed1");
-                      mat.diffuseColor = new BABYLON.Color3.FromInts(213,228,255);
+                      mat.diffuseColor = new Color3.FromInts(213,228,255);
                       mat.metallic  = .748;
                       mat.roughness = 0;  
                       task.loadedMeshes[i].material = mat;
@@ -536,7 +551,7 @@ export default class LoaderManager {
                   else if(task.loadedMeshes[i].name === "WindiCasingFrame DoorFront1" || task.loadedMeshes[i].name === "WindowFrame pCube22"  
                     || task.loadedMeshes[i].name ===  "pCube22 WindowFrame2"|| task.loadedMeshes[i].name ==="WindowFrame pCube22" ){
                       const mat       = standerdMat.clone("windowrame");
-                      mat.diffuseColor = new BABYLON.Color3.FromInts(91,91,91);
+                      mat.diffuseColor = new Color3.FromInts(91,91,91);
                       mat.metallic  = 1;
                       mat.roughness = .18;  
                       task.loadedMeshes[i].material = mat;
@@ -545,114 +560,114 @@ export default class LoaderManager {
                         this.setPickable(this.root.windowbox,1);
                       }
                       else if(task.loadedMeshes[i].name === "pCube22 WindowFrame2"){
-                        const windownode   = new BABYLON.TransformNode("windownode");
+                        const windownode   = new TransformNode("windownode");
                         task.loadedMeshes[i].parent   =  windownode;
                         task.loadedMeshes[i].name     = "windowframe";
                         const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
-                        const boundingInfo = new BABYLON.BoundingInfo(min, max);
+                        const boundingInfo = new BoundingInfo(min, max);
                         const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
                         task.loadedMeshes[i].position =  centerPoint;
                         this.setPickable(task.loadedMeshes[i],-1);
                         // windownode.position.set(-790,345,0);
                         windownode.parent   = this.root.windowFrameRoot;
-                        windownode.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+                        windownode.rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
                         this.root.windowFrameRoot.scaling.set(.01,.01,.01);
                       }
                       
                   }
                   else if(task.loadedMeshes[i].name === "Glass WindowFrame pCube22" || task.loadedMeshes[i].name === "pCube22 WindowFrame2 Glass"){
                     const mat       = standerdMat.clone("glasswindowFrameMat");
-                    mat.diffuseColor = new BABYLON.Color3.FromInts(255,255,255);
+                    mat.diffuseColor = new Color3.FromInts(255,255,255);
                     mat.metallic  = 1;
                     mat.roughness = .5;  
                     mat.alpha=.1;
                     task.loadedMeshes[i].material = mat;
                     if(task.loadedMeshes[i].name === "pCube22 WindowFrame2 Glass"){
-                        const windownode   = new BABYLON.TransformNode("windowframenode");
+                        const windownode   = new TransformNode("windowframenode");
                         task.loadedMeshes[i].parent   =  windownode;
                         task.loadedMeshes[i].name     = "windowglass";
                         const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
-                        const boundingInfo = new BABYLON.BoundingInfo(min, max);
+                        const boundingInfo = new BoundingInfo(min, max);
                         const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
                         task.loadedMeshes[i].position =  centerPoint;
                         task.loadedMeshes[i].isPickable=false;
                         // windownode.position.set(-790,345,0);
                         windownode.parent   = this.root.windowFrameRoot;
-                        windownode.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(0).radians());
+                        windownode.rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians(),Angle.FromDegrees(0).radians());
 
                     }
                     
                 }
                 else if(task.loadedMeshes[i].name ===  "AirconClose1"){
                   const mat       = physicMat.clone("acMat");
-                  mat.albedoColor  = new BABYLON.Color3.FromInts(255,255,255);
-                  mat.emissiveColor = new BABYLON.Color3.FromInts(0,0,0);
+                  mat.albedoColor  = new Color3.FromInts(255,255,255);
+                  mat.emissiveColor = new Color3.FromInts(0,0,0);
                   mat.metallic  =  0;
                   mat.roughness = .1;  
                   task.loadedMeshes[i].material = mat;
                 }
                 else if(task.loadedMeshes[i].name ===  "DoorBath2 DoorBath1"){
                   const mat       = standerdMat.clone("DoorBath2Mat");
-                  mat.diffuseColor  = new BABYLON.Color3.FromInts(255,145,46);
+                  mat.diffuseColor  = new Color3.FromInts(255,145,46);
                   mat.roughness = 1;  
                   task.loadedMeshes[i].material = mat;
                 }
                 else if(task.loadedMeshes[i].name ===  "CasingFrameBath DoorBath2"){
                   const mat       = standerdMat.clone("FrameBathMat");
-                  mat.diffuseColor  = new BABYLON.Color3.FromInts(78,78,78);
+                  mat.diffuseColor  = new Color3.FromInts(78,78,78);
                   mat.roughness = 1;  
                   task.loadedMeshes[i].material = mat;
                 }
                 else if(task.loadedMeshes[i].name ===  "DoorBath2 DorrKnobBath DoorBath1"){
                   const mat       = standerdMat.clone("DoorBath2Mat");
-                  mat.diffuseColor  = new BABYLON.Color3.FromInts(147,147,147);
+                  mat.diffuseColor  = new Color3.FromInts(147,147,147);
                   mat.roughness = 1;  
                   task.loadedMeshes[i].material = mat;
                 }
                 else if(task.loadedMeshes[i].name ===  "DoorFront1 CasingFrameFront"){
                   const mat       = standerdMat.clone("DoorFront1Mat");
-                  mat.diffuseColor  = new BABYLON.Color3.FromInts(55,55,55);
+                  mat.diffuseColor  = new Color3.FromInts(55,55,55);
                   mat.roughness = 1;  
                   task.loadedMeshes[i].material = mat;
                 }
                 else if(task.loadedMeshes[i].name ===  "DoorFront1 DoorKnob"){
                   
-                    const tmproot  = new BABYLON.TransformNode("door_root"); 
+                    const tmproot  = new TransformNode("door_root"); 
                     task.loadedMeshes[i].parent = tmproot;
                     task.loadedMeshes[i].scaling.y=.98;
                     task.loadedMeshes[i].name="mydoor";
                     this.setPickable(task.loadedMeshes[i],2);
                     const mat            = standerdMat.clone("bathdoorMat");
-                    mat.diffuseColor     = new BABYLON.Color3.FromInts(255,170,93);
-                    mat.diffuseTexture   = new BABYLON.Texture("models/texture/Wood027_2K_Roughness.jpg",this.scene);
+                    mat.diffuseColor     = new Color3.FromInts(255,170,93);
+                    mat.diffuseTexture   = new Texture("models/texture/Wood027_2K_Roughness.jpg",this.scene);
                     mat.roughness = 1;  
                     task.loadedMeshes[i].material = mat;
                     const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
-                    const boundingInfo = new BABYLON.BoundingInfo(min, max);
+                    const boundingInfo = new BoundingInfo(min, max);
                     const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
                     task.loadedMeshes[i].position =  centerPoint;
                     tmproot.position.z-=100;
                     tmproot.parent =this.root.doorRoot;
-                    this.root.doorRoot.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(0).radians(),BABYLON.Angle.FromDegrees(325).radians(),BABYLON.Angle.FromDegrees(0).radians());
+                    this.root.doorRoot.rotation = new Vector3(Angle.FromDegrees(0).radians(),Angle.FromDegrees(325).radians(),Angle.FromDegrees(0).radians());
                     this.root.doorRoot.scaling.set(.01,.01,.01);
                 }
                 else if(task.loadedMeshes[i].name ===  "DoorFront1 DoorKnobFront DoorKnob"){
                     if(this.Counter ===0){
-                        const tmproot  = new BABYLON.TransformNode("door_knob");
+                        const tmproot  = new TransformNode("door_knob");
                         task.loadedMeshes[i].parent = tmproot;
                         task.loadedMeshes[i].name="mydoorknob";
                         const mat           = physicMat.clone("bathdoorMat");
-                        mat.albedoColor     = new BABYLON.Color3.FromInts(0,0,0);  
-                        mat.emissiveColor   = new BABYLON.Color3.FromInts(1,1,1);
-                        mat.albedoTexture   = new BABYLON.Texture("models/texture/Wood027_2K_Roughness.jpg",this.scene);
+                        mat.albedoColor     = new Color3.FromInts(0,0,0);  
+                        mat.emissiveColor   = new Color3.FromInts(1,1,1);
+                        mat.albedoTexture   = new Texture("models/texture/Wood027_2K_Roughness.jpg",this.scene);
                         mat.roughness       = .15;  
                         mat.metallic        = .53;  
                         task.loadedMeshes[i].material = mat;
                         const { min, max } = task.loadedMeshes[i].getHierarchyBoundingVectors();
-                        const boundingInfo = new BABYLON.BoundingInfo(min, max);
+                        const boundingInfo = new BoundingInfo(min, max);
                         const centerPoint = boundingInfo.boundingBox.center.scale(-1);  
                         task.loadedMeshes[i].position =  centerPoint;
-                        tmproot.rotation.y = BABYLON.Angle.FromDegrees(180).radians();
+                        tmproot.rotation.y = Angle.FromDegrees(180).radians();
                         tmproot.position.set(-20,0,-195);
                         tmproot.parent =this.root.doorRoot;
                         tmproot.name ="doorknob";
@@ -665,8 +680,8 @@ export default class LoaderManager {
                 }
                 else if(task.loadedMeshes[i].name ===  "OnSwitch2"){
                   const mat           = physicMat.clone("bathdoorMat");
-                  mat.albedoColor    = new BABYLON.Color3.FromInts(226,226,226);
-                  // mat.emissiveColor   = new BABYLON.Color3.FromInts(50,50,50);
+                  mat.albedoColor    = new Color3.FromInts(226,226,226);
+                  // mat.emissiveColor   = new Color3.FromInts(50,50,50);
                   mat.metallic  = 0;  
                   mat.roughness = .2;  
                   task.loadedMeshes[i].material = mat;
@@ -683,45 +698,45 @@ export default class LoaderManager {
               }
           }
     });
-    const frontplan = BABYLON.MeshBuilder.CreatePlane("frontplane",{width:8,height:5,sideOrientation: BABYLON.Mesh.DOUBLESIDE},this.scene);
-    let frontplanMaterial = new BABYLON.StandardMaterial("frontplaneMat", this.scene);
+    const frontplan = MeshBuilder.CreatePlane("frontplane",{width:8,height:5,sideOrientation: Mesh.DOUBLESIDE},this.scene);
+    let frontplanMaterial = new StandardMaterial("frontplaneMat", this.scene);
 
-    frontplanMaterial.emissiveTexture= new BABYLON.Texture("models/texture/view.jpg",this.scene);
-    frontplanMaterial.diffuseTexture = new BABYLON.Texture("models/texture/view.jpg",this.scene);
-    frontplan.rotation.y = BABYLON.Angle.FromDegrees(270).radians();
-    frontplan.position = new BABYLON.Vector3(-8.4,4,-.9);
+    frontplanMaterial.emissiveTexture= new Texture("models/texture/view.jpg",this.scene);
+    frontplanMaterial.diffuseTexture = new Texture("models/texture/view.jpg",this.scene);
+    frontplan.rotation.y = Angle.FromDegrees(270).radians();
+    frontplan.position = new Vector3(-8.4,4,-.9);
     frontplan.material = frontplanMaterial;
     frontplan.isPickable=false;
     frontplan.renderOutline=false;
 
 
     const backPlan = frontplan.clone("backsidePlan");
-    let backplanMaterial = new BABYLON.StandardMaterial("frontplaneMat", this.scene);
-    backplanMaterial.emissiveTexture= new BABYLON.Texture("models/texture/hallway.jpg",this.scene);
-    backplanMaterial.diffuseTexture = new BABYLON.Texture("models/texture/hallway.jpg",this.scene);
-    backPlan.rotation.y = BABYLON.Angle.FromDegrees(90).radians();
-    backPlan.position = new BABYLON.Vector3(10,2,-.54);
+    let backplanMaterial = new StandardMaterial("frontplaneMat", this.scene);
+    backplanMaterial.emissiveTexture= new Texture("models/texture/hallway.jpg",this.scene);
+    backplanMaterial.diffuseTexture = new Texture("models/texture/hallway.jpg",this.scene);
+    backPlan.rotation.y = Angle.FromDegrees(90).radians();
+    backPlan.position = new Vector3(10,2,-.54);
     backPlan.scaling.y*=1.2;
     backPlan.material = backplanMaterial;
     backPlan.isPickable=false;
     backPlan.renderOutline=false;
 
-    const tableupperColllider = BABYLON.MeshBuilder.CreatePlane("tablecollider",{width:2.6,height:1.6,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
-    let tableMat = new BABYLON.StandardMaterial("frontplaneMat", this.scene);
-    tableMat.diffuseColor = new BABYLON.Color3.FromInts(107,166,163);
-    tableMat.emissiveColor = new BABYLON.Color3.FromInts(107,166,163);
+    const tableupperColllider = MeshBuilder.CreatePlane("tablecollider",{width:2.6,height:1.6,sideOrientation: Mesh.FRONTSIDE},this.scene);
+    let tableMat = new StandardMaterial("frontplaneMat", this.scene);
+    tableMat.diffuseColor = new Color3.FromInts(107,166,163);
+    tableMat.emissiveColor = new Color3.FromInts(107,166,163);
     tableupperColllider.renderOutline=false;
     tableupperColllider.isPickable=false;
     tableupperColllider.material = tableMat;
-    tableupperColllider.rotation = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),0,0);
-    tableupperColllider.position = new BABYLON.Vector3(-.3,1.92,2.5);
+    tableupperColllider.rotation = new Vector3(Angle.FromDegrees(90).radians(),0,0);
+    tableupperColllider.position = new Vector3(-.3,1.92,2.5);
     tableupperColllider.visibility=0;
 
     const trollyCollider = tableupperColllider.clone("trollycollider"); 
     trollyCollider.renderOutline=false;
     trollyCollider.isPickable=false;
-    trollyCollider.position = new BABYLON.Vector3(-2.2,1.80,2.50);
-    trollyCollider.scaling  = new BABYLON.Vector3(.3,.8,1)
+    trollyCollider.position = new Vector3(-2.2,1.80,2.50);
+    trollyCollider.scaling  = new Vector3(.3,.8,1)
     trollyCollider.visibility=0;
     trollyCollider.isPickable=false;
     trollyCollider.renderOutline=false;
@@ -730,63 +745,63 @@ export default class LoaderManager {
     apdCassetteTrolly.isPickable=false;
     apdCassetteTrolly.renderOutline=false;
     apdCassetteTrolly.visibility=0;
-    apdCassetteTrolly.position = new BABYLON.Vector3(-2.7,1.80,2.50);
+    apdCassetteTrolly.position = new Vector3(-2.7,1.80,2.50);
 
     const trollyreckCollider      = trollyCollider.clone("trollyreckcollider")  
     trollyreckCollider.visibility = 0;
-    trollyreckCollider.position   = new BABYLON.Vector3(-2.9,.5,2.5); 
-    trollyreckCollider.scaling    = new BABYLON.Vector3(.83,.83,1);
+    trollyreckCollider.position   = new Vector3(-2.9,.5,2.5); 
+    trollyreckCollider.scaling    = new Vector3(.83,.83,1);
 
     const apdCollider = tableupperColllider.clone("apdcollider"); 
     apdCollider.renderOutline=false;
     apdCollider.isPickable=false;
     
-    this.scene.getMeshByName("apdcollider").position = new BABYLON.Vector3(-3.4,2.1,2.5);
-    apdCollider.position = new BABYLON.Vector3(-3.4,2.1,2.5);
+    this.scene.getMeshByName("apdcollider").position = new Vector3(-3.4,2.1,2.5);
+    apdCollider.position = new Vector3(-3.4,2.1,2.5);
     apdCollider.scaling.set(.3,.4,1)
     apdCollider.visibility=0;
 
 
-    const apdSwitch      = BABYLON.MeshBuilder.CreateSphere("apdswitch_sphere", {diameterX:.035,diameterY:.035,diameterZ:.02});
-    apdSwitch.position   = new BABYLON.Vector3(-3.685,1.895, 2.121);
+    const apdSwitch      = MeshBuilder.CreateSphere("apdswitch_sphere", {diameterX:.035,diameterY:.035,diameterZ:.02});
+    apdSwitch.position   = new Vector3(-3.685,1.895, 2.121);
     apdSwitch.visibility = 1;
-    const apdSwitchmat   = new BABYLON.StandardMaterial("apdswitch_sphere_mat")
-    apdSwitchmat.diffuseColor = new BABYLON.Color3.FromInts(0,255,0);
+    const apdSwitchmat   = new StandardMaterial("apdswitch_sphere_mat")
+    apdSwitchmat.diffuseColor = new Color3.FromInts(0,255,0);
     apdSwitch.material    =  apdSwitchmat;
     this.setPickable(apdSwitch,.01);
 
-    const acIndicator            = BABYLON.MeshBuilder.CreateSphere("acindicator", {diameter:.05},this.scene);
+    const acIndicator            = MeshBuilder.CreateSphere("acindicator", {diameter:.05},this.scene);
     const acIndicatorMat         = new StandardMaterial("acindicatormat",this.scene);
-    acIndicator.position         = new BABYLON.Vector3(-5.17,4.72,2.71);
-    acIndicatorMat.diffuseColor  = new BABYLON.Color3.FromInts(0,255,0);
+    acIndicator.position         = new Vector3(-5.17,4.72,2.71);
+    acIndicatorMat.diffuseColor  = new Color3.FromInts(0,255,0);
     acIndicator.material         = acIndicatorMat;
 
     
-    const cabinetpart = BABYLON.MeshBuilder.CreatePlane("cabinetpartcollider1",{width:1,height:1,sideOrientation: BABYLON.Mesh.FRONTSIDE},this.scene);
-    const cabinetPartCollider = new BABYLON.StandardMaterial("cabinetPartCollider", this.scene);
-    cabinetPartCollider.diffuseColor = new BABYLON.Color3.FromInts(107,166,163);
-    cabinetPartCollider.emissiveColor = new BABYLON.Color3.FromInts(107,166,163);
+    const cabinetpart = MeshBuilder.CreatePlane("cabinetpartcollider1",{width:1,height:1,sideOrientation: Mesh.FRONTSIDE},this.scene);
+    const cabinetPartCollider = new StandardMaterial("cabinetPartCollider", this.scene);
+    cabinetPartCollider.diffuseColor = new Color3.FromInts(107,166,163);
+    cabinetPartCollider.emissiveColor = new Color3.FromInts(107,166,163);
     cabinetpart.renderOutline=false;
     cabinetpart.isPickable = false;
     cabinetpart.material   = tableMat;
-    cabinetpart.rotation   = new BABYLON.Vector3(BABYLON.Angle.FromDegrees(90).radians(),0,0);
-    cabinetpart.position   = new BABYLON.Vector3(2.119,1.47,2.43);
-    cabinetpart.scaling    = new BABYLON.Vector3(.82,.54,1);
+    cabinetpart.rotation   = new Vector3(Angle.FromDegrees(90).radians(),0,0);
+    cabinetpart.position   = new Vector3(2.119,1.47,2.43);
+    cabinetpart.scaling    = new Vector3(.82,.54,1);
     cabinetpart.visibility = 0;
 
   const cabinetpart2    = cabinetpart.clone("cabinetpartcollider2");
-  cabinetpart2.position = new BABYLON.Vector3(1.87,1.07,2.43);
-  cabinetpart2.scaling  = new BABYLON.Vector3(1.41,.54,1);
+  cabinetpart2.position = new Vector3(1.87,1.07,2.43);
+  cabinetpart2.scaling  = new Vector3(1.41,.54,1);
   cabinetpart2.visibility=0;
 
   const cabinetpart3    = cabinetpart.clone("cabinetpartcollider3");
-  cabinetpart3.position = new BABYLON.Vector3(1.87,.67,2.43);
-  cabinetpart3.scaling  = new BABYLON.Vector3(1.41,.54,1);
+  cabinetpart3.position = new Vector3(1.87,.67,2.43);
+  cabinetpart3.scaling  = new Vector3(1.41,.54,1);
   cabinetpart3.visibility=0;
 
   const cabinetpart4 = cabinetpart.clone("cabinetpartcollider4");
-  cabinetpart4.position = new BABYLON.Vector3(1.87,.24,2.43);
-  cabinetpart4.scaling  = new BABYLON.Vector3(1.41,.54,1);
+  cabinetpart4.position = new Vector3(1.87,.24,2.43);
+  cabinetpart4.scaling  = new Vector3(1.41,.54,1);
   cabinetpart4.visibility=0;
   // console.log("meshes", meshes)
    this.assetsManager.onProgress = (
@@ -818,12 +833,12 @@ export default class LoaderManager {
     mesh.isPickable    = true;
     mesh.renderOutline = false;
     mesh.outlineWidth  = width;
-    mesh.outlineColor  = BABYLON.Color3.Yellow();
+    mesh.outlineColor  = Color3.Yellow();
    
   }
   createShadowGenerator(mesh){
     // this.shadowGenerator = new BABYLON.ShadowGenerator(512, this.root.sceneCommon.directionalLight);
-    // this.shadowGenerator.getShadowMap().renderList.push(mesh);
+    // this.shadowGenerator.getShadowMap().renderList.push(mesh);`
     // this.shadowGenerator.useContactHardeningShadow = true;
     // this.shadowGenerator.contactHardeningLightSizeUVRatio = 0.07;
   }

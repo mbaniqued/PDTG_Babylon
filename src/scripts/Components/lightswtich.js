@@ -1,6 +1,6 @@
 import { GameState,ANIM_TIME,event_objectivecomplete } from "../scene/MainScene";
-import TWEEN from "@tweenjs/tween.js";
 import { LIGHTON,LIGHTOFF } from "../Enviroment";
+import {Vector3,ActionManager,ExecuteCodeAction } from 'babylonjs';
 export default class LightSwitch{
 
         constructor(root,meshobject){
@@ -25,8 +25,8 @@ export default class LightSwitch{
             this.updateoutLine(this.meshRoot,false);
         }
         addAction(mesh){
-            mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+            mesh.actionManager = new ActionManager(this.root.scene);
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, (object)=> {
                     if(this.root.camera.radius<3){
                         this.state =1;
                         this.root.gamestate.state  =  GameState.active;
@@ -38,11 +38,11 @@ export default class LightSwitch{
                     this.setLabel();
                     this.updateoutLine(mesh,true);
             }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOutTrigger, (object)=> {
                     this.label.isVisible=false;
                     this.updateoutLine(mesh,false);
             }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (object)=> {
                     if(this.root.camera.radius<3){
                         this.state =1;
                         this.root.gamestate.state  =  GameState.active;
@@ -58,7 +58,7 @@ export default class LightSwitch{
                         this.updateoutLine(mesh,false);
                     }
             }))
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (object)=> {
+            mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickTrigger, (object)=> {
                         if(this.root.camera.radius<3){
                             this.state =1;
                             this.root.gamestate.state  =  GameState.active;
@@ -74,7 +74,7 @@ export default class LightSwitch{
                             this.state=1;
                             this.root.setCameraAnim(185,185,90,1.5);
                             let node = this.root.scene.getNodeByName("fanswitchnode");
-                            this.root.setFocusOnObject(new BABYLON.Vector3(node.position.x,node.position.y,node.position.z+.25));
+                            this.root.setFocusOnObject(new Vector3(node.position.x,node.position.y,node.position.z+.25));
                         }
                         else if(this.state>0){
                             

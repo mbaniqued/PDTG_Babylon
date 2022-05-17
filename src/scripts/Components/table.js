@@ -1,6 +1,6 @@
 import { GameState,ANIM_TIME,rotateState } from "../scene/MainScene";
 import TWEEN from "@tweenjs/tween.js";
-
+import {Vector3,Angle,ActionManager,ExecuteCodeAction} from 'babylonjs';
 export default class Table{
 
     constructor(root,meshobject,pos){
@@ -14,7 +14,7 @@ export default class Table{
         this.state=0;
         this.setPos();
         this.setDrawer();
-        // this.mesh = new BABYLON.TransformNode();
+        // this.mesh = new TransformNode();
         
         this.initAction();
         this.label = this.root.gui2D.createRectLabel(this.name,160,36,10,"#FFFFFF",this.meshRoot,0,-20);
@@ -55,8 +55,8 @@ export default class Table{
         });
     }
     addAction(mesh){
-                mesh.actionManager = new BABYLON.ActionManager(this.root.scene);
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (object)=> {
+                mesh.actionManager = new ActionManager(this.root.scene);
+                mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, (object)=> {
                     if(rotateState.value ===1)
                         return;
                     this.setLabel();
@@ -67,11 +67,11 @@ export default class Table{
 
                     
                 }))
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (object)=> {
+                mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOutTrigger, (object)=> {
                        this.label.isVisible=false;
                        this.updateoutLine(mesh,false);
                 }))
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (object)=> {
+                mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (object)=> {
                     if(rotateState.value ===1)
                         return;
                     this.setLabel();
@@ -81,19 +81,19 @@ export default class Table{
                         this.updateoutLine(mesh,false);
                     }
                 }))
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger,(object)=> {
+                mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickTrigger,(object)=> {
 
                     console.log(rotateState.value+"     "+this.root.gamestate.state+"    "+this.root.camera.radius+"  "+this.root.scene.postProcessesEnabled);
                     if(rotateState.value ===1 || this.root.gamestate.state === GameState.radial || this.root.gamestate.state === GameState.inspect)
                         return;
                     this.updateoutLine(mesh,false);
-                    if(this.root.camera.radius>2.5 || (this.root.camera.target.x != this.meshRoot.position.x && this.root.camera.target.y != this.meshRoot.position.y)){
+                    if(this.root.camera.radius>2.51 || (this.root.camera.target.x != this.meshRoot.position.x && this.root.camera.target.y != this.meshRoot.position.y)){
                         if(this.isdrawerOpen)
                             this.state=10;
                         else    
                             this.state=0;
                         let isPositive =true;
-                        if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(45).radians())
+                        if(this.root.camera.alpha<Angle.FromDegrees(45).radians())
                             isPositive = false;
                         this.root.setCameraAnim(isPositive?270:-90,270,45,2.5);
                     }
@@ -101,7 +101,7 @@ export default class Table{
                         case 0:
                                 this.root.gamestate.state = GameState.default;
                                 this.setTableFocusAnim();
-                                this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z-.5));
+                                this.root.setFocusOnObject(new Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.meshRoot.position.z-.5));
                             break;
                         case 1:
                                 if(mesh.parent.name.includes("tabledrawer")){
@@ -113,7 +113,7 @@ export default class Table{
                                 this.meshRoot.getChildTransformNodes().forEach(childnode=>{
                                  if(childnode.name==="tabledrawer"){
                                         let drawerNode  = childnode;  
-                                        this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-.25:this.meshRoot.position.z-.5));
+                                        this.root.setFocusOnObject(new Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-.25:this.meshRoot.position.z-.5));
                                     }
                                 });
                                 this.root.gamestate.state = GameState.active;
@@ -128,7 +128,7 @@ export default class Table{
     }
     setTableFocusAnim(){
         let isPositive =true;
-        if(this.root.camera.alpha<BABYLON.Angle.FromDegrees(45).radians())
+        if(this.root.camera.alpha<Angle.FromDegrees(45).radians())
             isPositive = false;
         // console.log("!! setTableFocusAnim!!! "+isPositive);
         this.root.gamestate.state  =  GameState.focus;
@@ -147,8 +147,8 @@ export default class Table{
 
                     this.root.audioManager.playSound(this.root.audioManager.drawerSound);
                     let val = this.isdrawerOpen?-120:120; 
-                    this.root.setFocusOnObject(new BABYLON.Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.meshRoot.position.z-.5));
-                    // this.root.setFocusOnObject(new BABYLON.Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z+(this.isdrawerOpen?-2:0)));
+                    this.root.setFocusOnObject(new Vector3(this.meshRoot.position.x,this.meshRoot.position.y,this.isdrawerOpen?drawerNode.absolutePosition.z-1.5:this.meshRoot.position.z-.5));
+                    // this.root.setFocusOnObject(new Vector3(drawerNode.absolutePosition.x,drawerNode.absolutePosition.y+1,drawerNode.absolutePosition.z+(this.isdrawerOpen?-2:0)));
                     new TWEEN.Tween(drawerNode.position).to({y:drawerNode.position.y+val},ANIM_TIME).easing(TWEEN.Easing.Sinusoidal.Out).onUpdate(()=>{
                         this.drawerAnim = true;
                     }).onComplete(() => {
