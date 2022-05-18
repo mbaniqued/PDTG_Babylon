@@ -12,7 +12,7 @@ module.exports = function(options) {
     : "development";
 
   return {
-    mode: "development",
+    mode: "production",
     entry: {
       main: path.resolve('src/index.js')
     },
