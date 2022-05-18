@@ -1028,9 +1028,17 @@ export default class MainScene {
             this.wipeAlcohal.alocohalwipe.isVisible = true;
             document.getElementById("alcoholwipeicon").style.display="block";
           }
-          if(this.camera.radius<3)
+          if(this.camera.radius<3 || (this.camera.target.x == this.doorObject.meshRoot.position.x && this.camera.radius<=6)){
              this.gui2D.resetCamBtn.isVisible=true;
-            this.gui2D.userBackBtn.isVisible=true;
+             if(this.camera.radius<3){
+                console.log("INNNNNNNNNNNN"+this.camera.target.z+"  "+this.fanswitchobject.meshRoot.position.z);
+                if(this.camera.target.z == this.acItem.meshRoot.position.z)
+                  this.sceneCommon.setminiCamTarget(1);
+                if(this.camera.target.x == this.fanswitchobject.meshRoot.position.x && this.camera.target.y == this.fanswitchobject.meshRoot.position.y)
+                  this.sceneCommon.setminiCamTarget(0);
+            }
+          }
+          this.gui2D.userBackBtn.isVisible=true;
       })
       const resultdoneBtn = this.gui2D.resultContainer.getChildByName("doneresult");
        resultdoneBtn.onPointerUpObservable.add(()=>{
@@ -1075,8 +1083,16 @@ export default class MainScene {
               this.wipeAlcohal.alocohalwipe.isVisible = true;
               document.getElementById("alcoholwipeicon").style.display="block";
           }
-          if(this.camera.radius<3)
+          if(this.camera.radius<3 || (this.camera.target.x == this.doorObject.meshRoot.position.x && this.camera.radius<=6)){
               this.gui2D.resetCamBtn.isVisible=true;
+              if(this.camera.radius<3){
+                console.log("INNNNNNNNNNNN"+this.camera.target.z+"  "+this.fanswitchobject.meshRoot.position.x);
+                if(this.camera.target.z == this.acItem.meshRoot.position.z)
+                  this.sceneCommon.setminiCamTarget(1);
+                if(this.camera.target.x == this.fanswitchobject.meshRoot.position.x && this.camera.target.y == this.fanswitchobject.meshRoot.position.y)
+                  this.sceneCommon.setminiCamTarget(0);
+             }
+          }
           this.gui2D.userBackBtn.isVisible=true;
       })
   }
